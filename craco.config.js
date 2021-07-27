@@ -4,4 +4,9 @@ module.exports = {
       plugins: [require("tailwindcss"), require("autoprefixer")],
     },
   },
+  webpack: {
+    configure: {
+      devtool: "eval-source-map",
+    },
+  },
 };
