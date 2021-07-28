@@ -7,11 +7,15 @@ import { auth, db } from "./firebase";
 import { initState, dataReducer } from "./reducer/Reducer";
 
 import B2bShop from "./components/customer/b2bshop/B2bShop";
+import B2bOrder from "./components/customer/b2bshop/B2bOrder";
+import OrderList from "./components/admin/orderlist/OrderList";
 import Sidebar from "./components/sidebar/Sidebar";
 import Home from "./components/home/Home";
+import Login from "./components/login/Login";
 import ListProduct from "./components/products/listproduct/ListProduct";
 import AddProduct from "./components/products/addproduct/AddProduct";
 import DetailProduct from "./components/products/detailproduct/DetailProduct";
+import OrderDetail from "./components/admin/orderlist/OrderDetail";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -26,13 +30,20 @@ function App() {
       .doc(user?.email)
       .get()
       .then(doc => dispatch({ type: "USERTYPE", userType: doc?.data()?.type }));
-    dispatch({ type: "USER", user: user });
+  }, [user]);
+
+  useEffect(() => {
+    db.collection("accounts")
+      .doc(user?.email)
+      .get()
+      .then(doc => dispatch({ type: "USER", user: doc?.data() }));
   }, [user]);
 
   useEffect(() => {
     db.collection("orders")
       .doc("b2b")
       .collection("b2borders")
+      .orderBy("createdAt", "desc")
       .onSnapshot(snapshot =>
         snapshot.docs.map(doc =>
           dispatch({
@@ -68,11 +79,12 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
-    db.collection("orders").onSnapshot(snapshot =>
-      snapshot.docs.map(doc =>
-        dispatch({ type: "ORDER_COUNTS", orderCounts: doc.data().counts })
-      )
-    );
+    db.collection("forNumberedId")
+      .doc("b2bOrder")
+      .get()
+      .then(doc =>
+        dispatch({ type: "ORDER_COUNTS", orderCounts: doc?.data().counts })
+      );
   }, [dispatch]);
 
   if (loading || userType === "before") {
@@ -93,8 +105,10 @@ function App() {
             <InitDataContext.Provider value={state}>
               <Sidebar />
               <Switch>
+                <Route path="/orderdetail/:id" component={OrderDetail} />
+                <Route path="/orderlist" component={OrderList} />
+                <Route path="/b2border" component={B2bOrder} />
                 <Route path="/b2bshop" component={B2bShop} />
-                ''
                 <Route
                   exact
                   path="/detailproduct/:id"
@@ -109,6 +123,10 @@ function App() {
         </div>
       </Router>
     );
+  }
+
+  if (!user) {
+    return <Login />;
   }
   return (
     <>

@@ -9,6 +9,7 @@ const Sidebar = () => {
     { 상품추가: "/addproduct" },
     { 상품목록: "/listproduct" },
     { B2BShop: "/b2bshop" },
+    { 주문확인: "/orderlist" },
   ];
   return (
     //   d-1
