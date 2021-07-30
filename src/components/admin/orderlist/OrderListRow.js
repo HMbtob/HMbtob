@@ -5,35 +5,24 @@ const OrderListRow = ({
   id,
   createdAt,
   customer,
-  listLength,
   orderState,
-  totalPrice,
-  totalQuan,
-  totalWeight,
-  orders,
   orderNumber,
+  order,
 }) => {
   const history = useHistory();
   const today = new Date();
-  console.log(today);
-  console.log(
-    orders[0].data.list[0].relDate.toDate().toLocaleDateString() <
-      today.toLocaleDateString()
-  );
-  const included = orders
-    .find(arr => arr.id === id)
-    .data.list.reduce((i, c) => {
-      return (
-        i ||
-        c.relDate.toDate().toLocaleDateString() > today.toLocaleDateString()
-      );
-    }, false);
-  console.log(included);
-  if (orders) {
+
+  const included = order.data.list.reduce((i, c) => {
+    return (
+      i || c.relDate.toDate().toLocaleDateString() > today.toLocaleDateString()
+    );
+  }, false);
+  if (order) {
     return (
       <div
         onClick={() => history.push(`/orderdetail/${id}`)}
-        className={`grid grid-cols-10 grid-flow-col text-center border-b border-l border-r py-1 ${
+        className={`grid grid-cols-10 grid-flow-col text-center 
+        border-b border-l border-r py-1 text-sm ${
           included ? " bg-red-200" : ""
         }`}
       >
@@ -42,11 +31,26 @@ const OrderListRow = ({
           {new Date(createdAt.toDate()).toLocaleString()}
         </div>
         <div className="col-span-2">{customer}</div>
-        <div>{listLength} 종류</div>
         <div>{orderState} </div>
-        <div>{totalPrice} 원</div>
-        <div>{totalQuan} 개</div>
-        <div>{totalWeight} KG</div>
+        <div>
+          {order.data.list.reduce((i, c) => {
+            return i + (c.price - c.dcRate * c.price) * c.quan;
+          }, 0)}{" "}
+          원
+        </div>
+        <div>{order.data.list.length} 종류</div>
+        <div>
+          {order.data.list.reduce((i, c) => {
+            return i + c.quan;
+          }, 0)}{" "}
+          개
+        </div>
+        <div>
+          {order.data.list.reduce((i, c) => {
+            return i + c.weight * c.quan;
+          }, 0) / 1000}{" "}
+          KG
+        </div>
       </div>
     );
   }

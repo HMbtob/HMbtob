@@ -13,7 +13,7 @@ const B2bShop = () => {
   const state = useContext(InitDataContext);
   const dispatch = useContext(InitDispatchContext);
   const { notices, products } = state;
-  console.log(state);
+  // FIXME: 전체 상품이 아니라 b2bshop 에있는 상품 가져오기, 리듀서도 다시
   const preorderProducts = products.filter(
     product => new Date(product.data.preOrderDeadline.toDate()) > new Date()
   );
@@ -37,7 +37,7 @@ const B2bShop = () => {
       if (form[key]) {
         simpleList.push({
           orderNumber: String(state.orderCounts + 1000),
-          id: key,
+          productId: key,
           title: truncate(
             products.find(product => product.id === key).data.title,
             50
@@ -67,6 +67,8 @@ const B2bShop = () => {
             products.find(product => product.id === key).data
               .preOrderDeadline || 0,
           childOrderNumber: `${String(state.orderCounts + 1000)}-${i + 1}`,
+          moved: false,
+          createdAt: new Date(),
         });
         i++;
       }
@@ -74,13 +76,13 @@ const B2bShop = () => {
   }
   const B2bMakeOrder = async () => {
     // dispatch로 심플리스트 스테이트로 업데이트하고
-    dispatch({ type: "SIMPLELIST", simpleList });
+    await dispatch({ type: "SIMPLELIST", simpleList });
     // 주문번호생성하고
-    dispatch({
+    await dispatch({
       type: "ORDER_NUMBER",
       orderNumber: state.orderCounts + 1000,
     });
-    // ㅍ히스토리푸시로 주문번호로 라우팅
+    // ㅍ히스토리푸시로  라우팅
     reset();
     history.push(`/b2border`);
   };

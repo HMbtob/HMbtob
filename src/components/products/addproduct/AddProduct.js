@@ -1,10 +1,10 @@
 import React from "react";
+import { useHistory } from "react-router";
 import useInputs from "../../../hooks/useInput";
 import { db } from "../../../firebase";
-import { useHistory } from "react-router";
-
 const AddProduct = () => {
   const history = useHistory();
+
   const [
     {
       sku,
@@ -57,7 +57,7 @@ const AddProduct = () => {
   const Inputs = [
     { sku: "sku" },
     { title: "제목" },
-    { price: "가격" },
+    { price: "매입가" },
     { artist: "그룹명" },
     { ent: "소속사" },
     { thumbNail: "썸네일" },
@@ -93,8 +93,10 @@ const AddProduct = () => {
     { postcard: "엽서" },
     { gift: "특전" },
   ];
-  const Appp = () => {
-    db.collection("products")
+
+  const Appp = async () => {
+    await db
+      .collection("products")
       .doc()
       .set({
         sku,
@@ -126,7 +128,9 @@ const AddProduct = () => {
         unShipped: 0,
       });
     reset();
-    alert("저장 완료");
+
+    await reset();
+    await alert("추가완료");
     history.push("/listproduct");
   };
   return (

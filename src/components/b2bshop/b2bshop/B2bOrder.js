@@ -1,13 +1,15 @@
 import React, { useContext, useState } from "react";
-import { InitDataContext } from "../../../App";
 import { useHistory } from "react-router";
+import { InitDataContext } from "../../../App";
 import useInputs from "../../../hooks/useInput";
 import { db } from "../../../firebase";
 
 const B2bOrder = () => {
   const state = useContext(InitDataContext);
-  const { user, simpleLists } = state;
+
   const history = useHistory();
+
+  const { user, simpleLists } = state;
 
   // 약관 체크
   const [confirmChecked, setConfirmCheck] = useState(false);
@@ -24,7 +26,10 @@ const B2bOrder = () => {
   //  인풋
   const [form, onChange, reset] = useInputs({
     recipient: "",
-    address: "",
+    address1: "",
+    address2: "",
+    address3: "",
+    country: "",
     zipcode: "",
     recipientPhoneNumber: "",
     recipientEmail: "",
@@ -35,7 +40,10 @@ const B2bOrder = () => {
 
   const {
     recipient,
-    address,
+    address1,
+    address2,
+    address3,
+    country,
     zipcode,
     recipientPhoneNumber,
     recipientEmail,
@@ -46,64 +54,52 @@ const B2bOrder = () => {
 
   const inputsName = [
     "수령인",
-    "주소",
+    "주소1",
+    "주소2",
+    "주소3",
+    "국가",
     "우편번호",
     "수령인번호",
     "수령인이메일",
     "배송매세지",
     "결제방법",
     "배송방법",
-    "결제방법",
-    "배송방법",
   ];
-
-  console.log(form);
 
   const options = [
     [{ transfer: "계좌이체" }, { credit: "크레딧" }],
     [{ dhl: "DHL" }, { ems: "EMS" }],
   ];
 
-  const confirmOrder = () => {
-    db.collection("orders")
-      .doc("b2b")
-      .collection("b2borders")
-      .add({
-        orderState: "confirmOrder",
-        totalQuan:
-          simpleLists &&
-          simpleLists.reduce((i, c) => {
-            return i + c.quan;
-          }, 0),
-        totalWeight:
-          simpleLists &&
-          simpleLists.reduce((i, c) => {
-            return i + c.weight * c.quan;
-          }, 0),
-        totalPrice:
-          simpleLists &&
-          simpleLists.reduce((i, c) => {
-            return i + (c.price - c.dcRate * c.price) * c.quan;
-          }, 0),
-        paymentMethod,
-        recipient,
-        shippingType,
-        address,
-        zipcode,
-        recipientPhoneNumber,
-        recipientEmail,
-        shippingMessage,
-        orderNumber: state.orderNumber,
-        createdAt: new Date(),
-        customer: user.email,
-        list: simpleLists,
-      });
-    db.collection("forNumberedId")
+  const confirmOrder = async () => {
+    await db.collection("orders").doc("b2b").collection("b2borders").add({
+      orderState: "confirmOrder",
+      paymentMethod,
+      recipient,
+      shippingType,
+      address1,
+      address2,
+      address3,
+      country,
+      zipcode,
+      recipientPhoneNumber,
+      recipientEmail,
+      shippingMessage,
+      orderNumber: state.orderNumber,
+      createdAt: new Date(),
+      customer: user.email,
+      list: simpleLists,
+      dcRates: user.dcRates,
+      shippingRate: user.shippingRate,
+    });
+    await db
+      .collection("forNumberedId")
       .doc("b2bOrder")
       .set({ counts: state.orderCounts + 1 });
-    alert("주문 완료");
-    reset();
-    history.push("/b2bshop");
+
+    await reset();
+    await alert("주문 완료");
+    history.push("/orderlist");
   };
 
   return (
@@ -243,13 +239,36 @@ const B2bOrder = () => {
               {simpleLists &&
                 simpleLists.reduce((i, c) => {
                   return i + c.weight * c.quan;
-                }, 0)}{" "}
+                }, 0) / 1000}{" "}
               KG
             </div>
           </div>
           <div className="grid grid-cols-2 w-1/2 text-right">
+            <div>예상운송비</div>
+            <div>
+              {(simpleLists.reduce((i, c) => {
+                return i + c.weight * c.quan;
+              }, 0) /
+                1000) *
+                (user.shippingRate[shippingType]
+                  ? user.shippingRate[shippingType]
+                  : 10000)}
+              원
+            </div>
+          </div>
+          <div className="grid grid-cols-2 w-1/2 text-right">
             <div>합계</div>
-            <div>공급가액 + 예상운송비</div>
+            <div>
+              {simpleLists.reduce((i, c) => {
+                return i + (c.price - c.dcRate * c.price) * c.quan;
+              }, 0) +
+                (simpleLists.reduce((i, c) => {
+                  return i + c.weight * c.quan;
+                }, 0) /
+                  1000) *
+                  user.shippingRate[shippingType]}
+              원
+            </div>
           </div>
         </div>
 
@@ -265,7 +284,10 @@ const B2bOrder = () => {
             className={`${
               confirmChecked &&
               recipient.length > 0 &&
-              address.length > 0 &&
+              address1.length > 0 &&
+              address2.length > 0 &&
+              address3.length > 0 &&
+              country.length > 0 &&
               zipcode.length > 0 &&
               recipientPhoneNumber.length > 0 &&
               recipientEmail.length > 0 &&
