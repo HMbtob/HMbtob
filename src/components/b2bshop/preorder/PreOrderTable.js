@@ -3,7 +3,7 @@ import PreOrderRow from "./PreOrderRow";
 
 const PreOrderTable = ({ preorderProducts, onChange }) => {
   return (
-    <div className=" w-7/12 overflow-y-auto">
+    <div className="w-7/12 overflow-y-auto">
       {/* 표 */}
 
       {/* 표 제목 */}

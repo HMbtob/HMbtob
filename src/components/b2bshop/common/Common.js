@@ -11,7 +11,7 @@ export const Common = ({ commonProducts, dispatch, category, onChange }) => {
   const categories = ["cd", "dvd", "per", "goods", "limited", "beauty"];
 
   return (
-    <div className="flex flex-col w-4/5 mt-12 overflow-y-auto">
+    <div className="flex flex-col w-11/12 mt-12 overflow-y-auto">
       <div
         className="grid grid-cols-6 grid-flow-col 
         text-center  bg-gray-200  
@@ -22,7 +22,7 @@ export const Common = ({ commonProducts, dispatch, category, onChange }) => {
             key={index}
             onClick={selectCat}
             id={doc}
-            className={`${
+            className={`cursor-pointer ${
               category === doc ? "bg-gray-400 text-gray-100" : ""
             } `}
           >

@@ -19,7 +19,10 @@ import OrderDetail from "./components/admin/orderlist/OrderDetail";
 import Unshiped from "./components/admin/unshipped/Unshiped";
 import ShippingList from "./components/admin/shipping/ShippingList";
 import UnshipedDetail from "./components/admin/unshipped/UnshippedDetail";
-import Customer from "./components/admin/customer/Customer";
+import CustomerList from "./components/admin/customer/CustomerList";
+import CustomerDetail from "./components/admin/customer/CustomerDetail";
+import MyOrderList from "./components/b2bshop/myorder/MyOrderList";
+import MyOrderDetail from "./components/b2bshop/myorder/MyOrderDetail";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -146,10 +149,13 @@ function App() {
   if (user && userType === "customer") {
     return (
       <div className="flex bg-gray-50 h-auto">
-        <InitDataContext.Provider value={state}>
-          <Route path="/b2bshop" component={B2bShop} />
-          <Route path="/b2border" component={B2bOrder} />
-        </InitDataContext.Provider>
+        {" "}
+        <InitDispatchContext.Provider value={dispatch}>
+          <InitDataContext.Provider value={state}>
+            <Route path="/b2bshop" component={B2bShop} />
+            <Route path="/b2border" component={B2bOrder} />
+          </InitDataContext.Provider>{" "}
+        </InitDispatchContext.Provider>
       </div>
     );
   }
@@ -179,7 +185,16 @@ function App() {
                 <Route path="/listproduct" component={ListProduct} />
                 <Route path="/addproduct" component={AddProduct} />
                 {/* customer */}
-                <Route path="/customer" component={Customer} />
+                <Route
+                  exact
+                  path="/customerdetail/:uid"
+                  component={CustomerDetail}
+                />
+                <Route path="/customerlist" component={CustomerList} />
+
+                {/* b2b */}
+                <Route path="/myorderlist/:id" component={MyOrderDetail} />
+                <Route path="/myorderlist" component={MyOrderList} />
                 <Route path="/b2bshop" component={B2bShop} />
                 <Route path="/" component={Home} />
               </Switch>

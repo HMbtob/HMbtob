@@ -1,14 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router";
 
-const OrderListRow = ({
-  id,
-  createdAt,
-  customer,
-  orderState,
-  orderNumber,
-  order,
-}) => {
+const MyOrderListRow = ({ id, orderNumber, createdAt, orderState, order }) => {
   const history = useHistory();
   const today = new Date();
 
@@ -20,9 +13,9 @@ const OrderListRow = ({
   if (order) {
     return (
       <div
-        onClick={() => history.push(`/orderdetail/${id}`)}
-        className={`grid grid-cols-10 grid-flow-col text-center 
-        border-b border-l border-r py-1 text-sm cursor-pointer bg-white ${
+        onClick={() => history.push(`/myorderlist/${id}`)}
+        className={`grid grid-cols-8 grid-flow-col text-center 
+        border-b border-l border-r py-1 text-sm cursor-pointer ${
           included ? " bg-red-200" : ""
         }`}
       >
@@ -30,7 +23,6 @@ const OrderListRow = ({
         <div className="col-span-2">
           {new Date(createdAt.toDate()).toLocaleString()}
         </div>
-        <div className="col-span-2">{customer}</div>
         <div>{orderState} </div>
         <div>
           {order.data.list.reduce((i, c) => {
@@ -58,4 +50,4 @@ const OrderListRow = ({
   return "loading";
 };
 
-export default OrderListRow;
+export default MyOrderListRow;

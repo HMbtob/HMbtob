@@ -12,6 +12,8 @@ function reducer(state, action) {
         acc[current] = "";
         return acc;
       }, {});
+    case "CREDIT_RESET":
+      return { ...state, handleCredit: "" };
     default:
       return state;
   }
@@ -25,8 +27,12 @@ function useInputs(initialForm) {
     dispatch({ type: "CHANGE", name, value });
   }, []);
   const reset = useCallback(() => dispatch({ type: "RESET" }), []);
+  const credit_reset = useCallback(
+    () => dispatch({ type: "CREDIT_RESET" }),
+    []
+  );
 
-  return [form, onChange, reset];
+  return [form, onChange, reset, credit_reset];
 }
 
 export default useInputs;

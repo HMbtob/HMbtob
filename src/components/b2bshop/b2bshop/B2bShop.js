@@ -90,9 +90,9 @@ const B2bShop = () => {
   return (
     <div className="w-full h-screen flex ">
       {/* d2 -1 */}
-      <div className=" w-3/4 flex flex-col items-center mt-12">
+      <div className=" w-3/5 flex flex-col items-center mt-12">
         {/* d3-1 */}
-        <div className="flex flex-row w-5/6 h-1/4 justify-evenly">
+        <div className="flex flex-row w-11/12 h-1/4 justify-evenly">
           {/* d4 */}
           {preorderProducts && (
             <PreOrderTable
@@ -117,6 +117,7 @@ const B2bShop = () => {
         simpleList={simpleList && simpleList}
         dispatch={dispatch}
         B2bMakeOrder={B2bMakeOrder}
+        state={state}
       />
     </div>
   );

@@ -16,15 +16,15 @@ const ShippingList = ({ shipping, from }) => {
            bg-gray-800 text-gray-100 py-1 rounded-sm text-xs"
         >
           <div className="col-span-1">.No</div>
-          <div className="col-span-2">배송시간</div>
-          <div className="col-span-2">주문번호</div>
-          <div className="col-span-2">주문시간</div>
+          <div className="col-span-3">배송시간</div>
+          <div className="col-span-1">주문번호</div>
+          <div className="col-span-3">주문시간</div>
           <div className="col-span-3">주문자</div>
           <div>배송사</div>
           <div>국가</div>
           <div className="col-span-1">종류</div>
           <div className="col-span-1">총수량</div>
-          <div className="col-span-2">총무게</div>
+          <div className="col-span-1">총무게</div>
           <div className="col-span-2">예상운송비</div>
           <div className="col-span-2">총가격</div>
         </div>

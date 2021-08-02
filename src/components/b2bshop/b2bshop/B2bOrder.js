@@ -3,6 +3,7 @@ import { useHistory } from "react-router";
 import { InitDataContext } from "../../../App";
 import useInputs from "../../../hooks/useInput";
 import { db } from "../../../firebase";
+import firebase from "firebase";
 
 const B2bOrder = () => {
   const state = useContext(InitDataContext);
@@ -10,7 +11,7 @@ const B2bOrder = () => {
   const history = useHistory();
 
   const { user, simpleLists } = state;
-
+  console.log(user);
   // 약관 체크
   const [confirmChecked, setConfirmCheck] = useState(false);
 
@@ -96,6 +97,47 @@ const B2bOrder = () => {
       .collection("forNumberedId")
       .doc("b2bOrder")
       .set({ counts: state.orderCounts + 1 });
+    await db
+      .collection("accounts")
+      .doc(user.email)
+      .update({
+        credit:
+          user.credit -
+          (simpleLists.reduce((i, c) => {
+            return i + (c.price - c.dcRate * c.price) * c.quan;
+          }, 0) +
+            (simpleLists.reduce((i, c) => {
+              return i + c.weight * c.quan;
+            }, 0) /
+              1000) *
+              user.shippingRate[shippingType]),
+        creditDetails: firebase.firestore.FieldValue.arrayUnion({
+          type: "makeOrder",
+          amount: Number(
+            simpleLists.reduce((i, c) => {
+              return i + (c.price - c.dcRate * c.price) * c.quan;
+            }, 0) +
+              (simpleLists.reduce((i, c) => {
+                return i + c.weight * c.quan;
+              }, 0) /
+                1000) *
+                user.shippingRate[shippingType]
+          ),
+          date: new Date(),
+          totalAmount:
+            Number(user.credit) -
+            Number(
+              simpleLists.reduce((i, c) => {
+                return i + (c.price - c.dcRate * c.price) * c.quan;
+              }, 0) +
+                (simpleLists.reduce((i, c) => {
+                  return i + c.weight * c.quan;
+                }, 0) /
+                  1000) *
+                  user.shippingRate[shippingType]
+            ),
+        }),
+      });
 
     await reset();
     await alert("주문 완료");
@@ -155,7 +197,12 @@ const B2bOrder = () => {
                     onChange={onChange}
                   />
                 ) : (
-                  <select name={doc} value={form[index]} onChange={onChange}>
+                  <select
+                    name={doc}
+                    value={form[index]}
+                    onChange={onChange}
+                    className="border"
+                  >
                     {doc === "paymentMethod"
                       ? options[0].map((option, index) => (
                           <option key={index} value={Object.keys(option)}>
@@ -193,7 +240,8 @@ const B2bOrder = () => {
             <>
               {simpleLists.map((doc, index) => (
                 <div
-                  className="grid grid-cols-12 text-center text-sm border-b border-r border-l py-1"
+                  className="grid grid-cols-12 text-center text-sm bg-white
+                  border-b border-r border-l py-1"
                   key={index}
                 >
                   <div>{doc.childOrderNumber}</div>
@@ -224,7 +272,7 @@ const B2bOrder = () => {
         {/* dep-3-4 */}
         <div className="flex-col mb-10 w-full flex items-end">
           <div className="grid grid-cols-2 w-1/2 text-right">
-            <div>공급가액</div>
+            <div>총액가액</div>
             <div>
               {simpleLists &&
                 simpleLists.reduce((i, c) => {
@@ -250,9 +298,7 @@ const B2bOrder = () => {
                 return i + c.weight * c.quan;
               }, 0) /
                 1000) *
-                (user.shippingRate[shippingType]
-                  ? user.shippingRate[shippingType]
-                  : 10000)}
+                user.shippingRate[shippingType]}
               원
             </div>
           </div>

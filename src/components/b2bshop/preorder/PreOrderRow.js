@@ -13,7 +13,8 @@ const PreOrderRow = ({
   return (
     <div
       id={id}
-      className="grid  grid-cols-20 place-items-center text-center text-xs border-b p-1 border-l border-r"
+      className="grid  grid-cols-20 place-items-center text-center 
+      text-xs border-b p-1 border-l border-r bg-white"
     >
       <img
         className="h-8 bg-contain bg-center bg-no-repeat rounded-sm"

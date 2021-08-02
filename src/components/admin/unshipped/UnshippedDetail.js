@@ -87,18 +87,20 @@ const UnshippedDetail = ({ match }) => {
           </div>
         </div>
         <div className="w-full text-center">상품종류</div>
-        <div className="grid grid-cols-28 text-center bg-gray-800 rounded-sm text-gray-100">
-          <div></div>
-          <div>No.</div>
+        <div
+          className="grid grid-cols-28 text-center bg-gray-800 
+        rounded-sm text-gray-100 text-sm py-1"
+        >
+          <div className="col-span-2">No.</div>
           <div className="col-span-2">주문일</div>
           <div className="col-span-2">발매일</div>
-          <div className="col-span-15">앨범명</div>
-          <div>판매가</div>
-          <div className="col-span-2">할인가</div>
+          <div className="col-span-11">앨범명</div>
+          <div className="col-span-2">판매가</div>
+          <div className="col-span-4">할인가</div>
           <div>무게</div>
           <div>수량</div>
           <div>총무게</div>
-          <div>총액</div>
+          <div className="col-span-2">총액</div>
         </div>
         {orders &&
           [].concat

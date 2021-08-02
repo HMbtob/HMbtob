@@ -185,17 +185,18 @@ const OrderDetail = ({ match }) => {
           <>
             <div className="flex flex-row justify-evenly">
               {/* 주문내용 확인 */}
-              <div className="flex-col mb-10 flex space-y-2">
-                <div className="grid grid-cols-2">
+              <div className="flex-col mb-10 flex space-y-2 text-sm w-1/3 text-center">
+                <div className="grid grid-cols-2 items-center h-8">
                   <div>주문번호</div>
                   <div>{order.data.orderNumber}</div>
                 </div>
-                <div className="grid grid-cols-2">
+                <div className="grid grid-cols-2 items-center h-8">
                   <div>주문상태</div>
                   <select
                     name="orderState"
                     value={orderState}
                     onChange={onChange}
+                    className="border p-1"
                   >
                     <option value="makeOrder">주문서작성중</option>
                     <option value="confirmOrder">주문완료</option>
@@ -203,37 +204,39 @@ const OrderDetail = ({ match }) => {
                     <option value="shipping">배송중</option>
                   </select>
                 </div>
-                <div className="grid grid-cols-2">
+                <div className="grid grid-cols-2 items-center h-8">
                   <div>이메일</div>
                   <div>{order.data.customer}</div>
                 </div>
-                <div className="grid grid-cols-2">
+                <div className="grid grid-cols-2 items-center h-8">
                   <div>주문일</div>
                   {new Date(order.data.createdAt.toDate()).toLocaleString()}
                 </div>
-                <div className="grid grid-cols-2">
+                <div className="grid grid-cols-2 items-center h-8">
                   <div>결제방법</div>
 
                   <select
                     name="paymentMethod"
                     value={paymentMethod}
                     onChange={onChange}
+                    className="border p-1"
                   >
                     <option value="transfer">계좌이체</option>
                   </select>
                 </div>
-                <div className="grid grid-cols-2">
+                <div className="grid grid-cols-2 items-center h-8">
                   <div>발송방법</div>
                   <select
                     name="shippingType"
                     value={shippingType}
                     onChange={onChange}
+                    className="border p-1"
                   >
                     <option value="dhl">DHL</option>
                     <option value="ems">EMS</option>
                   </select>
                 </div>
-                <div className="grid grid-cols-2">
+                <div className="grid grid-cols-2 h-8">
                   <div>전화번호</div>
                   {user?.phoneNumber}
                 </div>
@@ -270,7 +273,7 @@ const OrderDetail = ({ match }) => {
               </div>
               {/* 수령인 파트 */}
 
-              <div className="flex-col mb-10 flex space-y-2">
+              <div className="flex-col mb-10 flex space-y-2 text-sm items-center w-1/3">
                 <div className="text-center">수령인</div>
                 <div className="grid grid-cols-2">
                   <div>email</div>
@@ -278,6 +281,7 @@ const OrderDetail = ({ match }) => {
                     name="recipientEmail"
                     value={recipientEmail}
                     onChange={onChange}
+                    className="border p-1"
                   />{" "}
                 </div>
                 <div className="grid grid-cols-2">
@@ -286,6 +290,7 @@ const OrderDetail = ({ match }) => {
                     name="recipientPhoneNumber"
                     value={recipientPhoneNumber}
                     onChange={onChange}
+                    className="border p-1"
                   />{" "}
                 </div>
                 <div className="grid grid-cols-2">
@@ -294,6 +299,7 @@ const OrderDetail = ({ match }) => {
                     name="address1"
                     value={address1}
                     onChange={onChange}
+                    className="border p-1"
                   />{" "}
                 </div>
                 <div className="grid grid-cols-2">
@@ -302,6 +308,7 @@ const OrderDetail = ({ match }) => {
                     name="address2"
                     value={address2}
                     onChange={onChange}
+                    className="border p-1"
                   />{" "}
                 </div>
                 <div className="grid grid-cols-2">
@@ -310,6 +317,7 @@ const OrderDetail = ({ match }) => {
                     name="address3"
                     value={address3}
                     onChange={onChange}
+                    className="border p-1"
                   />{" "}
                 </div>
                 <div className="grid grid-cols-2">
@@ -318,6 +326,7 @@ const OrderDetail = ({ match }) => {
                     name="country"
                     value={country}
                     onChange={onChange}
+                    className="border p-1"
                   />{" "}
                 </div>
                 <div className="grid grid-cols-2">
@@ -326,6 +335,7 @@ const OrderDetail = ({ match }) => {
                     name="zipcode"
                     value={zipcode}
                     onChange={onChange}
+                    className="border p-1"
                   />{" "}
                 </div>
                 <div className="grid grid-cols-2">
@@ -334,21 +344,30 @@ const OrderDetail = ({ match }) => {
                     name="recipient"
                     value={recipient}
                     onChange={onChange}
+                    className="border p-1"
                   />{" "}
                 </div>
                 <div className="grid grid-cols-2">
                   <div>요청사항</div>
-                  <input
+                  <textarea
+                    rows="5"
+                    cols="19"
                     name="shippingMessage"
                     value={shippingMessage}
                     onChange={onChange}
+                    className="border p-1"
                   />{" "}
                 </div>
-                <button onClick={saveDetails}>수정하기</button>
+                <button
+                  onClick={saveDetails}
+                  className="bg-gray-800 rounded text-gray-200 w-1/3 items-center py-2"
+                >
+                  수정하기
+                </button>
               </div>
             </div>
             {/* // dep-3-2 */}
-            <div className="w-full text-center">상품종류</div>
+            <div className="w-full text-center mb-5">상품종류</div>
             {/* dep-3-3 */}
             <div
               className="grid grid-cols-28 text-center bg-gray-800
@@ -388,28 +407,43 @@ const OrderDetail = ({ match }) => {
             ))}
 
             {/* dep-3-5 */}
-            <div className="text-right flex flex-col items-end mt-6 text-lg">
-              <button onClick={makeShipping}>발송처리</button>
-              <button onClick={moveList}>주문이동</button>
-              <select
-                name="orderNumberSelect"
-                value={orderNumberSelect}
-                onChange={onChange}
-              >
-                {/* 해당 주문자의 미발송 주문 가져와서 이동 */}
-                <option value="">주문번호</option>
-                {orders
-                  .filter(
-                    doc =>
-                      doc.data.customer === order.data.customer &&
-                      doc.data.orderState === "confirmOrder"
-                  )
-                  .map((doc, index) => (
-                    <option key={index} value={doc.data.orderNumber}>
-                      {doc.data.orderNumber}
-                    </option>
-                  ))}
-              </select>
+            <div className="text-center items-center justify-between flex flex-row mt-6 text-lg">
+              <div>
+                <button
+                  onClick={makeShipping}
+                  className="bg-gray-800 text-gray-200 px-2 py-1 ml-5 rounded-sm"
+                >
+                  발송처리
+                </button>
+              </div>
+              <div>
+                <select
+                  name="orderNumberSelect"
+                  value={orderNumberSelect}
+                  onChange={onChange}
+                  className="p-2 border"
+                >
+                  {/* 해당 주문자의 미발송 주문 가져와서 이동 */}
+                  <option value="">주문번호</option>
+                  {orders
+                    .filter(
+                      doc =>
+                        doc.data.customer === order.data.customer &&
+                        doc.data.orderState === "confirmOrder"
+                    )
+                    .map((doc, index) => (
+                      <option key={index} value={doc.data.orderNumber}>
+                        {doc.data.orderNumber}
+                      </option>
+                    ))}
+                </select>
+                <button
+                  onClick={moveList}
+                  className="bg-gray-800 text-gray-200 px-2 py-1 ml-1 rounded-sm"
+                >
+                  주문이동
+                </button>
+              </div>
             </div>
 
             {/* dep-3-6 */}
@@ -454,7 +488,7 @@ const OrderDetail = ({ match }) => {
                     }, 0)
                   ) /
                     1000) *
-                    Number(user.shippingRate.dhl) +
+                    Number(order.data.shippingRate[shippingType]) +
                     order.data.list.reduce((i, c) => {
                       return i + (c.price - c.dcRate * c.price) * c.quan;
                     }, 0)}{" "}

@@ -10,7 +10,8 @@ export default function CommonRow({
   return (
     <div
       id={id}
-      className="grid grid-cols-20 place-items-center text-center text-sm border-b border-l border-r py-1"
+      className="grid grid-cols-20 place-items-center text-center 
+      text-sm border-b border-l border-r py-1 bg-white"
     >
       <img
         className="col-span-3 h-10 bg-contain bg-center bg-no-repeat rounded-sm"

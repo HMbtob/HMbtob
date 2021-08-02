@@ -3,9 +3,13 @@ import SimpleListRow from "./SimpleListRow";
 import Modal from "../../modal/Modal";
 // import CustomerChat from "../../chat/CustomerChat";
 import React, { useState } from "react";
+import { useHistory } from "react-router";
 
-const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder }) => {
+const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
+  const { user } = state;
   const [modalOpen, setModalOpen] = useState(false);
+
+  const history = useHistory();
 
   const openModal = () => {
     setModalOpen(true);
@@ -15,7 +19,7 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder }) => {
   };
 
   return (
-    <div className=" h-2/3 w-1/5 mt-32 flex flex-col text-center text-sm font-bold text-gray-800">
+    <div className="m-auto h-2/3 w-1/3 mt-32 flex flex-col text-center text-sm font-bold text-gray-800">
       CHECKED LIST
       <div
         className="grid grid-cols-6 place-items-center text-center text-xs bg-gray-800 p-1 
@@ -37,44 +41,56 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder }) => {
           />
         ))}
         {/* 버튼들 */}
-        <div className="w-full flex justify-evenly mt-10">
-          <button
-            disabled={!confirmChecked}
-            onClick={B2bMakeOrder}
-            className={`${
-              confirmChecked
-                ? "cursor-pointer bg-gray-800 px-3 py-1 rounded-sm text-gray-100 font-semibold mb-2"
-                : "cursor-pointer bg-gray-200 px-3 py-1 rounded-sm text-gray-300 font-semibold mb-2"
-            }`}
-          >
-            주문하기
-          </button>
-          <button
-            className="cursor-pointer bg-gray-800 px-3 
+        <div className="w-full flex flex-col justify-evenly mt-10">
+          <div className="w- full flex flex-row justify-evenly">
+            {user && (
+              <>
+                <div>MY CREDIT : </div>
+                <div>{user.credit} 원</div>
+              </>
+            )}
+          </div>
+
+          <div className="flex justify-evenly mt-2">
+            <button
+              disabled={!confirmChecked}
+              onClick={B2bMakeOrder}
+              className={`${
+                confirmChecked
+                  ? "cursor-pointer bg-gray-800 px-3 py-1 rounded-sm text-gray-100 font-semibold mb-2"
+                  : "cursor-pointer bg-gray-200 px-3 py-1 rounded-sm text-gray-300 font-semibold mb-2"
+              }`}
+            >
+              주문하기
+            </button>
+            <button
+              onClick={() => history.push("/myorderlist")}
+              className="cursor-pointer bg-gray-800 px-3 
           py-1 rounded-sm text-gray-100 font-semibold
           mb-2"
-          >
-            내주문
-          </button>
-          <button
-            onClick={openModal}
-            className="cursor-pointer bg-gray-800 px-3 
+            >
+              내주문
+            </button>
+            <button
+              onClick={openModal}
+              className="cursor-pointer bg-gray-800 px-3 
           py-1 rounded-sm text-gray-100 font-semibold
           mb-2"
-          >
-            문의하기
-          </button>
-          <Modal open={modalOpen} close={closeModal} header={"헤더"}>
-            {/* <CustomerChat userData={userData} />{" "} */}
-          </Modal>
-          <button
-            onClick={() => auth.signOut()}
-            className="cursor-pointer bg-gray-800 px-3 
+            >
+              문의하기
+            </button>
+            <Modal open={modalOpen} close={closeModal} header={"헤더"}>
+              {/* <CustomerChat userData={userData} />{" "} */}
+            </Modal>
+            <button
+              onClick={() => auth.signOut()}
+              className="cursor-pointer bg-gray-800 px-3 
           py-1 rounded-sm text-gray-100 font-semibold
           mb-2"
-          >
-            로그아웃
-          </button>
+            >
+              로그아웃
+            </button>
+          </div>
         </div>
       </div>
     </div>
