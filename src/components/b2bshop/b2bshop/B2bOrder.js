@@ -11,7 +11,6 @@ const B2bOrder = () => {
   const history = useHistory();
 
   const { user, simpleLists } = state;
-  console.log(user);
   // 약관 체크
   const [confirmChecked, setConfirmCheck] = useState(false);
 
@@ -141,7 +140,10 @@ const B2bOrder = () => {
 
     await reset();
     await alert("주문 완료");
-    history.push("/orderlist");
+    if (user.type === "admin") {
+      history.push("/orderlist");
+    }
+    history.push("/myorderlist");
   };
 
   return (

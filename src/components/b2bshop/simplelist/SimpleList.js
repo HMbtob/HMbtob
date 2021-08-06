@@ -1,10 +1,9 @@
 import { auth } from "../../../firebase";
 import SimpleListRow from "./SimpleListRow";
 import Modal from "../../modal/Modal";
-// import CustomerChat from "../../chat/CustomerChat";
 import React, { useState } from "react";
 import { useHistory } from "react-router";
-
+import InSimpleList from "../../chat/InSimpleList";
 const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
   const { user } = state;
   const [modalOpen, setModalOpen] = useState(false);
@@ -79,8 +78,8 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
             >
               문의하기
             </button>
-            <Modal open={modalOpen} close={closeModal} header={"헤더"}>
-              {/* <CustomerChat userData={userData} />{" "} */}
+            <Modal open={modalOpen} close={closeModal} header={"문의하기"}>
+              <InSimpleList />
             </Modal>
             <button
               onClick={() => auth.signOut()}

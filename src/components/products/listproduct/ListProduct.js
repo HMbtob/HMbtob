@@ -3,7 +3,7 @@ import { InitDataContext } from "../../../App";
 import ListProductRow from "./ListProductRow";
 const ListProduct = () => {
   const state = useContext(InitDataContext);
-  const { products } = state;
+  const { products, orders, shippings } = state;
 
   // 헤더 항목
   const headers = [
@@ -45,6 +45,9 @@ const ListProduct = () => {
             unShipped={product.data.unShipped}
             relDate={product.data.relDate}
             preOrderDeadline={product.data.preOrderDeadline}
+            bigcProductId={product.data.bigc.product_id}
+            orders={orders}
+            shippings={shippings}
           />
         ))}
       </div>

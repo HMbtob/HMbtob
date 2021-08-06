@@ -23,6 +23,7 @@ import CustomerList from "./components/admin/customer/CustomerList";
 import CustomerDetail from "./components/admin/customer/CustomerDetail";
 import MyOrderList from "./components/b2bshop/myorder/MyOrderList";
 import MyOrderDetail from "./components/b2bshop/myorder/MyOrderDetail";
+import OrderProductList from "./components/teamjangnim/OrderProductList";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -148,15 +149,21 @@ function App() {
   }
   if (user && userType === "customer") {
     return (
-      <div className="flex bg-gray-50 h-auto">
-        {" "}
-        <InitDispatchContext.Provider value={dispatch}>
-          <InitDataContext.Provider value={state}>
-            <Route path="/b2bshop" component={B2bShop} />
-            <Route path="/b2border" component={B2bOrder} />
-          </InitDataContext.Provider>{" "}
-        </InitDispatchContext.Provider>
-      </div>
+      <Router>
+        <div className="flex bg-gray-50 h-auto">
+          {" "}
+          <InitDispatchContext.Provider value={dispatch}>
+            <InitDataContext.Provider value={state}>
+              <Switch>
+                <Route path="/myorderlist/:id" component={MyOrderDetail} />
+                <Route path="/myorderlist" component={MyOrderList} />
+                <Route path="/b2border" component={B2bOrder} />
+                <Route path="/b2bshop" component={B2bShop} />
+              </Switch>
+            </InitDataContext.Provider>{" "}
+          </InitDispatchContext.Provider>
+        </div>
+      </Router>
     );
   }
 
@@ -168,10 +175,12 @@ function App() {
             <InitDataContext.Provider value={state}>
               <Sidebar />
               <Switch>
+                {/* 석팀장님 */}
+                <Route path="/orderproductslist" component={OrderProductList} />
+
                 {/* order */}
                 <Route path="/orderdetail/:id" component={OrderDetail} />
                 <Route path="/orderlist" component={OrderList} />
-                <Route path="/b2border" component={B2bOrder} />
                 {/* shipping */}
                 <Route path="/unshipped/:uid" component={UnshipedDetail} />
                 <Route path="/unshipped" component={Unshiped} />
@@ -195,6 +204,7 @@ function App() {
                 {/* b2b */}
                 <Route path="/myorderlist/:id" component={MyOrderDetail} />
                 <Route path="/myorderlist" component={MyOrderList} />
+                <Route path="/b2border" component={B2bOrder} />
                 <Route path="/b2bshop" component={B2bShop} />
                 <Route path="/" component={Home} />
               </Switch>

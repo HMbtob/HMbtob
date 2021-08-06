@@ -25,7 +25,7 @@ const MyOrderDetail = ({ match }) => {
         </div>
         <div className="flex flex-row justify-evenly">
           {/* 주문내용 확인 */}
-          <div className="flex-col mb-10 flex space-y-2">
+          <div className="flex-col mb-10 flex space-y-2 w-1/3">
             <div className="grid grid-cols-2">
               <div>주문번호</div>
               <div>{order.data.orderNumber}</div>
@@ -57,7 +57,7 @@ const MyOrderDetail = ({ match }) => {
           </div>
           {/* 수령인 파트 */}
 
-          <div className="flex-col mb-10 flex space-y-2">
+          <div className="flex-col mb-10 flex space-y-2 w-1/3">
             <div className="text-center">수령인</div>
             <div className="grid grid-cols-2">
               <div>email</div>

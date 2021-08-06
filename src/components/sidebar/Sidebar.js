@@ -13,6 +13,7 @@ const Sidebar = () => {
     { 배송관리: "/shippinglist" },
     { 미발송건: "/unshipped" },
     { 고객관리: "/customerlist" },
+    { 상품판매량: "/orderproductslist" },
   ];
   return (
     //   d-1

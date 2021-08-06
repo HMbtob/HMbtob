@@ -15,7 +15,7 @@ const CreditDetails = ({ creditDetails }) => {
             <div>{de.type}</div>
             <div>{de.amount} 원</div>
             <div className="col-span-2">
-              {new Date(de.date.toDate()).toLocaleString()}
+              {de.date.toDate().toLocaleString()}
             </div>
 
             <div>{de.totalAmount} 원</div>

@@ -14,8 +14,7 @@ const OrderDetailRow = ({
   checkedInputs,
 }) => {
   const today = new Date();
-  const preOrder =
-    relDate.toDate().toLocaleDateString() < today.toLocaleDateString();
+  const preOrder = relDate.toDate() < today;
   return (
     <div
       className={` text-sm place-items-center grid grid-cols-28 grid-flow-col text-center border-b border-l border-r py-1 ${

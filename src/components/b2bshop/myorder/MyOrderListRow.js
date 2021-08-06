@@ -6,9 +6,7 @@ const MyOrderListRow = ({ id, orderNumber, createdAt, orderState, order }) => {
   const today = new Date();
 
   const included = order.data.list.reduce((i, c) => {
-    return (
-      i || c.relDate.toDate().toLocaleDateString() > today.toLocaleDateString()
-    );
+    return i || c.relDate.toDate() > today;
   }, false);
   if (order) {
     return (

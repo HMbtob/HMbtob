@@ -12,6 +12,8 @@ export const initState = {
   shippingNumber: null,
   simpleLists: [],
   accounts: [],
+  // 상품별 판매량
+  allOrderProductsList: null,
 };
 
 export function dataReducer(state, action) {
@@ -40,13 +42,13 @@ export function dataReducer(state, action) {
       return { ...state, shippingCounts: action.shippingCounts };
     case "SHIPPING_NUMBER":
       return { ...state, shippingNumber: action.shippingNumber };
-
     case "SIMPLELIST":
       return {
         ...state,
         simpleLists: action.simpleList,
       };
-
+    case "ALL_ORDER_PRODUCTS_LIST":
+      return { ...state, allOrderProductsList: action.allOrderProductsList };
     default:
       return state;
   }

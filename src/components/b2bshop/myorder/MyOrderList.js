@@ -6,7 +6,6 @@ const MyOrderList = () => {
   const state = useContext(InitDataContext);
   const { orders, user } = state;
   const userOrders = orders.filter(order => order.data.customer === user.email);
-
   return (
     <div className="w-full h-full flex justify-center">
       <div className=" w-11/12 flex-col mt-20">

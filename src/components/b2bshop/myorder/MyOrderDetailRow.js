@@ -3,8 +3,7 @@ import React from "react";
 const MyOrderDetailRow = ({ order, id, totalWeight }) => {
   console.log(order);
   const today = new Date();
-  const preOrder =
-    order.relDate.toDate().toLocaleDateString() < today.toLocaleDateString();
+  const preOrder = order.relDate.toDate() < today;
 
   return (
     <div
