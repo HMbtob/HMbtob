@@ -36,10 +36,10 @@ const CustomerDetail = ({ match }) => {
     // 담당자
     inCharge: user.data.inCharge,
     cd: user.data.dcRates.cd * 100,
-    dvd: user.data.dcRates.dvd * 100,
+    dvdBlueRay: user.data.dcRates.dvdBlueRay * 100,
     goods: user.data.dcRates.goods * 100,
-    limited: user.data.dcRates.limited * 100,
-    per: user.data.dcRates.per * 100,
+    photoBook: user.data.dcRates.photoBook * 100,
+    officialStore: user.data.dcRates.officialStore * 100,
     beauty: user.data.dcRates.beauty * 100,
     dhl: user.data.shippingRate.dhl,
     ems: user.data.shippingRate.ems,
@@ -63,10 +63,10 @@ const CustomerDetail = ({ match }) => {
     shippingMessage,
     inCharge,
     cd,
-    dvd,
+    dvdBlueRay,
     goods,
-    limited,
-    per,
+    photoBook,
+    officialStore,
     beauty,
     dhl,
     ems,
@@ -75,7 +75,7 @@ const CustomerDetail = ({ match }) => {
     handleCredit,
   } = form;
 
-  const dcValues = { cd, dvd, goods, limited, per, beauty };
+  const dcValues = { cd, dvdBlueRay, goods, photoBook, officialStore, beauty };
   const shippingRate = { dhl, ems };
 
   const saveDetails = () => {
@@ -92,12 +92,12 @@ const CustomerDetail = ({ match }) => {
         recipient,
         shippingMessage,
         dcRates: {
-          cd: cd > 0 ? cd / 100 : 0,
-          dvd: dvd > 0 ? dvd / 100 : 0,
-          goods: goods > 0 ? goods / 100 : 0,
-          limited: limited > 0 ? limited / 100 : 0,
-          per: per > 0 ? per / 100 : 0,
-          beauty: beauty > 0 ? per / 100 : 0,
+          cd: Number(cd) / 100,
+          dvdBlueRay: Number(dvdBlueRay) / 100,
+          photoBook: Number(goods) / 100,
+          goods: Number(photoBook) / 100,
+          officialStore: Number(officialStore) / 100,
+          beauty: Number(beauty) / 100,
         },
         shippingRate: { dhl, ems },
         nickName,

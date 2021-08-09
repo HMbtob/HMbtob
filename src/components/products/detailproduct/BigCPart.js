@@ -1,22 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-const B2bPart = ({ product }) => {
-  //   B2B shop 에 활성/비활성
-  const handleExpose = () => {};
-
+const BigCPart = () => {
   return (
     <div className="w-5/6 m-auto my-20">
       <div
         className="text-left text-xl  
-            text-gray-800 mb-1 ml-2 "
+        text-gray-800 mb-1 ml-2 "
       >
-        B2B
+        BIG
       </div>
       <div>
         <button
-          // onClick={}
           className="py-1 px-2 mx-3 my-2 bg-gray-500 
-        rounded-md text-gray-200 text-sm"
+    rounded-md text-gray-200 text-sm"
         >
           등록
         </button>
@@ -26,4 +23,4 @@ const B2bPart = ({ product }) => {
   );
 };
 
-export default B2bPart;
+export default BigCPart;

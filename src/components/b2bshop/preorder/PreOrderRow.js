@@ -9,6 +9,8 @@ const PreOrderRow = ({
   name,
   preOrderDeadline,
   price,
+  product,
+  user,
 }) => {
   return (
     <div
@@ -22,23 +24,59 @@ const PreOrderRow = ({
         alt={title}
       />
 
-      <div className="col-span-9">{title}</div>
-      <div className="col-span-3">
+      <div className="col-span-2">{product.data.barcode}</div>
+      <div className="col-span-2">{product.data.sku}</div>
+      <div className="col-span-5">{title}</div>
+      <div className="col-span-2">
         {new Date(relDate.toDate()).toLocaleDateString()}
       </div>
-      <div className="col-span-3">
+      <div className="col-span-2">
         {new Date(preOrderDeadline.toDate()).toLocaleDateString()}
       </div>
       <div className="col-span-2">{price} 원</div>
+      <div className="col-span-2">
+        {price - price * user.dcRates[product.data.category]} 원
+      </div>
       {/* 재고 */}
-      {/* 재고보다 많으면 밸리데이션 오류나게 */}
-      {/* 아니면 그냥 주문받고 추가로 주문하나? */}
       <input
+        id={id}
+        disabled={Number(product.data.stock) > 0 ? false : true}
         type="number"
         name={name}
         onChange={onChange}
         className="w-1/2 h-6 border text-center col-span-2"
       />
+      {Number(product.data.stock) > 0 ? (
+        ""
+      ) : (
+        // FIXME: 요청하면 어디서 받을지 확인 후 수정
+        <div
+          className="font-extrabold text-red-600 
+      text-2xl absolute pl-8 items-center flex flex-row "
+        >
+          OUT OF STOCK ‼️ OUT OF STOCK ‼️
+          {product.data.reStockable ? (
+            <>
+              <div
+                className="border w-36 mx-5 text-gray-800 text-center 
+           font-light text-base bg-white"
+              >
+                <input
+                  type="number"
+                  placeholder="RE STOCK"
+                  className="w-28 p-1"
+                />{" "}
+                EA
+              </div>
+              <button className="bg-red-500 text-white rounded px-3">
+                REQUEST{" "}
+              </button>
+            </>
+          ) : (
+            "OUT OF STOCK ‼️"
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -3,7 +3,7 @@ import NoticeTableRow from "./NoticeTableRow";
 
 const NoticeTable = ({ notices }) => {
   return (
-    <div className="w-4/12 overflow-y-auto">
+    <div className="w-11/12 h-1/4 overflow-y-auto">
       <div>
         <div className="text-center text-sm font-bold text-gray-800">
           NOTICE

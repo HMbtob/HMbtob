@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router";
-import { db } from "../../../firebase";
-import useInputs from "../../../hooks/useInput";
 import HiddenB2b from "./HiddenB2b";
 import HiddenBigc from "./HiddenBigc";
 const ListProductRow = ({
@@ -29,10 +27,13 @@ const ListProductRow = ({
       setForHidden(true);
     }
   };
-
   return (
-    <>
-      <div className="grid grid-cols-28 items-center place-items-center text-sm p-1 bg-white">
+    <div className="border-b">
+      <div
+        className="grid grid-cols-28 items-center place-items-center 
+        cursor-pointer text-sm p-1 bg-white"
+        onClick={() => handleHidden(forHidden)}
+      >
         <button
           className="col-span-2 bg-gray-500 px-2 py-1 rounded-md text-gray-200"
           onClick={() => history.push(`/detailproduct/${id}`)}
@@ -40,9 +41,8 @@ const ListProductRow = ({
           DETAIL
         </button>
         <div className="col-span-2">{sku}</div>
-        <button onClick={() => handleHidden(forHidden)}>간단</button>
         <img className="col-span-2 h-10 rounded" src={thumbNail} alt={id} />
-        <div className="col-span-9">{title}</div>
+        <div className="col-span-10">{title}</div>
         <div className="col-span-2">{price}원</div>
         <div className="col-span-2">{stock}</div>
         <div className="col-span-2">{totalSell}</div>
@@ -90,7 +90,7 @@ const ListProductRow = ({
           />
         </>
       )}
-    </>
+    </div>
   );
 };
 

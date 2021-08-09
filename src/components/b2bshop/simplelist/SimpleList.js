@@ -18,8 +18,8 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
   };
 
   return (
-    <div className="m-auto h-2/3 w-1/3 mt-32 flex flex-col text-center text-sm font-bold text-gray-800">
-      CHECKED LIST
+    <div className="m-auto h-3/4 w-11/12 mt-12 flex flex-col text-center text-sm font-bold text-gray-800">
+      CART LIST
       <div
         className="grid grid-cols-6 place-items-center text-center text-xs bg-gray-800 p-1 
         text-gray-200"

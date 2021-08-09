@@ -387,24 +387,48 @@ const OrderDetail = ({ match }) => {
               <div>총액</div>
             </div>
             {/* dep-3-4 */}
-            {order.data.list.map(doc => (
-              <OrderDetailRow
-                key={doc.childOrderNumber}
-                id={doc.childOrderNumber}
-                title={doc.title}
-                createdAt={new Date(
-                  order.data.createdAt.toDate()
-                ).toLocaleDateString()}
-                relDate={doc.relDate}
-                price={doc.price}
-                quan={doc.quan}
-                weight={doc.weight}
-                totalWeight={doc.weight * doc.quan}
-                dcRate={doc.dcRate}
-                changeHandler={changeHandler}
-                checkedInputs={checkedInputs}
-              />
-            ))}
+            {order.data.list
+              .filter(list => new Date(list.relDate.toDate()) < new Date())
+              .sort()
+              .map(doc => (
+                <OrderDetailRow
+                  key={doc.childOrderNumber}
+                  id={doc.childOrderNumber}
+                  title={doc.title}
+                  createdAt={new Date(
+                    order.data.createdAt.toDate()
+                  ).toLocaleDateString()}
+                  relDate={doc.relDate}
+                  price={doc.price}
+                  quan={doc.quan}
+                  weight={doc.weight}
+                  totalWeight={doc.weight * doc.quan}
+                  dcRate={doc.dcRate}
+                  changeHandler={changeHandler}
+                  checkedInputs={checkedInputs}
+                />
+              ))}
+            {order.data.list
+              .filter(list => new Date(list.relDate.toDate()) >= new Date())
+              .sort()
+              .map(doc => (
+                <OrderDetailRow
+                  key={doc.childOrderNumber}
+                  id={doc.childOrderNumber}
+                  title={doc.title}
+                  createdAt={new Date(
+                    order.data.createdAt.toDate()
+                  ).toLocaleDateString()}
+                  relDate={doc.relDate}
+                  price={doc.price}
+                  quan={doc.quan}
+                  weight={doc.weight}
+                  totalWeight={doc.weight * doc.quan}
+                  dcRate={doc.dcRate}
+                  changeHandler={changeHandler}
+                  checkedInputs={checkedInputs}
+                />
+              ))}
 
             {/* dep-3-5 */}
             <div className="text-center items-center justify-between flex flex-row mt-6 text-lg">

@@ -1,14 +1,14 @@
 import React from "react";
 import PreOrderRow from "./PreOrderRow";
 
-const PreOrderTable = ({ preorderProducts, onChange }) => {
+const PreOrderTable = ({ preorderProducts, onChange, user }) => {
   return (
-    <div className="w-7/12 overflow-y-auto">
+    <div className="w-11/12 h-1/4 overflow-y-auto">
       {/* 표 */}
 
       {/* 표 제목 */}
       <div className="text-center text-sm font-bold text-gray-800">
-        PRE ORDER SCHEDULE
+        PRE ORDER
       </div>
       {/* 표 헤더 */}
       <div
@@ -17,10 +17,13 @@ const PreOrderTable = ({ preorderProducts, onChange }) => {
         text-gray-200 text-xs"
       >
         <div>커버</div>
-        <div className="col-span-9">타이틀</div>
-        <div className="col-span-3">출시일</div>
-        <div className="col-span-3">주문마감일</div>
+        <div className="col-span-2">바코드</div>
+        <div className="col-span-2">sku</div>
+        <div className="col-span-5">타이틀</div>
+        <div className="col-span-2">출시일</div>
+        <div className="col-span-2">주문마감일</div>
         <div className="col-span-2">가격</div>
+        <div className="col-span-2">할인가</div>
         <div className="col-span-2">수량</div>
       </div>
       {/* 표 로우 */}
@@ -37,6 +40,8 @@ const PreOrderTable = ({ preorderProducts, onChange }) => {
               name={product.id}
               price={product.data.price}
               onChange={onChange}
+              product={product}
+              user={user}
             />
           ))}
       </div>

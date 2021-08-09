@@ -12,7 +12,7 @@ const B2bShop = () => {
   const history = useHistory();
   const state = useContext(InitDataContext);
   const dispatch = useContext(InitDispatchContext);
-  const { notices, products } = state;
+  const { notices, products, user } = state;
   // FIXME: 전체 상품이 아니라 b2bshop 에있는 상품 가져오기, 리듀서도 다시
   const preorderProducts = products.filter(
     product => new Date(product.data.preOrderDeadline.toDate()) > new Date()
@@ -24,10 +24,9 @@ const B2bShop = () => {
     return string?.length > n ? string.substr(0, n - 1) + " . . ." : string;
   };
 
-  // {title:quan} 형태로 가져오기
+  // {title(id):quan} 형태로 가져오기
   const [confirmChecked, setConfirmCheck] = useState(false);
-  const [form, onChange, reset] = useSimpleList({}, setConfirmCheck);
-
+  const [form, onChange, reset] = useSimpleList({}, setConfirmCheck, products);
   // list 만들기
   let simpleList = [];
 
@@ -74,6 +73,7 @@ const B2bShop = () => {
       }
     }
   }
+
   const B2bMakeOrder = async () => {
     // dispatch로 심플리스트 스테이트로 업데이트하고
     await dispatch({ type: "SIMPLELIST", simpleList });
@@ -90,35 +90,39 @@ const B2bShop = () => {
   return (
     <div className="w-full h-screen flex ">
       {/* d2 -1 */}
-      <div className=" w-3/5 flex flex-col items-center mt-12">
-        {/* d3-1 */}
-        <div className="flex flex-row w-11/12 h-1/4 justify-evenly">
-          {/* d4 */}
-          {preorderProducts && (
-            <PreOrderTable
-              preorderProducts={preorderProducts}
-              onChange={onChange}
-            />
-          )}
-          {notices && <NoticeTable notices={notices} />}
-        </div>
-        {/* d3-2 */}
+      <div
+        className=" w-3/5 flex flex-col 
+      items-center mt-12"
+      >
+        {preorderProducts && (
+          <PreOrderTable
+            preorderProducts={preorderProducts}
+            onChange={onChange}
+            user={user}
+          />
+        )}
         <Common
           commonProducts={commonProducts}
           dispatch={dispatch}
           category={state.category}
           onChange={onChange}
+          simpleList={simpleList}
+          user={user}
         />
       </div>
       {/* d2-2 */}
-      <SimpleList
-        // userData={userData}
-        confirmChecked={confirmChecked}
-        simpleList={simpleList && simpleList}
-        dispatch={dispatch}
-        B2bMakeOrder={B2bMakeOrder}
-        state={state}
-      />
+      <div className=" w-2/5 flex flex-col items-center mt-12">
+        {notices && <NoticeTable notices={notices} />}
+
+        <SimpleList
+          // userData={userData}
+          confirmChecked={confirmChecked}
+          simpleList={simpleList && simpleList}
+          dispatch={dispatch}
+          B2bMakeOrder={B2bMakeOrder}
+          state={state}
+        />
+      </div>
     </div>
   );
 };

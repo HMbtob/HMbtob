@@ -11,6 +11,7 @@ const B2bOrder = () => {
   const history = useHistory();
 
   const { user, simpleLists } = state;
+
   // 약관 체크
   const [confirmChecked, setConfirmCheck] = useState(false);
 
@@ -36,6 +37,7 @@ const B2bOrder = () => {
     shippingMessage: "",
     paymentMethod: "transfer",
     shippingType: "dhl",
+    orderEmail: user?.email,
   });
 
   const {
@@ -52,6 +54,7 @@ const B2bOrder = () => {
     shippingType,
   } = form;
 
+  const { orderEmail } = form;
   const inputsName = [
     "수령인",
     "주소1",
@@ -87,7 +90,7 @@ const B2bOrder = () => {
       shippingMessage,
       orderNumber: state.orderNumber,
       createdAt: new Date(),
-      customer: user.email,
+      customer: orderEmail,
       list: simpleLists,
       dcRates: user.dcRates,
       shippingRate: user.shippingRate,
@@ -161,7 +164,7 @@ const B2bOrder = () => {
         {/* dep-3-2 주문자 / 수령인*/}
         <div className="w-full flex flex-row justify-evenly">
           {/*   dep-3-2-1 주문자 */}
-          <div className="flex-col mb-10 flex space-y-2">
+          <div className="flex-col mb-10 flex space-y-2  w-2/5">
             <div className="grid grid-cols-2">
               <div>주문번호</div>
               {state.orderNumber && <div>{state.orderNumber}</div>}
@@ -178,7 +181,17 @@ const B2bOrder = () => {
                 </div>
                 <div className="grid grid-cols-2">
                   <div>주문자 이메일</div>
-                  <div>{user.email}</div>
+                  {user.type === "admin" ? (
+                    <input
+                      type="text"
+                      name="orderEmail"
+                      className="border h-8 pl-2"
+                      value={orderEmail}
+                      onChange={onChange}
+                    />
+                  ) : (
+                    <div>{user.email}</div>
+                  )}
                 </div>
               </>
             )}
@@ -186,42 +199,44 @@ const B2bOrder = () => {
           {/* 세로선 */}
           <div className="border mb-10"></div>
           {/*   dep-3-2-2 수령인 */}
-          <div className="flex-col mb-10 flex space-y-2">
-            {Object.keys(form).map((doc, index) => (
-              <div key={index} className="grid grid-cols-2">
-                <div className="p-1">{inputsName[index]}</div>
-                {doc !== "paymentMethod" && doc !== "shippingType" ? (
-                  <input
-                    className="border h-8"
-                    type="text"
-                    name={doc}
-                    value={form[index]}
-                    onChange={onChange}
-                  />
-                ) : (
-                  <select
-                    name={doc}
-                    value={form[index]}
-                    onChange={onChange}
-                    className="border"
-                  >
-                    {doc === "paymentMethod"
-                      ? options[0].map((option, index) => (
-                          <option key={index} value={Object.keys(option)}>
-                            {Object.values(option)}
-                          </option>
-                        ))
-                      : doc === "shippingType"
-                      ? options[1].map((option, index) => (
-                          <option key={index} value={Object.keys(option)}>
-                            {Object.values(option)}
-                          </option>
-                        ))
-                      : ""}
-                  </select>
-                )}
-              </div>
-            ))}
+          <div className="flex-col mb-10 flex space-y-2 w-2/5">
+            {Object.keys(form)
+              .slice(0, -1)
+              .map((doc, index) => (
+                <div key={index} className="grid grid-cols-2">
+                  <div className="p-1">{inputsName[index]}</div>
+                  {doc !== "paymentMethod" && doc !== "shippingType" ? (
+                    <input
+                      className="border h-8  pl-2"
+                      type="text"
+                      name={doc}
+                      value={form[index]}
+                      onChange={onChange}
+                    />
+                  ) : (
+                    <select
+                      name={doc}
+                      value={form[index]}
+                      onChange={onChange}
+                      className="border"
+                    >
+                      {doc === "paymentMethod"
+                        ? options[0].map((option, index) => (
+                            <option key={index} value={Object.keys(option)}>
+                              {Object.values(option)}
+                            </option>
+                          ))
+                        : doc === "shippingType"
+                        ? options[1].map((option, index) => (
+                            <option key={index} value={Object.keys(option)}>
+                              {Object.values(option)}
+                            </option>
+                          ))
+                        : ""}
+                    </select>
+                  )}
+                </div>
+              ))}
           </div>
         </div>
 

@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import B2bPart from "./B2bPart";
 import CommonPart from "./CommonPart";
 import { InitDataContext } from "../../../App";
+import BigCPart from "./BigCPart";
 
 const DetailProduct = ({ match }) => {
   const { id } = match.params;
@@ -16,7 +17,9 @@ const DetailProduct = ({ match }) => {
       </div>
 
       {/* COMMON PART */}
-      <CommonPart />
+      <CommonPart id={id} product={product} />
+      {/* BIG C */}
+      <BigCPart id={id} product={product} />
       {/* B2B PART */}
       <B2bPart id={id} product={product} />
     </div>

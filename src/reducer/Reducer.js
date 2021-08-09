@@ -14,6 +14,8 @@ export const initState = {
   accounts: [],
   // 상품별 판매량
   allOrderProductsList: null,
+  // 미발송 확인: 상태별 product_id:qty
+  unShippedProductsIdandQty: "",
 };
 
 export function dataReducer(state, action) {
@@ -49,6 +51,12 @@ export function dataReducer(state, action) {
       };
     case "ALL_ORDER_PRODUCTS_LIST":
       return { ...state, allOrderProductsList: action.allOrderProductsList };
+    case "UNSHIPPED_PRODUCTS_ID_QTY":
+      return {
+        ...state,
+        unShippedProductsIdandQty: action.unShippedProductsIdandQty,
+      };
+
     default:
       return state;
   }
