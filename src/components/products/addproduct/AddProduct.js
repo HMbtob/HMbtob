@@ -149,58 +149,59 @@ const AddProduct = () => {
   };
 
   const saveProduct = async () => {
-    allOrderProductsList.data.map(async (doc, index) => {
+    allOrderProductsList.data.slice(500, 999).map(async (doc, index) => {
       await console.log(index);
-      await db
-        .collection("products")
-        .doc()
-        .set({
-          sku: doc.sku,
-          purchasePrice: 0,
-          price: Number(doc.price) * 1100,
-          artist: "",
-          ent: "",
-          x: 0,
-          stock: doc.inventory_level,
-          y: 0,
-          z: 0,
-          title: doc.name,
-          thumbNail: "",
-          descrip: "",
-          weight: doc.weight * 1000,
-          category:
-            doc.categories[0] === 169
-              ? "cd"
-              : doc.categories[0] === 200
-              ? "dvdBlueRay"
-              : doc.categories[0] === 205
-              ? "goods"
-              : doc.categories[0] === 237
-              ? "officialStore"
-              : doc.categories[0] === 206
-              ? "beauty"
-              : "cd",
-          relDate: new Date(),
-          preOrderDeadline: new Date(),
-          options: {
-            poster: false,
-            pob: false,
-            photocard: false,
-            weverseGift: false,
-            interAsiaPhotocard: false,
-          },
-          barcode: doc.upc,
-          reStockable: "가능",
-          exposeToB2b: "노출",
-          bigC: { ...doc },
-        });
+      const batch = db.batch();
+      const nycRef = db.collection("products").doc();
+
+      batch.set(nycRef, {
+        sku: doc.sku,
+        purchasePrice: 0,
+        price: Number(doc.price) * 1100,
+        artist: "",
+        ent: "",
+        x: 0,
+        stock: doc.inventory_level,
+        y: 0,
+        z: 0,
+        title: doc.name,
+        thumbNail: "",
+        descrip: "",
+        weight: doc.weight * 1000,
+        category:
+          doc.categories[0] === 169
+            ? "cd"
+            : doc.categories[0] === 200
+            ? "dvdBlueRay"
+            : doc.categories[0] === 205
+            ? "goods"
+            : doc.categories[0] === 237
+            ? "officialStore"
+            : doc.categories[0] === 206
+            ? "beauty"
+            : "cd",
+        relDate: new Date(),
+        preOrderDeadline: new Date(),
+        options: {
+          poster: false,
+          pob: false,
+          photocard: false,
+          weverseGift: false,
+          interAsiaPhotocard: false,
+        },
+        barcode: doc.upc,
+        reStockable: "가능",
+        exposeToB2b: "노출",
+        bigC: { ...doc },
+      });
+      await batch.commit();
     });
   };
   return (
     <>
       <form className="w-3/5 m-auto my-20" onSubmit={Appp}>
         <div
-          onClick={saveProduct}
+          // onClick={saveProduct}
           className="text-left text-2xl  
         text-gray-800 mb-1 ml-2 "
         >

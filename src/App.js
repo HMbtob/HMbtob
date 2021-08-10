@@ -23,6 +23,7 @@ import CustomerList from "./components/admin/customer/CustomerList";
 import CustomerDetail from "./components/admin/customer/CustomerDetail";
 import MyOrderList from "./components/b2bshop/myorder/MyOrderList";
 import MyOrderDetail from "./components/b2bshop/myorder/MyOrderDetail";
+import MyInfo from "./components/b2bshop/myorder/MyInfo";
 import OrderProductList from "./components/teamjangnim/OrderProductList";
 
 export const InitDataContext = React.createContext(null);
@@ -204,6 +205,7 @@ function App() {
                 {/* b2b */}
                 <Route path="/myorderlist/:id" component={MyOrderDetail} />
                 <Route path="/myorderlist" component={MyOrderList} />
+                <Route path="/myinfo/:uid" component={MyInfo} />
                 <Route path="/b2border" component={B2bOrder} />
                 <Route path="/b2bshop" component={B2bShop} />
                 <Route path="/" component={Home} />

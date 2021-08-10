@@ -7,7 +7,6 @@ import InSimpleList from "../../chat/InSimpleList";
 const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
   const { user } = state;
   const [modalOpen, setModalOpen] = useState(false);
-
   const history = useHistory();
 
   const openModal = () => {
@@ -69,6 +68,14 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
           mb-2"
             >
               내주문
+            </button>
+            <button
+              onClick={() => history.push(`/myinfo/${user.uid}`)}
+              className="cursor-pointer bg-gray-800 px-3 
+          py-1 rounded-sm text-gray-100 font-semibold
+          mb-2"
+            >
+              내정보
             </button>
             <button
               onClick={openModal}

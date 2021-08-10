@@ -49,7 +49,7 @@ const ListProduct = () => {
   return (
     <div className="flex flex-col w-full">
       <div className="ml-28 mt-32 text-gray-800 text-xl">상품목록{loading}</div>
-      <div className="border w-11/12 m-auto mt-4">
+      <div className="border w-11/12 m-auto mt-4 mb-12">
         <div className="grid grid-cols-36 text-center border-b p-1 bg-gray-100 sticky top-0">
           {headers.map((header, index) => (
             <div
@@ -66,7 +66,7 @@ const ListProduct = () => {
             </div>
           ))}
         </div>
-        {products.map(product => (
+        {products.slice(0, 100).map(product => (
           <ListProductRow
             key={product.id}
             id={product.id}

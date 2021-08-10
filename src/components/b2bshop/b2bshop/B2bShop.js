@@ -17,7 +17,8 @@ const B2bShop = () => {
   // FIXME: 전체 상품이 아니라 b2bshop 에있는 상품 가져오기, 리듀서도 다시
 
   const preorderProducts = products
-    ?.filter(
+    ?.slice(0, 100)
+    .filter(
       product =>
         new Date(
           product?.data?.preOrderDeadline?.seconds * 1000
@@ -26,7 +27,8 @@ const B2bShop = () => {
     .filter(doc => doc.data.exposeToB2b === "노출");
 
   const commonProducts = products
-    ?.filter(
+    ?.slice(0, 100)
+    .filter(
       product =>
         new Date(
           product?.data?.preOrderDeadline?.seconds * 1000

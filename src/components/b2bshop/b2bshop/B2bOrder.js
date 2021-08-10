@@ -4,13 +4,14 @@ import { InitDataContext } from "../../../App";
 import useInputs from "../../../hooks/useInput";
 import { db } from "../../../firebase";
 import firebase from "firebase";
+import useSimpleList from "../../../hooks/useSimpleList";
 
 const B2bOrder = () => {
   const state = useContext(InitDataContext);
 
   const history = useHistory();
 
-  const { user, simpleLists } = state;
+  const { user, simpleLists, products } = state;
 
   // 약관 체크
   const [confirmChecked, setConfirmCheck] = useState(false);
@@ -205,13 +206,24 @@ const B2bOrder = () => {
               .map((doc, index) => (
                 <div key={index} className="grid grid-cols-2">
                   <div className="p-1">{inputsName[index]}</div>
-                  {doc !== "paymentMethod" && doc !== "shippingType" ? (
+                  {doc !== "paymentMethod" &&
+                  doc !== "shippingType" &&
+                  doc !== "shippingMessage" ? (
                     <input
                       className="border h-8  pl-2"
                       type="text"
                       name={doc}
                       value={form[index]}
                       onChange={onChange}
+                    />
+                  ) : doc === "shippingMessage" ? (
+                    <textarea
+                      rows="5"
+                      cols="19"
+                      name="shippingMessage"
+                      value={shippingMessage}
+                      onChange={onChange}
+                      className="border p-1"
                     />
                   ) : (
                     <select
@@ -245,11 +257,11 @@ const B2bOrder = () => {
           {/* 번호/앨범명/판매가/할인가/금액 */}
           <div className="grid grid-cols-12 text-center bg-gray-800 rounded-sm text-gray-100">
             <div>No.</div>
+            <div>SKU</div>
             <div className="col-span-5">앨범명</div>
             <div className="col-span-1">출시일</div>
-            <div className="col-span-1">주문마감일</div>
             <div>판매가</div>
-            <div>할인가</div>
+            <div className="col-span-1">할인가</div>
             <div>수량</div>
             <div>금액</div>
           </div>
@@ -262,21 +274,24 @@ const B2bOrder = () => {
                   key={index}
                 >
                   <div>{doc.childOrderNumber}</div>
+                  <div>
+                    {
+                      products?.find(product => product.id === doc.productId)
+                        .data.sku
+                    }
+                  </div>
                   <div className="col-span-5">{doc.title}</div>
                   <div className="col-span-1">
                     {new Date(doc.relDate.toDate()).toLocaleDateString()}
                   </div>
-                  <div className="col-span-1">
-                    {new Date(
-                      doc.preOrderDeadline.toDate()
-                    ).toLocaleDateString()}
-                  </div>
+
                   <div>{doc.price} 원</div>
-                  <div>
+                  <div className="col-span-1">
                     {doc.price - doc.dcRate * doc.price} 원
-                    {` [${doc.dcRate * 100} %]`}
+                    {/* {` [${doc.dcRate * 100} %]`} */}
                   </div>
                   <div>{doc.quan} 개</div>
+
                   <div>
                     {(doc.price - doc.dcRate * doc.price) * doc.quan} 원
                   </div>
@@ -289,7 +304,7 @@ const B2bOrder = () => {
         {/* dep-3-4 */}
         <div className="flex-col mb-10 w-full flex items-end">
           <div className="grid grid-cols-2 w-1/2 text-right">
-            <div>총액가액</div>
+            <div>총액</div>
             <div>
               {simpleLists &&
                 simpleLists.reduce((i, c) => {
@@ -298,7 +313,7 @@ const B2bOrder = () => {
               원
             </div>
           </div>
-          <div className="grid grid-cols-2 w-1/2 text-right">
+          {/* <div className="grid grid-cols-2 w-1/2 text-right">
             <div>총무게</div>
             <div>
               {simpleLists &&
@@ -307,7 +322,7 @@ const B2bOrder = () => {
                 }, 0) / 1000}{" "}
               KG
             </div>
-          </div>
+          </div> */}
           <div className="grid grid-cols-2 w-1/2 text-right">
             <div>예상운송비</div>
             <div>
