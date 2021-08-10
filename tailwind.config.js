@@ -6,6 +6,7 @@ module.exports = {
       gridTemplateColumns: {
         20: "repeat(20, minmax(0, 1fr))",
         28: "repeat(28, minmax(0, 1fr))",
+        36: "repeat(36, minmax(0, 1fr))",
       },
       gridColumn: {
         "span-13": "span 13 / span 13",
@@ -31,5 +32,5 @@ module.exports = {
       borderColor: ["checked"],
     },
   },
-  plugins: [],
+  plugins: [require("tailwind-scrollbar-hide")],
 };

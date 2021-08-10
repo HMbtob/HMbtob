@@ -3,7 +3,7 @@ import PreOrderRow from "./PreOrderRow";
 
 const PreOrderTable = ({ preorderProducts, onChange, user }) => {
   return (
-    <div className="w-11/12 h-1/4 overflow-y-auto">
+    <div className="flex flex-col w-11/12 h-1/4">
       {/* 표 */}
 
       {/* 표 제목 */}
@@ -27,7 +27,7 @@ const PreOrderTable = ({ preorderProducts, onChange, user }) => {
         <div className="col-span-2">수량</div>
       </div>
       {/* 표 로우 */}
-      <div className=" ">
+      <div className="overflow-y-auto	scrollbar-hide">
         {preorderProducts &&
           preorderProducts.map(product => (
             <PreOrderRow

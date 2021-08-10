@@ -13,13 +13,27 @@ const B2bShop = () => {
   const state = useContext(InitDataContext);
   const dispatch = useContext(InitDispatchContext);
   const { notices, products, user } = state;
+  const today = new Date();
   // FIXME: 전체 상품이 아니라 b2bshop 에있는 상품 가져오기, 리듀서도 다시
-  const preorderProducts = products.filter(
-    product => new Date(product.data.preOrderDeadline.toDate()) > new Date()
-  );
-  const commonProducts = products.filter(
-    product => new Date(product.data.preOrderDeadline.toDate()) <= new Date()
-  );
+
+  const preorderProducts = products
+    ?.filter(
+      product =>
+        new Date(
+          product?.data?.preOrderDeadline?.seconds * 1000
+        ).toDateString() > today.toDateString()
+    )
+    .filter(doc => doc.data.exposeToB2b === "노출");
+
+  const commonProducts = products
+    ?.filter(
+      product =>
+        new Date(
+          product?.data?.preOrderDeadline?.seconds * 1000
+        ).toDateString() <= today.toDateString()
+    )
+    .filter(doc => doc.data.exposeToB2b === "노출");
+
   const truncate = (string, n) => {
     return string?.length > n ? string.substr(0, n - 1) + " . . ." : string;
   };

@@ -2,7 +2,7 @@
   "name": "interasia",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://api.bigcommerce.com",
+  "proxy": "https://us-central1-interasiastock.cloudfunctions.net",
   "dependencies": {
     "@craco/craco": "^6.2.0",
     "@testing-library/jest-dom": "^5.11.4",
@@ -18,6 +18,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "react-spinkit": "^3.0.0",
+    "tailwind-scrollbar-hide": "^1.0.3",
     "web-vitals": "^1.0.1"
   },
   "scripts": {

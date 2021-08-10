@@ -17,7 +17,7 @@ const Sidebar = () => {
   ];
   return (
     //   d-1
-    <div className="flex-col items-center w-auto  h-auto min-h-screen text-gray-300 bg-gray-600">
+    <div className="flex-col items-center w-auto text-gray-300 bg-gray-600">
       {/* d-2 */}
       <div
         onClick={() => auth.signOut()}

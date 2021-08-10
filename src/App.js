@@ -150,7 +150,7 @@ function App() {
   if (user && userType === "customer") {
     return (
       <Router>
-        <div className="flex bg-gray-50 h-auto">
+        <div className="flex bg-gray-50 h-auto min-h-screen">
           {" "}
           <InitDispatchContext.Provider value={dispatch}>
             <InitDataContext.Provider value={state}>
@@ -170,7 +170,7 @@ function App() {
   if (user && userType === "admin") {
     return (
       <Router>
-        <div className="flex bg-gray-50 h-auto">
+        <div className="flex bg-gray-50 h-auto min-h-screen">
           <InitDispatchContext.Provider value={dispatch}>
             <InitDataContext.Provider value={state}>
               <Sidebar />

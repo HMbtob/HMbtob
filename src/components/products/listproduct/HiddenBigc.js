@@ -66,8 +66,8 @@ const HiddenBigc = ({
   }, [bigcProductId]);
   return (
     <div
-      className="grid grid-cols-28 items-center 
-place-items-center text-sm p-1 bg-white"
+      className="grid grid-cols-36 items-center 
+place-items-center text-xs bg-white"
     >
       {bigcProductId && (
         <>
@@ -77,10 +77,10 @@ place-items-center text-sm p-1 bg-white"
           >
             수정
           </button>
-          <div className="col-span-2">big</div>
-          <div></div>
+          <div className="col-span-3">big</div>
+          <div className="col-span-3"></div>
           <div className="col-span-2"></div>
-          <div className="col-span-9">{productName && productName}</div>
+          <div className="col-span-14">{productName && productName}</div>
           <input
             type="number"
             className="col-span-2 border w-3/4 p-1 text-center"
@@ -97,15 +97,30 @@ place-items-center text-sm p-1 bg-white"
           />
           <div className="col-span-2">{total_sold && total_sold}</div>
 
-          <div className="col-span-2">t</div>
-
-          {/* <div className="col-span-2 text-xs">
-            {new Date(relDate.toDate()).toLocaleDateString()}
+          <div className="col-span-2">
+            {unShippedProductsIdandQty &&
+              (unShippedProductsIdandQty.filter(
+                doc => Object.keys(doc)[0] === bigcProductId.toString()
+              )[0]
+                ? Object.values(
+                    unShippedProductsIdandQty.filter(
+                      doc => Object.keys(doc)[0] === bigcProductId.toString()
+                    )[0]
+                  )
+                : 0)}
           </div>
 
           <div className="col-span-2 text-xs">
-            {new Date(preOrderDeadline.toDate()).toLocaleDateString()}
-          </div> */}
+            {relDate &&
+              new Date(relDate.seconds * 1000).toISOString().substring(0, 10)}
+          </div>
+
+          <div className="col-span-2 text-xs">
+            {preOrderDeadline &&
+              new Date(preOrderDeadline.seconds * 1000)
+                .toISOString()
+                .substring(0, 10)}
+          </div>
         </>
       )}
     </div>

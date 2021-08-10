@@ -1,7 +1,6 @@
 import React from "react";
 
 const MyOrderDetailRow = ({ order, id, totalWeight }) => {
-  console.log(order);
   const today = new Date();
   const preOrder = order.relDate.toDate() < today;
 

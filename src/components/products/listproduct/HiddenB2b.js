@@ -55,16 +55,16 @@ const HiddenB2b = ({
   };
   return (
     <div
-      className="grid grid-cols-28 items-center 
-place-items-center text-sm p-1 bg-white"
+      className="grid grid-cols-36 items-center 
+place-items-center text-xs  bg-white"
     >
       <button onClick={simpleSave} className="col-span-2">
         수정
       </button>
-      <div className="col-span-2">b2b</div>
-      <div></div>
+      <div className="col-span-3">b2b</div>
+      <div className="col-span-3"></div>
       <div className="col-span-2"></div>
-      <div className="col-span-9"></div>
+      <div className="col-span-14"></div>
       <input
         type="number"
         className="col-span-2 border w-3/4 p-1 text-center"
@@ -82,11 +82,15 @@ place-items-center text-sm p-1 bg-white"
       <div className="col-span-2">{totalUnshipped + totalshipped}</div>
       <div className="col-span-2">{totalUnshipped}</div>
       <div className="col-span-2 text-xs">
-        {new Date(relDate.toDate()).toLocaleDateString()}
+        {relDate &&
+          new Date(relDate.seconds * 1000).toISOString().substring(0, 10)}
       </div>
 
       <div className="col-span-2 text-xs">
-        {new Date(preOrderDeadline.toDate()).toLocaleDateString()}
+        {preOrderDeadline &&
+          new Date(preOrderDeadline.seconds * 1000)
+            .toISOString()
+            .substring(0, 10)}
       </div>
     </div>
   );

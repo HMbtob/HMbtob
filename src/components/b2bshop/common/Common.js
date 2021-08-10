@@ -25,7 +25,7 @@ export const Common = ({
   ];
 
   return (
-    <div className="flex flex-col h-3/4 w-11/12 mt-12 overflow-y-auto">
+    <div className="flex flex-col h-3/5 w-11/12 mt-12 mb-20 ">
       <div
         className="grid grid-cols-6 grid-flow-col 
         text-center  bg-gray-200  
@@ -60,7 +60,7 @@ export const Common = ({
         <div className="col-span-2">할인가</div>
         <div className="col-span-2">수량</div>
       </div>
-      <div>
+      <div className="overflow-y-auto	scrollbar-hide">
         {commonProducts &&
           commonProducts
             .filter(a => a.data.category === category)

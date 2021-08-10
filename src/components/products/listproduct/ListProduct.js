@@ -11,7 +11,8 @@ const ListProduct = () => {
   const [loading, setLoading] = useState("미발송 정보를 불러오는 중입니다.");
   // 헤더 항목
   const headers = [
-    "수정",
+    "BTN",
+    "바코드",
     "SKU",
     "썸넬",
     "제목",
@@ -48,12 +49,18 @@ const ListProduct = () => {
   return (
     <div className="flex flex-col w-full">
       <div className="ml-28 mt-32 text-gray-800 text-xl">상품목록{loading}</div>
-      <div className="border w-5/6 m-auto mt-4">
-        <div className="grid grid-cols-28 text-center border-b p-1 bg-gray-100 ">
+      <div className="border w-11/12 m-auto mt-4">
+        <div className="grid grid-cols-36 text-center border-b p-1 bg-gray-100 sticky top-0">
           {headers.map((header, index) => (
             <div
               key={index}
-              className={header === "제목" ? "col-span-10" : "col-span-2"}
+              className={
+                header === "제목"
+                  ? "col-span-14"
+                  : header === "바코드" || header === "SKU"
+                  ? "col-span-3"
+                  : "col-span-2"
+              }
             >
               {header}
             </div>
@@ -67,6 +74,7 @@ const ListProduct = () => {
             thumbNail={product.data.thumbNail}
             title={product.data.title}
             price={product.data.price}
+            barcode={product.data.barcode}
             stock={product.data.stock}
             totalSell={product.data.totalSell}
             unShipped={product.data.unShipped}

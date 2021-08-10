@@ -139,7 +139,6 @@ const CommonPart = ({ product, id }) => {
 
     await alert("수정 완료");
   };
-  console.log(reStockable, exposeToB2b);
   return (
     <div className="w-5/6 m-auto my-20">
       <div
@@ -226,8 +225,8 @@ const CommonPart = ({ product, id }) => {
             {/* <option value="" defaultValue>
               필수선택
             </option> */}
-            <option value={true}>가능</option>
-            <option value={false}>불가능</option>
+            <option value="가능">가능</option>
+            <option value="불가능">불가능</option>
           </select>
         </div>
         <div className="grid grid-cols-4 p-2 items-center">
@@ -242,8 +241,8 @@ const CommonPart = ({ product, id }) => {
             {/* <option value="" defaultValue>
               필수선택
             </option> */}
-            <option value={true}>노출</option>
-            <option value={false}>숨김</option>
+            <option value="노출">노출</option>
+            <option value="숨김">숨김</option>
           </select>
         </div>
         {/* 체크박스 인풋 */}

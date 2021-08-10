@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router";
+import Modal from "../../modal/Modal";
 import HiddenB2b from "./HiddenB2b";
 import HiddenBigc from "./HiddenBigc";
+import StockTable from "./StockTable";
 const ListProductRow = ({
   id,
   sku,
@@ -15,6 +17,7 @@ const ListProductRow = ({
   preOrderDeadline,
   orders,
   shippings,
+  barcode,
   bigcProductId,
 }) => {
   const history = useHistory();
@@ -27,32 +30,55 @@ const ListProductRow = ({
       setForHidden(true);
     }
   };
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
   return (
     <div className="border-b">
       <div
-        className="grid grid-cols-28 items-center place-items-center 
-        cursor-pointer text-sm p-1 bg-white"
-        onClick={() => handleHidden(forHidden)}
+        className="grid grid-cols-36 items-center place-items-center 
+        text-xs bg-white"
       >
-        <button
-          className="col-span-2 bg-gray-500 px-2 py-1 rounded-md text-gray-200"
-          onClick={() => history.push(`/detailproduct/${id}`)}
+        <div className="col-span-2 flex flex-row justify-evenly w-full">
+          <button>🎁</button>
+          <button onClick={() => history.push(`/detailproduct/${id}`)}>
+            ⚒
+          </button>
+          <button onClick={openModal}>📦</button>
+        </div>
+        <Modal open={modalOpen} close={closeModal} header={"재고수불부"}>
+          <StockTable />
+        </Modal>
+
+        <div className="col-span-3">{barcode}</div>
+        <div className="col-span-3">{sku}</div>
+        <img className="col-span-2 h-8 rounded-sm " src={thumbNail} alt="" />
+        <div
+          className="col-span-14 cursor-pointer "
+          onClick={() => handleHidden(forHidden)}
         >
-          DETAIL
-        </button>
-        <div className="col-span-2">{sku}</div>
-        <img className="col-span-2 h-10 rounded" src={thumbNail} alt={id} />
-        <div className="col-span-10">{title}</div>
+          {title}
+        </div>
         <div className="col-span-2">{price}원</div>
         <div className="col-span-2">{stock}</div>
         <div className="col-span-2">{totalSell}</div>
         <div className="col-span-2">{unShipped}</div>
         <div className="col-span-2 text-xs">
-          {new Date(relDate.toDate()).toLocaleDateString()}
+          {relDate &&
+            new Date(relDate.seconds * 1000).toISOString().substring(0, 10)}
         </div>
-
         <div className="col-span-2 text-xs">
-          {new Date(preOrderDeadline.toDate()).toLocaleDateString()}
+          {preOrderDeadline &&
+            new Date(preOrderDeadline.seconds * 1000)
+              .toISOString()
+              .substring(0, 10)}
         </div>
       </div>
       {forHidden ? (

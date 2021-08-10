@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useHistory } from "react-router";
 import useInputs from "../../../hooks/useInput";
 import { db } from "../../../firebase";
 import axios from "axios";
+import { InitDataContext, InitDispatchContext } from "../../../App";
+
 const AddProduct = () => {
   const history = useHistory();
-
+  const state = useContext(InitDataContext);
+  const { allOrderProductsList } = state;
   const [
     {
       sku,
@@ -111,7 +114,7 @@ const AddProduct = () => {
       .collection("products")
       .doc()
       .set({
-        sku: product?.data?.data?.sku,
+        sku,
         purchasePrice: Number(purchasePrice),
         price: Number(price),
         artist,
@@ -120,7 +123,7 @@ const AddProduct = () => {
         stock: stock,
         y: Number(y),
         z: Number(z),
-        title: product?.data?.data.name,
+        title,
         thumbNail,
         descrip,
         weight: Number(weight),
@@ -134,39 +137,70 @@ const AddProduct = () => {
           weverseGift,
           interAsiaPhotocard,
         },
-        barcode: product?.data?.data?.upc,
+        barcode,
         reStockable: reStockable,
         exposeToB2b: exposeToB2b,
-        bigC: { ...product?.data?.data },
+        bigC: {},
       });
 
     await reset();
     await alert("추가완료");
     history.push("/listproduct");
   };
-  const [product, setProduct] = useState("");
 
-  useEffect(() => {
-    const callGetProductInfo = async () => {
-      await axios
-        .get(`/stores/7uw7zc08qw/v3/catalog/products/3961`, {
-          headers: {
-            "x-auth-token": "23t2vx6zwiq32xa8b0uspfo7mb7181x",
-            accept: "application/json",
-            "content-type": "application/json",
+  const saveProduct = async () => {
+    allOrderProductsList.data.map(async (doc, index) => {
+      await console.log(index);
+      await db
+        .collection("products")
+        .doc()
+        .set({
+          sku: doc.sku,
+          purchasePrice: 0,
+          price: Number(doc.price) * 1100,
+          artist: "",
+          ent: "",
+          x: 0,
+          stock: doc.inventory_level,
+          y: 0,
+          z: 0,
+          title: doc.name,
+          thumbNail: "",
+          descrip: "",
+          weight: doc.weight * 1000,
+          category:
+            doc.categories[0] === 169
+              ? "cd"
+              : doc.categories[0] === 200
+              ? "dvdBlueRay"
+              : doc.categories[0] === 205
+              ? "goods"
+              : doc.categories[0] === 237
+              ? "officialStore"
+              : doc.categories[0] === 206
+              ? "beauty"
+              : "cd",
+          relDate: new Date(),
+          preOrderDeadline: new Date(),
+          options: {
+            poster: false,
+            pob: false,
+            photocard: false,
+            weverseGift: false,
+            interAsiaPhotocard: false,
           },
-        })
-        .then(product => setProduct(product))
-        .catch(error => console.log(error));
-    };
-    callGetProductInfo();
-  }, []);
-  console.log(product?.data?.data);
+          barcode: doc.upc,
+          reStockable: "가능",
+          exposeToB2b: "노출",
+          bigC: { ...doc },
+        });
+    });
+  };
   return (
     <>
-      {" "}
       <form className="w-3/5 m-auto my-20" onSubmit={Appp}>
         <div
+          onClick={saveProduct}
           className="text-left text-2xl  
         text-gray-800 mb-1 ml-2 "
         >
@@ -186,7 +220,7 @@ const AddProduct = () => {
                 name={Object.keys(doc)}
               />
             </div>
-          ))}{" "}
+          ))}
           {/* 날짜 인풋 */}
           <div className="grid grid-cols-4 p-2 items-center">
             <div className="text-gray-600 text-right  mr-3">출시일</div>
