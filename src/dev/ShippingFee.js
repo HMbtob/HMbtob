@@ -1,10 +1,10 @@
 import React from "react";
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import { db } from "../firebase";
-
+import {SPREADSHEET_ID} from "../evir"
 const Sheets = () => {
   // Config variables
-  const SPREADSHEET_ID = "1fA8-4EPeHNCV_VMXQY2Xmlxw-PkIKedpK6oSWBTk6Zk";
+  
   //   const SHEET_ID = "Sheet2";
   const CLIENT_EMAIL = "forsheet@interasiastock.iam.gserviceaccount.com";
   const PRIVATE_KEY =
