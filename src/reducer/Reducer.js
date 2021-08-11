@@ -16,6 +16,8 @@ export const initState = {
   allOrderProductsList: null,
   // 미발송 확인: 상태별 product_id:qty
   unShippedProductsIdandQty: "",
+  // dhl shipping Fee
+  dhlShippingFee: [],
 };
 
 export function dataReducer(state, action) {
@@ -51,6 +53,8 @@ export function dataReducer(state, action) {
       };
     case "ALL_ORDER_PRODUCTS_LIST":
       return { ...state, allOrderProductsList: action.allOrderProductsList };
+    case "DHL_SHIPPING_FEE":
+      return { ...state, dhlShippingFee: action.dhlShippingFee };
     case "UNSHIPPED_PRODUCTS_ID_QTY":
       return {
         ...state,

@@ -25,6 +25,7 @@ import MyOrderList from "./components/b2bshop/myorder/MyOrderList";
 import MyOrderDetail from "./components/b2bshop/myorder/MyOrderDetail";
 import MyInfo from "./components/b2bshop/myorder/MyInfo";
 import OrderProductList from "./components/teamjangnim/OrderProductList";
+import Dev from "./dev/Dev";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -134,6 +135,17 @@ function App() {
       );
   }, [dispatch]);
 
+  useEffect(() => {
+    db.collection("shippingFee")
+      .doc("dhl")
+      .onSnapshot(snapshot =>
+        dispatch({
+          type: "DHL_SHIPPING_FEE",
+          dhlShippingFee: snapshot.data(),
+        })
+      );
+  }, [dispatch]);
+
   if (loading || userType === "before") {
     return (
       <div className="grid place-items-center h-screen w-full">
@@ -176,6 +188,9 @@ function App() {
             <InitDataContext.Provider value={state}>
               <Sidebar />
               <Switch>
+                {/* 개발 */}
+                <Route path="/fordev" component={Dev} />
+                {}
                 {/* 석팀장님 */}
                 <Route path="/orderproductslist" component={OrderProductList} />
 

@@ -1,17 +1,23 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { InitDataContext } from "../../../App";
 import useInputs from "../../../hooks/useInput";
 import { db } from "../../../firebase";
 import firebase from "firebase";
-import useSimpleList from "../../../hooks/useSimpleList";
 
 const B2bOrder = () => {
   const state = useContext(InitDataContext);
-
   const history = useHistory();
 
-  const { user, simpleLists, products } = state;
+  const { user, simpleLists, products, dhlShippingFee } = state;
+  const { z } = dhlShippingFee;
+
+  // 배송국가 전체 for select option
+  const countries = [].concat(
+    ...z
+      ?.map(zo => Object.values(zo).map(co => co.country))
+      .map(doc => [].concat(...doc))
+  );
 
   // 약관 체크
   const [confirmChecked, setConfirmCheck] = useState(false);
@@ -28,24 +34,24 @@ const B2bOrder = () => {
   //  인풋
   const [form, onChange, reset] = useInputs({
     recipient: "",
-    address1: "",
-    address2: "",
-    address3: "",
+    street: "",
+    city: "",
+    states: "",
     country: "",
     zipcode: "",
     recipientPhoneNumber: "",
     recipientEmail: "",
     shippingMessage: "",
-    paymentMethod: "transfer",
-    shippingType: "dhl",
+    paymentMethod: "",
+    shippingType: "",
     orderEmail: user?.email,
   });
 
   const {
     recipient,
-    address1,
-    address2,
-    address3,
+    street,
+    city,
+    states,
     country,
     zipcode,
     recipientPhoneNumber,
@@ -57,23 +63,63 @@ const B2bOrder = () => {
 
   const { orderEmail } = form;
   const inputsName = [
-    "수령인",
-    "주소1",
-    "주소2",
-    "주소3",
-    "국가",
-    "우편번호",
-    "수령인번호",
-    "수령인이메일",
-    "배송매세지",
-    "결제방법",
-    "배송방법",
+    "recipient",
+    "street",
+    "city",
+    "state",
+    "country",
+    "zipcode",
+    "PhoneNumber",
+    "Email",
+    "Memo",
+    "Payment Method",
+    "Shipping Type",
   ];
 
   const options = [
     [{ transfer: "계좌이체" }, { credit: "크레딧" }],
-    [{ dhl: "DHL" }, { ems: "EMS" }],
+    [
+      { dhl: "DHL" },
+      // { ems: "EMS" }
+    ],
   ];
+
+  // 운임, 총무게
+  const totalWeight =
+    simpleLists &&
+    simpleLists.reduce((i, c) => {
+      return i + c.weight * c.quan;
+    }, 0) / 1000;
+
+  // 몇번재 구간에 걸리는지 num 에서 1빼야함
+  let num = 1;
+  for (let i = 1; i < 31; i++) {
+    let j = i * 0.5;
+    if (j > totalWeight) {
+      break;
+    }
+    num++;
+  }
+
+  // 어느나라에 걸리는지
+  const zone =
+    z &&
+    country.length > 0 &&
+    Object.keys(
+      z.find(doc =>
+        Object.values(doc).find(asd => asd.country.includes(country))
+      )
+    );
+
+  // 가격
+  const fee =
+    z &&
+    country.length > 0 &&
+    Number(
+      Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
+        .fee[num - 1].split(",")
+        .join("")
+    );
 
   const confirmOrder = async () => {
     await db.collection("orders").doc("b2b").collection("b2borders").add({
@@ -81,9 +127,9 @@ const B2bOrder = () => {
       paymentMethod,
       recipient,
       shippingType,
-      address1,
-      address2,
-      address3,
+      street,
+      city,
+      states,
       country,
       zipcode,
       recipientPhoneNumber,
@@ -109,22 +155,13 @@ const B2bOrder = () => {
           (simpleLists.reduce((i, c) => {
             return i + (c.price - c.dcRate * c.price) * c.quan;
           }, 0) +
-            (simpleLists.reduce((i, c) => {
-              return i + c.weight * c.quan;
-            }, 0) /
-              1000) *
-              user.shippingRate[shippingType]),
+            fee),
         creditDetails: firebase.firestore.FieldValue.arrayUnion({
           type: "makeOrder",
           amount: Number(
             simpleLists.reduce((i, c) => {
               return i + (c.price - c.dcRate * c.price) * c.quan;
-            }, 0) +
-              (simpleLists.reduce((i, c) => {
-                return i + c.weight * c.quan;
-              }, 0) /
-                1000) *
-                user.shippingRate[shippingType]
+            }, 0) + fee
           ),
           date: new Date(),
           totalAmount:
@@ -132,12 +169,7 @@ const B2bOrder = () => {
             Number(
               simpleLists.reduce((i, c) => {
                 return i + (c.price - c.dcRate * c.price) * c.quan;
-              }, 0) +
-                (simpleLists.reduce((i, c) => {
-                  return i + c.weight * c.quan;
-                }, 0) /
-                  1000) *
-                  user.shippingRate[shippingType]
+              }, 0) + fee
             ),
         }),
       });
@@ -208,7 +240,8 @@ const B2bOrder = () => {
                   <div className="p-1">{inputsName[index]}</div>
                   {doc !== "paymentMethod" &&
                   doc !== "shippingType" &&
-                  doc !== "shippingMessage" ? (
+                  doc !== "shippingMessage" &&
+                  doc !== "country" ? (
                     <input
                       className="border h-8  pl-2"
                       type="text"
@@ -232,19 +265,36 @@ const B2bOrder = () => {
                       onChange={onChange}
                       className="border"
                     >
-                      {doc === "paymentMethod"
-                        ? options[0].map((option, index) => (
+                      {doc === "paymentMethod" ? (
+                        <>
+                          <option value="">필수선택</option>
+                          {options[0].map((option, index) => (
                             <option key={index} value={Object.keys(option)}>
                               {Object.values(option)}
                             </option>
-                          ))
-                        : doc === "shippingType"
-                        ? options[1].map((option, index) => (
+                          ))}
+                        </>
+                      ) : doc === "shippingType" ? (
+                        <>
+                          <option value="">필수선택</option>
+                          {options[1].map((option, index) => (
                             <option key={index} value={Object.keys(option)}>
                               {Object.values(option)}
                             </option>
-                          ))
-                        : ""}
+                          ))}
+                        </>
+                      ) : doc === "country" ? (
+                        <>
+                          <option value="">필수선택</option>
+                          {countries.map((co, i) => (
+                            <option key={i} value={co}>
+                              {co}
+                            </option>
+                          ))}
+                        </>
+                      ) : (
+                        ""
+                      )}
                     </select>
                   )}
                 </div>
@@ -326,25 +376,19 @@ const B2bOrder = () => {
           <div className="grid grid-cols-2 w-1/2 text-right">
             <div>예상운송비</div>
             <div>
-              {(simpleLists.reduce((i, c) => {
-                return i + c.weight * c.quan;
-              }, 0) /
-                1000) *
-                user.shippingRate[shippingType]}
-              원
+              {/* FIXME: 초과분 */}
+              {/* 30키로 미만 */}
+              {fee && fee}
+              {/* 30키로 초과 */}원
             </div>
           </div>
           <div className="grid grid-cols-2 w-1/2 text-right">
             <div>합계</div>
             <div>
-              {simpleLists.reduce((i, c) => {
-                return i + (c.price - c.dcRate * c.price) * c.quan;
-              }, 0) +
-                (simpleLists.reduce((i, c) => {
-                  return i + c.weight * c.quan;
-                }, 0) /
-                  1000) *
-                  user.shippingRate[shippingType]}
+              {fee &&
+                simpleLists.reduce((i, c) => {
+                  return i + (c.price - c.dcRate * c.price) * c.quan;
+                }, 0) + fee}
               원
             </div>
           </div>
@@ -362,11 +406,13 @@ const B2bOrder = () => {
             className={`${
               confirmChecked &&
               recipient.length > 0 &&
-              address1.length > 0 &&
-              address2.length > 0 &&
-              address3.length > 0 &&
+              street.length > 0 &&
+              city.length > 0 &&
+              state.length > 0 &&
               country.length > 0 &&
               zipcode.length > 0 &&
+              paymentMethod.length > 0 &&
+              shippingType.length > 0 &&
               recipientPhoneNumber.length > 0 &&
               recipientEmail.length > 0 &&
               shippingMessage.length > 0
