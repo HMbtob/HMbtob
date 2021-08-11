@@ -32,12 +32,12 @@ const Sidebar = () => {
       </div>
       {/* d-2 */}
       <div className="bg-gray-600 p-12 text-lg text-gray-300 leading-10">
-        <div
+        {/* <div
           onClick={() => history.push(`/fordev`)}
           className="cursor-pointer hover:text-gray-50"
         >
           {"개발"}
-        </div>
+        </div> */}
         {/* d-3 */}
         {underMenu.map((menu, index) => (
           <div

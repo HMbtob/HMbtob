@@ -14,17 +14,17 @@ const PreOrderTable = ({ preorderProducts, onChange, user }) => {
       <div
         className="grid grid-cols-20 
         text-center bg-gray-800 p-1 
-        text-gray-200 text-xs"
+        text-gray-200 text-xs font-semibold"
       >
-        <div>커버</div>
-        <div className="col-span-2">바코드</div>
-        <div className="col-span-2">sku</div>
-        <div className="col-span-5">타이틀</div>
-        <div className="col-span-2">출시일</div>
-        <div className="col-span-2">주문마감일</div>
-        <div className="col-span-2">가격</div>
-        <div className="col-span-2">할인가</div>
-        <div className="col-span-2">수량</div>
+        <div>COVER</div>
+        <div className="col-span-2">BARCODE</div>
+        <div className="col-span-2">SKU</div>
+        <div className="col-span-5">TITLE</div>
+        <div className="col-span-2">RELEASE</div>
+        <div className="col-span-2">DEADLINE</div>
+        <div className="col-span-2">PRICE</div>
+        <div className="col-span-2">SALE</div>
+        <div className="col-span-2">EA</div>
       </div>
       {/* 표 로우 */}
       <div className="overflow-y-auto	scrollbar-hide">

@@ -22,13 +22,18 @@ export default function CommonRow({
       />
       <div className="col-span-2">{product.data.barcode}</div>
       <div className="col-span-2">{product.data.sku}</div>
-      <div className="col-span-5">{title}</div>
+      <div className="col-span-5 text-left">{title}</div>
       <div className="col-span-3">
         {new Date(relDate.seconds * 1000).toISOString().substring(0, 10)}
       </div>
-      <div className="col-span-2">{price} 원</div>
       <div className="col-span-2">
-        {price - price * user?.dcRates[product.data.category]} 원
+        ₩ {Math.round(price).toLocaleString("ko-KR")}
+      </div>
+      <div className="col-span-2">
+        ₩{" "}
+        {Math.round(
+          price - price * user?.dcRates[product.data.category]
+        ).toLocaleString("ko-KR")}{" "}
       </div>
       {/* 재고 */}
       <input

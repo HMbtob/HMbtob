@@ -12,16 +12,16 @@ const ListProduct = () => {
   // 헤더 항목
   const headers = [
     "BTN",
-    "바코드",
+    "BARCODE",
     "SKU",
-    "썸넬",
-    "제목",
-    "가격",
-    "현재고",
-    "총판매",
-    "미발송",
-    "출시일",
-    "주문마감",
+    "COVER",
+    "TITLE",
+    "PRICE",
+    "STOCK",
+    "SALE",
+    "UNSHIPPED",
+    "RELEASE",
+    "DEADLINE",
   ];
 
   useEffect(() => {
@@ -48,16 +48,18 @@ const ListProduct = () => {
   }, [dispatch]);
   return (
     <div className="flex flex-col w-full">
-      <div className="ml-28 mt-32 text-gray-800 text-xl">상품목록{loading}</div>
+      <div className="ml-28 mt-32 text-gray-800 text-xl">
+        PRODUCT LIST{loading}
+      </div>
       <div className="border w-11/12 m-auto mt-4 mb-12">
-        <div className="grid grid-cols-36 text-center border-b p-1 bg-gray-100 sticky top-0">
+        <div className="grid grid-cols-36 text-center border-b p-1 bg-gray-100 sticky top-0 text-sm">
           {headers.map((header, index) => (
             <div
               key={index}
               className={
-                header === "제목"
+                header === "TITLE"
                   ? "col-span-14"
-                  : header === "바코드" || header === "SKU"
+                  : header === "BARCODE" || header === "SKU"
                   ? "col-span-3"
                   : "col-span-2"
               }

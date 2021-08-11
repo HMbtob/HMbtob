@@ -77,7 +77,7 @@ const B2bOrder = () => {
   ];
 
   const options = [
-    [{ transfer: "계좌이체" }, { credit: "크레딧" }],
+    [{ transfer: "transfer" }, { credit: "credit" }],
     [
       { dhl: "DHL" },
       // { ems: "EMS" }
@@ -121,7 +121,8 @@ const B2bOrder = () => {
         .join("")
     );
 
-  const confirmOrder = async () => {
+  const confirmOrder = async e => {
+    e.preventDefault();
     await db.collection("orders").doc("b2b").collection("b2borders").add({
       orderState: "confirmOrder",
       paymentMethod,
@@ -186,36 +187,40 @@ const B2bOrder = () => {
     // dep-1
     <div className="w-full h-full flex justify-center">
       {/* dep-2 */}
-      <div className="w-4/5 flex-col mt-20 flex items-center">
+      <form
+        className="w-4/5 flex-col mt-20 flex items-center"
+        onSubmit={confirmOrder}
+      >
         {/* dep-3-1 */}
         <div
           className="text-center text-xl bg-gray-800 py-1 
         rounded-sm font-bold text-gray-100 mb-5 w-full"
         >
-          주문 내용 확인
+          Order Details
         </div>
         {/* dep-3-2 주문자 / 수령인*/}
         <div className="w-full flex flex-row justify-evenly">
           {/*   dep-3-2-1 주문자 */}
           <div className="flex-col mb-10 flex space-y-2  w-2/5">
             <div className="grid grid-cols-2">
-              <div>주문번호</div>
+              <div>Order Number</div>
               {state.orderNumber && <div>{state.orderNumber}</div>}
             </div>
             {user && (
               <>
                 <div className="grid grid-cols-2">
-                  <div>주문자</div>
+                  <div>Name</div>
                   <div>{user.displayName}</div>
                 </div>
                 <div className="grid grid-cols-2">
-                  <div>주문자 연락처</div>
+                  <div>Number</div>
                   <div>{user.phoneNumber}</div>
                 </div>
                 <div className="grid grid-cols-2">
-                  <div>주문자 이메일</div>
+                  <div>Email</div>
                   {user.type === "admin" ? (
                     <input
+                      required
                       type="text"
                       name="orderEmail"
                       className="border h-8 pl-2"
@@ -243,6 +248,7 @@ const B2bOrder = () => {
                   doc !== "shippingMessage" &&
                   doc !== "country" ? (
                     <input
+                      required
                       className="border h-8  pl-2"
                       type="text"
                       name={doc}
@@ -251,6 +257,7 @@ const B2bOrder = () => {
                     />
                   ) : doc === "shippingMessage" ? (
                     <textarea
+                      required
                       rows="5"
                       cols="19"
                       name="shippingMessage"
@@ -260,6 +267,7 @@ const B2bOrder = () => {
                     />
                   ) : (
                     <select
+                      required
                       name={doc}
                       value={form[index]}
                       onChange={onChange}
@@ -267,7 +275,7 @@ const B2bOrder = () => {
                     >
                       {doc === "paymentMethod" ? (
                         <>
-                          <option value="">필수선택</option>
+                          <option value="">required</option>
                           {options[0].map((option, index) => (
                             <option key={index} value={Object.keys(option)}>
                               {Object.values(option)}
@@ -276,7 +284,7 @@ const B2bOrder = () => {
                         </>
                       ) : doc === "shippingType" ? (
                         <>
-                          <option value="">필수선택</option>
+                          <option value="">required</option>
                           {options[1].map((option, index) => (
                             <option key={index} value={Object.keys(option)}>
                               {Object.values(option)}
@@ -285,8 +293,8 @@ const B2bOrder = () => {
                         </>
                       ) : doc === "country" ? (
                         <>
-                          <option value="">필수선택</option>
-                          {countries.map((co, i) => (
+                          <option value="">required</option>
+                          {countries.sort().map((co, i) => (
                             <option key={i} value={co}>
                               {co}
                             </option>
@@ -308,12 +316,12 @@ const B2bOrder = () => {
           <div className="grid grid-cols-12 text-center bg-gray-800 rounded-sm text-gray-100">
             <div>No.</div>
             <div>SKU</div>
-            <div className="col-span-5">앨범명</div>
-            <div className="col-span-1">출시일</div>
-            <div>판매가</div>
-            <div className="col-span-1">할인가</div>
-            <div>수량</div>
-            <div>금액</div>
+            <div className="col-span-5">TITLE</div>
+            <div className="col-span-1">RELEASE</div>
+            <div>PRICE</div>
+            <div className="col-span-1">SALE</div>
+            <div>EA</div>
+            <div>AMOUNT</div>
           </div>
           {simpleLists && (
             <>
@@ -335,15 +343,20 @@ const B2bOrder = () => {
                     {new Date(doc.relDate.toDate()).toLocaleDateString()}
                   </div>
 
-                  <div>{doc.price} 원</div>
+                  <div>₩ {Math.round(doc.price).toLocaleString("ko-KR")}</div>
                   <div className="col-span-1">
-                    {doc.price - doc.dcRate * doc.price} 원
+                    ₩{" "}
+                    {Math.round(
+                      doc.price - doc.dcRate * doc.price
+                    ).toLocaleString("ko-KR")}
                     {/* {` [${doc.dcRate * 100} %]`} */}
                   </div>
-                  <div>{doc.quan} 개</div>
+                  <div>{doc.quan} EA</div>
 
                   <div>
-                    {(doc.price - doc.dcRate * doc.price) * doc.quan} 원
+                    {Math.round(
+                      (doc.price - doc.dcRate * doc.price) * doc.quan
+                    ).toLocaleString("ko-KR")}
                   </div>
                 </div>
               ))}
@@ -354,13 +367,15 @@ const B2bOrder = () => {
         {/* dep-3-4 */}
         <div className="flex-col mb-10 w-full flex items-end">
           <div className="grid grid-cols-2 w-1/2 text-right">
-            <div>총액</div>
+            <div>TOTAL PRICE</div>
             <div>
+              ₩{" "}
               {simpleLists &&
-                simpleLists.reduce((i, c) => {
-                  return i + (c.price - c.dcRate * c.price) * c.quan;
-                }, 0)}{" "}
-              원
+                Math.round(
+                  simpleLists.reduce((i, c) => {
+                    return i + (c.price - c.dcRate * c.price) * c.quan;
+                  }, 0)
+                ).toLocaleString("ko-KR")}
             </div>
           </div>
           {/* <div className="grid grid-cols-2 w-1/2 text-right">
@@ -374,22 +389,23 @@ const B2bOrder = () => {
             </div>
           </div> */}
           <div className="grid grid-cols-2 w-1/2 text-right">
-            <div>예상운송비</div>
+            <div>SHIPPING FEE</div>
             <div>
               {/* FIXME: 초과분 */}
               {/* 30키로 미만 */}
-              {fee && fee}
-              {/* 30키로 초과 */}원
+              {fee && `₩ ${fee}`}
+              {/* 30키로 초과 */}
             </div>
           </div>
           <div className="grid grid-cols-2 w-1/2 text-right">
-            <div>합계</div>
+            <div>AMOUNT</div>
             <div>
               {fee &&
-                simpleLists.reduce((i, c) => {
-                  return i + (c.price - c.dcRate * c.price) * c.quan;
-                }, 0) + fee}
-              원
+                `₩ ${Math.round(
+                  simpleLists.reduce((i, c) => {
+                    return i + (c.price - c.dcRate * c.price) * c.quan;
+                  }, 0) + fee
+                ).toLocaleString("ko-KR")}`}
             </div>
           </div>
         </div>
@@ -397,6 +413,7 @@ const B2bOrder = () => {
         <div className="grid grid-cols-6 items-center mb-96 w-full place-items-center">
           <div className="col-span-3">기본 약관/안내 체크하면 버튼 활성화</div>
           <input
+            required
             className="col-span-1"
             type="checkbox"
             checked={confirmChecked ? true : false}
@@ -404,28 +421,29 @@ const B2bOrder = () => {
           />
           <button
             className={`${
-              confirmChecked &&
-              recipient.length > 0 &&
-              street.length > 0 &&
-              city.length > 0 &&
-              state.length > 0 &&
-              country.length > 0 &&
-              zipcode.length > 0 &&
-              paymentMethod.length > 0 &&
-              shippingType.length > 0 &&
-              recipientPhoneNumber.length > 0 &&
-              recipientEmail.length > 0 &&
-              shippingMessage.length > 0
-                ? "col-span-2 bg-gray-800 py-2 px-8 rounded-sm text-gray-100"
+              confirmChecked
+                ? //  &&
+                  // recipient.length > 0 &&
+                  // street.length > 0 &&
+                  // city.length > 0 &&
+                  // states.length > 0 &&
+                  // country.length > 0 &&
+                  // zipcode.length > 0 &&
+                  // paymentMethod.length > 0 &&
+                  // shippingType.length > 0 &&
+                  // recipientPhoneNumber.length > 0 &&
+                  // recipientEmail.length > 0 &&
+                  // shippingMessage.length > 0
+                  "col-span-2 bg-gray-800 py-2 px-8 rounded-sm text-gray-100"
                 : "col-span-2 bg-gray-100 py-2 px-8 rounded-sm text-gray-100"
             }`}
-            disabled={!confirmChecked}
-            onClick={confirmOrder}
+            // disabled={!confirmChecked && recipient.length > 0}
+            type="submit"
           >
-            주문하기
+            ORDER
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

@@ -61,12 +61,12 @@ const ListProductRow = ({
         <div className="col-span-3">{sku}</div>
         <img className="col-span-2 h-8 rounded-sm " src={thumbNail} alt="" />
         <div
-          className="col-span-14 cursor-pointer "
+          className="col-span-14 cursor-pointer text-left w-full"
           onClick={() => handleHidden(forHidden)}
         >
           {title}
         </div>
-        <div className="col-span-2">{price}원</div>
+        <div className="col-span-2">{price.toLocaleString("ko-KR")}원</div>
         <div className="col-span-2">{stock}</div>
         <div className="col-span-2">{totalSell}</div>
         <div className="col-span-2">{unShipped}</div>

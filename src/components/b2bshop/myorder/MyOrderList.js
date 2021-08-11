@@ -10,20 +10,20 @@ const MyOrderList = () => {
     <div className="w-full h-full flex justify-center">
       <div className=" w-11/12 flex-col mt-20">
         <div className="w-full text-center my-4 text-gray-800 text-lg">
-          주문확인
+          My Orders
         </div>
         {/* <button>주문확인</button> */}
         <div
           className="grid grid-cols-8  grid-flow-col text-center 
        bg-gray-800 text-gray-100 py-1 rounded-sm text-sm"
         >
-          <div>주문번호</div>
-          <div className="col-span-2">주문시간</div>
-          <div>주문상태</div>
-          <div>주문총가격</div>
-          <div>주문종류</div>
-          <div>주문총수량</div>
-          <div>주문총무게</div>
+          <div>ORDER NUMBER</div>
+          <div className="col-span-2">DATE</div>
+          <div>STATUS</div>
+          <div>PRICE</div>
+          <div>SORTS</div>
+          <div>EA</div>
+          <div>WEIGHT</div>
         </div>
         <div>
           {userOrders &&

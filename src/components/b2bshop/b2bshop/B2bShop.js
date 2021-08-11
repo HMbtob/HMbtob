@@ -14,7 +14,6 @@ const B2bShop = () => {
   const dispatch = useContext(InitDispatchContext);
   const { notices, products, user } = state;
   const today = new Date();
-  // FIXME: 전체 상품이 아니라 b2bshop 에있는 상품 가져오기, 리듀서도 다시
 
   const preorderProducts = products
     ?.slice(0, 100)

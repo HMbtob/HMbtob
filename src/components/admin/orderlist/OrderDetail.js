@@ -20,7 +20,7 @@ const OrderDetail = ({ match }) => {
     shippingType: order.data.shippingType,
     recipientEmail: order.data.recipientEmail,
     recipientPhoneNumber: order.data.recipientPhoneNumber,
-    address1: order.data.address1,
+    street: order.data.street,
     address2: order.data.address2,
     address3: order.data.address3,
     country: order.data.country,
@@ -36,7 +36,7 @@ const OrderDetail = ({ match }) => {
     shippingType,
     recipientEmail,
     recipientPhoneNumber,
-    address1,
+    street,
     address2,
     address3,
     country,
@@ -53,7 +53,7 @@ const OrderDetail = ({ match }) => {
       shippingType,
       recipientEmail,
       recipientPhoneNumber,
-      address1,
+      street,
       address2,
       address3,
       country,
@@ -138,7 +138,7 @@ const OrderDetail = ({ match }) => {
         orderCreatedAt: order.data.createdAt,
         recipientEmail,
         recipientPhoneNumber,
-        address1,
+        street,
         address2,
         address3,
         country,
@@ -294,10 +294,10 @@ const OrderDetail = ({ match }) => {
                   />{" "}
                 </div>
                 <div className="grid grid-cols-2">
-                  <div>주소1</div>
+                  <div>street</div>
                   <input
-                    name="address1"
-                    value={address1}
+                    name="street"
+                    value={street}
                     onChange={onChange}
                     className="border p-1"
                   />{" "}

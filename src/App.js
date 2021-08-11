@@ -189,7 +189,12 @@ function App() {
               <Sidebar />
               <Switch>
                 {/* 개발 */}
-                <Route path="/fordev" component={Dev} />
+                {user.email === "interasiadev@gmail.com" ? (
+                  <Route path="/fordev" component={Dev} />
+                ) : (
+                  ""
+                )}
+
                 {}
                 {/* 석팀장님 */}
                 <Route path="/orderproductslist" component={OrderProductList} />

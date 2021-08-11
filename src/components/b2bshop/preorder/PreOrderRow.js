@@ -35,9 +35,14 @@ const PreOrderRow = ({
           .toISOString()
           .substring(0, 10)}
       </div>
-      <div className="col-span-2">{price} 원</div>
       <div className="col-span-2">
-        {price - price * user?.dcRates[product.data.category]} 원
+        ₩ {Math.round(price).toLocaleString("ko-KR")}
+      </div>
+      <div className="col-span-2">
+        ₩{" "}
+        {Math.round(
+          price - price * user?.dcRates[product.data.category]
+        ).toLocaleString("ko-KR")}{" "}
       </div>
       {/* 재고 */}
       <input

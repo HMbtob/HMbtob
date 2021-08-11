@@ -44,7 +44,7 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
             {user && (
               <>
                 <div>MY CREDIT : </div>
-                <div>{user.credit} 원</div>
+                <div>₩ {Math.round(user.credit).toLocaleString("ko-KR")}</div>
               </>
             )}
           </div>
@@ -59,7 +59,7 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
                   : "cursor-pointer bg-gray-200 px-3 py-1 rounded-sm text-gray-300 font-semibold mb-2"
               }`}
             >
-              주문하기
+              ORDER
             </button>
             <button
               onClick={() => history.push("/myorderlist")}
@@ -67,7 +67,7 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
           py-1 rounded-sm text-gray-100 font-semibold
           mb-2"
             >
-              내주문
+              My orders
             </button>
             <button
               onClick={() => history.push(`/myinfo/${user.uid}`)}
@@ -75,7 +75,7 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
           py-1 rounded-sm text-gray-100 font-semibold
           mb-2"
             >
-              내정보
+              My info
             </button>
             <button
               onClick={openModal}
@@ -83,7 +83,7 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
           py-1 rounded-sm text-gray-100 font-semibold
           mb-2"
             >
-              문의하기
+              Contact
             </button>
             <Modal open={modalOpen} close={closeModal} header={"문의하기"}>
               <InSimpleList />
@@ -94,7 +94,7 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
           py-1 rounded-sm text-gray-100 font-semibold
           mb-2"
             >
-              로그아웃
+              Logout
             </button>
           </div>
         </div>

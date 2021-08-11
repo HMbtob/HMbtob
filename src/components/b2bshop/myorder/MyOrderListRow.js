@@ -23,17 +23,19 @@ const MyOrderListRow = ({ id, orderNumber, createdAt, orderState, order }) => {
         </div>
         <div>{orderState} </div>
         <div>
-          {order.data.list.reduce((i, c) => {
-            return i + (c.price - c.dcRate * c.price) * c.quan;
-          }, 0)}{" "}
-          원
+          ₩{" "}
+          {Math.round(
+            order.data.list.reduce((i, c) => {
+              return i + (c.price - c.dcRate * c.price) * c.quan;
+            }, 0)
+          ).toLocaleString("ko-KR")}
         </div>
-        <div>{order.data.list.length} 종류</div>
+        <div>{order.data.list.length} </div>
         <div>
           {order.data.list.reduce((i, c) => {
             return i + c.quan;
           }, 0)}{" "}
-          개
+          EA
         </div>
         <div>
           {order.data.list.reduce((i, c) => {
