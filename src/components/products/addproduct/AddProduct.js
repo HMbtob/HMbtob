@@ -14,7 +14,7 @@ const AddProduct = () => {
       sku,
       title,
       purchasePrice,
-      price,
+
       artist,
       ent,
       category,
@@ -35,6 +35,12 @@ const AddProduct = () => {
       reStockable,
       stock,
       exposeToB2b,
+      KRW,
+      USD,
+      EUR,
+      SGD,
+      JPY,
+      CNY,
     },
     onChange,
     reset,
@@ -42,7 +48,14 @@ const AddProduct = () => {
     sku: "",
     title: "",
     purchasePrice: 0,
-    price: 0,
+    price: {
+      KRW: 0,
+      USD: 0,
+      EUR: 0,
+      SGD: 0,
+      JPY: 0,
+      CNY: 0,
+    },
     artist: "",
     ent: "",
     thumbNail: "",
@@ -70,7 +83,6 @@ const AddProduct = () => {
     { sku: "sku" },
     { title: "제목" },
     { purchasePrice: "매입가" },
-    { price: "판매가" },
     { artist: "그룹명" },
     { ent: "소속사" },
     { thumbNail: "썸네일" },
@@ -81,6 +93,12 @@ const AddProduct = () => {
     { z: "높이" },
     { barcode: "바코드" },
     { stock: "재고" },
+    { KRW: "KRW" },
+    { USD: "USD" },
+    { EUR: "EUR" },
+    { SGD: "SGD" },
+    { JPY: "JPY" },
+    { CNY: "CNY" },
   ];
 
   // 셀렉트인풋
@@ -116,7 +134,14 @@ const AddProduct = () => {
       .set({
         sku,
         purchasePrice: Number(purchasePrice),
-        price: Number(price),
+        price: {
+          KRW: Number(KRW),
+          USD: Number(USD),
+          EUR: Number(EUR),
+          SGD: Number(SGD),
+          JPY: Number(JPY),
+          CNY: Number(CNY),
+        },
         artist,
         ent,
         x: Number(x),
@@ -147,26 +172,34 @@ const AddProduct = () => {
     await alert("추가완료");
     history.push("/listproduct");
   };
-
   const saveProduct = async () => {
-    allOrderProductsList.data.slice(500, 999).map(async (doc, index) => {
+    allOrderProductsList.data.slice(0, 3).map(async (doc, index) => {
       await console.log(index);
       const batch = db.batch();
       const nycRef = db.collection("products").doc();
 
-      batch.set(nycRef, {
+      await batch.set(nycRef, {
         sku: doc.sku,
         purchasePrice: 0,
-        price: Number(doc.price) * 1100,
-        artist: "",
-        ent: "",
-        x: 0,
+        price: {
+          KRW: 12000 + Number(index),
+          USD: 10 + Number(index),
+          EUR: 20 + Number(index),
+          SGD: 30 + Number(index),
+          JPY: 1200 + Number(index),
+          CNY: 1300 + Number(index),
+        },
+        artist: "dummy",
+        ent: "dummy",
+        x: 10,
         stock: doc.inventory_level,
-        y: 0,
-        z: 0,
+        y: 10,
+        z: 10,
         title: doc.name,
-        thumbNail: "",
-        descrip: "",
+        thumbNail:
+          "https://firebasestorage.googleapis.com/v0/b/interasiastock.appspot.com/o/images%2FthumbNail%2F%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5B%EB%AC%B4%EB%A3%8C%EB%B0%B0%EC%86%A1%5D%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20JYPN%20-%20BLIND%20PACKAGE%20(%ED%95%9C%EC%A0%95%EB%B0%98)%20%5B%ED%8C%90%EB%A7%A4%EA%B8%B0%EA%B0%84%207%EC%9B%94%2016%EC%9D%BC(%EA%B8%88)%20~%207%EC%9B%94%2025%EC%9D%BC(%EC%9D%BC)%20%EA%B9%8C%EC%A7%80%5D.jpg?alt=media&token=91208c5c-2060-4c34-a67c-f33642981115",
+        descrip:
+          "https://firebasestorage.googleapis.com/v0/b/interasiastock.appspot.com/o/images%2FthumbNail%2F%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5B%EB%AC%B4%EB%A3%8C%EB%B0%B0%EC%86%A1%5D%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20JYPN%20-%20BLIND%20PACKAGE%20(%ED%95%9C%EC%A0%95%EB%B0%98)%20%5B%ED%8C%90%EB%A7%A4%EA%B8%B0%EA%B0%84%207%EC%9B%94%2016%EC%9D%BC(%EA%B8%88)%20~%207%EC%9B%94%2025%EC%9D%BC(%EC%9D%BC)%20%EA%B9%8C%EC%A7%80%5D.jpg?alt=media&token=91208c5c-2060-4c34-a67c-f33642981115",
         weight: doc.weight * 1000,
         category:
           doc.categories[0] === 169
@@ -197,16 +230,18 @@ const AddProduct = () => {
       await batch.commit();
     });
   };
+
   return (
     <>
       <form className="w-3/5 m-auto my-20" onSubmit={Appp}>
         <div
-          // onClick={saveProduct}
+          onClick={saveProduct}
           className="text-left text-2xl  
         text-gray-800 mb-1 ml-2 "
         >
           상품 추가
         </div>
+
         <div className="bg-white p-10 border">
           {Inputs.map((doc, index) => (
             <div key={index} className="grid grid-cols-4 p-2 items-center">
@@ -295,8 +330,9 @@ const AddProduct = () => {
               <option value="" defaultValue>
                 필수선택
               </option>
-              <option value={true}>노출</option>
-              <option value={false}>숨김</option>
+              <option value="노출">노출</option>
+              <option value="숨김">숨김</option>
+              <option value="DEAL">DEAL</option>
             </select>
           </div>
           {/* 체크박스 인풋 */}

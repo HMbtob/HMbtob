@@ -5,7 +5,7 @@ import ListProductRow from "./ListProductRow";
 const ListProduct = () => {
   const state = useContext(InitDataContext);
   const dispatch = useContext(InitDispatchContext);
-  const { products, orders, shippings } = state;
+  const { products, orders, shippings, user } = state;
 
   // 로딩관리
   const [loading, setLoading] = useState("미발송 정보를 불러오는 중입니다.");
@@ -85,6 +85,7 @@ const ListProduct = () => {
             bigcProductId={product?.data?.bigC?.id}
             orders={orders}
             shippings={shippings}
+            user={user}
           />
         ))}
       </div>

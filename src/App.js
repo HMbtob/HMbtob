@@ -26,6 +26,7 @@ import MyOrderDetail from "./components/b2bshop/myorder/MyOrderDetail";
 import MyInfo from "./components/b2bshop/myorder/MyInfo";
 import OrderProductList from "./components/teamjangnim/OrderProductList";
 import Dev from "./dev/Dev";
+import Header from "./components/header/Header";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -167,12 +168,17 @@ function App() {
           {" "}
           <InitDispatchContext.Provider value={dispatch}>
             <InitDataContext.Provider value={state}>
-              <Switch>
-                <Route path="/myorderlist/:id" component={MyOrderDetail} />
-                <Route path="/myorderlist" component={MyOrderList} />
-                <Route path="/b2border" component={B2bOrder} />
-                <Route path="/b2bshop" component={B2bShop} />
-              </Switch>
+              {" "}
+              <div className="flex flex-col">
+                <Header />
+                <Switch>
+                  <Route path="/myorderlist/:id" component={MyOrderDetail} />
+                  <Route path="/myorderlist" component={MyOrderList} />
+                  <Route path="/myinfo/:uid" component={MyInfo} />
+                  <Route path="/b2border" component={B2bOrder} />
+                  <Route path="/b2bshop" component={B2bShop} />
+                </Switch>{" "}
+              </div>
             </InitDataContext.Provider>{" "}
           </InitDispatchContext.Provider>
         </div>
@@ -183,53 +189,59 @@ function App() {
   if (user && userType === "admin") {
     return (
       <Router>
-        <div className="flex bg-gray-50 h-auto min-h-screen">
+        <div className="flex flex-col bg-gray-50 h-auto min-h-screen w-screen">
           <InitDispatchContext.Provider value={dispatch}>
             <InitDataContext.Provider value={state}>
-              <Sidebar />
-              <Switch>
-                {/* 개발 */}
-                {user.email === "interasiadev@gmail.com" ? (
-                  <Route path="/fordev" component={Dev} />
-                ) : (
-                  ""
-                )}
+              <Header />
+              <div className="flex flex-row h-auto min-h-screen">
+                <Sidebar />
+                <Switch>
+                  {/* 개발 */}
+                  {user.email === "interasiadev@gmail.com" ? (
+                    <Route path="/fordev" component={Dev} />
+                  ) : (
+                    ""
+                  )}
 
-                {}
-                {/* 석팀장님 */}
-                <Route path="/orderproductslist" component={OrderProductList} />
+                  {}
+                  {/* 석팀장님 */}
+                  <Route
+                    path="/orderproductslist"
+                    component={OrderProductList}
+                  />
 
-                {/* order */}
-                <Route path="/orderdetail/:id" component={OrderDetail} />
-                <Route path="/orderlist" component={OrderList} />
-                {/* shipping */}
-                <Route path="/unshipped/:uid" component={UnshipedDetail} />
-                <Route path="/unshipped" component={Unshiped} />
-                <Route path="/shippinglist" component={ShippingList} />
-                {/* product */}
-                <Route
-                  exact
-                  path="/detailproduct/:id"
-                  component={DetailProduct}
-                />
-                <Route path="/listproduct" component={ListProduct} />
-                <Route path="/addproduct" component={AddProduct} />
-                {/* customer */}
-                <Route
-                  exact
-                  path="/customerdetail/:uid"
-                  component={CustomerDetail}
-                />
-                <Route path="/customerlist" component={CustomerList} />
+                  {/* order */}
+                  <Route path="/orderdetail/:id" component={OrderDetail} />
+                  <Route path="/orderlist" component={OrderList} />
+                  {/* shipping */}
+                  <Route path="/unshipped/:uid" component={UnshipedDetail} />
+                  <Route path="/unshipped" component={Unshiped} />
+                  <Route path="/shippinglist" component={ShippingList} />
+                  {/* product */}
+                  <Route
+                    exact
+                    path="/detailproduct/:id"
+                    component={DetailProduct}
+                  />
+                  <Route path="/listproduct" component={ListProduct} />
+                  <Route path="/addproduct" component={AddProduct} />
+                  {/* customer */}
+                  <Route
+                    exact
+                    path="/customerdetail/:uid"
+                    component={CustomerDetail}
+                  />
+                  <Route path="/customerlist" component={CustomerList} />
 
-                {/* b2b */}
-                <Route path="/myorderlist/:id" component={MyOrderDetail} />
-                <Route path="/myorderlist" component={MyOrderList} />
-                <Route path="/myinfo/:uid" component={MyInfo} />
-                <Route path="/b2border" component={B2bOrder} />
-                <Route path="/b2bshop" component={B2bShop} />
-                <Route path="/" component={Home} />
-              </Switch>
+                  {/* b2b */}
+                  <Route path="/myorderlist/:id" component={MyOrderDetail} />
+                  <Route path="/myorderlist" component={MyOrderList} />
+                  <Route path="/myinfo/:uid" component={MyInfo} />
+                  <Route path="/b2border" component={B2bOrder} />
+                  <Route path="/b2bshop" component={B2bShop} />
+                  <Route path="/" component={Home} />
+                </Switch>
+              </div>
             </InitDataContext.Provider>
           </InitDispatchContext.Provider>
         </div>

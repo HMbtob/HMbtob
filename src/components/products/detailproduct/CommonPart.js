@@ -7,7 +7,12 @@ const CommonPart = ({ product, id }) => {
     sku: product.data.sku,
     title: product.data.title,
     purchasePrice: product.data.purchasePrice,
-    price: product.data.price,
+    KRW: product.data.price.KRW,
+    USD: product.data.price.USD,
+    EUR: product.data.price.EUR,
+    SGD: product.data.price.SGD,
+    JPY: product.data.price.JPY,
+    CNY: product.data.price.CNY,
     artist: product.data.artist,
     ent: product.data.ent,
     thumbNail: product.data.thumbNail,
@@ -37,7 +42,6 @@ const CommonPart = ({ product, id }) => {
     sku,
     title,
     purchasePrice,
-    price,
     artist,
     ent,
     category,
@@ -58,6 +62,12 @@ const CommonPart = ({ product, id }) => {
     reStockable,
     stock,
     exposeToB2b,
+    KRW,
+    USD,
+    EUR,
+    SGD,
+    JPY,
+    CNY,
   } = form;
 
   // 텍스트 숫자인풋
@@ -65,7 +75,6 @@ const CommonPart = ({ product, id }) => {
     { sku: "sku" },
     { title: "제목" },
     { purchasePrice: "매입가" },
-    { price: "판매가" },
     { artist: "그룹명" },
     { ent: "소속사" },
     { thumbNail: "썸네일" },
@@ -76,6 +85,12 @@ const CommonPart = ({ product, id }) => {
     { z: "높이" },
     { barcode: "바코드" },
     { stock: "재고" },
+    { KRW: "KRW" },
+    { USD: "USD" },
+    { EUR: "EUR" },
+    { SGD: "SGD" },
+    { JPY: "JPY" },
+    { CNY: "CNY" },
   ];
 
   // 셀렉트인풋
@@ -111,7 +126,14 @@ const CommonPart = ({ product, id }) => {
       .update({
         sku,
         purchasePrice: Number(purchasePrice),
-        price: Number(price),
+        price: {
+          KRW: Number(KRW),
+          USD: Number(USD),
+          EUR: Number(EUR),
+          SGD: Number(SGD),
+          JPY: Number(JPY),
+          CNY: Number(CNY),
+        },
         artist,
         ent,
         x: Number(x),
@@ -243,6 +265,7 @@ const CommonPart = ({ product, id }) => {
             </option> */}
             <option value="노출">노출</option>
             <option value="숨김">숨김</option>
+            <option value="DEAL">DEAL</option>
           </select>
         </div>
         {/* 체크박스 인풋 */}

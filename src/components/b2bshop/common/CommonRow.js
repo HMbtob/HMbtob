@@ -27,13 +27,15 @@ export default function CommonRow({
         {new Date(relDate.seconds * 1000).toISOString().substring(0, 10)}
       </div>
       <div className="col-span-2">
-        ₩ {Math.round(price).toLocaleString("ko-KR")}
+        {Math.round(price[user?.currency]).toLocaleString("ko-KR")}{" "}
+        {user?.currency}
       </div>
       <div className="col-span-2">
-        ₩{" "}
         {Math.round(
-          price - price * user?.dcRates[product.data.category]
+          price[user?.currency] -
+            price[user?.currency] * user?.dcRates[product.data.category]
         ).toLocaleString("ko-KR")}{" "}
+        {user?.currency}
       </div>
       {/* 재고 */}
       <input

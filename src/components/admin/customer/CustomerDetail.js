@@ -26,9 +26,9 @@ const CustomerDetail = ({ match }) => {
     type: user.data.type,
     recipientEmail: user.data.recipientEmail,
     recipientPhoneNumber: user.data.recipientPhoneNumber,
-    address1: user.data.address1,
-    address2: user.data.address2,
-    address3: user.data.address3,
+    street: user.data.street,
+    city: user.data.city,
+    states: user.data.states,
     country: user.data.country,
     zipcode: user.data.zipcode,
     recipient: user.data.recipient,
@@ -48,15 +48,17 @@ const CustomerDetail = ({ match }) => {
     memo: user.data.memo,
     // 크레딧
     handleCredit: "",
+    // 커런시
+    currency: user.data.currency,
   });
 
   const {
     type,
     recipientEmail,
     recipientPhoneNumber,
-    address1,
-    address2,
-    address3,
+    street,
+    city,
+    states,
     country,
     zipcode,
     recipient,
@@ -73,6 +75,7 @@ const CustomerDetail = ({ match }) => {
     nickName,
     memo,
     handleCredit,
+    currency,
   } = form;
 
   const dcValues = { cd, dvdBlueRay, goods, photoBook, officialStore, beauty };
@@ -84,9 +87,9 @@ const CustomerDetail = ({ match }) => {
       .update({
         recipientEmail,
         recipientPhoneNumber,
-        address1,
-        address2,
-        address3,
+        street,
+        city,
+        states,
         country,
         zipcode,
         recipient,
@@ -104,6 +107,7 @@ const CustomerDetail = ({ match }) => {
         inCharge,
         memo,
         type,
+        currency,
       });
     alert("수정 완료");
   };
@@ -116,6 +120,7 @@ const CustomerDetail = ({ match }) => {
         creditDetails: firebase.firestore.FieldValue.arrayUnion({
           type: "charge",
           amount: Number(handleCredit),
+          currency: user.data.currency,
           date: new Date(),
           totalAmount: Number(user.data.credit) + Number(handleCredit),
         }),
@@ -130,17 +135,17 @@ const CustomerDetail = ({ match }) => {
           className="text-center text-md bg-gray-800 
         rounded-sm text-gray-100 mb-5 w-full"
         >
-          주문 내용 확인
+          USER DETAILS{" "}
         </div>
         <div className="flex flex-row justify-evenly">
           {/* 주문내용 확인 */}
           <div className="flex-col mb-10 flex space-y-2 w-1/2">
             <div className="grid grid-cols-2">
-              <div>이메일</div>
+              <div>Email</div>
               <div>{user.id}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>권한</div>
+              <div>Permission</div>
               <select name="type" value={type} onChange={onChange}>
                 <option value="">권한선택</option>
                 <option value="none">none</option>
@@ -149,16 +154,16 @@ const CustomerDetail = ({ match }) => {
               </select>
             </div>
             <div className="grid grid-cols-2">
-              <div>이름</div>
+              <div>Name</div>
               <div>{user.data.displayName}</div>
             </div>
 
             <div className="grid grid-cols-2">
-              <div>전화번호</div>
+              <div>Number</div>
               {user.data.phoneNumber}
             </div>
             <div className="grid grid-cols-2">
-              <div>담당자</div>
+              <div>In Charge</div>
               <select name="inCharge" value={inCharge} onChange={onChange}>
                 <option>담당자선택</option>
                 {inCharges &&
@@ -167,6 +172,22 @@ const CustomerDetail = ({ match }) => {
                       {inCharge.id}
                     </option>
                   ))}
+              </select>
+            </div>
+            <div className="grid grid-cols-2">
+              <div>Currency</div>
+              <select
+                name="currency"
+                value={currency}
+                onChange={onChange}
+                className="border p-1"
+              >
+                <option value="KRW">KRW</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="SGD">SGD</option>
+                <option value="JPY">JPY</option>
+                <option value="CNY">CNY</option>
               </select>
             </div>
             <div className="grid grid-cols-2">
@@ -191,7 +212,10 @@ const CustomerDetail = ({ match }) => {
             </div>
             <div className="grid grid-cols-2">
               <div>CREDIT</div>
-              <div>{user.data.credit} 원</div>
+              <div>
+                {Math.round(user.data.credit).toLocaleString("ko-KR")}{" "}
+                {user.data.currency}
+              </div>
             </div>
             <div className="grid grid-cols-3">
               <Modal
@@ -201,19 +225,30 @@ const CustomerDetail = ({ match }) => {
               >
                 <CreditDetails creditDetails={creditDetails} />
               </Modal>
-              <button onClick={openModal}>사용내역</button>
-              <button onClick={saveCredit}>충전하기</button>
+              <button
+                className="bg-gray-700 p-1 rounded text-gray-200 m-2"
+                onClick={openModal}
+              >
+                Details
+              </button>
+              <button
+                className="bg-gray-700 p-1 rounded text-gray-200 m-2"
+                onClick={saveCredit}
+              >
+                Charge
+              </button>
               <input
                 name="handleCredit"
                 value={handleCredit}
                 onChange={onChange}
-                className="border p-1"
+                placeholder="charge"
+                className="border p-1 m-1"
               />
             </div>
             {/* 할인율 */}
             <div className="grid grid-cols-1">
               <div className="text-center my-1 font-semibold">
-                할인율 {`[ % ]`}
+                DC Rate {`[ % ]`}
               </div>
               <div
                 className={`grid grid-cols-${
@@ -269,9 +304,8 @@ const CustomerDetail = ({ match }) => {
           {/* 수령인 파트 */}
 
           <div className="flex-col mb-10 flex space-y-2">
-            <div className="text-center">수령인</div>
             <div className="grid grid-cols-2">
-              <div>email</div>
+              <div>Recipient Email</div>
               <input
                 name="recipientEmail"
                 value={recipientEmail}
@@ -280,7 +314,7 @@ const CustomerDetail = ({ match }) => {
               />{" "}
             </div>
             <div className="grid grid-cols-2">
-              <div>전화번호</div>
+              <div>Recipient PhoneNumber</div>
               <input
                 name="recipientPhoneNumber"
                 value={recipientPhoneNumber}
@@ -289,34 +323,34 @@ const CustomerDetail = ({ match }) => {
               />{" "}
             </div>
             <div className="grid grid-cols-2">
-              <div>주소1</div>
+              <div>Street</div>
               <input
-                name="address1"
-                value={address1}
+                name="street"
+                value={street}
                 onChange={onChange}
                 className="border p-1"
               />{" "}
             </div>
             <div className="grid grid-cols-2">
-              <div>주소2</div>
+              <div>City</div>
               <input
-                name="address2"
-                value={address2}
+                name="city"
+                value={city}
                 onChange={onChange}
                 className="border p-1"
               />{" "}
             </div>
             <div className="grid grid-cols-2">
-              <div>주소3</div>
+              <div>state</div>
               <input
-                name="address3"
-                value={address3}
+                name="states"
+                value={states}
                 onChange={onChange}
                 className="border p-1"
               />{" "}
             </div>
             <div className="grid grid-cols-2">
-              <div>국가</div>
+              <div>Country</div>
               <input
                 name="country"
                 value={country}
@@ -325,7 +359,7 @@ const CustomerDetail = ({ match }) => {
               />{" "}
             </div>
             <div className="grid grid-cols-2">
-              <div>우편번호</div>
+              <div>Zipcode</div>
               <input
                 name="zipcode"
                 value={zipcode}
@@ -334,7 +368,7 @@ const CustomerDetail = ({ match }) => {
               />{" "}
             </div>
             <div className="grid grid-cols-2">
-              <div>이름</div>
+              <div>recipient</div>
               <input
                 name="recipient"
                 value={recipient}
@@ -343,8 +377,10 @@ const CustomerDetail = ({ match }) => {
               />{" "}
             </div>
             <div className="grid grid-cols-2">
-              <div>요청사항</div>
-              <input
+              <div>Memo</div>
+              <textarea
+                rows="5"
+                cols="30"
                 name="shippingMessage"
                 value={shippingMessage}
                 onChange={onChange}

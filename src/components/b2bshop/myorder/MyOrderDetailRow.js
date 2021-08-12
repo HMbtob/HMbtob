@@ -1,6 +1,6 @@
 import React from "react";
 
-const MyOrderDetailRow = ({ order, id, totalWeight }) => {
+const MyOrderDetailRow = ({ order, id, totalWeight, currency }) => {
   const today = new Date();
   const preOrder = order.relDate.toDate() < today;
 
@@ -18,19 +18,25 @@ const MyOrderDetailRow = ({ order, id, totalWeight }) => {
       <div className="col-span-2">
         {order.relDate.toDate().toLocaleDateString()}{" "}
       </div>
-      <div className="col-span-11">{order.title}</div>
-      <div className="col-span-2">{order.price} 원</div>
-      <div className="col-span-3">
-        {order.price - order.price * order.dcRate} 원{" "}
-        {`[${order.dcRate * 100}%]`}
+      <div className="col-span-12">{order.title}</div>
+      <div className="col-span-2">
+        {Math.round(order.price).toLocaleString("ko-KR")} {currency}
       </div>
-      <div>{order.weight} g</div>
-      <div>{order.quan} 개</div>
+      <div className="col-span-2">
+        {Math.round(order.price - order.price * order.dcRate).toLocaleString(
+          "ko-KR"
+        )}{" "}
+        {currency}
+      </div>
+      <div className="col-span-2">{order.quan} EA</div>
       <div className="col-span-2">
         {Math.round(totalWeight * 0.001 * 10) / 10} kg
       </div>
       <div className="col-span-2">
-        {(order.price - order.price * order.dcRate) * order.quan} 원
+        {Math.round(
+          (order.price - order.price * order.dcRate) * order.quan
+        ).toLocaleString("ko-KR")}{" "}
+        {currency}
       </div>
     </div>
   );

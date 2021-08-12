@@ -9,7 +9,9 @@ import ShippingList from "../shipping/ShippingList";
 const OrderDetail = ({ match }) => {
   const { id } = match.params;
   const state = useContext(InitDataContext);
-  const { orders, user, shippingCounts, shippings } = state;
+  const { orders, user, shippingCounts, shippings, dhlShippingFee } = state;
+  const { z } = dhlShippingFee;
+
   const order = orders.find(order => order.id === id);
   const shipping = shippings.filter(arr => arr.data.orderId === id);
   const history = useHistory();
@@ -21,8 +23,8 @@ const OrderDetail = ({ match }) => {
     recipientEmail: order.data.recipientEmail,
     recipientPhoneNumber: order.data.recipientPhoneNumber,
     street: order.data.street,
-    address2: order.data.address2,
-    address3: order.data.address3,
+    city: order.data.city,
+    states: order.data.states,
     country: order.data.country,
     zipcode: order.data.zipcode,
     recipient: order.data.recipient,
@@ -37,8 +39,8 @@ const OrderDetail = ({ match }) => {
     recipientEmail,
     recipientPhoneNumber,
     street,
-    address2,
-    address3,
+    city,
+    states,
     country,
     zipcode,
     recipient,
@@ -54,14 +56,14 @@ const OrderDetail = ({ match }) => {
       recipientEmail,
       recipientPhoneNumber,
       street,
-      address2,
-      address3,
+      city,
+      states,
       country,
       zipcode,
       recipient,
       shippingMessage,
     });
-    alert("수정 완료");
+    alert("Done");
   };
 
   const [checkedInputs, setCheckedInputs] = useState([]);
@@ -75,10 +77,54 @@ const OrderDetail = ({ match }) => {
     }
   };
 
+  // 배송국가 전체 for select option
+  const countries = [].concat(
+    ...z
+      ?.map(zo => Object.values(zo).map(co => co.country))
+      .map(doc => [].concat(...doc))
+  );
+
+  // 운임, 총무게
+  const totalWeight =
+    order.data.list &&
+    order.data.list.reduce((i, c) => {
+      return i + c.weight * c.quan;
+    }, 0) / 1000;
+
+  // 몇번재 구간에 걸리는지 num 에서 1빼야함
+  let num = 1;
+  for (let i = 1; i < 31; i++) {
+    let j = i * 0.5;
+    if (j > totalWeight) {
+      break;
+    }
+    num++;
+  }
+
+  // 어느나라에 걸리는지
+  const zone =
+    z &&
+    country.length > 0 &&
+    Object.keys(
+      z.find(doc =>
+        Object.values(doc).find(asd => asd.country.includes(country))
+      )
+    );
+
+  // 가격
+  const fee =
+    z &&
+    country.length > 0 &&
+    Number(
+      Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
+        .fee[num - 1].split(",")
+        .join("")
+    );
+
   const moveList = async e => {
     e.preventDefault();
     if (orderNumberSelect.length <= 0) {
-      return alert("올바른 주문번호를 선택하세여");
+      return alert("Please select the correct order number");
     }
 
     await db
@@ -112,9 +158,9 @@ const OrderDetail = ({ match }) => {
       });
 
     await reset();
-    await alert("이동 완료");
+    await alert("Done");
 
-    history.push(
+    history.go(
       `/orderdetail/${
         orders.find(arr => arr.data.orderNumber === Number(orderNumberSelect))
           .id
@@ -139,8 +185,8 @@ const OrderDetail = ({ match }) => {
         recipientEmail,
         recipientPhoneNumber,
         street,
-        address2,
-        address3,
+        city,
+        states,
         country,
         zipcode,
         recipient,
@@ -178,20 +224,23 @@ const OrderDetail = ({ match }) => {
           className="text-center text-md bg-gray-800 
         rounded-sm text-gray-100 mb-5 w-full"
         >
-          주문 내용 확인
+          Order Details{" "}
         </div>
 
         {user && order && (
           <>
             <div className="flex flex-row justify-evenly">
               {/* 주문내용 확인 */}
-              <div className="flex-col mb-10 flex space-y-2 text-sm w-1/3 text-center">
+              <div
+                className="flex-col mb-10 flex space-y-2 text-sm w-5/12
+                "
+              >
                 <div className="grid grid-cols-2 items-center h-8">
-                  <div>주문번호</div>
+                  <div className="text-right pr-5">No.</div>
                   <div>{order.data.orderNumber}</div>
                 </div>
                 <div className="grid grid-cols-2 items-center h-8">
-                  <div>주문상태</div>
+                  <div className="text-right pr-5">Status</div>
                   <select
                     name="orderState"
                     value={orderState}
@@ -205,15 +254,15 @@ const OrderDetail = ({ match }) => {
                   </select>
                 </div>
                 <div className="grid grid-cols-2 items-center h-8">
-                  <div>이메일</div>
+                  <div className="text-right pr-5">Email</div>
                   <div>{order.data.customer}</div>
                 </div>
                 <div className="grid grid-cols-2 items-center h-8">
-                  <div>주문일</div>
+                  <div className="text-right pr-5">Date</div>
                   {new Date(order.data.createdAt.toDate()).toLocaleString()}
                 </div>
                 <div className="grid grid-cols-2 items-center h-8">
-                  <div>결제방법</div>
+                  <div className="text-right pr-5">PaymentMethod</div>
 
                   <select
                     name="paymentMethod"
@@ -221,11 +270,11 @@ const OrderDetail = ({ match }) => {
                     onChange={onChange}
                     className="border p-1"
                   >
-                    <option value="transfer">계좌이체</option>
+                    <option value="transfer">transfer</option>
                   </select>
                 </div>
                 <div className="grid grid-cols-2 items-center h-8">
-                  <div>발송방법</div>
+                  <div className="text-right pr-5">ShippingType</div>
                   <select
                     name="shippingType"
                     value={shippingType}
@@ -237,15 +286,18 @@ const OrderDetail = ({ match }) => {
                   </select>
                 </div>
                 <div className="grid grid-cols-2 h-8">
-                  <div>전화번호</div>
+                  <div className="text-right pr-5">Phone Number</div>
                   {user?.phoneNumber}
                 </div>
                 {/* 할인율 */}
-                <div className="grid grid-cols-1">
-                  <div className="text-center my-1 font-semibold">할인율</div>
-                  <div className="grid grid-cols-6 bg-gray-600 text-center text-gray-100 rounded-sm px-1">
+                <div className="grid grid-cols-1 ">
+                  <div className="text-center my-1 font-semibold">DC Rates</div>
+                  <div
+                    className="grid grid-cols-6 bg-gray-600 text-center 
+                  text-xs text-gray-100 rounded-sm px-1"
+                  >
                     {Object.keys(order?.data.dcRates).map((doc, index) => (
-                      <div key={index}>{doc}</div>
+                      <div key={index}>{doc.toUpperCase()}</div>
                     ))}
                   </div>
                   <div className="grid grid-cols-6 text-center border-b px-1 border-l border-r text-sm">
@@ -254,12 +306,15 @@ const OrderDetail = ({ match }) => {
                     ))}
                   </div>
                   <div className="text-center my-1 font-semibold mt-3">
-                    배송요율
+                    Shipping Fee
                   </div>
-                  <div className="grid grid-cols-6 bg-gray-600 text-center text-gray-100 rounded-sm px-1">
+                  <div
+                    className="grid grid-cols-6 bg-gray-600 text-center 
+                  text-xs text-gray-100 rounded-sm px-1"
+                  >
                     {" "}
                     {Object.keys(order?.data.shippingRate).map((doc, index) => (
-                      <div key={index}>{doc}</div>
+                      <div key={index}>{doc.toUpperCase()}</div>
                     ))}
                   </div>
                   <div className="grid grid-cols-6 text-center border-b px-1 border-l border-r text-sm">
@@ -273,101 +328,111 @@ const OrderDetail = ({ match }) => {
               </div>
               {/* 수령인 파트 */}
 
-              <div className="flex-col mb-10 flex space-y-2 text-sm items-center w-1/3">
-                <div className="text-center">수령인</div>
-                <div className="grid grid-cols-2">
-                  <div>email</div>
+              <div
+                className="flex-col mb-10 flex space-y-2 text-sm 
+               w-6/12 items-center"
+              >
+                <div className="grid grid-cols-2 w-3/4 items-center">
+                  <div className="text-right pr-5">Email</div>
                   <input
                     name="recipientEmail"
                     value={recipientEmail}
                     onChange={onChange}
-                    className="border p-1"
+                    className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>전화번호</div>
+                <div className="grid grid-cols-2 w-3/4 items-center">
+                  <div className="text-right pr-5">PhoneNumber</div>
                   <input
                     name="recipientPhoneNumber"
                     value={recipientPhoneNumber}
                     onChange={onChange}
-                    className="border p-1"
+                    className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>street</div>
+                <div className="grid grid-cols-2 w-3/4 items-center">
+                  <div className="text-right pr-5">Street</div>
                   <input
                     name="street"
                     value={street}
                     onChange={onChange}
-                    className="border p-1"
+                    className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>주소2</div>
+                <div className="grid grid-cols-2 w-3/4 items-center">
+                  <div className="text-right pr-5">City</div>
                   <input
-                    name="address2"
-                    value={address2}
+                    name="city"
+                    value={city}
                     onChange={onChange}
-                    className="border p-1"
+                    className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>주소3</div>
+                <div className="grid grid-cols-2 w-3/4 items-center">
+                  <div className="text-right pr-5">State</div>
                   <input
-                    name="address3"
-                    value={address3}
+                    name="states"
+                    value={states}
                     onChange={onChange}
-                    className="border p-1"
+                    className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>국가</div>
-                  <input
+                <div className="grid grid-cols-2 w-3/4 items-center">
+                  <div className="text-right pr-5">Country</div>
+                  <select
                     name="country"
                     value={country}
                     onChange={onChange}
-                    className="border p-1"
-                  />{" "}
+                    className="border p-1 pl-2"
+                  >
+                    {countries.sort().map((co, i) => (
+                      <option key={i} value={co}>
+                        {co}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>우편번호</div>
+                <div className="grid grid-cols-2 w-3/4 items-center">
+                  <div className="text-right pr-5">Zipcode</div>
                   <input
                     name="zipcode"
                     value={zipcode}
                     onChange={onChange}
-                    className="border p-1"
+                    className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>이름</div>
+                <div className="grid grid-cols-2 w-3/4 items-center">
+                  <div className="text-right pr-5">Recipient</div>
                   <input
                     name="recipient"
                     value={recipient}
                     onChange={onChange}
-                    className="border p-1"
+                    className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>요청사항</div>
+                <div className="grid grid-cols-2 w-3/4 items-center">
+                  <div className="text-right pr-5">Memo</div>
                   <textarea
                     rows="5"
                     cols="19"
                     name="shippingMessage"
                     value={shippingMessage}
                     onChange={onChange}
-                    className="border p-1"
+                    className="border p-1 pl-2"
                   />{" "}
                 </div>
                 <button
                   onClick={saveDetails}
                   className="bg-gray-800 rounded text-gray-200 w-1/3 items-center py-2"
                 >
-                  수정하기
+                  FIX
                 </button>
               </div>
             </div>
             {/* // dep-3-2 */}
-            <div className="w-full text-center mb-5">상품종류</div>
+            <div className="w-full text-center mb-3 font-semibold">
+              PRODUCTS
+            </div>
             {/* dep-3-3 */}
             <div
               className="grid grid-cols-28 text-center bg-gray-800
@@ -375,16 +440,15 @@ const OrderDetail = ({ match }) => {
             >
               <div></div>
               <div>No.</div>
-              <div className="col-span-2">주문일</div>
-              <div className="col-span-2">발매일</div>
-              <div className="col-span-15">앨범명</div>
-              <div>판매가</div>
-              <div className="col-span-2">할인가</div>
-              <div>무게</div>
-              <div>수량</div>
-              <div>총무게</div>
+              <div className="col-span-2">DATE</div>
+              <div className="col-span-2">RELEASE</div>
+              <div className="col-span-12">TITLE</div>
+              <div className="col-span-2">PRICE</div>
+              <div className="col-span-2">SALE</div>
+              <div className="col-span-2">EA</div>
+              <div className="col-span-2">WEIGHT</div>
 
-              <div>총액</div>
+              <div className="col-span-2">AMOUNT</div>
             </div>
             {/* dep-3-4 */}
             {order.data.list
@@ -406,6 +470,7 @@ const OrderDetail = ({ match }) => {
                   dcRate={doc.dcRate}
                   changeHandler={changeHandler}
                   checkedInputs={checkedInputs}
+                  order={order}
                 />
               ))}
             {order.data.list
@@ -427,17 +492,18 @@ const OrderDetail = ({ match }) => {
                   dcRate={doc.dcRate}
                   changeHandler={changeHandler}
                   checkedInputs={checkedInputs}
+                  order={order}
                 />
               ))}
 
             {/* dep-3-5 */}
-            <div className="text-center items-center justify-between flex flex-row mt-6 text-lg">
+            <div className="text-center items-center justify-between flex flex-row mt-6 text-sm">
               <div>
                 <button
                   onClick={makeShipping}
                   className="bg-gray-800 text-gray-200 px-2 py-1 ml-5 rounded-sm"
                 >
-                  발송처리
+                  SHIP
                 </button>
               </div>
               <div>
@@ -445,10 +511,10 @@ const OrderDetail = ({ match }) => {
                   name="orderNumberSelect"
                   value={orderNumberSelect}
                   onChange={onChange}
-                  className="p-2 border"
+                  className="p-1 border"
                 >
                   {/* 해당 주문자의 미발송 주문 가져와서 이동 */}
-                  <option value="">주문번호</option>
+                  <option value="">NO.</option>
                   {orders
                     .filter(
                       doc =>
@@ -465,7 +531,7 @@ const OrderDetail = ({ match }) => {
                   onClick={moveList}
                   className="bg-gray-800 text-gray-200 px-2 py-1 ml-1 rounded-sm"
                 >
-                  주문이동
+                  MOVE
                 </button>
               </div>
             </div>
@@ -473,50 +539,38 @@ const OrderDetail = ({ match }) => {
             {/* dep-3-6 */}
             <div className="text-right flex flex-col items-end mt-6 text-lg">
               <div className="grid grid-cols-2 w-96 mb-3">
-                <div>액수</div>
+                <div>PRICE</div>
                 <div>
-                  {order.data.list.reduce((i, c) => {
-                    return i + (c.price - c.dcRate * c.price) * c.quan;
-                  }, 0)}{" "}
-                  원
-                </div>
-              </div>
-              <div className="grid grid-cols-2 w-96 mb-3">
-                <div>총무게</div>
-                <div>
-                  {order.data.list.reduce((i, c) => {
-                    return i + c.weight * c.quan;
-                  }, 0) / 1000}{" "}
-                  kg
-                </div>
-              </div>
-              <div className="grid grid-cols-2 w-96  mb-3">
-                <div>예상운송비</div>
-                <div>
-                  {(Number(
+                  {Math.round(
                     order.data.list.reduce((i, c) => {
-                      return i + c.weight * c.quan;
+                      return i + (c.price - c.dcRate * c.price) * c.quan;
                     }, 0)
-                  ) /
-                    1000) *
-                    Number(order.data.shippingRate[shippingType])}{" "}
-                  원
+                  ).toLocaleString("ko-KR")}{" "}
+                  {order.data.currency}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 w-96  mb-3">
+                <div>SHIPPING FEE</div>
+                <div>
+                  {/* FIXME: 초과분 */}
+                  {/* 30키로 미만 */}
+                  {fee &&
+                    `${Math.round(fee).toLocaleString("ko-KR")} ${
+                      order.data.currency
+                    }`}
+                  {/* 30키로 초과 */}
                 </div>
               </div>
               <div className="grid grid-cols-2 w-96 ">
-                <div>총액</div>
+                <div>AMOUNT</div>
                 <div>
-                  {(Number(
-                    order.data.list.reduce((i, c) => {
-                      return i + c.weight * c.quan;
-                    }, 0)
-                  ) /
-                    1000) *
-                    Number(order.data.shippingRate[shippingType]) +
+                  {Math.round(
                     order.data.list.reduce((i, c) => {
                       return i + (c.price - c.dcRate * c.price) * c.quan;
-                    }, 0)}{" "}
-                  원
+                    }, 0) + fee
+                  ).toLocaleString("ko-KR")}{" "}
+                  {order.data.currency}
                 </div>
               </div>
             </div>

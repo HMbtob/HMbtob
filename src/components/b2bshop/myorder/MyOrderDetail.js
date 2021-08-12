@@ -6,12 +6,51 @@ import MyOrderDetailRow from "./MyOrderDetailRow";
 const MyOrderDetail = ({ match }) => {
   const { id } = match.params;
   const state = useContext(InitDataContext);
-  const { orders, accounts, shippings } = state;
+  const { orders, accounts, shippings, dhlShippingFee } = state;
+  const { z } = dhlShippingFee;
 
   const order = orders.find(order => order.id === id);
   const account = accounts.find(account => account.id === order.data.customer);
   const shipping = shippings.filter(shipping => shipping.data.orderId === id);
 
+  // 운임, 총무게
+  const totalWeight =
+    order.data.list &&
+    order.data.list.reduce((i, c) => {
+      return i + c.weight * c.quan;
+    }, 0) / 1000;
+
+  // 몇번재 구간에 걸리는지 num 에서 1빼야함
+  let num = 1;
+  for (let i = 1; i < 31; i++) {
+    let j = i * 0.5;
+    if (j > totalWeight) {
+      break;
+    }
+    num++;
+  }
+
+  // 어느나라에 걸리는지
+  const zone =
+    z &&
+    order &&
+    order.data.country.length > 0 &&
+    Object.keys(
+      z.find(doc =>
+        Object.values(doc).find(asd => asd.country.includes(order.data.country))
+      )
+    );
+
+  // 가격
+  const fee =
+    z &&
+    order &&
+    order.data.country.length > 0 &&
+    Number(
+      Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
+        .fee[num - 1].split(",")
+        .join("")
+    );
   return (
     <div className="w-full h-full flex justify-center">
       {/* dep-2 */}
@@ -106,11 +145,10 @@ const MyOrderDetail = ({ match }) => {
           <div className="col-span-2">No.</div>
           <div className="col-span-2">DATE</div>
           <div className="col-span-2">RELEASE</div>
-          <div className="col-span-11">TITLE</div>
+          <div className="col-span-12">TITLE</div>
           <div className="col-span-2">PRICE</div>
-          <div className="col-span-3">SALE</div>
-          <div>WEIGHT</div>
-          <div>EA</div>
+          <div className="col-span-2">SALE</div>
+          <div className="col-span-2">EA</div>
           <div className="col-span-2">WEIGHTS</div>
 
           <div className="col-span-2">AMOUNT</div>
@@ -122,48 +160,46 @@ const MyOrderDetail = ({ match }) => {
               id={doc.childOrderNumber}
               totalWeight={doc.weight * doc.quan}
               order={doc}
+              currency={order.data.currency}
             />
           ))}
         <div className="text-right flex flex-col items-end mt-6 text-lg">
           <div className="grid grid-cols-2 w-96 mb-3">
-            <div>TOTAL PRICE</div>
+            <div>PRICE</div>
             <div>
               {Math.round(
                 order.data.list.reduce((i, c) => {
                   return i + (c.price - c.dcRate * c.price) * c.quan;
                 }, 0)
-              ).toLocaleString("ko-KR")}
-              원
+              ).toLocaleString("ko-KR")}{" "}
+              {order.data.currency}
             </div>
           </div>
 
           <div className="grid grid-cols-2 w-96  mb-3">
             <div>SHIPPING FEE</div>
             <div>
-              {(Number(
-                order.data.list.reduce((i, c) => {
-                  return i + c.weight * c.quan;
-                }, 0)
-              ) /
-                1000) *
-                Number(order.data.shippingRate[order.data.shippingType])}
-              원
+              {/* FIXME: 초과분 */}
+              {/* 30키로 미만 */}
+              {fee &&
+                `${Math.round(fee).toLocaleString("ko-KR")} ${
+                  order.data.currency
+                }`}
+              {/* 30키로 초과 */}
             </div>
           </div>
           <div className="grid grid-cols-2 w-96 ">
             <div>TOTAL PRICE</div>
             <div>
-              {(Number(
-                order.data.list.reduce((i, c) => {
-                  return i + c.weight * c.quan;
-                }, 0)
-              ) /
-                1000) *
-                Number(order.data.shippingRate[order.data.shippingType]) +
-                order.data.list.reduce((i, c) => {
-                  return i + (c.price - c.dcRate * c.price) * c.quan;
-                }, 0)}{" "}
-              원
+              {order &&
+                fee &&
+                Math.round(
+                  fee +
+                    order.data.list.reduce((i, c) => {
+                      return i + (c.price - c.dcRate * c.price) * c.quan;
+                    }, 0)
+                ).toLocaleString("ko-KR")}{" "}
+              {order.data.currency}
             </div>
           </div>
         </div>

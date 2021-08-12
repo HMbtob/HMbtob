@@ -44,7 +44,10 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
             {user && (
               <>
                 <div>MY CREDIT : </div>
-                <div>₩ {Math.round(user.credit).toLocaleString("ko-KR")}</div>
+                <div>
+                  {Math.round(user.credit).toLocaleString("ko-KR")}{" "}
+                  {user.currency}
+                </div>
               </>
             )}
           </div>

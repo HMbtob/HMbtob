@@ -19,8 +19,8 @@ const ShippingListRow = ({ shipping }) => {
         <div className="col-span-3">{shipping.data.customer}</div>
         <div>{shipping.data.shippingType}</div>
         <div>{shipping.data.country}</div>
-        <div className="col-span-1">{shipping.data.list.length}</div>
-        <div className="col-span-1">{shipping.data.shippingNumber}</div>
+        <div className="col-span-1">{shipping.data.list.length} type</div>
+        <div className="col-span-1">{shipping.data.shippingNumber} EA</div>
         <div className="col-span-1">
           {Number(
             shipping.data.list.reduce((i, c) => {
@@ -30,20 +30,24 @@ const ShippingListRow = ({ shipping }) => {
           KG
         </div>
         <div className="col-span-2">
-          {(Number(
-            shipping.data.list.reduce((i, c) => {
-              return i + c.weight * c.quan;
-            }, 0)
-          ) /
-            1000) *
-            Number(shipping.data.shippingRate[shipping.data.shippingType])}{" "}
-          원
+          ₩{" "}
+          {Math.round(
+            (Number(
+              shipping.data.list.reduce((i, c) => {
+                return i + c.weight * c.quan;
+              }, 0)
+            ) /
+              1000) *
+              Number(shipping.data.shippingRate[shipping.data.shippingType])
+          ).toLocaleString("ko-KR")}
         </div>
         <div className="col-span-2">
-          {shipping.data.list.reduce((i, c) => {
-            return i + (c.price - c.dcRate * c.price) * c.quan;
-          }, 0)}{" "}
-          원
+          ₩{" "}
+          {Math.round(
+            shipping.data.list.reduce((i, c) => {
+              return i + (c.price - c.dcRate * c.price) * c.quan;
+            }, 0)
+          ).toLocaleString("ko-KR")}{" "}
         </div>
       </div>
     );

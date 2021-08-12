@@ -1,6 +1,6 @@
 import React from "react";
 
-const PreOrderRow = ({
+const DealRow = ({
   id,
   title,
   relDate,
@@ -23,22 +23,10 @@ const PreOrderRow = ({
         src={thumbNail}
         alt=""
       />
-      <div className="col-span-2">{product.data.barcode}</div>
-      <div className="col-span-2">{product.data.sku}</div>
-      <div className="col-span-5">{title}</div>
-      <div className="col-span-2">
-        {new Date(relDate.seconds * 1000).toISOString().substring(0, 10)}
-      </div>
-      <div className="col-span-2">
-        {new Date(preOrderDeadline.seconds * 1000)
-          .toISOString()
-          .substring(0, 10)}
-      </div>
-      <div className="col-span-2">
-        {Math.round(price[user?.currency])?.toLocaleString("ko-KR")}{" "}
-        {user?.currency}
-      </div>
-      <div className="col-span-2">
+      <div className="col-span-4">{product.data.sku}</div>
+      <div className="col-span-7">{title}</div>
+
+      <div className="col-span-4">
         {Math.round(
           price[user?.currency] -
             price[user?.currency] * user?.dcRates[product.data.category]
@@ -52,7 +40,7 @@ const PreOrderRow = ({
         type="number"
         name={name}
         onChange={onChange}
-        className="w-1/2 h-6 border text-center col-span-2"
+        className="w-1/2 h-6 border text-center col-span-4"
       />
       {Number(product.data.stock) > 0 ? (
         ""
@@ -89,4 +77,4 @@ const PreOrderRow = ({
   );
 };
 
-export default PreOrderRow;
+export default DealRow;

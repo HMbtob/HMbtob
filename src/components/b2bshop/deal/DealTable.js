@@ -1,7 +1,7 @@
 import React from "react";
-import PreOrderRow from "./PreOrderRow";
+import DealRow from "./DealRow";
 
-const PreOrderTable = ({ preorderProducts, onChange, user }) => {
+const DealTable = ({ dealProducts, onChange, user }) => {
   return (
     <div className="flex flex-col w-11/12 h-64 mb-5">
       {/* 표 */}
@@ -15,20 +15,16 @@ const PreOrderTable = ({ preorderProducts, onChange, user }) => {
         text-gray-200 text-xs font-semibold"
       >
         <div>COVER</div>
-        <div className="col-span-2">BARCODE</div>
-        <div className="col-span-2">SKU</div>
-        <div className="col-span-5">TITLE</div>
-        <div className="col-span-2">RELEASE</div>
-        <div className="col-span-2">DEADLINE</div>
-        <div className="col-span-2">PRICE</div>
-        <div className="col-span-2">SALE</div>
-        <div className="col-span-2">EA</div>
+        <div className="col-span-4">SKU</div>
+        <div className="col-span-7">TITLE</div>
+        <div className="col-span-4">SALE PRICE</div>
+        <div className="col-span-4">EA</div>
       </div>
       {/* 표 로우 */}
       <div className="overflow-y-auto	scrollbar-hide">
-        {preorderProducts &&
-          preorderProducts.map(product => (
-            <PreOrderRow
+        {dealProducts &&
+          dealProducts.map(product => (
+            <DealRow
               key={product.id}
               id={product.id}
               title={product.data.title}
@@ -47,4 +43,4 @@ const PreOrderTable = ({ preorderProducts, onChange, user }) => {
   );
 };
 
-export default PreOrderTable;
+export default DealTable;

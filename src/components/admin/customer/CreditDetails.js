@@ -13,12 +13,17 @@ const CreditDetails = ({ creditDetails }) => {
         creditDetails.map((de, i) => (
           <div key={i} className="grid grid-cols-5 text-center">
             <div>{de.type}</div>
-            <div>{Math.round(de.amount).toLocaleString("ko-KR")} 원</div>
+            <div>
+              {de.type === "makeOrder" ? "-" : de.type === "charge" ? "+" : ""}
+              {Math.round(de.amount).toLocaleString("ko-KR")} {de.currency}
+            </div>
             <div className="col-span-2">
               {de.date.toDate().toLocaleString()}
             </div>
 
-            <div>{Math.round(de.totalAmount).toLocaleString("ko-KR")} 원</div>
+            <div>
+              {Math.round(de.totalAmount).toLocaleString("ko-KR")} {de.currency}
+            </div>
           </div>
         ))}
     </div>

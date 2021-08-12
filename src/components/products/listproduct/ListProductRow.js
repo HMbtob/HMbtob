@@ -19,6 +19,7 @@ const ListProductRow = ({
   shippings,
   barcode,
   bigcProductId,
+  user,
 }) => {
   const history = useHistory();
   const [forHidden, setForHidden] = useState(true);
@@ -66,10 +67,12 @@ const ListProductRow = ({
         >
           {title}
         </div>
-        <div className="col-span-2">{price.toLocaleString("ko-KR")}원</div>
-        <div className="col-span-2">{stock}</div>
-        <div className="col-span-2">{totalSell}</div>
-        <div className="col-span-2">{unShipped}</div>
+        <div className="col-span-2">
+          {price[user.currency]?.toLocaleString("ko-KR")} {user.currency}
+        </div>
+        <div className="col-span-2">{stock?.toLocaleString("ko-KR")}</div>
+        <div className="col-span-2">{totalSell?.toLocaleString("ko-KR")}</div>
+        <div className="col-span-2">{unShipped?.toLocaleString("ko-KR")}</div>
         <div className="col-span-2 text-xs">
           {relDate &&
             new Date(relDate.seconds * 1000).toISOString().substring(0, 10)}
@@ -90,7 +93,7 @@ const ListProductRow = ({
             sku={sku}
             thumbNail={thumbNail}
             title={title}
-            price={price}
+            price={price[user.currency]}
             stock={stock}
             totalSell={totalSell}
             unShipped={unShipped}

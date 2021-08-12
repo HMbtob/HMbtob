@@ -5,19 +5,20 @@ const OrderDetailRow = ({
   title,
   price,
   quan,
-  weight,
   totalWeight,
   dcRate,
   relDate,
   createdAt,
   changeHandler,
+  order,
   checkedInputs,
 }) => {
   const today = new Date();
   const preOrder = relDate.toDate() < today;
   return (
     <div
-      className={` text-sm place-items-center grid grid-cols-28 grid-flow-col text-center border-b border-l border-r py-1 ${
+      className={`text-xs place-items-center grid grid-cols-28 grid-flow-col 
+      text-center border-b border-l border-r py-1 ${
         !preOrder ? "bg-red-200" : ""
       }`}
     >
@@ -32,15 +33,22 @@ const OrderDetailRow = ({
       <div className="col-span-2">{createdAt}</div>
 
       <div className="col-span-2">{relDate.toDate().toLocaleDateString()} </div>
-      <div className="col-span-15">{title}</div>
-      <div>{price} 원</div>
+      <div className="col-span-12">{title}</div>
       <div className="col-span-2">
-        {price - price * dcRate} 원 {`[${dcRate * 100}%]`}
+        {Math.round(price).toLocaleString("ko-KR")} {order.data.currency}
       </div>
-      <div>{weight} g</div>
-      <div>{quan} 개</div>
-      <div>{Math.round(totalWeight * 0.001 * 10) / 10} kg</div>
-      <div>{(price - price * dcRate) * quan} 원</div>
+      <div className="col-span-2">
+        {Math.round(price - price * dcRate).toLocaleString("ko-KR")}{" "}
+        {order.data.currency}
+      </div>
+      <div className="col-span-2">{quan} EA</div>
+      <div className="col-span-2">
+        {Math.round(totalWeight * 0.001 * 10) / 10} kg
+      </div>
+      <div className="col-span-2">
+        {Math.round((price - price * dcRate) * quan).toLocaleString("ko-KR")}{" "}
+        {order.data.currency}
+      </div>
     </div>
   );
 };

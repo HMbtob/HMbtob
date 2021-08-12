@@ -3,6 +3,9 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      height: {
+        lg: "40rem",
+      },
       gridTemplateColumns: {
         20: "repeat(20, minmax(0, 1fr))",
         28: "repeat(28, minmax(0, 1fr))",

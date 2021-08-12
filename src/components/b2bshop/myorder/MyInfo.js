@@ -88,7 +88,8 @@ const MyInfo = ({ match }) => {
             <div className="grid grid-cols-2">
               <div>CREDIT</div>
               <div>
-                ₩ {Math.round(user.data.credit).toLocaleString("ko-KR")}
+                {Math.round(user.data.credit).toLocaleString("ko-KR")}{" "}
+                {user.data.currency}
               </div>
             </div>
             <div className="grid grid-cols-3">

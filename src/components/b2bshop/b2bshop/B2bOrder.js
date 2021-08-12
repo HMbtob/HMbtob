@@ -142,6 +142,7 @@ const B2bOrder = () => {
       list: simpleLists,
       dcRates: user.dcRates,
       shippingRate: user.shippingRate,
+      currency: user.currency,
     });
     await db
       .collection("forNumberedId")
@@ -159,6 +160,7 @@ const B2bOrder = () => {
             fee),
         creditDetails: firebase.firestore.FieldValue.arrayUnion({
           type: "makeOrder",
+          currency: user.currency,
           amount: Number(
             simpleLists.reduce((i, c) => {
               return i + (c.price - c.dcRate * c.price) * c.quan;
@@ -178,9 +180,9 @@ const B2bOrder = () => {
     await reset();
     await alert("주문 완료");
     if (user.type === "admin") {
-      history.push("/orderlist");
+      history.replace("/orderlist");
     }
-    history.push("/myorderlist");
+    history.replace("/myorderlist");
   };
 
   return (
@@ -343,12 +345,15 @@ const B2bOrder = () => {
                     {new Date(doc.relDate.toDate()).toLocaleDateString()}
                   </div>
 
-                  <div>₩ {Math.round(doc.price).toLocaleString("ko-KR")}</div>
+                  <div>
+                    {Math.round(doc.price).toLocaleString("ko-KR")}{" "}
+                    {user.currency}
+                  </div>
                   <div className="col-span-1">
-                    ₩{" "}
                     {Math.round(
                       doc.price - doc.dcRate * doc.price
-                    ).toLocaleString("ko-KR")}
+                    ).toLocaleString("ko-KR")}{" "}
+                    {user.currency}
                     {/* {` [${doc.dcRate * 100} %]`} */}
                   </div>
                   <div>{doc.quan} EA</div>
@@ -356,7 +361,8 @@ const B2bOrder = () => {
                   <div>
                     {Math.round(
                       (doc.price - doc.dcRate * doc.price) * doc.quan
-                    ).toLocaleString("ko-KR")}
+                    ).toLocaleString("ko-KR")}{" "}
+                    {user.currency}
                   </div>
                 </div>
               ))}
@@ -369,13 +375,13 @@ const B2bOrder = () => {
           <div className="grid grid-cols-2 w-1/2 text-right">
             <div>TOTAL PRICE</div>
             <div>
-              ₩{" "}
               {simpleLists &&
                 Math.round(
                   simpleLists.reduce((i, c) => {
                     return i + (c.price - c.dcRate * c.price) * c.quan;
                   }, 0)
-                ).toLocaleString("ko-KR")}
+                ).toLocaleString("ko-KR")}{" "}
+              {user.currency}
             </div>
           </div>
           {/* <div className="grid grid-cols-2 w-1/2 text-right">
@@ -393,7 +399,8 @@ const B2bOrder = () => {
             <div>
               {/* FIXME: 초과분 */}
               {/* 30키로 미만 */}
-              {fee && `₩ ${fee}`}
+              {fee &&
+                `${Math.round(fee).toLocaleString("ko-KR")} ${user.currency}`}
               {/* 30키로 초과 */}
             </div>
           </div>
@@ -401,11 +408,11 @@ const B2bOrder = () => {
             <div>AMOUNT</div>
             <div>
               {fee &&
-                `₩ ${Math.round(
+                `${Math.round(
                   simpleLists.reduce((i, c) => {
                     return i + (c.price - c.dcRate * c.price) * c.quan;
                   }, 0) + fee
-                ).toLocaleString("ko-KR")}`}
+                ).toLocaleString("ko-KR")} ${user.currency}`}
             </div>
           </div>
         </div>

@@ -7,6 +7,7 @@ import NoticeTable from "../notice/NoticeTable";
 import PreOrderTable from "../preorder/PreOrderTable";
 import SimpleList from "../simplelist/SimpleList";
 import useSimpleList from "../../../hooks/useSimpleList";
+import DealTable from "../deal/DealTable";
 
 const B2bShop = () => {
   const history = useHistory();
@@ -15,25 +16,31 @@ const B2bShop = () => {
   const { notices, products, user } = state;
   const today = new Date();
 
+  // 세 상품이 겹치면 안됨
+  // 프리오더 상품
   const preorderProducts = products
     ?.slice(0, 100)
     .filter(
       product =>
-        new Date(
-          product?.data?.preOrderDeadline?.seconds * 1000
-        ).toDateString() > today.toDateString()
+        new Date(product?.data?.preOrderDeadline?.seconds * 1000) > today
     )
     .filter(doc => doc.data.exposeToB2b === "노출");
-
+  // 일반상품
   const commonProducts = products
     ?.slice(0, 100)
     .filter(
       product =>
-        new Date(
-          product?.data?.preOrderDeadline?.seconds * 1000
-        ).toDateString() <= today.toDateString()
+        new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
     )
     .filter(doc => doc.data.exposeToB2b === "노출");
+  // 특별가 상품
+  const dealProducts = products
+    ?.slice(0, 100)
+    .filter(
+      product =>
+        new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
+    )
+    .filter(doc => doc.data.exposeToB2b === "DEAL");
 
   const truncate = (string, n) => {
     return string?.length > n ? string.substr(0, n - 1) + " . . ." : string;
@@ -51,6 +58,7 @@ const B2bShop = () => {
       if (form[key]) {
         simpleList.push({
           orderNumber: String(state.orderCounts + 1000),
+          currency: user.currency,
           productId: key,
           title: truncate(
             products.find(product => product.id === key).data.title,
@@ -58,11 +66,17 @@ const B2bShop = () => {
           ),
           quan: Number(form[key]),
           price:
-            Number(products.find(product => product.id === key).data.price) ||
-            0,
+            Number(
+              products.find(product => product.id === key).data.price[
+                user.currency
+              ]
+            ) || 0,
           totalPrice:
-            Number(products.find(product => product.id === key).data.price) *
-              Number(form[key]) || 0,
+            Number(
+              products.find(product => product.id === key).data.price[
+                user.currency
+              ]
+            ) * Number(form[key]) || 0,
           weight:
             Number(products.find(product => product.id === key).data.weight) ||
             0,
@@ -101,21 +115,26 @@ const B2bShop = () => {
     reset();
     history.push(`/b2border`);
   };
-
   return (
-    <div className="w-full h-screen flex ">
+    <div className="w-full h-auto flex ">
       {/* d2 -1 */}
       <div
-        className=" w-3/5 flex flex-col 
+        className=" w-3/5 h-auto flex flex-col 
       items-center mt-12"
       >
         {preorderProducts && (
-          <PreOrderTable
-            preorderProducts={preorderProducts}
-            onChange={onChange}
-            user={user}
-          />
+          <>
+            <div className="text-center text-sm font-bold text-gray-800">
+              PRE ORDER
+            </div>
+            <PreOrderTable
+              preorderProducts={preorderProducts}
+              onChange={onChange}
+              user={user}
+            />
+          </>
         )}
+
         <Common
           commonProducts={commonProducts}
           dispatch={dispatch}
@@ -126,9 +145,20 @@ const B2bShop = () => {
         />
       </div>
       {/* d2-2 */}
-      <div className=" w-2/5 flex flex-col items-center mt-12">
+      <div className=" w-2/5 flex flex-col items-center mt-12 mr-5">
         {notices && <NoticeTable notices={notices} />}
-
+        {dealProducts && (
+          <>
+            <div className="text-center text-sm font-bold text-gray-800">
+              HOT DEAL{" "}
+            </div>
+            <DealTable
+              dealProducts={dealProducts}
+              onChange={onChange}
+              user={user}
+            />
+          </>
+        )}
         <SimpleList
           // userData={userData}
           confirmChecked={confirmChecked}

@@ -25,7 +25,7 @@ export const Common = ({
   ];
 
   return (
-    <div className="flex flex-col h-3/5 w-11/12 mt-12 mb-20 ">
+    <div className="flex flex-col h-lg w-11/12 mt-12 mb-20 ">
       <div
         className="grid grid-cols-6 grid-flow-col 
         text-center  bg-gray-200  

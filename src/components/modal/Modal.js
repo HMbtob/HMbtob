@@ -8,7 +8,7 @@ const Modal = props => {
     // 모달이 열릴때 openModal 클래스가 생성된다.
     <div className={open ? "openModal modal" : "modal"}>
       {open ? (
-        <section className=" overflow-y-auto	scrollbar-hide">
+        <section className="scrollbar-hide">
           <header>
             {header}
             <button className="close" onClick={close}>
@@ -16,7 +16,9 @@ const Modal = props => {
               &times;{" "}
             </button>
           </header>
-          <main>{props.children}</main>
+          <main className=" overflow-y-auto	scrollbar-hide">
+            {props.children}
+          </main>
           {/* <footer>
             <button className="close" onClick={close}>
               {" "}
