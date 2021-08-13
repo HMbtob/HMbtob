@@ -5,7 +5,7 @@ import ListProductRow from "./ListProductRow";
 const ListProduct = () => {
   const state = useContext(InitDataContext);
   const dispatch = useContext(InitDispatchContext);
-  const { products, orders, shippings, user } = state;
+  const { products, orders, shippings, user, exchangeRate } = state;
 
   // 로딩관리
   const [loading, setLoading] = useState("미발송 정보를 불러오는 중입니다.");
@@ -68,7 +68,8 @@ const ListProduct = () => {
             </div>
           ))}
         </div>
-        {products.slice(0, 100).map(product => (
+
+        {products.map(product => (
           <ListProductRow
             key={product.id}
             id={product.id}
@@ -86,6 +87,7 @@ const ListProduct = () => {
             orders={orders}
             shippings={shippings}
             user={user}
+            exchangeRate={exchangeRate}
           />
         ))}
       </div>

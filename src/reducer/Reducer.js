@@ -18,6 +18,8 @@ export const initState = {
   unShippedProductsIdandQty: "",
   // dhl shipping Fee
   dhlShippingFee: [],
+  // 환율
+  exchangeRate: [],
 };
 
 export function dataReducer(state, action) {
@@ -55,6 +57,8 @@ export function dataReducer(state, action) {
       return { ...state, allOrderProductsList: action.allOrderProductsList };
     case "DHL_SHIPPING_FEE":
       return { ...state, dhlShippingFee: action.dhlShippingFee };
+    case "EXCHANGE_RATE":
+      return { ...state, exchangeRate: action.exchangeRate };
     case "UNSHIPPED_PRODUCTS_ID_QTY":
       return {
         ...state,

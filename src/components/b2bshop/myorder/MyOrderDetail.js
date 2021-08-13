@@ -6,51 +6,12 @@ import MyOrderDetailRow from "./MyOrderDetailRow";
 const MyOrderDetail = ({ match }) => {
   const { id } = match.params;
   const state = useContext(InitDataContext);
-  const { orders, accounts, shippings, dhlShippingFee } = state;
-  const { z } = dhlShippingFee;
+  const { orders, accounts, shippings } = state;
 
   const order = orders.find(order => order.id === id);
   const account = accounts.find(account => account.id === order.data.customer);
   const shipping = shippings.filter(shipping => shipping.data.orderId === id);
 
-  // 운임, 총무게
-  const totalWeight =
-    order.data.list &&
-    order.data.list.reduce((i, c) => {
-      return i + c.weight * c.quan;
-    }, 0) / 1000;
-
-  // 몇번재 구간에 걸리는지 num 에서 1빼야함
-  let num = 1;
-  for (let i = 1; i < 31; i++) {
-    let j = i * 0.5;
-    if (j > totalWeight) {
-      break;
-    }
-    num++;
-  }
-
-  // 어느나라에 걸리는지
-  const zone =
-    z &&
-    order &&
-    order.data.country.length > 0 &&
-    Object.keys(
-      z.find(doc =>
-        Object.values(doc).find(asd => asd.country.includes(order.data.country))
-      )
-    );
-
-  // 가격
-  const fee =
-    z &&
-    order &&
-    order.data.country.length > 0 &&
-    Number(
-      Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
-        .fee[num - 1].split(",")
-        .join("")
-    );
   return (
     <div className="w-full h-full flex justify-center">
       {/* dep-2 */}
@@ -58,7 +19,7 @@ const MyOrderDetail = ({ match }) => {
         {/* dep-3-1 */}
         <div
           className="text-center text-md bg-gray-800 
-        rounded-sm text-gray-100 mb-5 w-full"
+        rounded-sm text-gray-100 mb-5 w-full font-semibold"
         >
           My Order
         </div>
@@ -132,22 +93,21 @@ const MyOrderDetail = ({ match }) => {
 
             <div className="grid grid-cols-2">
               <div>Memo</div>
-              <div>{order.data.memo}</div>
+              <div>{order.data.shippingMessage}</div>
             </div>
           </div>
         </div>
-        <div className="w-full text-center">PRODUCTS</div>
+        <div className="w-full text-center font-semibold mb-2">PRODUCTS</div>
         {/* dep-3-3 */}
         <div
           className="grid grid-cols-28 text-center bg-gray-800
-            text-sm py-1 rounded-sm text-gray-100"
+            text-xs py-1 rounded-sm text-gray-100 font-semibold"
         >
           <div className="col-span-2">No.</div>
-          <div className="col-span-2">DATE</div>
-          <div className="col-span-2">RELEASE</div>
+          <div className="col-span-3">DATE</div>
+          <div className="col-span-3">RELEASE</div>
           <div className="col-span-12">TITLE</div>
           <div className="col-span-2">PRICE</div>
-          <div className="col-span-2">SALE</div>
           <div className="col-span-2">EA</div>
           <div className="col-span-2">WEIGHTS</div>
 
@@ -167,39 +127,23 @@ const MyOrderDetail = ({ match }) => {
           <div className="grid grid-cols-2 w-96 mb-3">
             <div>PRICE</div>
             <div>
-              {Math.round(
-                order.data.list.reduce((i, c) => {
-                  return i + (c.price - c.dcRate * c.price) * c.quan;
-                }, 0)
-              ).toLocaleString("ko-KR")}{" "}
-              {order.data.currency}
+              {order?.data.totalPrice.toLocaleString("ko-KR")}{" "}
+              {order?.data.currency}
             </div>
           </div>
 
           <div className="grid grid-cols-2 w-96  mb-3">
             <div>SHIPPING FEE</div>
             <div>
-              {/* FIXME: 초과분 */}
-              {/* 30키로 미만 */}
-              {fee &&
-                `${Math.round(fee).toLocaleString("ko-KR")} ${
-                  order.data.currency
-                }`}
-              {/* 30키로 초과 */}
+              {order?.data.shippingFee.toLocaleString("ko-KR")}{" "}
+              {order?.data.currency}
             </div>
           </div>
           <div className="grid grid-cols-2 w-96 ">
             <div>TOTAL PRICE</div>
             <div>
-              {order &&
-                fee &&
-                Math.round(
-                  fee +
-                    order.data.list.reduce((i, c) => {
-                      return i + (c.price - c.dcRate * c.price) * c.quan;
-                    }, 0)
-                ).toLocaleString("ko-KR")}{" "}
-              {order.data.currency}
+              {order?.data.amountPrice.toLocaleString("ko-KR")}{" "}
+              {order?.data.currency}
             </div>
           </div>
         </div>

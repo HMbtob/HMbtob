@@ -9,7 +9,7 @@ const B2bOrder = () => {
   const state = useContext(InitDataContext);
   const history = useHistory();
 
-  const { user, simpleLists, products, dhlShippingFee } = state;
+  const { user, simpleLists, products, dhlShippingFee, exchangeRate } = state;
   const { z } = dhlShippingFee;
 
   // 배송국가 전체 for select option
@@ -113,37 +113,53 @@ const B2bOrder = () => {
 
   // 가격
   const fee =
-    z &&
-    country.length > 0 &&
-    Number(
-      Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
-        .fee[num - 1].split(",")
-        .join("")
-    );
+    z && country.length > 0 && shippingType.length > 0 && totalWeight < 30
+      ? Number(
+          Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
+            .fee[num - 1].split(",")
+            .join("")
+        ) / exchangeRate[user.currency]
+      : (totalWeight * user.shippingRate[shippingType]) /
+        exchangeRate[user.currency];
 
+  // total price
+  const totalPrice = simpleLists.reduce((i, c) => {
+    return i + c.price * c.quan;
+  }, 0);
+
+  // amount price
+  const amountPrice = totalPrice + fee;
   const confirmOrder = async e => {
     e.preventDefault();
-    await db.collection("orders").doc("b2b").collection("b2borders").add({
-      orderState: "confirmOrder",
-      paymentMethod,
-      recipient,
-      shippingType,
-      street,
-      city,
-      states,
-      country,
-      zipcode,
-      recipientPhoneNumber,
-      recipientEmail,
-      shippingMessage,
-      orderNumber: state.orderNumber,
-      createdAt: new Date(),
-      customer: orderEmail,
-      list: simpleLists,
-      dcRates: user.dcRates,
-      shippingRate: user.shippingRate,
-      currency: user.currency,
-    });
+    await db
+      .collection("orders")
+      .doc("b2b")
+      .collection("b2borders")
+      .add({
+        orderState: "confirmOrder",
+        paymentMethod,
+        recipient,
+        shippingType,
+        street,
+        city,
+        states,
+        country,
+        zipcode,
+        recipientPhoneNumber,
+        recipientEmail,
+        shippingMessage,
+        orderNumber: state.orderNumber,
+        createdAt: new Date(),
+        customer: orderEmail,
+        list: simpleLists,
+        dcRates: user.dcRates,
+        shippingRate: user.shippingRate,
+        currency: user.currency,
+        shippingFee: Number(fee.toFixed(2)),
+        amountPrice: Number(amountPrice.toFixed(2)),
+        totalPrice: Number(totalPrice.toFixed(2)),
+        memo: "",
+      });
     await db
       .collection("forNumberedId")
       .doc("b2bOrder")
@@ -152,28 +168,13 @@ const B2bOrder = () => {
       .collection("accounts")
       .doc(user.email)
       .update({
-        credit:
-          user.credit -
-          (simpleLists.reduce((i, c) => {
-            return i + (c.price - c.dcRate * c.price) * c.quan;
-          }, 0) +
-            fee),
+        credit: user.credit - amountPrice,
         creditDetails: firebase.firestore.FieldValue.arrayUnion({
           type: "makeOrder",
           currency: user.currency,
-          amount: Number(
-            simpleLists.reduce((i, c) => {
-              return i + (c.price - c.dcRate * c.price) * c.quan;
-            }, 0) + fee
-          ),
+          amount: Number(amountPrice),
           date: new Date(),
-          totalAmount:
-            Number(user.credit) -
-            Number(
-              simpleLists.reduce((i, c) => {
-                return i + (c.price - c.dcRate * c.price) * c.quan;
-              }, 0) + fee
-            ),
+          totalAmount: Number(user.credit) - Number(amountPrice),
         }),
       });
 
@@ -315,13 +316,15 @@ const B2bOrder = () => {
         {/* dep-3-3 */}
         <div className="flex-col mb-10 w-full">
           {/* 번호/앨범명/판매가/할인가/금액 */}
-          <div className="grid grid-cols-12 text-center bg-gray-800 rounded-sm text-gray-100">
+          <div
+            className="grid grid-cols-12 text-center bg-gray-800 rounded-sm 
+         text-sm font-semibold text-gray-100"
+          >
             <div>No.</div>
-            <div>SKU</div>
+            <div className="col-span-2">SKU</div>
             <div className="col-span-5">TITLE</div>
             <div className="col-span-1">RELEASE</div>
             <div>PRICE</div>
-            <div className="col-span-1">SALE</div>
             <div>EA</div>
             <div>AMOUNT</div>
           </div>
@@ -334,7 +337,7 @@ const B2bOrder = () => {
                   key={index}
                 >
                   <div>{doc.childOrderNumber}</div>
-                  <div>
+                  <div className="col-span-2">
                     {
                       products?.find(product => product.id === doc.productId)
                         .data.sku
@@ -346,23 +349,14 @@ const B2bOrder = () => {
                   </div>
 
                   <div>
-                    {Math.round(doc.price).toLocaleString("ko-KR")}{" "}
-                    {user.currency}
+                    {doc.price?.toLocaleString("ko-KR")} {user?.currency}
                   </div>
-                  <div className="col-span-1">
-                    {Math.round(
-                      doc.price - doc.dcRate * doc.price
-                    ).toLocaleString("ko-KR")}{" "}
-                    {user.currency}
-                    {/* {` [${doc.dcRate * 100} %]`} */}
-                  </div>
+
                   <div>{doc.quan} EA</div>
 
                   <div>
-                    {Math.round(
-                      (doc.price - doc.dcRate * doc.price) * doc.quan
-                    ).toLocaleString("ko-KR")}{" "}
-                    {user.currency}
+                    {(doc.price * doc.quan)?.toLocaleString("ko-KR")}{" "}
+                    {user?.currency}
                   </div>
                 </div>
               ))}
@@ -372,47 +366,30 @@ const B2bOrder = () => {
 
         {/* dep-3-4 */}
         <div className="flex-col mb-10 w-full flex items-end">
-          <div className="grid grid-cols-2 w-1/2 text-right">
+          <div className="grid grid-cols-2 w-2/3 text-right ">
             <div>TOTAL PRICE</div>
             <div>
-              {simpleLists &&
-                Math.round(
-                  simpleLists.reduce((i, c) => {
-                    return i + (c.price - c.dcRate * c.price) * c.quan;
-                  }, 0)
-                ).toLocaleString("ko-KR")}{" "}
-              {user.currency}
+              {simpleLists && totalPrice.toFixed(2).toLocaleString("ko-KR")}{" "}
+              {user?.currency}
             </div>
           </div>
-          {/* <div className="grid grid-cols-2 w-1/2 text-right">
-            <div>총무게</div>
-            <div>
-              {simpleLists &&
-                simpleLists.reduce((i, c) => {
-                  return i + c.weight * c.quan;
-                }, 0) / 1000}{" "}
-              KG
-            </div>
-          </div> */}
-          <div className="grid grid-cols-2 w-1/2 text-right">
+
+          <div className="grid grid-cols-2  text-right  w-2/3">
             <div>SHIPPING FEE</div>
-            <div>
-              {/* FIXME: 초과분 */}
-              {/* 30키로 미만 */}
-              {fee &&
-                `${Math.round(fee).toLocaleString("ko-KR")} ${user.currency}`}
-              {/* 30키로 초과 */}
+            <div className="w-full">
+              {fee
+                ? `${fee.toFixed(2).toLocaleString("ko-KR")} ${user?.currency}`
+                : "Please select country and shipping type"}
             </div>
           </div>
-          <div className="grid grid-cols-2 w-1/2 text-right">
+          <div className="grid grid-cols-2  text-right  w-2/3">
             <div>AMOUNT</div>
-            <div>
-              {fee &&
-                `${Math.round(
-                  simpleLists.reduce((i, c) => {
-                    return i + (c.price - c.dcRate * c.price) * c.quan;
-                  }, 0) + fee
-                ).toLocaleString("ko-KR")} ${user.currency}`}
+            <div className="w-full">
+              {fee
+                ? `${amountPrice.toFixed(2).toLocaleString("ko-KR")} ${
+                    user?.currency
+                  }`
+                : "Please select country and shipping type"}
             </div>
           </div>
         </div>

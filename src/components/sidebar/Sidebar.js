@@ -19,19 +19,19 @@ const Sidebar = () => {
     //   d-1
     <div className="flex-col items-center w-auto text-gray-300 bg-gray-600">
       {/* d-2 */}
-      <div
+      {/* <div
         onClick={() => auth.signOut()}
         className="text-2xl font-mono font-bold text-center text-gray-200 bg-blue-900 p-6"
       >
         interasia
-      </div>
+      </div> */}
       {/* d-2 */}
-      <div className="py-8 text-gray-300 bg-blue-900 leading-7 p-6">
-        {/* d-3 */}
-        {/* <div>좌상단 메뉴</div> */}
-      </div>
+      {/* <div className="py-8 text-gray-300 bg-blue-900 leading-7 p-6"> */}
+      {/* d-3 */}
+      {/* <div>좌상단 메뉴</div> */}
+      {/* </div> */}
       {/* d-2 */}
-      <div className="bg-gray-600 p-12 text-lg text-gray-300 leading-10">
+      <div className="bg-gray-600 p-8 text-lg text-gray-300 leading-10 text-center">
         {/* <div
           onClick={() => history.push(`/fordev`)}
           className="cursor-pointer hover:text-gray-50"
@@ -43,7 +43,7 @@ const Sidebar = () => {
           <div
             key={index}
             onClick={() => history.push(`${Object.values(menu)}`)}
-            className="cursor-pointer hover:text-gray-50"
+            className="cursor-pointer hover:text-gray-50 w-24"
           >
             {Object.keys(menu)}
           </div>

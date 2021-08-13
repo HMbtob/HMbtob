@@ -23,11 +23,12 @@ const MyOrderListRow = ({ id, orderNumber, createdAt, orderState, order }) => {
         </div>
         <div>{orderState} </div>
         <div>
-          {Math.round(
-            order.data.list.reduce((i, c) => {
-              return i + (c.price - c.dcRate * c.price) * c.quan;
+          {order.data.list
+            .reduce((i, c) => {
+              return i + (c.price - (c.dcRate * c.price).toFixed(2)) * c.quan;
             }, 0)
-          ).toLocaleString("ko-KR")}{" "}
+            .toFixed(2)
+            .toLocaleString("ko-KR")}{" "}
           {order.data.currency}
         </div>
         <div>{order.data.list.length} </div>

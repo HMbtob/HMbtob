@@ -20,10 +20,10 @@ const ListProductRow = ({
   barcode,
   bigcProductId,
   user,
+  exchangeRate,
 }) => {
   const history = useHistory();
   const [forHidden, setForHidden] = useState(true);
-
   const handleHidden = forHidden => {
     if (forHidden === true) {
       setForHidden(false);
@@ -68,7 +68,10 @@ const ListProductRow = ({
           {title}
         </div>
         <div className="col-span-2">
-          {price[user.currency]?.toLocaleString("ko-KR")} {user.currency}
+          {(price / exchangeRate[user?.currency])
+            ?.toFixed(2)
+            .toLocaleString("ko-KR")}{" "}
+          {user.currency}
         </div>
         <div className="col-span-2">{stock?.toLocaleString("ko-KR")}</div>
         <div className="col-span-2">{totalSell?.toLocaleString("ko-KR")}</div>
@@ -93,7 +96,7 @@ const ListProductRow = ({
             sku={sku}
             thumbNail={thumbNail}
             title={title}
-            price={price[user.currency]}
+            price={price}
             stock={stock}
             totalSell={totalSell}
             unShipped={unShipped}

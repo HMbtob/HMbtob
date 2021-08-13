@@ -8,6 +8,7 @@ export const Common = ({
   onChange,
   simpleList,
   user,
+  exchangeRate,
 }) => {
   const selectCat = e => {
     const { id } = e.target;
@@ -77,6 +78,7 @@ export const Common = ({
                 product={product}
                 simpleList={simpleList}
                 user={user}
+                exchangeRate={exchangeRate}
               />
             ))}
       </div>

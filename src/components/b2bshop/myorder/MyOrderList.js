@@ -9,13 +9,16 @@ const MyOrderList = () => {
   return (
     <div className="w-full h-full flex justify-center">
       <div className=" w-11/12 flex-col mt-20">
-        <div className="w-full text-center my-4 text-gray-800 text-lg">
+        <div
+          className="w-full text-center my-4 text-gray-800 
+       font-semibold text-lg"
+        >
           My Orders
         </div>
         {/* <button>주문확인</button> */}
         <div
           className="grid grid-cols-8  grid-flow-col text-center 
-       bg-gray-800 text-gray-100 py-1 rounded-sm text-sm"
+       bg-gray-800 text-gray-100 py-1 rounded-sm text-xs font-semibold"
         >
           <div>ORDER NUMBER</div>
           <div className="col-span-2">DATE</div>

@@ -11,6 +11,7 @@ const DealRow = ({
   price,
   product,
   user,
+  exchangeRate,
 }) => {
   return (
     <div
@@ -27,10 +28,10 @@ const DealRow = ({
       <div className="col-span-7">{title}</div>
 
       <div className="col-span-4">
-        {Math.round(
-          price[user?.currency] -
-            price[user?.currency] * user?.dcRates[product.data.category]
-        ).toLocaleString("ko-KR")}{" "}
+        {(
+          (price - (price * user?.dcRates[product.data.category])?.toFixed(2)) /
+          exchangeRate[user?.currency]
+        ).toFixed(2)}{" "}
         {user?.currency}
       </div>
       {/* 재고 */}

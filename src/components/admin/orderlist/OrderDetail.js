@@ -9,7 +9,14 @@ import ShippingList from "../shipping/ShippingList";
 const OrderDetail = ({ match }) => {
   const { id } = match.params;
   const state = useContext(InitDataContext);
-  const { orders, user, shippingCounts, shippings, dhlShippingFee } = state;
+  const {
+    orders,
+    user,
+    shippingCounts,
+    shippings,
+    exchangeRate,
+    dhlShippingFee,
+  } = state;
   const { z } = dhlShippingFee;
 
   const order = orders.find(order => order.id === id);
@@ -30,6 +37,7 @@ const OrderDetail = ({ match }) => {
     recipient: order.data.recipient,
     shippingMessage: order.data.shippingMessage,
     orderNumberSelect: "",
+    memo: order.data.memo,
   });
 
   const {
@@ -46,6 +54,7 @@ const OrderDetail = ({ match }) => {
     recipient,
     shippingMessage,
     orderNumberSelect,
+    memo,
   } = form;
 
   const saveDetails = () => {
@@ -62,6 +71,7 @@ const OrderDetail = ({ match }) => {
       zipcode,
       recipient,
       shippingMessage,
+      memo,
     });
     alert("Done");
   };
@@ -113,13 +123,14 @@ const OrderDetail = ({ match }) => {
 
   // 가격
   const fee =
-    z &&
-    country.length > 0 &&
-    Number(
-      Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
-        .fee[num - 1].split(",")
-        .join("")
-    );
+    z && country.length > 0 && totalWeight < 30
+      ? Number(
+          Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
+            .fee[num - 1].split(",")
+            .join("")
+        ) / exchangeRate[order.data.currency]
+      : (totalWeight * order.data.shippingRate[shippingType]) /
+        exchangeRate[order.data.currency];
 
   const moveList = async e => {
     e.preventDefault();
@@ -285,9 +296,20 @@ const OrderDetail = ({ match }) => {
                     <option value="ems">EMS</option>
                   </select>
                 </div>
-                <div className="grid grid-cols-2 h-8">
+                <div className="grid grid-cols-2 h-8 items-center">
                   <div className="text-right pr-5">Phone Number</div>
                   {user?.phoneNumber}
+                </div>
+                <div className="grid grid-cols-2 h-30">
+                  <div className="text-right pr-5">Memo</div>
+                  <textarea
+                    rows="5"
+                    cols="19"
+                    name="memo"
+                    value={memo}
+                    onChange={onChange}
+                    className="border p-1 pl-2"
+                  />{" "}
                 </div>
                 {/* 할인율 */}
                 <div className="grid grid-cols-1 ">
@@ -411,7 +433,7 @@ const OrderDetail = ({ match }) => {
                   />{" "}
                 </div>
                 <div className="grid grid-cols-2 w-3/4 items-center">
-                  <div className="text-right pr-5">Memo</div>
+                  <div className="text-right pr-5">Shipping Message</div>
                   <textarea
                     rows="5"
                     cols="19"
@@ -440,11 +462,10 @@ const OrderDetail = ({ match }) => {
             >
               <div></div>
               <div>No.</div>
-              <div className="col-span-2">DATE</div>
-              <div className="col-span-2">RELEASE</div>
+              <div className="col-span-3">DATE</div>
+              <div className="col-span-3">RELEASE</div>
               <div className="col-span-12">TITLE</div>
               <div className="col-span-2">PRICE</div>
-              <div className="col-span-2">SALE</div>
               <div className="col-span-2">EA</div>
               <div className="col-span-2">WEIGHT</div>
 
@@ -541,36 +562,23 @@ const OrderDetail = ({ match }) => {
               <div className="grid grid-cols-2 w-96 mb-3">
                 <div>PRICE</div>
                 <div>
-                  {Math.round(
-                    order.data.list.reduce((i, c) => {
-                      return i + (c.price - c.dcRate * c.price) * c.quan;
-                    }, 0)
-                  ).toLocaleString("ko-KR")}{" "}
-                  {order.data.currency}
+                  {order?.data.totalPrice.toLocaleString("ko-KR")}{" "}
+                  {order?.data.currency}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 w-96  mb-3">
                 <div>SHIPPING FEE</div>
                 <div>
-                  {/* FIXME: 초과분 */}
-                  {/* 30키로 미만 */}
-                  {fee &&
-                    `${Math.round(fee).toLocaleString("ko-KR")} ${
-                      order.data.currency
-                    }`}
-                  {/* 30키로 초과 */}
+                  {order?.data.shippingFee.toLocaleString("ko-KR")}{" "}
+                  {order?.data.currency}
                 </div>
               </div>
               <div className="grid grid-cols-2 w-96 ">
                 <div>AMOUNT</div>
                 <div>
-                  {Math.round(
-                    order.data.list.reduce((i, c) => {
-                      return i + (c.price - c.dcRate * c.price) * c.quan;
-                    }, 0) + fee
-                  ).toLocaleString("ko-KR")}{" "}
-                  {order.data.currency}
+                  {order?.data.amountPrice.toLocaleString("ko-KR")}{" "}
+                  {order?.data.currency}
                 </div>
               </div>
             </div>

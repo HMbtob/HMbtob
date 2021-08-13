@@ -14,7 +14,6 @@ const AddProduct = () => {
       sku,
       title,
       purchasePrice,
-
       artist,
       ent,
       category,
@@ -35,12 +34,7 @@ const AddProduct = () => {
       reStockable,
       stock,
       exposeToB2b,
-      KRW,
-      USD,
-      EUR,
-      SGD,
-      JPY,
-      CNY,
+      price,
     },
     onChange,
     reset,
@@ -48,14 +42,7 @@ const AddProduct = () => {
     sku: "",
     title: "",
     purchasePrice: 0,
-    price: {
-      KRW: 0,
-      USD: 0,
-      EUR: 0,
-      SGD: 0,
-      JPY: 0,
-      CNY: 0,
-    },
+    price: 0,
     artist: "",
     ent: "",
     thumbNail: "",
@@ -93,12 +80,7 @@ const AddProduct = () => {
     { z: "높이" },
     { barcode: "바코드" },
     { stock: "재고" },
-    { KRW: "KRW" },
-    { USD: "USD" },
-    { EUR: "EUR" },
-    { SGD: "SGD" },
-    { JPY: "JPY" },
-    { CNY: "CNY" },
+    { price: "도매가" },
   ];
 
   // 셀렉트인풋
@@ -109,7 +91,7 @@ const AddProduct = () => {
         { "dvd/blue-ray": "dvdBlueRay" },
         { "photo book": "photoBook" },
         { goods: "goods" },
-        { "official store": "officialStore" },
+        { "store goods": "officialStore" },
         { beauty: "beauty" },
       ],
     },
@@ -134,14 +116,7 @@ const AddProduct = () => {
       .set({
         sku,
         purchasePrice: Number(purchasePrice),
-        price: {
-          KRW: Number(KRW),
-          USD: Number(USD),
-          EUR: Number(EUR),
-          SGD: Number(SGD),
-          JPY: Number(JPY),
-          CNY: Number(CNY),
-        },
+        price: Number(price),
         artist,
         ent,
         x: Number(x),
@@ -173,7 +148,7 @@ const AddProduct = () => {
     history.push("/listproduct");
   };
   const saveProduct = async () => {
-    allOrderProductsList.data.slice(0, 3).map(async (doc, index) => {
+    allOrderProductsList.data.slice(0, 500).map(async (doc, index) => {
       await console.log(index);
       const batch = db.batch();
       const nycRef = db.collection("products").doc();
@@ -181,14 +156,7 @@ const AddProduct = () => {
       await batch.set(nycRef, {
         sku: doc.sku,
         purchasePrice: 0,
-        price: {
-          KRW: 12000 + Number(index),
-          USD: 10 + Number(index),
-          EUR: 20 + Number(index),
-          SGD: 30 + Number(index),
-          JPY: 1200 + Number(index),
-          CNY: 1300 + Number(index),
-        },
+        price: 0,
         artist: "dummy",
         ent: "dummy",
         x: 10,
@@ -196,23 +164,32 @@ const AddProduct = () => {
         y: 10,
         z: 10,
         title: doc.name,
-        thumbNail:
-          "https://firebasestorage.googleapis.com/v0/b/interasiastock.appspot.com/o/images%2FthumbNail%2F%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5B%EB%AC%B4%EB%A3%8C%EB%B0%B0%EC%86%A1%5D%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20JYPN%20-%20BLIND%20PACKAGE%20(%ED%95%9C%EC%A0%95%EB%B0%98)%20%5B%ED%8C%90%EB%A7%A4%EA%B8%B0%EA%B0%84%207%EC%9B%94%2016%EC%9D%BC(%EA%B8%88)%20~%207%EC%9B%94%2025%EC%9D%BC(%EC%9D%BC)%20%EA%B9%8C%EC%A7%80%5D.jpg?alt=media&token=91208c5c-2060-4c34-a67c-f33642981115",
-        descrip:
-          "https://firebasestorage.googleapis.com/v0/b/interasiastock.appspot.com/o/images%2FthumbNail%2F%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5B%EB%AC%B4%EB%A3%8C%EB%B0%B0%EC%86%A1%5D%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20JYPN%20-%20BLIND%20PACKAGE%20(%ED%95%9C%EC%A0%95%EB%B0%98)%20%5B%ED%8C%90%EB%A7%A4%EA%B8%B0%EA%B0%84%207%EC%9B%94%2016%EC%9D%BC(%EA%B8%88)%20~%207%EC%9B%94%2025%EC%9D%BC(%EC%9D%BC)%20%EA%B9%8C%EC%A7%80%5D.jpg?alt=media&token=91208c5c-2060-4c34-a67c-f33642981115",
+        thumbNail: "",
+        descrip: "",
         weight: doc.weight * 1000,
         category:
-          doc.categories[0] === 169
+          doc.categories.filter(arr => [196].includes(arr)).length > 0
             ? "cd"
-            : doc.categories[0] === 200
+            : doc.categories.filter(arr => [200, 245].includes(arr)).length > 0
             ? "dvdBlueRay"
-            : doc.categories[0] === 205
+            : doc.categories.filter(arr => [203].includes(arr)).length > 0
+            ? "photoBook"
+            : doc.categories.filter(arr =>
+                [205, 207, 243, 244, 209, 246, 222, 210].includes(arr)
+              ).length > 0
             ? "goods"
-            : doc.categories[0] === 237
+            : doc.categories.filter(arr =>
+                [237, 208, 241, 238, 239, 240].includes(arr)
+              ).length > 0
             ? "officialStore"
-            : doc.categories[0] === 206
+            : doc.categories.filter(arr =>
+                [
+                  206, 216, 230, 233, 225, 229, 219, 224, 231, 215, 221, 220,
+                  214, 223,
+                ].includes(arr)
+              ).length > 0
             ? "beauty"
-            : "cd",
+            : "beauty",
         relDate: new Date(),
         preOrderDeadline: new Date(),
         options: {
@@ -223,7 +200,7 @@ const AddProduct = () => {
           interAsiaPhotocard: false,
         },
         barcode: doc.upc,
-        reStockable: "가능",
+        reStockable: "불가능",
         exposeToB2b: "노출",
         bigC: { ...doc },
       });

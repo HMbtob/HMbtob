@@ -2,10 +2,11 @@ import React, { useContext } from "react";
 import axios from "axios";
 import Rows from "./Rows";
 import { InitDataContext, InitDispatchContext } from "../../App";
+import { db } from "../../firebase";
 
 const OrderProductList = () => {
   const state = useContext(InitDataContext);
-  const { allOrderProductsList } = state;
+  const { allOrderProductsList, products, exchangeRate } = state;
   const dispatch = useContext(InitDispatchContext);
   const callApi = async () => {
     await axios
@@ -35,6 +36,7 @@ const OrderProductList = () => {
       <button className="border bg-gray-600 text-gray-200" onClick={callApi}>
         불러오기
       </button>
+
       <div className="grid grid-cols-11 text-center border font-semibold">
         <div className="col-span-4">제목</div>
         <div>바코드</div>

@@ -1,14 +1,9 @@
 import React from "react";
 import PreOrderRow from "./PreOrderRow";
 
-const PreOrderTable = ({ preorderProducts, onChange, user }) => {
+const PreOrderTable = ({ preorderProducts, onChange, user, exchangeRate }) => {
   return (
     <div className="flex flex-col w-11/12 h-64 mb-5">
-      {/* 표 */}
-
-      {/* 표 제목 */}
-
-      {/* 표 헤더 */}
       <div
         className="grid grid-cols-20 
         text-center bg-gray-800 p-1 
@@ -40,6 +35,7 @@ const PreOrderTable = ({ preorderProducts, onChange, user }) => {
               onChange={onChange}
               product={product}
               user={user}
+              exchangeRate={exchangeRate}
             />
           ))}
       </div>

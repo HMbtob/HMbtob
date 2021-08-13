@@ -11,6 +11,7 @@ const PreOrderRow = ({
   price,
   product,
   user,
+  exchangeRate,
 }) => {
   return (
     <div
@@ -35,14 +36,16 @@ const PreOrderRow = ({
           .substring(0, 10)}
       </div>
       <div className="col-span-2">
-        {Math.round(price[user?.currency])?.toLocaleString("ko-KR")}{" "}
+        {(price / exchangeRate[user?.currency])
+          .toFixed(2)
+          ?.toLocaleString("ko-KR")}{" "}
         {user?.currency}
       </div>
       <div className="col-span-2">
-        {Math.round(
-          price[user?.currency] -
-            price[user?.currency] * user?.dcRates[product.data.category]
-        ).toLocaleString("ko-KR")}{" "}
+        {(
+          (price - (price * user?.dcRates[product.data.category])?.toFixed(2)) /
+          exchangeRate[user?.currency]
+        ).toFixed(2)}{" "}
         {user?.currency}
       </div>
       {/* 재고 */}

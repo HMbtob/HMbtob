@@ -19,7 +19,7 @@ const OrderListRow = ({
     return (
       <div
         onClick={() => history.push(`/orderdetail/${id}`)}
-        className={`grid grid-cols-10 grid-flow-col text-center 
+        className={`grid grid-cols-11 grid-flow-col text-center 
         border-b border-l border-r py-1 text-sm cursor-pointer bg-white ${
           included ? " bg-red-200" : ""
         }`}
@@ -31,11 +31,11 @@ const OrderListRow = ({
         <div className="col-span-2">{customer}</div>
         <div>{orderState} </div>
         <div>
-          {Math.round(
-            order.data.list.reduce((i, c) => {
-              return i + (c.price - c.dcRate * c.price) * c.quan;
-            }, 0)
-          ).toLocaleString("ko-KR")}{" "}
+          {order.data.totalPrice.toFixed(2).toLocaleString("ko-KR")}{" "}
+          {order.data.currency}
+        </div>
+        <div>
+          {order.data.amountPrice.toFixed(2).toLocaleString("ko-KR")}{" "}
           {order.data.currency}
         </div>
         <div>{order.data.list.length} type</div>

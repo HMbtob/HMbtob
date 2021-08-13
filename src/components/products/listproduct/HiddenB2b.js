@@ -17,6 +17,7 @@ const HiddenB2b = ({
   shippings,
 }) => {
   // 총판매
+  console.log(price);
   // // 총 미발송
   const totalUnshipped = [].concat
     .apply(

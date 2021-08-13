@@ -1,7 +1,7 @@
 import React from "react";
 import DealRow from "./DealRow";
 
-const DealTable = ({ dealProducts, onChange, user }) => {
+const DealTable = ({ dealProducts, onChange, user, exchangeRate }) => {
   return (
     <div className="flex flex-col w-11/12 h-64 mb-5">
       {/* 표 */}
@@ -36,6 +36,7 @@ const DealTable = ({ dealProducts, onChange, user }) => {
               onChange={onChange}
               product={product}
               user={user}
+              exchangeRate={exchangeRate}
             />
           ))}
       </div>

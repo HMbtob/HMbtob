@@ -30,23 +30,20 @@ const OrderDetailRow = ({
         checked={checkedInputs.includes(id) ? true : false}
       />
       <div>{id}</div>
-      <div className="col-span-2">{createdAt}</div>
+      <div className="col-span-3">{createdAt}</div>
 
-      <div className="col-span-2">{relDate.toDate().toLocaleDateString()} </div>
+      <div className="col-span-3">{relDate.toDate().toLocaleDateString()} </div>
       <div className="col-span-12">{title}</div>
       <div className="col-span-2">
-        {Math.round(price).toLocaleString("ko-KR")} {order.data.currency}
+        {price.toLocaleString("ko-KR")} {order.data.currency}
       </div>
-      <div className="col-span-2">
-        {Math.round(price - price * dcRate).toLocaleString("ko-KR")}{" "}
-        {order.data.currency}
-      </div>
+
       <div className="col-span-2">{quan} EA</div>
       <div className="col-span-2">
         {Math.round(totalWeight * 0.001 * 10) / 10} kg
       </div>
       <div className="col-span-2">
-        {Math.round((price - price * dcRate) * quan).toLocaleString("ko-KR")}{" "}
+        {(price.toFixed(2) * quan).toLocaleString("ko-KR")}{" "}
         {order.data.currency}
       </div>
     </div>

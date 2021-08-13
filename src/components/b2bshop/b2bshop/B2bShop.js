@@ -13,7 +13,7 @@ const B2bShop = () => {
   const history = useHistory();
   const state = useContext(InitDataContext);
   const dispatch = useContext(InitDispatchContext);
-  const { notices, products, user } = state;
+  const { notices, products, user, exchangeRate } = state;
   const today = new Date();
 
   // 세 상품이 겹치면 안됨
@@ -57,6 +57,7 @@ const B2bShop = () => {
     for (let key in form) {
       if (form[key]) {
         simpleList.push({
+          exchangeRate,
           orderNumber: String(state.orderCounts + 1000),
           currency: user.currency,
           productId: key,
@@ -67,16 +68,24 @@ const B2bShop = () => {
           quan: Number(form[key]),
           price:
             Number(
-              products.find(product => product.id === key).data.price[
-                user.currency
-              ]
+              (
+                (products.find(product => product.id === key).data.price /
+                  exchangeRate[user?.currency]) *
+                (1 -
+                  user.dcRates[
+                    products.find(product => product.id === key).data.category
+                  ])
+              ).toFixed(2)
             ) || 0,
           totalPrice:
             Number(
-              products.find(product => product.id === key).data.price[
-                user.currency
-              ]
-            ) * Number(form[key]) || 0,
+              (products.find(product => product.id === key).data.price /
+                exchangeRate[user?.currency]) *
+                (1 -
+                  user.dcRates[
+                    products.find(product => product.id === key).data.category
+                  ])
+            ).toFixed(2) * Number(form[key]) || 0,
           weight:
             Number(products.find(product => product.id === key).data.weight) ||
             0,
@@ -129,6 +138,7 @@ const B2bShop = () => {
             </div>
             <PreOrderTable
               preorderProducts={preorderProducts}
+              exchangeRate={exchangeRate}
               onChange={onChange}
               user={user}
             />
@@ -142,6 +152,7 @@ const B2bShop = () => {
           onChange={onChange}
           simpleList={simpleList}
           user={user}
+          exchangeRate={exchangeRate}
         />
       </div>
       {/* d2-2 */}
@@ -154,6 +165,7 @@ const B2bShop = () => {
             </div>
             <DealTable
               dealProducts={dealProducts}
+              exchangeRate={exchangeRate}
               onChange={onChange}
               user={user}
             />
@@ -161,6 +173,7 @@ const B2bShop = () => {
         )}
         <SimpleList
           // userData={userData}
+          exchangeRate={exchangeRate}
           confirmChecked={confirmChecked}
           simpleList={simpleList && simpleList}
           dispatch={dispatch}

@@ -147,6 +147,17 @@ function App() {
       );
   }, [dispatch]);
 
+  useEffect(() => {
+    db.collection("exchangeRate")
+      .doc("rates")
+      .onSnapshot(snapshot =>
+        dispatch({
+          type: "EXCHANGE_RATE",
+          exchangeRate: snapshot.data(),
+        })
+      );
+  }, [dispatch]);
+
   if (loading || userType === "before") {
     return (
       <div className="grid place-items-center h-screen w-full">

@@ -13,7 +13,7 @@ const OrderList = () => {
         </div>
         {/* <button>주문확인</button> */}
         <div
-          className="grid grid-cols-10  grid-flow-col text-center 
+          className="grid grid-cols-11  grid-flow-col text-center 
            bg-gray-800 text-gray-100 py-1 rounded-sm text-sm"
         >
           <div>No.</div>
@@ -21,6 +21,7 @@ const OrderList = () => {
           <div className="col-span-2">CUSTOMER</div>
           <div>STATUS</div>
           <div>PRICE</div>
+          <div>AMOUNT</div>
           <div>SORTS</div>
           <div>EA</div>
           <div>WEIGHT</div>
@@ -35,7 +36,6 @@ const OrderList = () => {
                 createdAt={order.data.createdAt}
                 customer={order.data.customer}
                 orderState={order.data.orderState}
-                orders={orders}
                 order={order}
               />
             ))}
