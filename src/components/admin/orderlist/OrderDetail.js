@@ -132,6 +132,7 @@ const OrderDetail = ({ match }) => {
       : (totalWeight * order.data.shippingRate[shippingType]) /
         exchangeRate[order.data.currency];
 
+  // 주문간 상품 이동
   const moveList = async e => {
     e.preventDefault();
     if (orderNumberSelect.length <= 0) {
@@ -156,29 +157,65 @@ const OrderDetail = ({ match }) => {
           ).data.list,
         ],
       });
-
+    // 기존엔 이동된 상품들은 기존 주문에서 지움 -> moved true로 바꿔서 취소선 그어지고 체크박스 못쓰게
     await db
       .collection("orders")
       .doc("b2b")
       .collection("b2borders")
       .doc(id)
       .update({
-        list: order.data.list.filter(
-          item => !checkedInputs.includes(item.childOrderNumber)
-        ),
+        list: [
+          ...order.data.list.filter(
+            item => !checkedInputs.includes(item.childOrderNumber)
+          ),
+          ...checkedInputs
+            .map(doc =>
+              order.data.list.find(arr => arr.childOrderNumber === doc)
+            )
+            .map(doc2 => {
+              doc2.moveTo = orderNumberSelect;
+              doc2.moved = true;
+              return doc2;
+            }),
+        ],
       });
 
-    await reset();
-    await alert("Done");
-
-    history.go(
+    await setCheckedInputs([]);
+    await alert("이동되었습니다");
+    history.replace(
       `/orderdetail/${
         orders.find(arr => arr.data.orderNumber === Number(orderNumberSelect))
           .id
       }`
     );
+    // await reset();
   };
-
+  // 부분 최소
+  const makeCancel = async () => {
+    await db
+      .collection("orders")
+      .doc("b2b")
+      .collection("b2borders")
+      .doc(id)
+      .update({
+        list: [
+          ...order.data.list.filter(
+            item => !checkedInputs.includes(item.childOrderNumber)
+          ),
+          ...checkedInputs
+            .map(doc =>
+              order.data.list.find(arr => arr.childOrderNumber === doc)
+            )
+            .map(doc2 => {
+              doc2.canceled = true;
+              return doc2;
+            }),
+        ],
+      });
+    // await reset();
+    await setCheckedInputs([]);
+    await alert("취소되었습니다");
+  };
   // TODO:  쉬핑 넘버 없이 카운츠로 넘버만들어서 저장-> 되면 오더에도 적용
   const makeShipping = async e => {
     e.preventDefault();
@@ -492,6 +529,7 @@ const OrderDetail = ({ match }) => {
                   changeHandler={changeHandler}
                   checkedInputs={checkedInputs}
                   order={order}
+                  aList={doc}
                 />
               ))}
             {order.data.list
@@ -514,6 +552,7 @@ const OrderDetail = ({ match }) => {
                   changeHandler={changeHandler}
                   checkedInputs={checkedInputs}
                   order={order}
+                  aList={doc}
                 />
               ))}
 
@@ -525,6 +564,12 @@ const OrderDetail = ({ match }) => {
                   className="bg-gray-800 text-gray-200 px-2 py-1 ml-5 rounded-sm"
                 >
                   SHIP
+                </button>
+                <button
+                  onClick={makeCancel}
+                  className="bg-gray-800 text-gray-200 px-2 py-1 ml-5 rounded-sm"
+                >
+                  CANCEL{" "}
                 </button>
               </div>
               <div>

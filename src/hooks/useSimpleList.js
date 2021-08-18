@@ -29,6 +29,7 @@ function useSimpleList(initialForm, f, p) {
         f(false);
         alert("숫자 혹은 1개 이상의 수량을 입력해주세요");
       } else if (
+        p.find(pro => pro.id === e.target.id).data.limitedStock === true &&
         Number(p.find(pro => pro.id === e.target.id).data.stock) < value
       ) {
         dispatch({ type: "CHANGE", name, value: 0 });

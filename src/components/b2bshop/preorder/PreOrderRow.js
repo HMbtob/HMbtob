@@ -13,6 +13,13 @@ const PreOrderRow = ({
   user,
   exchangeRate,
 }) => {
+  let today = new Date().getTime();
+  let gap = new Date(preOrderDeadline.seconds * 1000).getTime() - today;
+  let day = Math.ceil(gap / (1000 * 60 * 60 * 24));
+  let hour = Math.ceil((gap % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  let min = Math.ceil((gap % (1000 * 60 * 60)) / (1000 * 60));
+  let sec = Math.ceil((gap % (1000 * 60)) / 1000);
+
   return (
     <div
       id={id}
@@ -24,28 +31,41 @@ const PreOrderRow = ({
         src={thumbNail}
         alt=""
       />
-      <div className="col-span-2">{product.data.barcode}</div>
-      <div className="col-span-2">{product.data.sku}</div>
-      <div className="col-span-5">{title}</div>
-      <div className="col-span-2">
+      <div className="col-span-2 z-10">{product.data.barcode}</div>
+      <div className="col-span-2 z-10">{product.data.sku}</div>
+      <div className="col-span-5 z-10">{title}</div>
+      <div className="col-span-2 z-10">
         {new Date(relDate.seconds * 1000).toISOString().substring(0, 10)}
       </div>
-      <div className="col-span-2">
-        {new Date(preOrderDeadline.seconds * 1000)
-          .toISOString()
-          .substring(0, 10)}
+      <div className="col-span-2 z-10">
+        <div>
+          {new Date(preOrderDeadline.seconds * 1000)
+            .toISOString()
+            .substring(0, 10)}
+        </div>
+        <div>{`${day} days, ${hour} hours`}</div>
       </div>
-      <div className="col-span-2">
-        {(price / exchangeRate[user?.currency])
-          .toFixed(2)
-          ?.toLocaleString("ko-KR")}{" "}
+      <div className="col-span-2 z-10">
+        {exchangeRate[user?.currency] === 1
+          ? (price / exchangeRate[user?.currency])?.toLocaleString("ko-KR")
+          : (price / exchangeRate[user?.currency])
+              ?.toFixed(2)
+              ?.toLocaleString("ko-KR")}{" "}
         {user?.currency}
       </div>
-      <div className="col-span-2">
-        {(
-          (price - (price * user?.dcRates[product.data.category])?.toFixed(2)) /
-          exchangeRate[user?.currency]
-        ).toFixed(2)}{" "}
+      <div className="col-span-2 z-10">
+        {exchangeRate[user?.currency] === 1
+          ? (
+              (price - price * user?.dcRates[product.data.category]) /
+              exchangeRate[user?.currency]
+            ).toLocaleString("ko-KR")
+          : (
+              (price -
+                (price * user?.dcRates[product.data.category])?.toFixed(2)) /
+              exchangeRate[user?.currency]
+            )
+              .toFixed(2)
+              .toLocaleString("ko-KR")}{" "}
         {user?.currency}
       </div>
       {/* 재고 */}
@@ -63,28 +83,28 @@ const PreOrderRow = ({
         // FIXME: 요청하면 어디서 받을지 확인 후 수정
         <div
           className="font-extrabold text-red-600 
-      text-lg absolute pl-8 items-center flex flex-row "
+      text-xl absolute pl-8 items-center flex flex-row"
         >
-          OUT OF STOCK ‼️ OUT OF STOCK ‼️
+          <div className="opacity-50 z-0">OUT OF STOCK ‼️ OUT OF STOCK ‼️</div>
           {product.data.reStockable === "가능" ? (
             <>
               <div
                 className="border w-36 mx-5 text-gray-800 text-center 
-           font-light text-base bg-white"
+           font-light text-base bg-white z-20 opacity-100"
               >
                 <input
                   type="number"
                   placeholder="RE STOCK"
-                  className="w-28 p-1"
+                  className="w-28 p-1 z-20 opacity-100"
                 />{" "}
                 EA
               </div>
-              <button className="bg-red-500 text-white rounded px-3 font-semibold">
+              <button className="bg-red-500 text-white rounded px-3 font-semibold z-20 opacity-100">
                 REQUEST{" "}
               </button>
             </>
           ) : (
-            "OUT OF STOCK ‼️"
+            <div className="opacity-50 z-0">OUT OF STOCK ‼️</div>
           )}
         </div>
       )}

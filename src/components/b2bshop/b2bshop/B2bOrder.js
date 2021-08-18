@@ -369,7 +369,9 @@ const B2bOrder = () => {
           <div className="grid grid-cols-2 w-2/3 text-right ">
             <div>TOTAL PRICE</div>
             <div>
-              {simpleLists && totalPrice.toFixed(2).toLocaleString("ko-KR")}{" "}
+              {simpleLists && simpleLists[0].currency === "KRW"
+                ? totalPrice.toLocaleString("ko-KR")
+                : totalPrice.toFixed(2).toLocaleString("ko-KR")}{" "}
               {user?.currency}
             </div>
           </div>

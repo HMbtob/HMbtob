@@ -30,7 +30,6 @@ const OrderProductList = () => {
       return new Date(doc.date_created) > new Date("2021-01-01");
     });
   }
-
   return (
     <div className="flex flex-col">
       <button className="border bg-gray-600 text-gray-200" onClick={callApi}>

@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { InitDataContext } from "../../../App";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+
+import VisibilityIcon from "@material-ui/icons/Visibility";
 
 const HiddenBigc = ({
   id,
@@ -24,8 +27,10 @@ const HiddenBigc = ({
     handleStock: "",
     total_sold: "",
     productName: "",
+    isVisible: "",
   });
 
+  const { isVisible } = product;
   const { handlePrice, handleStock, total_sold, productName } = product;
 
   const onChange = e => {
@@ -46,22 +51,23 @@ const HiddenBigc = ({
       .catch(e => console.log(e));
   };
 
+  const sdadasdasd = async () => {
+    await axios
+      .get(
+        `https://us-central1-interasiastock.cloudfunctions.net/app/big/getproductinfo/${bigcProductId}`
+      )
+      .then(p =>
+        setProduct({
+          handlePrice: p.data.data.price,
+          handleStock: p.data.data.inventory_level,
+          total_sold: p.data.data.total_sold,
+          productName: p.data.data.name,
+          isVisible: p.data.data.is_visible,
+        })
+      )
+      .catch(e => console.log(e));
+  };
   useEffect(() => {
-    const sdadasdasd = async () => {
-      await axios
-        .get(
-          `https://us-central1-interasiastock.cloudfunctions.net/app/big/getproductinfo/${bigcProductId}`
-        )
-        .then(p =>
-          setProduct({
-            handlePrice: p.data.data.price,
-            handleStock: p.data.data.inventory_level,
-            total_sold: p.data.data.total_sold,
-            productName: p.data.data.name,
-          })
-        )
-        .catch(e => console.log(e));
-    };
     sdadasdasd();
   }, [bigcProductId]);
   return (
@@ -75,9 +81,59 @@ place-items-center text-xs bg-white"
             onClick={() => fixfix(bigcProductId, handleStock, handlePrice)}
             className="col-span-2"
           >
-            수정
+            big-수정
           </button>
-          <div className="col-span-3">big</div>
+          <div className="col-span-5">
+            {isVisible === true ? (
+              <VisibilityIcon
+                className="cursor-pointer"
+                fontSize="small"
+                style={{ color: "blue" }}
+                onClick={async () =>
+                  await axios
+                    .put(
+                      `/stores/7uw7zc08qw/v3/catalog/products/${bigcProductId}`,
+
+                      { is_visible: false },
+                      {
+                        headers: {
+                          accept: "application/json",
+                          "content-type": "application/json",
+                          "x-auth-token": "23t2vx6zwiq32xa8b0uspfo7mb7181x",
+                        },
+                      }
+                    )
+                    .then(() => sdadasdasd())
+                    .catch(e => console.log(e))
+                }
+              />
+            ) : isVisible === false ? (
+              <VisibilityOffIcon
+                className="cursor-pointer"
+                fontSize="small"
+                style={{ color: "red" }}
+                onClick={async () =>
+                  await axios
+                    .put(
+                      `/stores/7uw7zc08qw/v3/catalog/products/${bigcProductId}`,
+
+                      { is_visible: true },
+                      {
+                        headers: {
+                          accept: "application/json",
+                          "content-type": "application/json",
+                          "x-auth-token": "23t2vx6zwiq32xa8b0uspfo7mb7181x",
+                        },
+                      }
+                    )
+                    .then(() => sdadasdasd())
+                    .catch(e => console.log(e))
+                }
+              />
+            ) : (
+              ""
+            )}
+          </div>
           <div className="col-span-3"></div>
           <div className="col-span-2"></div>
           <div className="col-span-14">{productName && productName}</div>
@@ -113,13 +169,6 @@ place-items-center text-xs bg-white"
           <div className="col-span-2 text-xs">
             {relDate &&
               new Date(relDate.seconds * 1000).toISOString().substring(0, 10)}
-          </div>
-
-          <div className="col-span-2 text-xs">
-            {preOrderDeadline &&
-              new Date(preOrderDeadline.seconds * 1000)
-                .toISOString()
-                .substring(0, 10)}
           </div>
         </>
       )}

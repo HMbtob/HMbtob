@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { auth } from "../../firebase";
 import { useHistory } from "react-router-dom";
+import { InitDataContext } from "../../App";
 
 const Sidebar = () => {
+  const state = useContext(InitDataContext);
+  const { user } = state;
   const history = useHistory();
 
   const underMenu = [
@@ -32,12 +35,15 @@ const Sidebar = () => {
       {/* </div> */}
       {/* d-2 */}
       <div className="bg-gray-600 p-8 text-lg text-gray-300 leading-10 text-center">
-        {/* <div
-          onClick={() => history.push(`/fordev`)}
-          className="cursor-pointer hover:text-gray-50"
-        >
-          {"개발"}
-        </div> */}
+        {user?.email && (
+          <div
+            onClick={() => history.push(`/fordev`)}
+            className="cursor-pointer hover:text-gray-50"
+          >
+            {"개발"}
+          </div>
+        )}
+
         {/* d-3 */}
         {underMenu.map((menu, index) => (
           <div

@@ -1,7 +1,10 @@
 import React from "react";
 import { db } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
-
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import SyncIcon from "@material-ui/icons/Sync";
+import SyncDisabledIcon from "@material-ui/icons/SyncDisabled";
 const HiddenB2b = ({
   id,
   sku,
@@ -15,9 +18,9 @@ const HiddenB2b = ({
   preOrderDeadline,
   orders,
   shippings,
+  product,
 }) => {
   // 총판매
-  console.log(price);
   // // 총 미발송
   const totalUnshipped = [].concat
     .apply(
@@ -60,9 +63,59 @@ const HiddenB2b = ({
 place-items-center text-xs  bg-white"
     >
       <button onClick={simpleSave} className="col-span-2">
-        수정
+        b2b-수정
       </button>
-      <div className="col-span-3">b2b</div>
+      <div className="col-span-5">
+        {/* 노출/숨김 버튼 */}
+        {product.data.exposeToB2b === "숨김" && (
+          <VisibilityOffIcon
+            fontSize="small"
+            className="cursor-pointer"
+            style={{ color: "red" }}
+            onClick={() =>
+              db.collection("products").doc(id).update({ exposeToB2b: "노출" })
+            }
+          />
+        )}
+        {product.data.exposeToB2b === "노출" && (
+          <VisibilityIcon
+            fontSize="small"
+            className="cursor-pointer"
+            style={{ color: "blue" }}
+            onClick={() =>
+              db.collection("products").doc(id).update({ exposeToB2b: "숨김" })
+            }
+          />
+        )}
+        {/* 무한재고 */}
+        {product.data.limitedStock === false ? (
+          <SyncIcon
+            className="cursor-pointer"
+            fontSize="small"
+            style={{ color: "blue" }}
+            onClick={async () =>
+              await db
+                .collection("products")
+                .doc(id)
+                .update({ limitedStock: true })
+            }
+          />
+        ) : product.data.limitedStock === true ? (
+          <SyncDisabledIcon
+            className="cursor-pointer"
+            fontSize="small"
+            style={{ color: "red" }}
+            onClick={async () =>
+              await db
+                .collection("products")
+                .doc(id)
+                .update({ limitedStock: false })
+            }
+          />
+        ) : (
+          ""
+        )}
+      </div>
       <div className="col-span-3"></div>
       <div className="col-span-2"></div>
       <div className="col-span-14"></div>
@@ -85,13 +138,6 @@ place-items-center text-xs  bg-white"
       <div className="col-span-2 text-xs">
         {relDate &&
           new Date(relDate.seconds * 1000).toISOString().substring(0, 10)}
-      </div>
-
-      <div className="col-span-2 text-xs">
-        {preOrderDeadline &&
-          new Date(preOrderDeadline.seconds * 1000)
-            .toISOString()
-            .substring(0, 10)}
       </div>
     </div>
   );

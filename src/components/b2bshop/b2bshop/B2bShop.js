@@ -8,6 +8,8 @@ import PreOrderTable from "../preorder/PreOrderTable";
 import SimpleList from "../simplelist/SimpleList";
 import useSimpleList from "../../../hooks/useSimpleList";
 import DealTable from "../deal/DealTable";
+import SearchIcon from "@material-ui/icons/Search";
+import RestoreIcon from "@material-ui/icons/Restore";
 
 const B2bShop = () => {
   const history = useHistory();
@@ -15,32 +17,184 @@ const B2bShop = () => {
   const dispatch = useContext(InitDispatchContext);
   const { notices, products, user, exchangeRate } = state;
   const today = new Date();
+  const [query, setQuery] = useState();
+  const queryOnChange = e => {
+    const { value } = e.target;
+    setQuery(value);
+  };
+  // 초기값 상품들
+  const [preordered, setPreordered] = useState(
+    products
+      .filter(
+        product =>
+          new Date(product?.data?.preOrderDeadline?.seconds * 1000) > today
+      )
+      .filter(doc => doc.data.exposeToB2b === "노출")
+      .sort((a, b) => {
+        return (
+          new Date(a.data.preOrderDeadline.seconds) -
+          new Date(b.data.preOrderDeadline.seconds)
+        );
+      })
+      .slice(0, 150)
+  );
+  const [common, setCommon] = useState(
+    products
+      .filter(
+        product =>
+          new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
+      )
+      .filter(doc => doc.data.exposeToB2b === "노출")
+      .sort((a, b) => {
+        return (
+          new Date(b.data.relDate.seconds) - new Date(a.data.relDate.seconds)
+        );
+      })
+      .slice(0, 150)
+  );
+  const [deal, setDeal] = useState(
+    products
+      .filter(
+        product =>
+          new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
+      )
+      .filter(doc => doc.data.exposeToB2b === "DEAL")
+      .sort((a, b) => {
+        return (
+          new Date(b.data.relDate.seconds) - new Date(a.data.relDate.seconds)
+        );
+      })
+      .slice(0, 150)
+  );
 
+  // 초기화 버튼
+  const handleClear = e => {
+    e.preventDefault();
+    // 프리오더
+    setPreordered(
+      products
+        .filter(
+          product =>
+            new Date(product?.data?.preOrderDeadline?.seconds * 1000) > today
+        )
+        .filter(doc => doc.data.exposeToB2b === "노출")
+        .sort((a, b) => {
+          return (
+            new Date(a.data.preOrderDeadline.seconds) -
+            new Date(b.data.preOrderDeadline.seconds)
+          );
+        })
+        .slice(0, 150)
+    );
+    // 일반
+    setCommon(
+      products
+        .filter(
+          product =>
+            new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
+        )
+        .filter(doc => doc.data.exposeToB2b === "노출")
+        .sort((a, b) => {
+          return (
+            new Date(b.data.relDate.seconds) - new Date(a.data.relDate.seconds)
+          );
+        })
+        .slice(0, 150)
+    );
+    // 특별가
+    setDeal(
+      products
+        .filter(
+          product =>
+            new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
+        )
+        .filter(doc => doc.data.exposeToB2b === "DEAL")
+        .sort((a, b) => {
+          return (
+            new Date(b.data.relDate.seconds) - new Date(a.data.relDate.seconds)
+          );
+        })
+        .slice(0, 150)
+    );
+    setQuery("");
+  };
+  // 검색하기 버튼
   // 세 상품이 겹치면 안됨
   // 프리오더 상품
-  const preorderProducts = products
-    ?.slice(0, 100)
-    .filter(
-      product =>
-        new Date(product?.data?.preOrderDeadline?.seconds * 1000) > today
-    )
-    .filter(doc => doc.data.exposeToB2b === "노출");
-  // 일반상품
-  const commonProducts = products
-    ?.slice(0, 100)
-    .filter(
-      product =>
-        new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
-    )
-    .filter(doc => doc.data.exposeToB2b === "노출");
-  // 특별가 상품
-  const dealProducts = products
-    ?.slice(0, 100)
-    .filter(
-      product =>
-        new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
-    )
-    .filter(doc => doc.data.exposeToB2b === "DEAL");
+  const searchedProducts = e => {
+    e.preventDefault();
+
+    // 프리오더
+    setPreordered(
+      products
+        .filter(
+          product =>
+            new Date(product?.data?.preOrderDeadline?.seconds * 1000) > today
+        )
+        .filter(doc => doc.data.exposeToB2b === "노출")
+        .filter(
+          doc =>
+            doc.data.title.toLowerCase().includes(query.split(" ")[0]) ||
+            doc.data.title.toLowerCase().includes(query.split(" ")[1]) ||
+            doc.data.sku.includes(query.split(" ")[0]) ||
+            doc.data.sku.includes(query.split(" ")[1]) ||
+            doc.data.barcode.toLowerCase().includes(query.split(" ")[0]) ||
+            doc.data.barcode.toLowerCase().includes(query.split(" ")[1])
+        )
+        .sort((a, b) => {
+          return (
+            new Date(a.data.preOrderDeadline.seconds) -
+            new Date(b.data.preOrderDeadline.seconds)
+          );
+        })
+    );
+    // 일반
+    setCommon(
+      products
+        .filter(
+          product =>
+            new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
+        )
+        .filter(doc => doc.data.exposeToB2b === "노출")
+        .filter(
+          doc =>
+            doc.data.title.toLowerCase().includes(query.split(" ")[0]) ||
+            doc.data.title.toLowerCase().includes(query.split(" ")[1]) ||
+            doc.data.sku.includes(query.split(" ")[0]) ||
+            doc.data.sku.includes(query.split(" ")[1]) ||
+            doc.data.barcode.toLowerCase().includes(query.split(" ")[0]) ||
+            doc.data.barcode.toLowerCase().includes(query.split(" ")[1])
+        )
+        .sort((a, b) => {
+          return (
+            new Date(b.data.relDate.seconds) - new Date(a.data.relDate.seconds)
+          );
+        })
+    );
+    // 특별가
+    setDeal(
+      products
+        .filter(
+          product =>
+            new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
+        )
+        .filter(doc => doc.data.exposeToB2b === "DEAL")
+        .filter(
+          doc =>
+            doc.data.title.toLowerCase().includes(query.split(" ")[0]) ||
+            doc.data.title.toLowerCase().includes(query.split(" ")[1]) ||
+            doc.data.sku.includes(query.split(" ")[0]) ||
+            doc.data.sku.includes(query.split(" ")[1]) ||
+            doc.data.barcode.toLowerCase().includes(query.split(" ")[0]) ||
+            doc.data.barcode.toLowerCase().includes(query.split(" ")[1])
+        )
+        .sort((a, b) => {
+          return (
+            new Date(b.data.relDate.seconds) - new Date(a.data.relDate.seconds)
+          );
+        })
+    );
+  };
 
   const truncate = (string, n) => {
     return string?.length > n ? string.substr(0, n - 1) + " . . ." : string;
@@ -105,6 +259,8 @@ const B2bShop = () => {
               .preOrderDeadline || 0,
           childOrderNumber: `${String(state.orderCounts + 1000)}-${i + 1}`,
           moved: false,
+          moveTo: "",
+          canceled: false,
           createdAt: new Date(),
         });
         i++;
@@ -124,6 +280,10 @@ const B2bShop = () => {
     reset();
     history.push(`/b2border`);
   };
+
+  // useEffect(() => {
+  //   searchedProducts();
+  // }, [Clear]);
   return (
     <div className="w-full h-auto flex ">
       {/* d2 -1 */}
@@ -131,13 +291,47 @@ const B2bShop = () => {
         className=" w-3/5 h-auto flex flex-col 
       items-center mt-12"
       >
-        {preorderProducts && (
+        <form
+          onSubmit={searchedProducts}
+          className="top-2 left-40 fixed z-50 
+        bg-gray-200 p-1 rounded-lg w-96 flex flex-row"
+        >
+          <input
+            type="text"
+            className=" rounded-md outline-none pl-3 w-80"
+            placeholder="search"
+            onChange={queryOnChange}
+            value={query}
+          />{" "}
+          <div className="flex flex-row justify-evenly w-1/4">
+            <SearchIcon
+              className="cursor-pointer"
+              type="submit"
+              onClick={searchedProducts}
+            />
+            <RestoreIcon onClick={handleClear} className="cursor-pointer" />
+          </div>
+        </form>
+        {preordered && (
           <>
             <div className="text-center text-sm font-bold text-gray-800">
               PRE ORDER
             </div>
             <PreOrderTable
-              preorderProducts={preorderProducts}
+              preorderProducts={preordered}
+              exchangeRate={exchangeRate}
+              onChange={onChange}
+              user={user}
+            />
+          </>
+        )}
+        {deal && (
+          <>
+            <div className="text-center text-sm font-bold text-gray-800">
+              HOT DEAL{" "}
+            </div>
+            <DealTable
+              dealProducts={deal}
               exchangeRate={exchangeRate}
               onChange={onChange}
               user={user}
@@ -145,30 +339,40 @@ const B2bShop = () => {
           </>
         )}
 
-        <Common
-          commonProducts={commonProducts}
-          dispatch={dispatch}
-          category={state.category}
-          onChange={onChange}
-          simpleList={simpleList}
-          user={user}
-          exchangeRate={exchangeRate}
-        />
+        {common && (
+          <Common
+            commonProducts={common}
+            dispatch={dispatch}
+            category={state.category}
+            onChange={onChange}
+            simpleList={simpleList}
+            user={user}
+            exchangeRate={exchangeRate}
+          />
+        )}
       </div>
       {/* d2-2 */}
       <div className=" w-2/5 flex flex-col items-center mt-12 mr-5">
         {notices && <NoticeTable notices={notices} />}
-        {dealProducts && (
+        {deal && (
           <>
             <div className="text-center text-sm font-bold text-gray-800">
-              HOT DEAL{" "}
+              SCHEDULE
             </div>
-            <DealTable
-              dealProducts={dealProducts}
+            {/* <DealTable
+              dealProducts={deal}
               exchangeRate={exchangeRate}
               onChange={onChange}
               user={user}
-            />
+            /> */}
+            <iframe
+              src="https://calendar.google.com/calendar/embed?height=400&wkst=1&bgcolor=%23F9FAFB&ctz=Asia%2FSeoul&src=aW50ZXJhc2lhZGV2QGdtYWlsLmNvbQ&src=YWRkcmVzc2Jvb2sjY29udGFjdHNAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&src=ZDZtNTV2b2tpaTh1MWNvazVqOXQ2djduZmdAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&src=a28uc291dGhfa29yZWEjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23039BE5&color=%2333B679&color=%23F6BF26&color=%230B8043&showTitle=0&showNav=1&showTz=0&showCalendars=0&showTabs=0&showPrint=1&showDate=1"
+              style={{ borderWidth: 0 }}
+              width="600"
+              height="500"
+              frameBorder="0"
+              scrolling="no"
+            ></iframe>
           </>
         )}
         <SimpleList

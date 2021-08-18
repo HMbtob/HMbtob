@@ -141,78 +141,25 @@ const AddProduct = () => {
         reStockable: reStockable,
         exposeToB2b: exposeToB2b,
         bigC: {},
+        productMemo: [
+          {
+            memo: "add product",
+            date: new Date(),
+            writer: "server",
+          },
+        ],
+        limitedStock: false,
       });
 
     await reset();
     await alert("추가완료");
     history.push("/listproduct");
   };
-  const saveProduct = async () => {
-    allOrderProductsList.data.slice(0, 500).map(async (doc, index) => {
-      await console.log(index);
-      const batch = db.batch();
-      const nycRef = db.collection("products").doc();
-
-      await batch.set(nycRef, {
-        sku: doc.sku,
-        purchasePrice: 0,
-        price: 0,
-        artist: "dummy",
-        ent: "dummy",
-        x: 10,
-        stock: doc.inventory_level,
-        y: 10,
-        z: 10,
-        title: doc.name,
-        thumbNail: "",
-        descrip: "",
-        weight: doc.weight * 1000,
-        category:
-          doc.categories.filter(arr => [196].includes(arr)).length > 0
-            ? "cd"
-            : doc.categories.filter(arr => [200, 245].includes(arr)).length > 0
-            ? "dvdBlueRay"
-            : doc.categories.filter(arr => [203].includes(arr)).length > 0
-            ? "photoBook"
-            : doc.categories.filter(arr =>
-                [205, 207, 243, 244, 209, 246, 222, 210].includes(arr)
-              ).length > 0
-            ? "goods"
-            : doc.categories.filter(arr =>
-                [237, 208, 241, 238, 239, 240].includes(arr)
-              ).length > 0
-            ? "officialStore"
-            : doc.categories.filter(arr =>
-                [
-                  206, 216, 230, 233, 225, 229, 219, 224, 231, 215, 221, 220,
-                  214, 223,
-                ].includes(arr)
-              ).length > 0
-            ? "beauty"
-            : "beauty",
-        relDate: new Date(),
-        preOrderDeadline: new Date(),
-        options: {
-          poster: false,
-          pob: false,
-          photocard: false,
-          weverseGift: false,
-          interAsiaPhotocard: false,
-        },
-        barcode: doc.upc,
-        reStockable: "불가능",
-        exposeToB2b: "노출",
-        bigC: { ...doc },
-      });
-      await batch.commit();
-    });
-  };
 
   return (
     <>
       <form className="w-3/5 m-auto my-20" onSubmit={Appp}>
         <div
-          onClick={saveProduct}
           className="text-left text-2xl  
         text-gray-800 mb-1 ml-2 "
         >
