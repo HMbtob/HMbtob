@@ -126,7 +126,6 @@ const B2bOrder = () => {
   const totalPrice = simpleLists.reduce((i, c) => {
     return i + c.price * c.quan;
   }, 0);
-
   // amount price
   const amountPrice = totalPrice + fee;
   const confirmOrder = async e => {
@@ -177,7 +176,30 @@ const B2bOrder = () => {
           totalAmount: Number(user.credit) - Number(amountPrice),
         }),
       });
-
+    // await db.collection("products").doc()
+    // totalsold 계산
+    for (let i = 0; i < simpleLists.length; i++) {
+      console.log(simpleLists[i].productId, i);
+      db.collection("products")
+        .doc(simpleLists[i].productId)
+        .update({
+          stock:
+            products.find(product => product.id === simpleLists[i].productId)
+              .data.stock - simpleLists[i].quan,
+          totalSold:
+            products.find(product => product.id === simpleLists[i].productId)
+              .data.totalSold + simpleLists[i].quan,
+          totalStock:
+            products.find(product => product.id === simpleLists[i].productId)
+              .data.totalStock - simpleLists[i].quan,
+          stockHistory: firebase.firestore.FieldValue.arrayUnion({
+            type: "sell on B2B",
+            writer: user.email,
+            amount: simpleLists[i].quan,
+            date: new Date(),
+          }),
+        });
+    }
     await reset();
     await alert("주문 완료");
     if (user.type === "admin") {

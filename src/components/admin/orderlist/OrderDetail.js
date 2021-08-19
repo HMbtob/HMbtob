@@ -512,9 +512,9 @@ const OrderDetail = ({ match }) => {
             {order.data.list
               .filter(list => new Date(list.relDate.toDate()) < new Date())
               .sort()
-              .map(doc => (
+              .map((doc, i) => (
                 <OrderDetailRow
-                  key={doc.childOrderNumber}
+                  key={i}
                   id={doc.childOrderNumber}
                   title={doc.title}
                   createdAt={new Date(
@@ -535,9 +535,9 @@ const OrderDetail = ({ match }) => {
             {order.data.list
               .filter(list => new Date(list.relDate.toDate()) >= new Date())
               .sort()
-              .map(doc => (
+              .map((doc, i) => (
                 <OrderDetailRow
-                  key={doc.childOrderNumber}
+                  key={i}
                   id={doc.childOrderNumber}
                   title={doc.title}
                   createdAt={new Date(

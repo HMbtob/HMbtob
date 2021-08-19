@@ -65,7 +65,7 @@ place-items-center text-xs  bg-white"
       <button onClick={simpleSave} className="col-span-2">
         b2b-수정
       </button>
-      <div className="col-span-5">
+      <div className="col-span-5 flex flex-row justify-start w-full">
         {/* 노출/숨김 버튼 */}
         {product.data.exposeToB2b === "숨김" && (
           <VisibilityOffIcon
@@ -118,7 +118,7 @@ place-items-center text-xs  bg-white"
       </div>
       <div className="col-span-3"></div>
       <div className="col-span-2"></div>
-      <div className="col-span-14"></div>
+      <div className="col-span-12"></div>
       <input
         type="number"
         className="col-span-2 border w-3/4 p-1 text-center"
@@ -126,6 +126,7 @@ place-items-center text-xs  bg-white"
         value={handlePrice}
         onChange={onChange}
       />
+      <div className="col-span-2"></div>
       <input
         type="number"
         className="col-span-2 border w-3/4 p-1 text-center"

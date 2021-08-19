@@ -23,6 +23,7 @@ const ListProduct = () => {
     "COVER",
     "TITLE",
     "PRICE",
+    "STORE",
     "STOCK",
     "SOLD",
     "UNSHIPPED",
@@ -62,7 +63,7 @@ const ListProduct = () => {
               key={index}
               className={
                 header === "TITLE"
-                  ? "col-span-14"
+                  ? "col-span-12"
                   : header === "BARCODE" || header === "SKU"
                   ? "col-span-3"
                   : header === "BTN"
@@ -86,6 +87,7 @@ const ListProduct = () => {
                 price={product.data.price}
                 barcode={product.data.barcode}
                 stock={product.data.stock}
+                totalStock={product.data.totalStock}
                 totalSell={product.data.totalSell}
                 unShipped={product.data.unShipped}
                 relDate={product.data.relDate}
@@ -96,6 +98,7 @@ const ListProduct = () => {
                 shippings={shippings}
                 user={user}
                 exchangeRate={exchangeRate}
+                products={products}
               />
             ))}
           </div>

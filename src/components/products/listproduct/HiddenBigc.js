@@ -19,6 +19,7 @@ const HiddenBigc = ({
   orders,
   shippings,
   bigcProductId,
+  handleBigTotalSold,
 }) => {
   const state = useContext(InitDataContext);
   const { unShippedProductsIdandQty } = state;
@@ -69,7 +70,8 @@ const HiddenBigc = ({
   };
   useEffect(() => {
     sdadasdasd();
-  }, [bigcProductId]);
+    handleBigTotalSold(total_sold);
+  }, [bigcProductId, total_sold]);
   return (
     <div
       className="grid grid-cols-36 items-center 
@@ -83,7 +85,7 @@ place-items-center text-xs bg-white"
           >
             big-수정
           </button>
-          <div className="col-span-5">
+          <div className="col-span-5 flex flex-row justify-start w-full">
             {isVisible === true ? (
               <VisibilityIcon
                 className="cursor-pointer"
@@ -136,7 +138,7 @@ place-items-center text-xs bg-white"
           </div>
           <div className="col-span-3"></div>
           <div className="col-span-2"></div>
-          <div className="col-span-14">{productName && productName}</div>
+          <div className="col-span-12 w-full">{productName && productName}</div>
           <input
             type="number"
             className="col-span-2 border w-3/4 p-1 text-center"
@@ -144,6 +146,7 @@ place-items-center text-xs bg-white"
             value={handlePrice}
             onChange={onChange}
           />
+          <div className="col-span-2"></div>
           <input
             type="number"
             className="col-span-2 border w-3/4 p-1 text-center"

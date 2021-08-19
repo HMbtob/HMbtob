@@ -8,7 +8,7 @@ import { InitDataContext, InitDispatchContext } from "../../../App";
 const AddProduct = () => {
   const history = useHistory();
   const state = useContext(InitDataContext);
-  const { allOrderProductsList } = state;
+  const { allOrderProductsList, user } = state;
   const [
     {
       sku,
@@ -149,6 +149,16 @@ const AddProduct = () => {
           },
         ],
         limitedStock: false,
+        totalStock: stock,
+        totalSold: 0,
+        stockHistory: [
+          {
+            type: "add product on list",
+            writer: user.email,
+            amount: 0,
+            date: new Date(),
+          },
+        ],
       });
 
     await reset();

@@ -54,7 +54,7 @@ export default function CommonRow({
       <input
         id={id}
         disabled={
-          Number(product.data.stock) > 0 && product.data.limitedStock === false
+          Number(product.data.stock) > 0 || product.data.limitedStock === false
             ? false
             : true
         }
@@ -63,7 +63,7 @@ export default function CommonRow({
         onChange={onChange}
         className="w-1/2 h-7 border text-center col-span-2"
       />
-      {Number(product.data.stock) > 0 && product.data.limitedStock === false ? (
+      {Number(product.data.stock) > 0 || product.data.limitedStock === false ? (
         ""
       ) : (
         // FIXME: 요청하면 어디서 받을지 확인 후 수정

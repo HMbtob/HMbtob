@@ -15,14 +15,20 @@ const CreditDetails = ({ creditDetails }) => {
             <div>{de.type}</div>
             <div>
               {de.type === "makeOrder" ? "-" : de.type === "charge" ? "+" : ""}
-              {Math.round(de.amount).toLocaleString("ko-KR")} {de.currency}
+              {de.currency === "KRW"
+                ? Math.round(de.amount).toLocaleString("ko-KR")
+                : de.amount.toFixed(2).toLocaleString("ko-KR")}{" "}
+              {de.currency}
             </div>
             <div className="col-span-2">
               {de.date.toDate().toLocaleString()}
             </div>
 
             <div>
-              {Math.round(de.totalAmount).toLocaleString("ko-KR")} {de.currency}
+              {de.currency === "KRW"
+                ? Math.round(de.totalAmount).toLocaleString("ko-KR")
+                : de.totalAmount.toFixed(2).toLocaleString("ko-KR")}{" "}
+              {de.currency}
             </div>
           </div>
         ))}

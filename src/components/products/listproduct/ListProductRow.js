@@ -8,6 +8,8 @@ import BuildIcon from "@material-ui/icons/Build";
 import SyncAltIcon from "@material-ui/icons/SyncAlt";
 import CommentIcon from "@material-ui/icons/Comment";
 import ProductMemo from "./ProductMemo";
+import MouseIcon from "@material-ui/icons/Mouse";
+import StoreProduct from "./StoreProduct";
 const ListProductRow = ({
   id,
   sku,
@@ -15,6 +17,7 @@ const ListProductRow = ({
   title,
   price,
   stock,
+  totalStock,
   totalSell,
   unShipped,
   relDate,
@@ -26,6 +29,7 @@ const ListProductRow = ({
   user,
   exchangeRate,
   product,
+  products,
 }) => {
   const history = useHistory();
   const [forHidden, setForHidden] = useState(true);
@@ -40,12 +44,18 @@ const ListProductRow = ({
   const [modalOpen, setModalOpen] = useState(false);
 
   const openModal = () => {
+    handleHidden(forHidden);
     setModalOpen(true);
   };
   const closeModal = () => {
     setModalOpen(false);
   };
 
+  // 재고수불부에서 빅커머스 total_sold 가져가려고 만든 state
+  const [bigTotalSold, setBigTotalSold] = useState();
+  const handleBigTotalSold = q => {
+    setBigTotalSold(q);
+  };
   //상품별 메모 모달
   const [modalOpen2, setModalOpen2] = useState(false);
 
@@ -55,7 +65,6 @@ const ListProductRow = ({
   const closeModal2 = () => {
     setModalOpen2(false);
   };
-
   return (
     <div className="border-b w-full">
       <div
@@ -86,7 +95,11 @@ const ListProductRow = ({
             <SyncAltIcon fontSize="small" style={{ color: "gray" }} />
           </button>
           <Modal open={modalOpen} close={closeModal} header={"재고수불부"}>
-            <StockTable />
+            <StockTable
+              stockHistory={product.data.stockHistory}
+              bigTotalSold={bigTotalSold}
+              totalStock={totalStock}
+            />
           </Modal>
         </div>
 
@@ -94,7 +107,7 @@ const ListProductRow = ({
         <div className="col-span-3">{sku}</div>
         <img className="col-span-2 h-8 rounded-sm " src={thumbNail} alt="" />
         <div
-          className="col-span-14 cursor-pointer text-left w-full flex flex-row items-center"
+          className="col-span-12 cursor-pointer text-left w-full flex flex-row items-center"
           onClick={() => handleHidden(forHidden)}
         >
           <div> {title}</div>
@@ -107,7 +120,23 @@ const ListProductRow = ({
                 ?.toLocaleString("ko-KR")}{" "}
           {user.currency}
         </div>
-        <div className="col-span-2">{stock?.toLocaleString("ko-KR")}</div>
+        <div className="col-span-2">
+          <StoreProduct
+            stockHistory={product.data.stockHistory}
+            bigTotalSold={bigTotalSold}
+            totalStock={totalStock}
+            product={product}
+            user={user}
+            products={products}
+          />
+        </div>
+        <div className="col-span-2">
+          {forHidden ? (
+            <MouseIcon style={{ color: "darkgray" }} />
+          ) : (
+            (totalStock - bigTotalSold).toLocaleString("ko-KR")
+          )}
+        </div>
         <div className="col-span-2">{totalSell?.toLocaleString("ko-KR")}</div>
         <div className="col-span-2">{unShipped?.toLocaleString("ko-KR")}</div>
         <div className="col-span-2 text-xs">
@@ -148,6 +177,7 @@ const ListProductRow = ({
             orders={orders}
             shippings={shippings}
             bigcProductId={bigcProductId}
+            handleBigTotalSold={handleBigTotalSold}
           />
         </>
       )}

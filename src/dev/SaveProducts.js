@@ -7,7 +7,7 @@ import axios from "axios";
 
 const SaveProducts = () => {
   const state = useContext(InitDataContext);
-  const { products, allOrderProductsList } = state;
+  const { products, allOrderProductsList, user } = state;
   const CLIENT_EMAIL = "forsheet@interasiastock.iam.gserviceaccount.com";
 
   const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
@@ -28,7 +28,7 @@ const SaveProducts = () => {
     // 행으로 입력하기
     const rows = await sheet.getRows();
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 50; i++) {
       console.log(i, "번째 시작");
       const barcode = allOrderProductsList?.data[i]?.upc;
       const productId = allOrderProductsList?.data[i]?.id;
@@ -154,6 +154,16 @@ const SaveProducts = () => {
             writer: "server",
           },
         ],
+        stockHistory: [
+          {
+            type: "add product on list",
+            writer: user.email,
+            amount: 0,
+            date: new Date(),
+          },
+        ],
+        totalStock: 0,
+        totalSold: 0,
       });
     }
 
