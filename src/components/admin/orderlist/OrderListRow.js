@@ -13,7 +13,7 @@ const OrderListRow = ({
   const today = new Date();
 
   const included = order.data.list.reduce((i, c) => {
-    if (c.moved === false && c.canceled === false) {
+    if (c.moved === false && c.canceled === false && c.shipped === false) {
       return i || c.relDate.toDate() > today;
     }
     return i || false;
