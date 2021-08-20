@@ -17,7 +17,7 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
   };
 
   return (
-    <div className="m-auto h-3/4 w-11/12 mt-12 flex flex-col text-center text-sm font-bold text-gray-800">
+    <div className="m-auto h-3/4 w-11/12 mt-9 flex flex-col text-center text-sm font-bold text-gray-800">
       CART LIST
       <div
         className="grid grid-cols-6 place-items-center text-center text-xs bg-gray-800 p-1 

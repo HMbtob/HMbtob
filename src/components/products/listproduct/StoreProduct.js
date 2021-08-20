@@ -55,6 +55,12 @@ const StoreProduct = ({
           "거래처를 입력해주세요(미입력시 재고조정)",
           "재고조정"
         );
+        // 현재 totalStock
+        const barcodeTotalStock = Number(
+          products.find(
+            product => product.data.barcode === inputStock.toString()
+          ).data.totalStock
+        );
 
         await db
           .collection("products")
@@ -64,16 +70,14 @@ const StoreProduct = ({
             ).id
           )
           .update({
-            totalStock:
-              Number(
-                products.find(
-                  product => product.data.barcode === inputStock.toString()
-                ).data.totalStock
-              ) + Number(barcodeStock),
+            totalStock: Number(barcodeStock) + Number(bigTotalSold),
             stockHistory: firebase.firestore.FieldValue.arrayUnion({
               type: barcodeType,
               writer: user.email,
-              amount: Number(barcodeStock),
+              amount:
+                Number(barcodeTotalStock) -
+                Number(barcodeStock) -
+                Number(bigTotalSold),
               date: new Date(),
             }),
           });

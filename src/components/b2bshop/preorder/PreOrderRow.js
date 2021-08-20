@@ -43,7 +43,7 @@ const PreOrderRow = ({
             .toISOString()
             .substring(0, 10)}
         </div>
-        <div>{`${day} days, ${hour} hours`}</div>
+        <div className=" font-extrabold text-red-500">{`${day} D, ${hour} H`}</div>
       </div>
       <div className="col-span-2 z-10">
         {exchangeRate[user?.currency] === 1

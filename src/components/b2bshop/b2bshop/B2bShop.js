@@ -340,15 +340,20 @@ const B2bShop = () => {
         )}
 
         {common && (
-          <Common
-            commonProducts={common}
-            dispatch={dispatch}
-            category={state.category}
-            onChange={onChange}
-            simpleList={simpleList}
-            user={user}
-            exchangeRate={exchangeRate}
-          />
+          <>
+            <div className="text-center text-sm font-bold text-gray-800">
+              PRODUCTS{" "}
+            </div>
+            <Common
+              commonProducts={common}
+              dispatch={dispatch}
+              category={state.category}
+              onChange={onChange}
+              simpleList={simpleList}
+              user={user}
+              exchangeRate={exchangeRate}
+            />
+          </>
         )}
       </div>
       {/* d2-2 */}
