@@ -15,13 +15,42 @@ const B2bShop = () => {
   const history = useHistory();
   const state = useContext(InitDataContext);
   const dispatch = useContext(InitDispatchContext);
-  const { notices, products, user, exchangeRate } = state;
+  const { notices, products, user, exchangeRate, orders } = state;
   const today = new Date();
   const [query, setQuery] = useState();
   const queryOnChange = e => {
     const { value } = e.target;
     setQuery(value);
   };
+
+  // order number를 위한 0 포함된 숫자 만드는 함수
+  const addZeros = (n, digits) => {
+    let zero = "";
+    n = n.toString();
+    if (n.length < digits) {
+      for (var i = 0; i < digits - n.length; i++) zero += "0";
+    }
+    return zero + n;
+  };
+  // order number를 위한 마지막 3자리 숫자 만들기
+  const forOrderNumber = orders
+    .filter(order => order.data.customer === user.email)
+    .filter(
+      order =>
+        new Date(order.data.createdAt.seconds * 1000)
+          .toISOString()
+          .substring(0, 10) === new Date(today).toISOString().substring(0, 10)
+    )
+    ? orders
+        .filter(order => order.data.customer === user.email)
+        .filter(
+          order =>
+            new Date(order.data.createdAt.seconds * 1000)
+              .toISOString()
+              .substring(0, 10) ===
+            new Date(today).toISOString().substring(0, 10)
+        ).length
+    : 0;
   // 초기값 상품들
   const [preordered, setPreordered] = useState(
     products
@@ -196,10 +225,6 @@ const B2bShop = () => {
     );
   };
 
-  const truncate = (string, n) => {
-    return string?.length > n ? string.substr(0, n - 1) + " . . ." : string;
-  };
-
   // {title(id):quan} 형태로 가져오기
   const [confirmChecked, setConfirmCheck] = useState(false);
   const [form, onChange, reset] = useSimpleList({}, setConfirmCheck, products);
@@ -212,13 +237,13 @@ const B2bShop = () => {
       if (form[key]) {
         simpleList.push({
           exchangeRate,
-          orderNumber: String(state.orderCounts + 1000),
+          orderNumber: `${user.alias}-${new Date(today)
+            .toISOString()
+            .substring(2, 10)
+            .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)} `,
           currency: user.currency,
           productId: key,
-          title: truncate(
-            products.find(product => product.id === key).data.title,
-            50
-          ),
+          title: products.find(product => product.id === key).data.title,
           quan: Number(form[key]),
           price:
             Number(
@@ -257,10 +282,14 @@ const B2bShop = () => {
           preOrderDeadline:
             products.find(product => product.id === key).data
               .preOrderDeadline || 0,
-          childOrderNumber: `${String(state.orderCounts + 1000)}-${i + 1}`,
+          childOrderNumber: `${user.alias}-${new Date(today)
+            .toISOString()
+            .substring(2, 10)
+            .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)}-${i + 1}`,
           moved: false,
           moveTo: "",
           canceled: false,
+          shipped: false,
           createdAt: new Date(),
         });
         i++;

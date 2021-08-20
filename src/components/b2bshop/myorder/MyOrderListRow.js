@@ -6,14 +6,17 @@ const MyOrderListRow = ({ id, orderNumber, createdAt, orderState, order }) => {
   const today = new Date();
 
   const included = order.data.list.reduce((i, c) => {
-    return i || c.relDate.toDate() > today;
+    if (c.moved === false && c.canceled === false) {
+      return i || c.relDate.toDate() > today;
+    }
+    return i || false;
   }, false);
   if (order) {
     return (
       <div
         onClick={() => history.push(`/myorderlist/${id}`)}
         className={`grid grid-cols-8 grid-flow-col text-center 
-        border-b border-l border-r py-1 text-sm cursor-pointer ${
+        border-b border-l border-r py-1 text-sm cursor-pointer  ${
           included ? " bg-red-200" : ""
         }`}
       >
@@ -23,12 +26,22 @@ const MyOrderListRow = ({ id, orderNumber, createdAt, orderState, order }) => {
         </div>
         <div>{orderState} </div>
         <div>
-          {order.data.list
-            .reduce((i, c) => {
-              return i + (c.price - (c.dcRate * c.price).toFixed(2)) * c.quan;
-            }, 0)
-            .toFixed(2)
-            .toLocaleString("ko-KR")}{" "}
+          {order.data.currency === "KRW"
+            ? order.data.list
+                .reduce((i, c) => {
+                  return (
+                    i + (c.price - (c.dcRate * c.price).toFixed(2)) * c.quan
+                  );
+                }, 0)
+                .toLocaleString("ko-KR")
+            : order.data.list
+                .reduce((i, c) => {
+                  return (
+                    i + (c.price - (c.dcRate * c.price).toFixed(2)) * c.quan
+                  );
+                }, 0)
+                .toFixed(2)
+                .toLocaleString("ko-KR")}{" "}
           {order.data.currency}
         </div>
         <div>{order.data.list.length} </div>

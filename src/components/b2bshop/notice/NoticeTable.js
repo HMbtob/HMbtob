@@ -10,9 +10,9 @@ const NoticeTable = ({ notices }) => {
         </div>
         <div
           className="grid grid-cols-10 grid-flow-col 
-        text-center bg-gray-800 p-1 
+        text-center bg-gray-800  
         text-gray-200 
-         text-xs"
+         text-xs font-semibold"
         >
           <div className="col-span-1">No.</div>
           <div className="col-span-7">TITLE</div>

@@ -44,7 +44,9 @@ const ListProductRow = ({
   const [modalOpen, setModalOpen] = useState(false);
 
   const openModal = () => {
-    handleHidden(forHidden);
+    if (forHidden) {
+      handleHidden(forHidden);
+    }
     setModalOpen(true);
   };
   const closeModal = () => {
@@ -131,11 +133,8 @@ const ListProductRow = ({
           />
         </div>
         <div className="col-span-2">
-          {forHidden ? (
-            <MouseIcon style={{ color: "darkgray" }} />
-          ) : (
-            (totalStock - bigTotalSold).toLocaleString("ko-KR")
-          )}
+          {bigTotalSold && (totalStock - bigTotalSold).toLocaleString("ko-KR")}
+          {!bigTotalSold && <MouseIcon style={{ color: "darkgray" }} />}
         </div>
         <div className="col-span-2">{totalSell?.toLocaleString("ko-KR")}</div>
         <div className="col-span-2">{unShipped?.toLocaleString("ko-KR")}</div>

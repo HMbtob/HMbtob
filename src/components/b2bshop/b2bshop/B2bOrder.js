@@ -8,9 +8,39 @@ import firebase from "firebase";
 const B2bOrder = () => {
   const state = useContext(InitDataContext);
   const history = useHistory();
-
-  const { user, simpleLists, products, dhlShippingFee, exchangeRate } = state;
+  const today = new Date();
+  const { user, simpleLists, products, dhlShippingFee, exchangeRate, orders } =
+    state;
   const { z } = dhlShippingFee;
+
+  // order number를 위한 0 포함된 숫자 만드는 함수
+  const addZeros = (n, digits) => {
+    let zero = "";
+    n = n.toString();
+    if (n.length < digits) {
+      for (var i = 0; i < digits - n.length; i++) zero += "0";
+    }
+    return zero + n;
+  };
+  // order number를 위한 마지막 3자리 숫자 만들기
+  const forOrderNumber = orders
+    .filter(order => order.data.customer === user.email)
+    .filter(
+      order =>
+        new Date(order.data.createdAt.seconds * 1000)
+          .toISOString()
+          .substring(0, 10) === new Date(today).toISOString().substring(0, 10)
+    )
+    ? orders
+        .filter(order => order.data.customer === user.email)
+        .filter(
+          order =>
+            new Date(order.data.createdAt.seconds * 1000)
+              .toISOString()
+              .substring(0, 10) ===
+            new Date(today).toISOString().substring(0, 10)
+        ).length
+    : 0;
 
   // 배송국가 전체 for select option
   const countries = [].concat(
@@ -147,7 +177,10 @@ const B2bOrder = () => {
         recipientPhoneNumber,
         recipientEmail,
         shippingMessage,
-        orderNumber: state.orderNumber,
+        orderNumber: `${user.alias}-${new Date(today)
+          .toISOString()
+          .substring(2, 10)
+          .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)} `,
         createdAt: new Date(),
         customer: orderEmail,
         list: simpleLists,
@@ -159,27 +192,24 @@ const B2bOrder = () => {
         totalPrice: Number(totalPrice.toFixed(2)),
         memo: "",
       });
-    await db
-      .collection("forNumberedId")
-      .doc("b2bOrder")
-      .set({ counts: state.orderCounts + 1 });
-    await db
-      .collection("accounts")
-      .doc(user.email)
-      .update({
-        credit: user.credit - amountPrice,
-        creditDetails: firebase.firestore.FieldValue.arrayUnion({
-          type: "makeOrder",
-          currency: user.currency,
-          amount: Number(amountPrice),
-          date: new Date(),
-          totalAmount: Number(user.credit) - Number(amountPrice),
-        }),
-      });
-    // await db.collection("products").doc()
+
+    if (paymentMethod === "credit") {
+      await db
+        .collection("accounts")
+        .doc(user.email)
+        .update({
+          credit: user.credit - amountPrice,
+          creditDetails: firebase.firestore.FieldValue.arrayUnion({
+            type: "makeOrder",
+            currency: user.currency,
+            amount: Number(amountPrice),
+            date: new Date(),
+            totalAmount: Number(user.credit) - Number(amountPrice),
+          }),
+        });
+    }
     // totalsold 계산
     for (let i = 0; i < simpleLists.length; i++) {
-      console.log(simpleLists[i].productId, i);
       db.collection("products")
         .doc(simpleLists[i].productId)
         .update({
@@ -401,7 +431,9 @@ const B2bOrder = () => {
           <div className="grid grid-cols-2  text-right  w-2/3">
             <div>SHIPPING FEE</div>
             <div className="w-full">
-              {fee
+              {fee && user?.currency === "KRW"
+                ? `${fee.toLocaleString("ko-KR")} ${user?.currency}`
+                : fee && user?.currency !== "KRW"
                 ? `${fee.toFixed(2).toLocaleString("ko-KR")} ${user?.currency}`
                 : "Please select country and shipping type"}
             </div>
@@ -409,7 +441,9 @@ const B2bOrder = () => {
           <div className="grid grid-cols-2  text-right  w-2/3">
             <div>AMOUNT</div>
             <div className="w-full">
-              {fee
+              {amountPrice && user?.currency === "KRW"
+                ? `${amountPrice.toLocaleString("ko-KR")} ${user?.currency}`
+                : amountPrice && user?.currency !== "KRW"
                 ? `${amountPrice.toFixed(2).toLocaleString("ko-KR")} ${
                     user?.currency
                   }`
@@ -430,22 +464,9 @@ const B2bOrder = () => {
           <button
             className={`${
               confirmChecked
-                ? //  &&
-                  // recipient.length > 0 &&
-                  // street.length > 0 &&
-                  // city.length > 0 &&
-                  // states.length > 0 &&
-                  // country.length > 0 &&
-                  // zipcode.length > 0 &&
-                  // paymentMethod.length > 0 &&
-                  // shippingType.length > 0 &&
-                  // recipientPhoneNumber.length > 0 &&
-                  // recipientEmail.length > 0 &&
-                  // shippingMessage.length > 0
-                  "col-span-2 bg-gray-800 py-2 px-8 rounded-sm text-gray-100"
+                ? "col-span-2 bg-gray-800 py-2 px-8 rounded-sm text-gray-100"
                 : "col-span-2 bg-gray-100 py-2 px-8 rounded-sm text-gray-100"
             }`}
-            // disabled={!confirmChecked && recipient.length > 0}
             type="submit"
           >
             ORDER

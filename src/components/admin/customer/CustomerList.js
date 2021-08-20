@@ -12,11 +12,13 @@ const CustomerList = () => {
           CUSTOMER LIST
         </div>
         <div
-          className="grid grid-cols-4  grid-flow-col text-center 
+          className="grid grid-cols-6  grid-flow-col text-center 
        bg-gray-800 text-gray-100 py-1 rounded-sm text-xs"
         >
           <div className="col-span-2">E-mail</div>
           <div className="col-span-1">Name</div>
+          <div className="col-span-1">Nick</div>
+          <div className="col-span-1">alias</div>
           <div className="col-span-1">Type</div>
         </div>
 

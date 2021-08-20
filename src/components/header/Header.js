@@ -16,12 +16,27 @@ const Header = () => {
       </div>
 
       {/* 버튼들 */}
-      <div className="pr-5">
+      <div className="pr-5 flex flex-row">
+        <div
+          onClick={() => history.replace("/b2bshop")}
+          className="text-sm font-mono font-bold text-center 
+          text-gray-200 bg-blue-900 mr-8 cursor-pointer"
+        >
+          Home
+        </div>
+        <div
+          onClick={() => history.goBack()}
+          className="text-sm font-mono font-bold text-center 
+          text-gray-200 bg-blue-900 mr-8 cursor-pointer"
+        >
+          GoBack
+        </div>
         <div
           onClick={() => auth.signOut()}
-          className="text-sm font-mono font-bold text-center text-gray-200 bg-blue-900"
+          className="text-sm font-mono font-bold text-center 
+          text-gray-200 bg-blue-900 cursor-pointer"
         >
-          logout
+          Logout
         </div>
       </div>
     </div>

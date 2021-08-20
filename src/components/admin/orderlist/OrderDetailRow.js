@@ -1,6 +1,7 @@
 import React from "react";
 import CancelIcon from "@material-ui/icons/Cancel";
 import UndoIcon from "@material-ui/icons/Undo";
+import LocalAirportIcon from "@material-ui/icons/LocalAirport";
 const OrderDetailRow = ({
   id,
   title,
@@ -17,16 +18,14 @@ const OrderDetailRow = ({
 }) => {
   const today = new Date();
   const preOrder = relDate.toDate() < today;
-  // console.log(aList.moved);
   return (
     <div
-      className={`${
+      className={`${aList.shipped && " bg-blue-300"}
+      ${
         (aList?.moved || aList?.canceled) && "bg-gray-300"
       } text-xs place-items-center grid grid-cols-28 grid-flow-col 
       text-center border-b border-l border-r py-1 ${
-        !preOrder && !aList?.moved && !aList?.canceled && !aList?.refunded
-          ? "bg-red-200"
-          : ""
+        !preOrder && !aList?.moved && !aList?.canceled ? "bg-red-200" : ""
       }`}
     >
       <input
@@ -35,7 +34,7 @@ const OrderDetailRow = ({
         id={id}
         onChange={e => changeHandler(e.currentTarget.checked, id)}
         checked={checkedInputs.includes(id) ? true : false}
-        disabled={aList?.moved || aList?.canceled}
+        disabled={aList?.moved || aList?.canceled || aList?.shipped}
       />
       <div>{id}</div>
       <div className="col-span-3">{createdAt}</div>
@@ -50,6 +49,9 @@ const OrderDetailRow = ({
         )}
         {aList?.canceled && (
           <CancelIcon style={{ color: "#1F2937", fontSize: "medium" }} />
+        )}
+        {aList?.shipped && (
+          <LocalAirportIcon style={{ color: "#1F2937", fontSize: "medium" }} />
         )}
         <div
           className={`${(aList?.moved || aList?.canceled) && "line-through"}`}

@@ -97,9 +97,16 @@ const OrderDetail = ({ match }) => {
   // 운임, 총무게
   const totalWeight =
     order.data.list &&
-    order.data.list.reduce((i, c) => {
-      return i + c.weight * c.quan;
-    }, 0) / 1000;
+    order.data.list
+      .filter(
+        list =>
+          list.canceled === false &&
+          list.moved === false &&
+          list.shipped === false
+      )
+      .reduce((i, c) => {
+        return i + c.weight * c.quan;
+      }, 0) / 1000;
 
   // 몇번재 구간에 걸리는지 num 에서 1빼야함
   let num = 1;
@@ -120,18 +127,48 @@ const OrderDetail = ({ match }) => {
         Object.values(doc).find(asd => asd.country.includes(country))
       )
     );
-
-  // 가격
+  // 배송비 가격
   const fee =
-    z && country.length > 0 && totalWeight < 30
+    z && country.length > 0 && totalWeight < 30 && totalWeight > 0
       ? Number(
           Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
             .fee[num - 1].split(",")
             .join("")
         ) / exchangeRate[order.data.currency]
+      : totalWeight === 0
+      ? 0
       : (totalWeight * order.data.shippingRate[shippingType]) /
         exchangeRate[order.data.currency];
 
+  // 상품 total price
+  const totalPrice = order.data.list
+    .filter(
+      list =>
+        list.canceled === false &&
+        list.moved === false &&
+        list.shipped === false
+    )
+    .reduce((i, c) => {
+      return i + c.price * c.quan;
+    }, 0);
+
+  // amount price
+  const amountPrice = totalPrice + fee;
+
+  const saveRecal = () => {
+    db.collection("orders")
+      .doc("b2b")
+      .collection("b2borders")
+      .doc(id)
+      .update({
+        shippingType,
+        country,
+        shippingFee: Number(fee.toFixed(2)),
+        amountPrice: Number(amountPrice.toFixed(2)),
+        totalPrice: Number(totalPrice.toFixed(2)),
+      });
+    alert("수정 완료");
+  };
   // 주문간 상품 이동
   const moveList = async e => {
     e.preventDefault();
@@ -143,18 +180,14 @@ const OrderDetail = ({ match }) => {
       .collection("orders")
       .doc("b2b")
       .collection("b2borders")
-      .doc(
-        orders.find(arr => arr.data.orderNumber === Number(orderNumberSelect))
-          .id
-      )
+      .doc(orders.find(arr => arr.data.orderNumber === orderNumberSelect).id)
       .update({
         list: [
           ...checkedInputs.map(doc =>
             order.data.list.find(arr => arr.childOrderNumber === doc)
           ),
-          ...orders.find(
-            arr => arr.data.orderNumber === Number(orderNumberSelect)
-          ).data.list,
+          ...orders.find(arr => arr.data.orderNumber === orderNumberSelect).data
+            .list,
         ],
       });
     // 기존엔 이동된 상품들은 기존 주문에서 지움 -> moved true로 바꿔서 취소선 그어지고 체크박스 못쓰게
@@ -184,8 +217,7 @@ const OrderDetail = ({ match }) => {
     await alert("이동되었습니다");
     history.replace(
       `/orderdetail/${
-        orders.find(arr => arr.data.orderNumber === Number(orderNumberSelect))
-          .id
+        orders.find(arr => arr.data.orderNumber === orderNumberSelect).id
       }`
     );
     // await reset();
@@ -225,7 +257,7 @@ const OrderDetail = ({ match }) => {
       .set({
         orderId: id,
         orderNumber: order.data.orderNumber,
-        shippingNumber: shippingCounts + 1,
+        shippingNumber: order.data.orderNumber,
         shippedDate: new Date(),
         shippingType,
         customer: order.data.customer,
@@ -251,15 +283,21 @@ const OrderDetail = ({ match }) => {
       .collection("b2borders")
       .doc(id)
       .update({
-        list: order.data.list.filter(
-          item => !checkedInputs.includes(item.childOrderNumber)
-        ),
+        list: [
+          ...order.data.list.filter(
+            item => !checkedInputs.includes(item.childOrderNumber)
+          ),
+          ...checkedInputs
+            .map(doc =>
+              order.data.list.find(arr => arr.childOrderNumber === doc)
+            )
+            .map(doc2 => {
+              doc2.shipped = true;
+              return doc2;
+            }),
+        ],
       });
-
-    await db
-      .collection("forNumberedId")
-      .doc("shipping")
-      .set({ counts: state.shippingCounts + 1 });
+    await setCheckedInputs([]);
   };
 
   return (
@@ -318,6 +356,7 @@ const OrderDetail = ({ match }) => {
                     onChange={onChange}
                     className="border p-1"
                   >
+                    <option value="credit">credit</option>
                     <option value="transfer">transfer</option>
                   </select>
                 </div>
@@ -489,13 +528,13 @@ const OrderDetail = ({ match }) => {
               </div>
             </div>
             {/* // dep-3-2 */}
-            <div className="w-full text-center mb-3 font-semibold">
+            <div className="w-full text-center mb-1 font-semibold">
               PRODUCTS
             </div>
             {/* dep-3-3 */}
             <div
               className="grid grid-cols-28 text-center bg-gray-800
-            text-sm py-1 rounded-sm text-gray-100"
+            text-sm font-semibold rounded-sm text-gray-100"
             >
               <div></div>
               <div>No.</div>
@@ -613,7 +652,16 @@ const OrderDetail = ({ match }) => {
               </div>
 
               <div className="grid grid-cols-2 w-96  mb-3">
-                <div>SHIPPING FEE</div>
+                <div>
+                  <button
+                    onClick={saveRecal}
+                    className="cursor-pointer bg-gray-700 p-1 px-2 rounded-sm
+                     text-gray-200 text-sm mr-3"
+                  >
+                    재계산
+                  </button>{" "}
+                  SHIPPING FEE
+                </div>
                 <div>
                   {order?.data.shippingFee.toLocaleString("ko-KR")}{" "}
                   {order?.data.currency}

@@ -11,7 +11,7 @@ const StoreProduct = ({
   user,
   products,
 }) => {
-  const [inputStock, setInputStock] = useState("");
+  const [inputStock, setInputStock] = useState();
 
   const handleInputStock = e => {
     setInputStock(Number(e.target.value));
@@ -51,6 +51,9 @@ const StoreProduct = ({
         )
       ) {
         const barcodeStock = prompt("재고 조사한 총 수량을 입력하세요");
+        if (!parseInt(barcodeStock)) {
+          return alert("숫자를 입력해 주세요");
+        }
         const barcodeType = prompt(
           "거래처를 입력해주세요(미입력시 재고조정)",
           "재고조정"
@@ -75,9 +78,10 @@ const StoreProduct = ({
               type: barcodeType,
               writer: user.email,
               amount:
-                Number(barcodeTotalStock) -
-                Number(barcodeStock) -
-                Number(bigTotalSold),
+                (Number(barcodeTotalStock) -
+                  Number(barcodeStock) -
+                  Number(bigTotalSold)) *
+                -1,
               date: new Date(),
             }),
           });

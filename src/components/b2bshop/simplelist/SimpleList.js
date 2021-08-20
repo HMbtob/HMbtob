@@ -20,7 +20,7 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
     <div className="m-auto h-3/4 w-11/12 mt-9 flex flex-col text-center text-sm font-bold text-gray-800">
       CART LIST
       <div
-        className="grid grid-cols-6 place-items-center text-center text-xs bg-gray-800 p-1 
+        className="grid grid-cols-6 place-items-center text-center text-xs bg-gray-800 py-1 
         text-gray-200"
       >
         <div className="col-span-3">TITLE</div>
@@ -91,14 +91,6 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
             <Modal open={modalOpen} close={closeModal} header={"문의하기"}>
               <InSimpleList />
             </Modal>
-            <button
-              onClick={() => auth.signOut()}
-              className="cursor-pointer bg-gray-800 px-3 
-          py-1 rounded-sm text-gray-100 font-semibold
-          mb-2"
-            >
-              Logout
-            </button>
           </div>
         </div>
       </div>

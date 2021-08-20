@@ -34,11 +34,15 @@ const OrderListRow = ({
         <div className="col-span-2">{customer}</div>
         <div>{orderState} </div>
         <div>
-          {order.data.totalPrice.toFixed(2).toLocaleString("ko-KR")}{" "}
+          {order.data.currency === "KRW"
+            ? order.data.totalPrice.toLocaleString("ko-KR")
+            : order.data.totalPrice.toFixed(2).toLocaleString("ko-KR")}{" "}
           {order.data.currency}
         </div>
         <div>
-          {order.data.amountPrice.toFixed(2).toLocaleString("ko-KR")}{" "}
+          {order.data.currency === "KRW"
+            ? order.data.amountPrice.toLocaleString("ko-KR")
+            : order.data.amountPrice.toFixed(2).toLocaleString("ko-KR")}{" "}
           {order.data.currency}
         </div>
         <div>{order.data.list.length} type</div>

@@ -59,7 +59,7 @@ const MyOrderDetail = ({ match }) => {
 
           <div className="flex-col mb-10 flex space-y-2 w-1/3">
             <div className="grid grid-cols-2">
-              <div>recipient</div>
+              <div>Recipient</div>
               <div>{order.data.recipient}</div>
             </div>
             <div className="grid grid-cols-2">
@@ -103,10 +103,10 @@ const MyOrderDetail = ({ match }) => {
           className="grid grid-cols-28 text-center bg-gray-800
             text-xs py-1 rounded-sm text-gray-100 font-semibold"
         >
-          <div className="col-span-2">No.</div>
+          <div className="col-span-3">No.</div>
           <div className="col-span-3">DATE</div>
           <div className="col-span-3">RELEASE</div>
-          <div className="col-span-12">TITLE</div>
+          <div className="col-span-11">TITLE</div>
           <div className="col-span-2">PRICE</div>
           <div className="col-span-2">EA</div>
           <div className="col-span-2">WEIGHTS</div>

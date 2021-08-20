@@ -50,6 +50,8 @@ const CustomerDetail = ({ match }) => {
     handleCredit: "",
     // 커런시
     currency: user.data.currency,
+    // alias
+    alias: user.data.alias,
   });
 
   const {
@@ -76,6 +78,7 @@ const CustomerDetail = ({ match }) => {
     memo,
     handleCredit,
     currency,
+    alias,
   } = form;
 
   const dcValues = { cd, dvdBlueRay, goods, photoBook, officialStore, beauty };
@@ -108,6 +111,7 @@ const CustomerDetail = ({ match }) => {
         memo,
         type,
         currency,
+        alias,
       });
     alert("수정 완료");
   };
@@ -195,6 +199,15 @@ const CustomerDetail = ({ match }) => {
               <input
                 name="nickname"
                 value={nickName}
+                onChange={onChange}
+                className="border p-1"
+              />{" "}
+            </div>
+            <div className="grid grid-cols-2">
+              <div>Alias</div>
+              <input
+                name="alias"
+                value={alias}
                 onChange={onChange}
                 className="border p-1"
               />{" "}

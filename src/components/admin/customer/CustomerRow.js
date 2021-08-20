@@ -6,10 +6,13 @@ const CustomerRow = ({ account }) => {
   return (
     <div
       onClick={() => history.push(`/customerdetail/${account.data.uid}`)}
-      className="grid grid-cols-4 text-center py-1 bg-white border"
+      className="grid grid-cols-6 text-center py-1 
+      bg-white border cursor-pointer"
     >
       <div className="col-span-2">{account.data.email}</div>
       <div>{account.data.displayName}</div>
+      <div>{account.data.nickName}</div>
+      <div>{account.data.alias}</div>
       <div>{account.data.type}</div>
     </div>
   );

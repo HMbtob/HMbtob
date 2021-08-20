@@ -49,7 +49,7 @@ export const Common = ({
       </div>
       <div
         className="grid grid-cols-20 grid-flow-col 
-        text-center bg-gray-800 py-1 
+        text-center bg-gray-800
         text-gray-200 text-sm font-semibold"
       >
         <div className="col-span-2">COVER</div>

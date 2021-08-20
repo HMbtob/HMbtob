@@ -23,11 +23,10 @@ const StockTable = ({ stockHistory, bigTotalSold, totalStock }) => {
             <div className="col-span-3 text-sm"> {de.writer}</div>
 
             <div>
-              {de.type === "sell on B2B"
-                ? `- ${de.amount}`
-                : de.amount * -1 > 0
-                ? `+ ${de.amount * -1}`
-                : de.amount * -1}{" "}
+              {de.type === "sell on B2B" && `- ${de.amount}`}
+              {de.type !== "sell on B2B" && de.amount === 0 && de.amount}
+              {de.type !== "sell on B2B" && de.amount < 0 && de.amount}
+              {de.type !== "sell on B2B" && de.amount > 0 && `+ ${de.amount}`}
             </div>
           </div>
         ))}
