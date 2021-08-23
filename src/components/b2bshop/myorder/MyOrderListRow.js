@@ -15,7 +15,7 @@ const MyOrderListRow = ({ id, orderNumber, createdAt, orderState, order }) => {
     return (
       <div
         onClick={() => history.push(`/myorderlist/${id}`)}
-        className={`grid grid-cols-8 grid-flow-col text-center 
+        className={`grid grid-cols-7 grid-flow-col text-center 
         border-b border-l border-r py-1 text-sm cursor-pointer  ${
           included ? " bg-red-200" : ""
         }`}
@@ -50,12 +50,6 @@ const MyOrderListRow = ({ id, orderNumber, createdAt, orderState, order }) => {
             return i + c.quan;
           }, 0)}{" "}
           EA
-        </div>
-        <div>
-          {order.data.list.reduce((i, c) => {
-            return i + c.weight * c.quan;
-          }, 0) / 1000}{" "}
-          KG
         </div>
       </div>
     );

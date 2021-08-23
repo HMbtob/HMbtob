@@ -1,30 +1,23 @@
-import { auth } from "../../../firebase";
 import SimpleListRow from "./SimpleListRow";
-import Modal from "../../modal/Modal";
-import React, { useState } from "react";
-import { useHistory } from "react-router";
-import InSimpleList from "../../chat/InSimpleList";
-const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
+import React from "react";
+const SimpleList = ({
+  simpleList,
+  confirmChecked,
+  B2bMakeOrder,
+  state,
+  onChange,
+  deleteList,
+}) => {
   const { user } = state;
-  const [modalOpen, setModalOpen] = useState(false);
-  const history = useHistory();
-
-  const openModal = () => {
-    setModalOpen(true);
-  };
-  const closeModal = () => {
-    setModalOpen(false);
-  };
-
   return (
     <div className="m-auto h-3/4 w-11/12 mt-9 flex flex-col text-center text-sm font-bold text-gray-800">
       CART LIST
       <div
-        className="grid grid-cols-6 place-items-center text-center text-xs bg-gray-800 py-1 
+        className="grid grid-cols-7 place-items-center text-center text-xs bg-gray-800 py-1 
         text-gray-200"
       >
         <div className="col-span-3">TITLE</div>
-        <div className="col-span-1">QUAN</div>
+        <div className="col-span-2">QUAN</div>
         <div className="col-span-1">PRICE</div>
         <div className="col-span-1">TOTAL</div>
       </div>
@@ -36,6 +29,10 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
             quan={doc.quan}
             price={doc.price}
             totalPrice={doc.totalPrice}
+            onChange={onChange}
+            id={doc.productId}
+            simpleList={simpleList}
+            deleteList={deleteList}
           />
         ))}
         {/* 버튼들 */}
@@ -64,7 +61,7 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
             >
               ORDER
             </button>
-            <button
+            {/* <button
               onClick={() => history.push("/myorderlist")}
               className="cursor-pointer bg-gray-800 px-3 
           py-1 rounded-sm text-gray-100 font-semibold
@@ -86,11 +83,11 @@ const SimpleList = ({ simpleList, confirmChecked, B2bMakeOrder, state }) => {
           py-1 rounded-sm text-gray-100 font-semibold
           mb-2"
             >
-              Contact
+              Message
             </button>
             <Modal open={modalOpen} close={closeModal} header={"문의하기"}>
               <InSimpleList />
-            </Modal>
+            </Modal> */}
           </div>
         </div>
       </div>

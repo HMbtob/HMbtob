@@ -1,10 +1,14 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { InitDataContext } from "../../../App";
 import { db } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
 import OrderDetailRow from "./OrderDetailRow";
 import { useHistory } from "react-router";
 import ShippingList from "../shipping/ShippingList";
+import CancelIcon from "@material-ui/icons/Cancel";
+import UndoIcon from "@material-ui/icons/Undo";
+import LocalAirportIcon from "@material-ui/icons/LocalAirport";
+import firebase from "firebase";
 
 const OrderDetail = ({ match }) => {
   const { id } = match.params;
@@ -93,11 +97,25 @@ const OrderDetail = ({ match }) => {
       ?.map(zo => Object.values(zo).map(co => co.country))
       .map(doc => [].concat(...doc))
   );
+  // 전체상품
 
   // 운임, 총무게
   const totalWeight =
     order.data.list &&
     order.data.list
+      .filter(
+        list =>
+          list.canceled === false &&
+          list.moved === false &&
+          list.shipped === false
+      )
+      .reduce((i, c) => {
+        return i + c.weight * c.quan;
+      }, 0) / 1000;
+  // 체크된 상품 총무게
+  const checkedWeight =
+    order.data.list
+      .filter(item => checkedInputs.includes(item.childOrderNumber))
       .filter(
         list =>
           list.canceled === false &&
@@ -118,6 +136,14 @@ const OrderDetail = ({ match }) => {
     num++;
   }
 
+  let num2 = 1;
+  for (let i = 1; i < 31; i++) {
+    let j = i * 0.5;
+    if (j > checkedWeight) {
+      break;
+    }
+    num2++;
+  }
   // 어느나라에 걸리는지
   const zone =
     z &&
@@ -127,7 +153,14 @@ const OrderDetail = ({ match }) => {
         Object.values(doc).find(asd => asd.country.includes(country))
       )
     );
+
   // 배송비 가격
+  const [preFee, setPreFee] = useState(order?.data.shippingFee);
+  const handleFee = e => {
+    setPreFee(Number(e.target.value));
+  };
+
+  // 재계산 배송비
   const fee =
     z && country.length > 0 && totalWeight < 30 && totalWeight > 0
       ? Number(
@@ -140,7 +173,19 @@ const OrderDetail = ({ match }) => {
       : (totalWeight * order.data.shippingRate[shippingType]) /
         exchangeRate[order.data.currency];
 
+  // 체크된 상품 배송비
+  const [checkedItemsFee, setCheckedItemsFee] = useState("");
+  const handleCheckedItemFee = e => {
+    setCheckedItemsFee(Number(e.target.value));
+  };
+
   // 상품 total price
+  const [preTotalPrice, setPreTotalPrice] = useState(order?.data.totalPrice);
+  const handlePreTotalPrice = e => {
+    setPreTotalPrice(Number(e.target.value));
+  };
+
+  // 재계산 totalPrice
   const totalPrice = order.data.list
     .filter(
       list =>
@@ -152,9 +197,23 @@ const OrderDetail = ({ match }) => {
       return i + c.price * c.quan;
     }, 0);
 
-  // amount price
-  const amountPrice = totalPrice + fee;
+  // 체크된 상품 가격
+  const [checkedItemPrice, setCheckedItemPrice] = useState("");
+  const handleCheckedItemPrice = e => {
+    setCheckedItemPrice(Number(e.target.value));
+  };
 
+  // amount price
+  const [preAmountPrice, setPreAmountPrice] = useState(order?.data.amountPrice);
+  const handlePreAmountPrice = e => {
+    setPreAmountPrice(Number(e.target.value));
+  };
+
+  // 재계산 amount
+  const amountPrice = totalPrice + fee;
+  // 체크된 아이템 총액
+  const checkItemAmountPrice = checkedItemPrice + checkedItemsFee;
+  // 재계산 버튼
   const saveRecal = () => {
     db.collection("orders")
       .doc("b2b")
@@ -167,8 +226,24 @@ const OrderDetail = ({ match }) => {
         amountPrice: Number(amountPrice.toFixed(2)),
         totalPrice: Number(totalPrice.toFixed(2)),
       });
-    alert("수정 완료");
+    alert("재계산 완료");
   };
+  // 직접 입력 수정
+  const savePre = () => {
+    db.collection("orders")
+      .doc("b2b")
+      .collection("b2borders")
+      .doc(id)
+      .update({
+        shippingType,
+        country,
+        shippingFee: Number(preFee.toFixed(2)),
+        amountPrice: Number(preAmountPrice.toFixed(2)),
+        totalPrice: Number(preTotalPrice.toFixed(2)),
+      });
+    alert("직접 수정 완료");
+  };
+
   // 주문간 상품 이동
   const moveList = async e => {
     e.preventDefault();
@@ -276,7 +351,19 @@ const OrderDetail = ({ match }) => {
           checkedInputs.includes(item.childOrderNumber)
         ),
       });
-
+    await db
+      .collection("accounts")
+      .doc(user.email)
+      .update({
+        credit: user.credit - checkItemAmountPrice,
+        creditDetails: firebase.firestore.FieldValue.arrayUnion({
+          type: "makeOrder",
+          currency: user.currency,
+          amount: Number(checkItemAmountPrice),
+          date: new Date(),
+          totalAmount: Number(user.credit) - Number(checkItemAmountPrice),
+        }),
+      });
     await db
       .collection("orders")
       .doc("b2b")
@@ -297,9 +384,40 @@ const OrderDetail = ({ match }) => {
             }),
         ],
       });
+
     await setCheckedInputs([]);
   };
 
+  useEffect(() => {
+    setCheckedItemPrice(
+      Number(
+        order.data.list
+          .filter(item => checkedInputs.includes(item.childOrderNumber))
+          .filter(
+            list =>
+              list.canceled === false &&
+              list.moved === false &&
+              list.shipped === false
+          )
+          .reduce((i, c) => {
+            return i + c.price * c.quan;
+          }, 0)
+      )
+    );
+
+    setCheckedItemsFee(
+      z && country.length > 0 && checkedWeight < 30 && checkedWeight > 0
+        ? Number(
+            Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
+              .fee[num2 - 1].split(",")
+              .join("")
+          ) / exchangeRate[order.data.currency]
+        : checkedWeight === 0
+        ? 0
+        : (checkedWeight * order.data.shippingRate[shippingType]) /
+          exchangeRate[order.data.currency]
+    );
+  }, [checkedInputs, checkedWeight]);
   return (
     // dep-1
     <div className="w-full h-full flex justify-center">
@@ -356,8 +474,7 @@ const OrderDetail = ({ match }) => {
                     onChange={onChange}
                     className="border p-1"
                   >
-                    <option value="credit">credit</option>
-                    <option value="transfer">transfer</option>
+                    <option value="credit">transfer(credit)</option>
                   </select>
                 </div>
                 <div className="grid grid-cols-2 items-center h-8">
@@ -377,7 +494,7 @@ const OrderDetail = ({ match }) => {
                   {user?.phoneNumber}
                 </div>
                 <div className="grid grid-cols-2 h-30">
-                  <div className="text-right pr-5">Memo</div>
+                  <div className="text-right pr-5">Staff Memo</div>
                   <textarea
                     rows="5"
                     cols="19"
@@ -529,7 +646,21 @@ const OrderDetail = ({ match }) => {
             </div>
             {/* // dep-3-2 */}
             <div className="w-full text-center mb-1 font-semibold">
-              PRODUCTS
+              Ordered Items
+            </div>
+            <div className="flex flex-col items-end text-xs mb-3 rounded-md">
+              <div className="bg-red-200 w-44 pl-3 rounded-md mb-1">
+                &nbsp;&nbsp;&nbsp;&nbsp;: Items not yet released{" "}
+              </div>
+              <div className="bg-gray-300 w-44 pl-3 rounded-md  mb-1">
+                <CancelIcon style={{ fontSize: "small" }} />: canceled item
+              </div>
+              <div className="bg-gray-300 w-44 pl-3 rounded-md  mb-1">
+                <UndoIcon style={{ fontSize: "small" }} />: moved item
+              </div>
+              <div className="bg-blue-300 w-44 pl-3 rounded-md  mb-1">
+                <LocalAirportIcon style={{ fontSize: "small" }} />: shipped item
+              </div>
             </div>
             {/* dep-3-3 */}
             <div
@@ -599,12 +730,6 @@ const OrderDetail = ({ match }) => {
             <div className="text-center items-center justify-between flex flex-row mt-6 text-sm">
               <div>
                 <button
-                  onClick={makeShipping}
-                  className="bg-gray-800 text-gray-200 px-2 py-1 ml-5 rounded-sm"
-                >
-                  SHIP
-                </button>
-                <button
                   onClick={makeCancel}
                   className="bg-gray-800 text-gray-200 px-2 py-1 ml-5 rounded-sm"
                 >
@@ -626,6 +751,7 @@ const OrderDetail = ({ match }) => {
                         doc.data.customer === order.data.customer &&
                         doc.data.orderState === "confirmOrder"
                     )
+                    .slice(1)
                     .map((doc, index) => (
                       <option key={index} value={doc.data.orderNumber}>
                         {doc.data.orderNumber}
@@ -642,39 +768,144 @@ const OrderDetail = ({ match }) => {
             </div>
 
             {/* dep-3-6 */}
-            <div className="text-right flex flex-col items-end mt-6 text-lg">
-              <div className="grid grid-cols-2 w-96 mb-3">
-                <div>PRICE</div>
-                <div>
-                  {order?.data.totalPrice.toLocaleString("ko-KR")}{" "}
-                  {order?.data.currency}
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 w-96  mb-3">
-                <div>
+            <div className="flex flex-row justify-between">
+              {/* ship 하는(체크됨) 상품들 가격들 */}
+              <div className="text-right flex flex-col items-end mt-6 text-lg">
+                <div className="grid grid-cols-2 mb-3 items-center">
+                  <div>PRICE</div>
+                  <div className="flex flex-row items-center justify-end w-64">
+                    <div
+                      className="border flex flex-row bg-white w-2/3
+                   items-center justify-end text-sm p-1"
+                    >
+                      <input
+                        type="number"
+                        value={checkedItemPrice}
+                        onChange={handleCheckedItemPrice}
+                        className="w-full text-center outline-none text-sm"
+                      />
+                      {order?.data.currency}
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 mb-3 items-center">
+                  <div>SHIPPING FEE</div>
+                  <div className="flex flex-row items-center justify-end w-64">
+                    <div
+                      className="border flex flex-row bg-white w-2/3
+                   items-center justify-end text-sm p-1"
+                    >
+                      <input
+                        type="number"
+                        value={checkedItemsFee}
+                        onChange={handleCheckedItemFee}
+                        className="w-full text-center outline-none text-sm"
+                      />
+                      {order?.data.currency}
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 w-96 ">
+                  <div>AMOUNT</div>
+                  <div className="flex flex-row items-center justify-end">
+                    <div>
+                      {checkItemAmountPrice?.toLocaleString("ko-KR")}{" "}
+                      {order?.data.currency}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={makeShipping}
+                  className="bg-gray-800 text-gray-200 px-2 
+                 text-sm p-1 mt-3 rounded-sm"
+                >
+                  SHIP
+                </button>
+                {/* 남아있는 상품 가격 */}
+              </div>
+              <div className="text-right flex flex-col items-end mt-6 text-lg">
+                <div className="grid grid-cols-2 mb-3 items-center">
+                  <div>PRICE</div>
+                  <div className="flex flex-row items-center justify-end w-64">
+                    <div
+                      className="border flex flex-row bg-white
+                   items-center justify-end text-sm p-1 w-2/3"
+                    >
+                      <input
+                        type="number"
+                        value={preTotalPrice}
+                        onChange={handlePreTotalPrice}
+                        className="w-full text-center outline-none text-sm"
+                      />
+                      {order?.data.currency}
+                    </div>
+                    <div className="text-xs">
+                      ({totalPrice.toLocaleString("ko-KR")}{" "}
+                      {order?.data.currency})
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 mb-3 items-center">
+                  <div>SHIPPING FEE</div>
+                  <div className="flex flex-row items-center justify-end w-64">
+                    <div
+                      className="border flex flex-row bg-white
+                   items-center justify-end text-sm p-1 w-2/3"
+                    >
+                      <input
+                        type="number"
+                        value={preFee}
+                        onChange={handleFee}
+                        className="w-full text-center outline-none text-sm"
+                      />
+                      {order?.data.currency}
+                    </div>
+                    <div className="text-xs">
+                      ({fee.toLocaleString("ko-KR")} {order?.data.currency})
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 mb-3 items-center">
+                  <div>AMOUNT</div>
+                  <div className="flex flex-row items-center justify-end w-64">
+                    <div
+                      className="border flex flex-row bg-white
+                   items-center justify-end text-sm p-1 w-2/3"
+                    >
+                      <input
+                        type="number"
+                        value={preAmountPrice}
+                        onChange={handlePreAmountPrice}
+                        className="w-full text-center outline-none text-sm"
+                      />
+                      {order?.data.currency}
+                    </div>
+                    <div className="text-xs">
+                      ({amountPrice.toLocaleString("ko-KR")}{" "}
+                      {order?.data.currency})
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-row">
+                  <button
+                    onClick={savePre}
+                    className="cursor-pointer bg-gray-800 p-1 px-2 rounded-sm
+                     text-gray-200 text-sm mr-10 mt-3"
+                  >
+                    수정하기
+                  </button>{" "}
                   <button
                     onClick={saveRecal}
-                    className="cursor-pointer bg-gray-700 p-1 px-2 rounded-sm
-                     text-gray-200 text-sm mr-3"
+                    className="cursor-pointer bg-gray-800 p-1 px-2 rounded-sm
+                     text-gray-200 text-sm mt-3"
                   >
                     재계산
                   </button>{" "}
-                  SHIPPING FEE
-                </div>
-                <div>
-                  {order?.data.shippingFee.toLocaleString("ko-KR")}{" "}
-                  {order?.data.currency}
-                </div>
-              </div>
-              <div className="grid grid-cols-2 w-96 ">
-                <div>AMOUNT</div>
-                <div>
-                  {order?.data.amountPrice.toLocaleString("ko-KR")}{" "}
-                  {order?.data.currency}
                 </div>
               </div>
             </div>
+
             <ShippingList shipping={shipping} from="detail" />
           </>
         )}

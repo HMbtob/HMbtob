@@ -12,7 +12,7 @@ const ShippingList = ({ shipping, from }) => {
           className="w-full text-center my-4 
         text-gray-800 font-semibold"
         >
-          SHIPPING LIST
+          Shipped Items{" "}
         </div>
         <div
           className="grid grid-cols-20  grid-flow-col text-center 

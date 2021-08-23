@@ -2,7 +2,9 @@ import React, { useContext } from "react";
 import { InitDataContext } from "../../../App";
 import ShippingList from "../../admin/shipping/ShippingList";
 import MyOrderDetailRow from "./MyOrderDetailRow";
-
+import CancelIcon from "@material-ui/icons/Cancel";
+import UndoIcon from "@material-ui/icons/Undo";
+import LocalAirportIcon from "@material-ui/icons/LocalAirport";
 const MyOrderDetail = ({ match }) => {
   const { id } = match.params;
   const state = useContext(InitDataContext);
@@ -23,6 +25,7 @@ const MyOrderDetail = ({ match }) => {
         >
           My Order
         </div>
+
         <div className="flex flex-row justify-evenly">
           {/* 주문내용 확인 */}
           <div className="flex-col mb-10 flex space-y-2 w-1/3">
@@ -98,6 +101,20 @@ const MyOrderDetail = ({ match }) => {
           </div>
         </div>
         <div className="w-full text-center font-semibold mb-2">PRODUCTS</div>
+        <div className="flex flex-col items-end text-xs mb-3 rounded-md">
+          <div className="bg-red-200 w-44 pl-3 rounded-md mb-1">
+            &nbsp;&nbsp;&nbsp;&nbsp;: Items not yet released{" "}
+          </div>
+          <div className="bg-gray-300 w-44 pl-3 rounded-md  mb-1">
+            <CancelIcon style={{ fontSize: "small" }} />: canceled item
+          </div>
+          <div className="bg-gray-300 w-44 pl-3 rounded-md  mb-1">
+            <UndoIcon style={{ fontSize: "small" }} />: moved item
+          </div>
+          <div className="bg-blue-300 w-44 pl-3 rounded-md  mb-1">
+            <LocalAirportIcon style={{ fontSize: "small" }} />: shipped item
+          </div>
+        </div>
         {/* dep-3-3 */}
         <div
           className="grid grid-cols-28 text-center bg-gray-800
@@ -106,10 +123,9 @@ const MyOrderDetail = ({ match }) => {
           <div className="col-span-3">No.</div>
           <div className="col-span-3">DATE</div>
           <div className="col-span-3">RELEASE</div>
-          <div className="col-span-11">TITLE</div>
+          <div className="col-span-13">TITLE</div>
           <div className="col-span-2">PRICE</div>
           <div className="col-span-2">EA</div>
-          <div className="col-span-2">WEIGHTS</div>
 
           <div className="col-span-2">AMOUNT</div>
         </div>

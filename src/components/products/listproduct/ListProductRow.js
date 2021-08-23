@@ -120,7 +120,7 @@ const ListProductRow = ({
             : (price / exchangeRate[user?.currency])
                 ?.toFixed(2)
                 ?.toLocaleString("ko-KR")}{" "}
-          {user.currency}
+          {user?.currency}
         </div>
         <div className="col-span-2">
           <StoreProduct

@@ -42,7 +42,6 @@ const CustomerDetail = ({ match }) => {
     officialStore: user.data.dcRates.officialStore * 100,
     beauty: user.data.dcRates.beauty * 100,
     dhl: user.data.shippingRate.dhl,
-    ems: user.data.shippingRate.ems,
     // 추후 기입
     nickName: user.data.nickName,
     memo: user.data.memo,
@@ -73,7 +72,6 @@ const CustomerDetail = ({ match }) => {
     officialStore,
     beauty,
     dhl,
-    ems,
     nickName,
     memo,
     handleCredit,
@@ -82,7 +80,7 @@ const CustomerDetail = ({ match }) => {
   } = form;
 
   const dcValues = { cd, dvdBlueRay, goods, photoBook, officialStore, beauty };
-  const shippingRate = { dhl, ems };
+  const shippingRate = { dhl };
 
   const saveDetails = () => {
     db.collection("accounts")
@@ -105,7 +103,7 @@ const CustomerDetail = ({ match }) => {
           officialStore: Number(officialStore) / 100,
           beauty: Number(beauty) / 100,
         },
-        shippingRate: { dhl, ems },
+        shippingRate: { dhl },
         nickName,
         inCharge,
         memo,
@@ -150,7 +148,12 @@ const CustomerDetail = ({ match }) => {
             </div>
             <div className="grid grid-cols-2">
               <div>Permission</div>
-              <select name="type" value={type} onChange={onChange}>
+              <select
+                name="type"
+                className="border p-1"
+                value={type}
+                onChange={onChange}
+              >
                 <option value="">권한선택</option>
                 <option value="none">none</option>
                 <option value="customer">customer</option>
@@ -195,7 +198,7 @@ const CustomerDetail = ({ match }) => {
               </select>
             </div>
             <div className="grid grid-cols-2">
-              <div>nick name</div>
+              <div>Nick name</div>
               <input
                 name="nickname"
                 value={nickName}
@@ -213,7 +216,7 @@ const CustomerDetail = ({ match }) => {
               />{" "}
             </div>
             <div className="grid grid-cols-2">
-              <div>memo</div>
+              <div>Memo About Customer</div>
               <textarea
                 name="memo"
                 cols="40"
@@ -354,7 +357,7 @@ const CustomerDetail = ({ match }) => {
               />{" "}
             </div>
             <div className="grid grid-cols-2">
-              <div>state</div>
+              <div>State</div>
               <input
                 name="states"
                 value={states}
@@ -381,7 +384,7 @@ const CustomerDetail = ({ match }) => {
               />{" "}
             </div>
             <div className="grid grid-cols-2">
-              <div>recipient</div>
+              <div>Recipient</div>
               <input
                 name="recipient"
                 value={recipient}
@@ -390,7 +393,7 @@ const CustomerDetail = ({ match }) => {
               />{" "}
             </div>
             <div className="grid grid-cols-2">
-              <div>Memo</div>
+              <div>Shipping Message</div>
               <textarea
                 rows="5"
                 cols="30"

@@ -48,7 +48,15 @@ function useSimpleList(initialForm, f, p) {
   );
   const reset = useCallback(() => dispatch({ type: "RESET" }), []);
 
-  return [form, onChange, reset];
+  const deleteList = useCallback(
+    name => {
+      dispatch({ type: "CHANGE", name, value: 0 });
+      f(false);
+    },
+    [f]
+  );
+
+  return [form, onChange, reset, deleteList];
 }
 
 export default useSimpleList;

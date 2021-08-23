@@ -12,6 +12,8 @@ const PreOrderRow = ({
   product,
   user,
   exchangeRate,
+  reStockRequest,
+  simpleList,
 }) => {
   let today = new Date().getTime();
   let gap = new Date(preOrderDeadline.seconds * 1000).getTime() - today;
@@ -75,6 +77,7 @@ const PreOrderRow = ({
         type="number"
         name={name}
         onChange={onChange}
+        value={simpleList?.find(list => list.productId === name)?.quan}
         className="w-1/2 h-6 border text-center col-span-2"
       />
       {Number(product.data.stock) > 0 ? (
@@ -85,7 +88,7 @@ const PreOrderRow = ({
           className="font-extrabold text-red-600 
       text-xl absolute pl-8 items-center flex flex-row"
         >
-          <div className="opacity-50 z-0">OUT OF STOCK ‼️ OUT OF STOCK ‼️</div>
+          <div className="opacity-40 z-0">OUT OF STOCK ‼️ </div>
           {product.data.reStockable === "가능" ? (
             <>
               <div
@@ -104,7 +107,9 @@ const PreOrderRow = ({
               </button>
             </>
           ) : (
-            <div className="opacity-50 z-0">OUT OF STOCK ‼️</div>
+            <div className="opacity-40 z-0">
+              OUT OF STOCK ‼️ NO MORE REPUBLISHED !!
+            </div>
           )}
         </div>
       )}

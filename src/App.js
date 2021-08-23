@@ -114,6 +114,21 @@ function App() {
       );
   }, [dispatch]);
 
+  //
+  useEffect(() => {
+    db.collection("reStockRequests")
+      .orderBy("title", "desc")
+      .onSnapshot(snapshot =>
+        dispatch({
+          type: "RESTOCK_REQUEST",
+          reStockRequest: snapshot.docs.map(doc => ({
+            id: doc?.id,
+            data: doc?.data(),
+          })),
+        })
+      );
+  }, [dispatch]);
+
   useEffect(() => {
     db.collection("forNumberedId")
       .doc("b2bOrder")

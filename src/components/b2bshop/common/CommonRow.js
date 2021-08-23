@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export default function CommonRow({
   id,
   title,
@@ -9,7 +11,14 @@ export default function CommonRow({
   product,
   user,
   exchangeRate,
+  reStockRequest,
+  simpleList,
 }) {
+  const [qty, setQty] = useState("");
+
+  const handleQty = e => {
+    setQty(e?.target.value);
+  };
   return (
     <div
       id={id}
@@ -61,6 +70,7 @@ export default function CommonRow({
         type="number"
         name={name}
         onChange={onChange}
+        value={simpleList?.find(list => list.productId === name)?.quan}
         className="w-1/2 h-7 border text-center col-span-2"
       />
       {Number(product.data.stock) > 0 || product.data.limitedStock === false ? (
@@ -71,7 +81,7 @@ export default function CommonRow({
           className="font-extrabold text-red-600 
       text-xl absolute pl-8 items-center flex flex-row"
         >
-          <div className="opacity-50 z-0">OUT OF STOCK ‼️ OUT OF STOCK ‼️</div>
+          <div className="opacity-40 z-0">OUT OF STOCK ‼️ </div>
           {product.data.reStockable === "가능" ? (
             <>
               <div
@@ -82,15 +92,27 @@ export default function CommonRow({
                   type="number"
                   placeholder="RE STOCK"
                   className="w-28 p-1 z-20 opacity-100"
+                  value={qty}
+                  onChange={handleQty}
                 />{" "}
                 EA
               </div>
-              <button className="bg-red-500 text-white rounded px-3 font-semibold z-20 opacity-100">
+              <button
+                className="bg-red-500 text-white rounded 
+              px-3 font-semibold z-20 opacity-100"
+                onClick={() => {
+                  reStockRequest(product, user, qty);
+                  setQty("");
+                }}
+              >
                 REQUEST{" "}
               </button>
             </>
           ) : (
-            <div className="opacity-50 z-0">OUT OF STOCK ‼️</div>
+            <div className="opacity-40 z-0">
+              {" "}
+              OUT OF PRINT ‼️ NO MORE REPUBLISHED !!
+            </div>
           )}
         </div>
       )}

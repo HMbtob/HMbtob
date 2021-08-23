@@ -6,11 +6,12 @@ import FirstPageIcon from "@material-ui/icons/FirstPage";
 import LastPageIcon from "@material-ui/icons/LastPage";
 import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
+import RestockRequests from "./restockrequests/RestockRequests";
 const ListProduct = () => {
   const state = useContext(InitDataContext);
   const dispatch = useContext(InitDispatchContext);
-  const { products, orders, shippings, user, exchangeRate } = state;
-
+  const { products, orders, shippings, user, exchangeRate, reStockRequests } =
+    state;
   const [page, setPage] = useState(0);
   const [pages, setPages] = useState([-4, -3, -2, -1, 0, 1, 2, 3, 4]);
   // 로딩관리
@@ -141,6 +142,7 @@ const ListProduct = () => {
           />
         </div>
       </div>
+      <RestockRequests reStockRequests={reStockRequests} />
     </div>
   );
 };

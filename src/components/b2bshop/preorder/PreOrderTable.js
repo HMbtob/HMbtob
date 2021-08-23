@@ -1,7 +1,14 @@
 import React from "react";
 import PreOrderRow from "./PreOrderRow";
 
-const PreOrderTable = ({ preorderProducts, onChange, user, exchangeRate }) => {
+const PreOrderTable = ({
+  preorderProducts,
+  onChange,
+  user,
+  exchangeRate,
+  reStockRequest,
+  simpleList,
+}) => {
   return (
     <div className="flex flex-col w-11/12 h-64 mb-5">
       <div
@@ -36,6 +43,8 @@ const PreOrderTable = ({ preorderProducts, onChange, user, exchangeRate }) => {
               product={product}
               user={user}
               exchangeRate={exchangeRate}
+              reStockRequest={reStockRequest}
+              simpleList={simpleList}
             />
           ))}
       </div>

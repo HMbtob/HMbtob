@@ -20,6 +20,8 @@ export const initState = {
   dhlShippingFee: [],
   // 환율
   exchangeRate: [],
+  // 재입고요청
+  reStockRequests: [],
 };
 
 export function dataReducer(state, action) {
@@ -63,6 +65,11 @@ export function dataReducer(state, action) {
       return {
         ...state,
         unShippedProductsIdandQty: action.unShippedProductsIdandQty,
+      };
+    case "RESTOCK_REQUEST":
+      return {
+        ...state,
+        reStockRequests: action.reStockRequest,
       };
 
     default:

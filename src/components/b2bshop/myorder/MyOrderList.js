@@ -17,7 +17,7 @@ const MyOrderList = () => {
         </div>
         {/* <button>주문확인</button> */}
         <div
-          className="grid grid-cols-8  grid-flow-col text-center 
+          className="grid grid-cols-7  grid-flow-col text-center 
        bg-gray-800 text-gray-100 py-1 rounded-sm text-xs font-semibold"
         >
           <div>ORDER NUMBER</div>
@@ -26,7 +26,6 @@ const MyOrderList = () => {
           <div>PRICE</div>
           <div>SORTS</div>
           <div>EA</div>
-          <div>WEIGHT</div>
         </div>
         <div>
           {userOrders &&

@@ -11,7 +11,7 @@ const CreditDetails = ({ creditDetails }) => {
       </div>
       {creditDetails &&
         creditDetails.map((de, i) => (
-          <div key={i} className="grid grid-cols-5 text-center">
+          <div key={i} className="grid grid-cols-5 text-center border-b py-1">
             <div>{de.type}</div>
             <div>
               {de.type === "makeOrder" ? "-" : de.type === "charge" ? "+" : ""}

@@ -107,7 +107,7 @@ const B2bOrder = () => {
   ];
 
   const options = [
-    [{ transfer: "transfer" }, { credit: "credit" }],
+    [{ credit: "Bank Transfer(Credit)" }],
     [
       { dhl: "DHL" },
       // { ems: "EMS" }
@@ -193,21 +193,21 @@ const B2bOrder = () => {
         memo: "",
       });
 
-    if (paymentMethod === "credit") {
-      await db
-        .collection("accounts")
-        .doc(user.email)
-        .update({
-          credit: user.credit - amountPrice,
-          creditDetails: firebase.firestore.FieldValue.arrayUnion({
-            type: "makeOrder",
-            currency: user.currency,
-            amount: Number(amountPrice),
-            date: new Date(),
-            totalAmount: Number(user.credit) - Number(amountPrice),
-          }),
-        });
-    }
+    // if (paymentMethod === "credit") {
+    //   await db
+    //     .collection("accounts")
+    //     .doc(user.email)
+    //     .update({
+    //       credit: user.credit - amountPrice,
+    //       creditDetails: firebase.firestore.FieldValue.arrayUnion({
+    //         type: "makeOrder",
+    //         currency: user.currency,
+    //         amount: Number(amountPrice),
+    //         date: new Date(),
+    //         totalAmount: Number(user.credit) - Number(amountPrice),
+    //       }),
+    //     });
+    // }
     // totalsold 계산
     for (let i = 0; i < simpleLists.length; i++) {
       db.collection("products")
@@ -312,7 +312,6 @@ const B2bOrder = () => {
                     />
                   ) : doc === "shippingMessage" ? (
                     <textarea
-                      required
                       rows="5"
                       cols="19"
                       name="shippingMessage"
@@ -421,7 +420,7 @@ const B2bOrder = () => {
           <div className="grid grid-cols-2 w-2/3 text-right ">
             <div>TOTAL PRICE</div>
             <div>
-              {simpleLists && simpleLists[0].currency === "KRW"
+              {simpleLists && simpleLists[0]?.currency === "KRW"
                 ? totalPrice.toLocaleString("ko-KR")
                 : totalPrice.toFixed(2).toLocaleString("ko-KR")}{" "}
               {user?.currency}

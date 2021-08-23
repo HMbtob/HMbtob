@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useHistory } from "react-router";
-
+import { db } from "../../../firebase";
 import { InitDataContext, InitDispatchContext } from "../../../App";
 import { Common } from "../common/Common";
 import NoticeTable from "../notice/NoticeTable";
@@ -10,6 +10,8 @@ import useSimpleList from "../../../hooks/useSimpleList";
 import DealTable from "../deal/DealTable";
 import SearchIcon from "@material-ui/icons/Search";
 import RestoreIcon from "@material-ui/icons/Restore";
+import Modal from "../../modal/Modal";
+import InSimpleList from "../../chat/InSimpleList";
 
 const B2bShop = () => {
   const history = useHistory();
@@ -23,6 +25,15 @@ const B2bShop = () => {
     setQuery(value);
   };
 
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
   // order number를 위한 0 포함된 숫자 만드는 함수
   const addZeros = (n, digits) => {
     let zero = "";
@@ -34,7 +45,7 @@ const B2bShop = () => {
   };
   // order number를 위한 마지막 3자리 숫자 만들기
   const forOrderNumber = orders
-    .filter(order => order.data.customer === user.email)
+    .filter(order => order.data.customer === user?.email)
     .filter(
       order =>
         new Date(order.data.createdAt.seconds * 1000)
@@ -42,7 +53,7 @@ const B2bShop = () => {
           .substring(0, 10) === new Date(today).toISOString().substring(0, 10)
     )
     ? orders
-        .filter(order => order.data.customer === user.email)
+        .filter(order => order.data.customer === user?.email)
         .filter(
           order =>
             new Date(order.data.createdAt.seconds * 1000)
@@ -227,10 +238,13 @@ const B2bShop = () => {
 
   // {title(id):quan} 형태로 가져오기
   const [confirmChecked, setConfirmCheck] = useState(false);
-  const [form, onChange, reset] = useSimpleList({}, setConfirmCheck, products);
+  const [form, onChange, reset, deleteList] = useSimpleList(
+    {},
+    setConfirmCheck,
+    products
+  );
   // list 만들기
   let simpleList = [];
-
   if (form && products) {
     let i = 0;
     for (let key in form) {
@@ -310,9 +324,20 @@ const B2bShop = () => {
     history.push(`/b2border`);
   };
 
-  // useEffect(() => {
-  //   searchedProducts();
-  // }, [Clear]);
+  // common 이랑 preorder 에 재고 재입고 요청하기
+  const reStockRequest = (product, user, qty) => {
+    db.collection("reStockRequests").doc().set({
+      requestDate: new Date(),
+      barcode: product.data.barcode,
+      sku: product.data.sku,
+      title: product.data.title,
+      customer: user?.email,
+      qty: qty,
+      confirmed: false,
+    });
+    alert("요청되었습니다");
+  };
+
   return (
     <div className="w-full h-auto flex ">
       {/* d2 -1 */}
@@ -322,23 +347,51 @@ const B2bShop = () => {
       >
         <form
           onSubmit={searchedProducts}
-          className="top-2 left-40 fixed z-50 
-        bg-gray-200 p-1 rounded-lg w-96 flex flex-row"
+          className="top-2 left-40 fixed z-50 flex flex-row
+        "
         >
-          <input
-            type="text"
-            className=" rounded-md outline-none pl-3 w-80"
-            placeholder="search"
-            onChange={queryOnChange}
-            value={query}
-          />{" "}
-          <div className="flex flex-row justify-evenly w-1/4">
-            <SearchIcon
-              className="cursor-pointer"
-              type="submit"
-              onClick={searchedProducts}
-            />
-            <RestoreIcon onClick={handleClear} className="cursor-pointer" />
+          <div className="bg-gray-200 p-1 rounded-lg w-96 flex flex-row">
+            <input
+              type="text"
+              className=" rounded-md outline-none pl-3 w-80"
+              placeholder="search"
+              onChange={queryOnChange}
+              value={query}
+            />{" "}
+            <div className="flex flex-row justify-evenly w-1/4">
+              <SearchIcon
+                className="cursor-pointer"
+                type="submit"
+                onClick={searchedProducts}
+              />
+              <RestoreIcon onClick={handleClear} className="cursor-pointer" />
+            </div>
+          </div>
+          <div className="pr-5 flex flex-row items-center pl-5">
+            <div
+              onClick={() => history.push("/myorderlist")}
+              className="text-sm font-mono font-bold text-center 
+          text-gray-200 bg-blue-900 mr-5 cursor-pointer"
+            >
+              MyOrders
+            </div>
+            <div
+              onClick={() => history.push(`/myinfo/${user.uid}`)}
+              className="text-sm font-mono font-bold text-center 
+          text-gray-200 bg-blue-900 mr-5 cursor-pointer"
+            >
+              MyInfo
+            </div>
+            <div
+              onClick={openModal}
+              className="text-sm font-mono font-bold text-center 
+          text-gray-200 bg-blue-900 mr-5 cursor-pointer"
+            >
+              Message
+            </div>
+            <Modal open={modalOpen} close={closeModal} header={"문의하기"}>
+              <InSimpleList />
+            </Modal>
           </div>
         </form>
         {preordered && (
@@ -351,6 +404,8 @@ const B2bShop = () => {
               exchangeRate={exchangeRate}
               onChange={onChange}
               user={user}
+              reStockRequest={reStockRequest}
+              simpleList={simpleList}
             />
           </>
         )}
@@ -381,6 +436,7 @@ const B2bShop = () => {
               simpleList={simpleList}
               user={user}
               exchangeRate={exchangeRate}
+              reStockRequest={reStockRequest}
             />
           </>
         )}
@@ -417,6 +473,8 @@ const B2bShop = () => {
           dispatch={dispatch}
           B2bMakeOrder={B2bMakeOrder}
           state={state}
+          onChange={onChange}
+          deleteList={deleteList}
         />
       </div>
     </div>

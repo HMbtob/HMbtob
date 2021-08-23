@@ -9,6 +9,7 @@ export const Common = ({
   simpleList,
   user,
   exchangeRate,
+  reStockRequest,
 }) => {
   const selectCat = e => {
     const { id } = e.target;
@@ -20,7 +21,7 @@ export const Common = ({
     { cd: "cd" },
     { dvdBlueRay: "dvd/blue-ray" },
     { photoBook: "photo book" },
-    { goods: "goods" },
+    { goods: "goods/magazine" },
     { officialStore: "official store" },
     { beauty: "beauty" },
   ];
@@ -79,6 +80,7 @@ export const Common = ({
                 simpleList={simpleList}
                 user={user}
                 exchangeRate={exchangeRate}
+                reStockRequest={reStockRequest}
               />
             ))}
       </div>

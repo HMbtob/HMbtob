@@ -28,7 +28,7 @@ const MyOrderDetailRow = ({ order, id, totalWeight, currency }) => {
         {order.relDate.toDate().toLocaleDateString()}{" "}
       </div>
 
-      <div className="col-span-11 text-left w-full flex flex-row">
+      <div className="col-span-13 text-left w-full flex flex-row">
         {order?.moved && (
           <>
             <div className="no-underline"> {order?.moveTo}</div>
@@ -55,9 +55,7 @@ const MyOrderDetailRow = ({ order, id, totalWeight, currency }) => {
         {currency}
       </div>
       <div className="col-span-2">{order.quan} EA</div>
-      <div className="col-span-2">
-        {Math.round(totalWeight * 0.001 * 10) / 10} kg
-      </div>
+
       <div className="col-span-2">
         {(order.price.toFixed(2) * order.quan).toLocaleString("ko-KR")}{" "}
         {currency}
