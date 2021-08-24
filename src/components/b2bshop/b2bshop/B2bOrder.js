@@ -60,18 +60,17 @@ const B2bOrder = () => {
       setConfirmCheck(false);
     }
   };
-
   //  인풋
   const [form, onChange, reset] = useInputs({
-    recipient: "",
-    street: "",
-    city: "",
-    states: "",
-    country: "",
-    zipcode: "",
-    recipientPhoneNumber: "",
-    recipientEmail: "",
-    shippingMessage: "",
+    recipient: user?.recipient,
+    street: user?.street,
+    city: user?.city,
+    states: user?.states,
+    country: user?.country,
+    zipcode: user?.zipcode,
+    recipientPhoneNumber: user?.recipientPhoneNumber,
+    recipientEmail: user?.recipientEmail,
+    shippingMessage: user?.shippingMessage,
     paymentMethod: "",
     shippingType: "",
     orderEmail: user?.email,
@@ -192,6 +191,17 @@ const B2bOrder = () => {
         totalPrice: Number(totalPrice.toFixed(2)),
         memo: "",
       });
+    await db.collection("accounts").doc(user.email).update({
+      recipient,
+      street,
+      city,
+      states,
+      country,
+      zipcode,
+      recipientPhoneNumber,
+      recipientEmail,
+      shippingMessage,
+    });
 
     // if (paymentMethod === "credit") {
     //   await db
@@ -307,7 +317,7 @@ const B2bOrder = () => {
                       className="border h-8  pl-2"
                       type="text"
                       name={doc}
-                      value={form[index]}
+                      value={form[doc]}
                       onChange={onChange}
                     />
                   ) : doc === "shippingMessage" ? (
@@ -323,7 +333,7 @@ const B2bOrder = () => {
                     <select
                       required
                       name={doc}
-                      value={form[index]}
+                      value={form[doc]}
                       onChange={onChange}
                       className="border"
                     >

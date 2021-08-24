@@ -32,7 +32,10 @@ const Header = () => {
           GoBack
         </div>
         <div
-          onClick={() => auth.signOut()}
+          onClick={async () => {
+            await auth.signOut();
+            await history.replace("/");
+          }}
           className="text-sm font-mono font-bold text-center 
           text-gray-200 bg-blue-900 cursor-pointer"
         >

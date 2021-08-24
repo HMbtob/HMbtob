@@ -7,6 +7,10 @@ import LastPageIcon from "@material-ui/icons/LastPage";
 import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import RestockRequests from "./restockrequests/RestockRequests";
+import SearchIcon from "@material-ui/icons/Search";
+import RestoreIcon from "@material-ui/icons/Restore";
+import TopStoreProduct from "./TopStoreProduct";
+
 const ListProduct = () => {
   const state = useContext(InitDataContext);
   const dispatch = useContext(InitDispatchContext);
@@ -30,6 +34,48 @@ const ListProduct = () => {
     "UNSHIPPED",
     "RELEASE",
   ];
+  // 검색기능구현
+  // 상품들
+  const [preProduct, setPreProduct] = useState(products);
+
+  // 검색어
+  const [query, setQuery] = useState();
+  const queryOnChange = e => {
+    const { value } = e.target;
+    setQuery(value);
+  };
+
+  // 검색하기
+
+  const searchProducts = e => {
+    e.preventDefault();
+
+    setPreProduct(
+      products
+        .filter(
+          doc =>
+            doc.data.title.includes(query.split(" ")[0]) ||
+            doc.data.title.includes(query.split(" ")[1]) ||
+            doc.data.title.toLowerCase().includes(query.split(" ")[0]) ||
+            doc.data.title.toLowerCase().includes(query.split(" ")[1]) ||
+            doc.data.sku.includes(query.split(" ")[0]) ||
+            doc.data.sku.includes(query.split(" ")[1]) ||
+            doc.data.barcode.toLowerCase().includes(query.split(" ")[0]) ||
+            doc.data.barcode.toLowerCase().includes(query.split(" ")[1])
+        )
+        .sort((a, b) => {
+          return (
+            new Date(a.data.preOrderDeadline.seconds) -
+            new Date(b.data.preOrderDeadline.seconds)
+          );
+        })
+    );
+  };
+  // 초기화
+  const handleClear = e => {
+    e.preventDefault();
+    setPreProduct(products);
+  };
 
   useEffect(() => {
     // FIXME:여기다가 미발송 건수 요청하는 함수 넣어서 랜더링 되면
@@ -55,9 +101,37 @@ const ListProduct = () => {
   }, [dispatch]);
   return (
     <div className="flex flex-col w-full">
+      <form
+        onSubmit={searchProducts}
+        className="top-2 left-40 fixed z-50 flex flex-row
+        "
+      >
+        <div className="bg-gray-200 p-1 rounded-lg w-96 flex flex-row">
+          <input
+            type="text"
+            className=" rounded-md outline-none pl-3 w-80"
+            placeholder="search"
+            onChange={queryOnChange}
+            value={query}
+          />{" "}
+          <div className="flex flex-row justify-evenly w-1/4">
+            <SearchIcon
+              className="cursor-pointer"
+              type="submit"
+              onClick={searchProducts}
+            />
+            <RestoreIcon onClick={handleClear} className="cursor-pointer" />
+          </div>
+        </div>
+      </form>
       <div className="ml-28 mt-16 text-gray-800 text-xl">PRODUCT LIST</div>
       <div className="ml-28 mt-2 text-gray-800 text-xs">{loading}</div>
       <div className="border w-11/12 m-auto mt-4 mb-12">
+        <TopStoreProduct
+          products={products}
+          user={user}
+          exchangeRate={exchangeRate}
+        />
         <div className="grid grid-cols-36 text-center border-b p-1 bg-gray-100 sticky top-0 text-sm">
           {headers.map((header, index) => (
             <div
@@ -78,7 +152,7 @@ const ListProduct = () => {
         </div>
         <div className="w-full flex flex-col items-center">
           <div className="w-full">
-            {products?.slice(0 + page * 20, 20 + page * 20).map(product => (
+            {preProduct?.slice(0 + page * 20, 20 + page * 20).map(product => (
               <ListProductRow
                 key={product.id}
                 id={product.id}

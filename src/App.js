@@ -265,7 +265,7 @@ function App() {
                   <Route path="/myinfo/:uid" component={MyInfo} />
                   <Route path="/b2border" component={B2bOrder} />
                   <Route path="/b2bshop" component={B2bShop} />
-                  <Route path="/" component={Home} />
+                  <Route path="/" component={B2bShop} />
                 </Switch>
               </div>
             </InitDataContext.Provider>

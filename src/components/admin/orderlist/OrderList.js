@@ -1,13 +1,77 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
+import { useHistory } from "react-router";
 import { InitDataContext } from "../../../App";
 import OrderListRow from "./OrderListRow";
-
+import SearchIcon from "@material-ui/icons/Search";
+import RestoreIcon from "@material-ui/icons/Restore";
 const OrderList = () => {
+  const history = useHistory();
   const state = useContext(InitDataContext);
-  const { orders } = state;
+  const { orders, user } = state;
+
+  // 주문들
+  const [order, setOrder] = useState(orders);
+
+  // 검색어
+  const [query, setQuery] = useState();
+  const queryOnChange = e => {
+    const { value } = e.target;
+    setQuery(value);
+  };
+
+  // 검색하기 orderNumber, customer
+  const searchProduct = e => {
+    e.preventDefault();
+
+    setOrder(
+      orders
+        .filter(
+          doc =>
+            doc.data.orderNumber.toLowerCase().includes(query.split(" ")[0]) ||
+            doc.data.orderNumber.toLowerCase().includes(query.split(" ")[1]) ||
+            doc.data.customer.toLowerCase().includes(query.split(" ")[0]) ||
+            doc.data.customer.toLowerCase().includes(query.split(" ")[1])
+        )
+        .sort((a, b) => {
+          return (
+            new Date(a.data.createdAt.seconds) -
+            new Date(b.data.createdAt.seconds)
+          );
+        })
+    );
+  };
+
+  // 초기화 버튼
+  const handleClear = e => {
+    e.preventDefault();
+    setOrder(orders);
+  };
   return (
     <div className="w-full h-full flex justify-center">
       <div className=" w-11/12 flex-col mt-20">
+        <form
+          onSubmit={searchProduct}
+          className="top-2 left-40 fixed z-50 flex flex-row
+        "
+        >
+          <div className="bg-gray-200 p-1 rounded-lg w-96 flex flex-row">
+            <input
+              type="text"
+              className=" rounded-md outline-none pl-3 w-80"
+              placeholder="search"
+              onChange={queryOnChange}
+              value={query}
+            />{" "}
+            <div className="flex flex-row justify-evenly w-1/4">
+              <SearchIcon
+                className="cursor-pointer"
+                type="submit"
+                onClick={searchProduct}
+              />
+              <RestoreIcon onClick={handleClear} className="cursor-pointer" />
+            </div>
+          </div>
+        </form>
         <div className="w-full text-center my-4 text-gray-800 text-lg">
           ORDERS
         </div>
@@ -27,8 +91,8 @@ const OrderList = () => {
           <div>WEIGHT</div>
         </div>
         <div>
-          {orders &&
-            orders.map(order => (
+          {order &&
+            order.map(order => (
               <OrderListRow
                 key={order.id}
                 id={order.id}

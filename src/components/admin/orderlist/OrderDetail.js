@@ -77,7 +77,7 @@ const OrderDetail = ({ match }) => {
       shippingMessage,
       memo,
     });
-    alert("Done");
+    alert("저장 완료");
   };
 
   const [checkedInputs, setCheckedInputs] = useState([]);
@@ -350,6 +350,9 @@ const OrderDetail = ({ match }) => {
         list: order.data.list.filter(item =>
           checkedInputs.includes(item.childOrderNumber)
         ),
+        checkedItemsFee,
+        checkedItemPrice,
+        checkItemAmountPrice,
       });
     await db
       .collection("accounts")

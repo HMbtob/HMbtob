@@ -100,7 +100,9 @@ const MyOrderDetail = ({ match }) => {
             </div>
           </div>
         </div>
-        <div className="w-full text-center font-semibold mb-2">PRODUCTS</div>
+        <div className="w-full text-center font-semibold mb-2">
+          Ordered Items
+        </div>
         <div className="flex flex-col items-end text-xs mb-3 rounded-md">
           <div className="bg-red-200 w-44 pl-3 rounded-md mb-1">
             &nbsp;&nbsp;&nbsp;&nbsp;: Items not yet released{" "}
