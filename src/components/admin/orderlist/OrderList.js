@@ -4,11 +4,53 @@ import { InitDataContext } from "../../../App";
 import OrderListRow from "./OrderListRow";
 import SearchIcon from "@material-ui/icons/Search";
 import RestoreIcon from "@material-ui/icons/Restore";
+import AddCircleOutlinedIcon from "@material-ui/icons/AddCircleOutlined";
+import AssignmentIcon from "@material-ui/icons/Assignment";
+import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
+
 const OrderList = () => {
-  const history = useHistory();
   const state = useContext(InitDataContext);
   const { orders, user } = state;
+  // pdf
+  // Create styles
+  const styles = StyleSheet.create({
+    page: {
+      flexDirection: "row",
+      backgroundColor: "#E4E4E4",
+    },
+    section: {
+      margin: 10,
+      padding: 10,
+      flexGrow: 1,
+    },
+  });
 
+  // Create Document Component
+  const MyDocument = () => (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <View style={styles.section}>
+          <Text>Section #1</Text>
+        </View>
+        <View style={styles.section}>
+          <Text>Section #2</Text>
+        </View>
+      </Page>
+    </Document>
+  );
+
+  const [checkedAllItems, setCheckedAllItems] = useState([]);
+
+  // const handleCheckedAllItems = (checked, id) => {
+  //   if (checked) {
+  //     setCheckedAllItems([...checkedAllItems, id]);
+  //     console.log(checkedAllItems);
+  //   } else {
+  //     // 체크 해제
+  //     setCheckedAllItems(checkedAllItems.filter(el => el !== id));
+  //     console.log(checkedAllItems);
+  //   }
+  // };
   // 주문들
   const [order, setOrder] = useState(orders);
 
@@ -77,9 +119,13 @@ const OrderList = () => {
         </div>
         {/* <button>주문확인</button> */}
         <div
-          className="grid grid-cols-11  grid-flow-col text-center 
+          className="grid grid-cols-12  grid-flow-col text-center 
            bg-gray-800 text-gray-100 py-1 rounded-sm text-sm"
         >
+          <div className="flex flex-row justify-around">
+            <AddCircleOutlinedIcon style={{ marginLeft: "11" }} />
+            <AssignmentIcon onClick={() => console.log(checkedAllItems)} />
+          </div>
           <div>No.</div>
           <div className="col-span-2">Date</div>
           <div className="col-span-2">CUSTOMER</div>
@@ -101,6 +147,8 @@ const OrderList = () => {
                 customer={order.data.customer}
                 orderState={order.data.orderState}
                 order={order}
+                setCheckedAllItems={setCheckedAllItems}
+                checkedAllItems={checkedAllItems}
               />
             ))}
         </div>

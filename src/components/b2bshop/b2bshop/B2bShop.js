@@ -305,6 +305,9 @@ const B2bShop = () => {
           canceled: false,
           shipped: false,
           createdAt: new Date(),
+          barcode:
+            products.find(product => product.id === key).data.barcode || "",
+          sku: products.find(product => product.id === key).data.sku || "",
         });
         i++;
       }

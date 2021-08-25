@@ -1,17 +1,36 @@
+import axios from "axios";
 import React from "react";
+import { useEffect } from "react";
 import { useRef } from "react";
 import { useState } from "react";
 import { db } from "../../../firebase";
+import firebase from "firebase";
 
 const TopStoreProduct = ({ products, user, exchangeRate }) => {
   const [inputStock, setInputStock] = useState();
   const [inputBarcodes, setInputBarcodes] = useState();
   const [inputProduct, setInputProduct] = useState();
+  const [bigcTotalSold, setBigcTotalSold] = useState();
   const inputRef1 = useRef(null);
   const inputRef2 = useRef(null);
+
+  // 수량 수량 위해 빅커머스 total sold 가져오기
+  const bigcTotalsold = async () => {
+    if (inputProduct) {
+      await axios
+        .get(
+          `https://us-central1-interasiastock.cloudfunctions.net/app/big/getproductinfo/${inputProduct?.data?.bigC?.id}`
+        )
+        .then(p =>
+          setBigcTotalSold({
+            total_sold: p.data.data.total_sold,
+          })
+        )
+        .catch(e => console.log(e));
+    }
+  };
   const handleInputStock = e => {
     e.preventDefault();
-
     setInputStock(Number(e.target.value));
   };
 
@@ -31,19 +50,46 @@ const TopStoreProduct = ({ products, user, exchangeRate }) => {
 
   const handleSubmit2 = async e => {
     e.preventDefault();
-    // 여기서 await 로 빅커머스 토탈 솔드 가져오기
     // 재고수불부 업데이트
-    // await db
-    //   .collection("products")
-    //   .doc(inputProduct.id)
-    //   .update({
-    //     totalStock: Number(inputProduct.totalStock) + Number(),
-    //   });
+    console.log(
+      inputProduct.data.totalStock,
+      inputStock,
+      bigcTotalSold.total_sold
+    );
+    await db
+      .collection("products")
+      .doc(inputProduct.id)
+      .update({
+        totalStock: Number(inputStock) + Number(bigcTotalSold.total_sold),
+        stockHistory: firebase.firestore.FieldValue.arrayUnion({
+          type: "재고조사",
+          writer: user.email,
+          amount:
+            (Number(inputProduct.data.totalStock) -
+              Number(inputStock) -
+              Number(bigcTotalSold.total_sold)) *
+            -1,
+          date: new Date(),
+        }),
+      });
     // 얼럿으로 완료
+    alert(`총 재고가 ${Number(inputStock)}로 수정되었습니다`);
+    alert(
+      `오차는 ${
+        (Number(inputProduct.data.totalStock) -
+          Number(inputStock) -
+          Number(bigcTotalSold.total_sold)) *
+        -1
+      } 입니다`
+    );
     setInputStock("");
     setInputBarcodes("");
+    setInputProduct("");
     inputRef2.current.focus();
   };
+  useEffect(() => {
+    bigcTotalsold();
+  }, [inputProduct]);
   return (
     <div
       className="grid grid-cols-36 text-center border-b p-1 items-center
@@ -61,20 +107,24 @@ const TopStoreProduct = ({ products, user, exchangeRate }) => {
         />
         <button type="submit"></button>
       </form>
-      <div className="col-span-4">{inputProduct?.data.sku}</div>
+      <div className="col-span-4">{inputProduct && inputProduct?.data.sku}</div>
       <div className="col-span-1"></div>
-      <div className="col-span-12 text-left">{inputProduct?.data.title}</div>
+      <div className="col-span-12 text-left">
+        {inputProduct && inputProduct?.data.title}
+      </div>
       {inputProduct && (
-        <div className="col-span-2">
-          {exchangeRate[user?.currency] === 1
-            ? (
-                inputProduct?.data.price / exchangeRate[user?.currency]
-              )?.toLocaleString("ko-KR")
-            : (inputProduct?.data.price / exchangeRate[user?.currency])
-                ?.toFixed(2)
-                ?.toLocaleString("ko-KR")}{" "}
-          {user?.currency}
-        </div>
+        <>
+          <div className="col-span-2">
+            {exchangeRate[user?.currency] === 1
+              ? (
+                  inputProduct?.data.price / exchangeRate[user?.currency]
+                )?.toLocaleString("ko-KR")
+              : (inputProduct?.data.price / exchangeRate[user?.currency])
+                  ?.toFixed(2)
+                  ?.toLocaleString("ko-KR")}{" "}
+            {user?.currency}
+          </div>
+        </>
       )}
 
       {/* <div className="col-span-2">{inputProduct?.data.price}</div> */}

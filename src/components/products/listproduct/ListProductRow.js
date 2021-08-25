@@ -42,7 +42,6 @@ const ListProductRow = ({
   };
   // 재고수불부 모달
   const [modalOpen, setModalOpen] = useState(false);
-
   const openModal = () => {
     if (forHidden) {
       handleHidden(forHidden);

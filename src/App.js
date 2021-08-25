@@ -27,6 +27,7 @@ import MyInfo from "./components/b2bshop/myorder/MyInfo";
 import OrderProductList from "./components/teamjangnim/OrderProductList";
 import Dev from "./dev/Dev";
 import Header from "./components/header/Header";
+import TotalInvoice from "./components/invoice/TotalInvoice";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -35,7 +36,6 @@ function App() {
   const [user, loading] = useAuthState(auth);
   const [state, dispatch] = useReducer(dataReducer, initState);
   const { userType } = state;
-
   // TODO: 유저타입을 -> user.userType 으로 대체가능한가?
   useEffect(() => {
     db.collection("accounts")

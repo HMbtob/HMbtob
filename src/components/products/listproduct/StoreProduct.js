@@ -39,57 +39,58 @@ const StoreProduct = ({
       setInputStock("");
       alert("수정 완료");
       // 바코드 입력받았을때 로직
-    } else if (inputStock.toString().length >= 10) {
-      // 입력받은 바코드로 상품검색해서 보여주기
-      if (
-        window.confirm(
-          `검색한 상품이 맞습니까? ${
-            products.find(
-              product => product.data.barcode === inputStock.toString()
-            ).data.title
-          }`
-        )
-      ) {
-        const barcodeStock = prompt("재고 조사한 총 수량을 입력하세요");
-        if (!parseInt(barcodeStock)) {
-          return alert("숫자를 입력해 주세요");
-        }
-        const barcodeType = prompt(
-          "거래처를 입력해주세요(미입력시 재고조정)",
-          "재고조정"
-        );
-        // 현재 totalStock
-        const barcodeTotalStock = Number(
-          products.find(
-            product => product.data.barcode === inputStock.toString()
-          ).data.totalStock
-        );
+    } else if (inputStock.toString().length >= 8) {
+      alert("올바른 수량을 입력해 주세요");
+      // // 입력받은 바코드로 상품검색해서 보여주기
+      // if (
+      //   window.confirm(
+      //     `검색한 상품이 맞습니까? ${
+      //       products.find(
+      //         product => product.data.barcode === inputStock.toString()
+      //       ).data.title
+      //     }`
+      //   )
+      // ) {
+      //   const barcodeStock = prompt("재고 조사한 총 수량을 입력하세요");
+      //   if (!parseInt(barcodeStock)) {
+      //     return alert("숫자를 입력해 주세요");
+      //   }
+      //   const barcodeType = prompt(
+      //     "거래처를 입력해주세요(미입력시 재고조정)",
+      //     "재고조정"
+      //   );
+      //   // 현재 totalStock
+      //   const barcodeTotalStock = Number(
+      //     products.find(
+      //       product => product.data.barcode === inputStock.toString()
+      //     ).data.totalStock
+      //   );
 
-        await db
-          .collection("products")
-          .doc(
-            products.find(
-              product => product.data.barcode === inputStock.toString()
-            ).id
-          )
-          .update({
-            totalStock: Number(barcodeStock) + Number(bigTotalSold),
-            stockHistory: firebase.firestore.FieldValue.arrayUnion({
-              type: barcodeType,
-              writer: user.email,
-              amount:
-                (Number(barcodeTotalStock) -
-                  Number(barcodeStock) -
-                  Number(bigTotalSold)) *
-                -1,
-              date: new Date(),
-            }),
-          });
-        setInputStock("");
-        alert("수정 완료");
-      } else {
-        alert("검색하신 바코드는 없는 바코드 입니다");
-      }
+      //   await db
+      //     .collection("products")
+      //     .doc(
+      //       products.find(
+      //         product => product.data.barcode === inputStock.toString()
+      //       ).id
+      //     )
+      //     .update({
+      //       totalStock: Number(barcodeStock) + Number(bigTotalSold),
+      //       stockHistory: firebase.firestore.FieldValue.arrayUnion({
+      //         type: barcodeType,
+      //         writer: user.email,
+      //         amount:
+      //           (Number(barcodeTotalStock) -
+      //             Number(barcodeStock) -
+      //             Number(bigTotalSold)) *
+      //           -1,
+      //         date: new Date(),
+      //       }),
+      //     });
+      //   setInputStock("");
+      //   alert("수정 완료");
+      // } else {
+      //   alert("검색하신 바코드는 없는 바코드 입니다");
+      // }
     }
   };
 

@@ -37,14 +37,12 @@ const ListProduct = () => {
   // 검색기능구현
   // 상품들
   const [preProduct, setPreProduct] = useState(products);
-
   // 검색어
   const [query, setQuery] = useState();
   const queryOnChange = e => {
     const { value } = e.target;
     setQuery(value);
   };
-
   // 검색하기
 
   const searchProducts = e => {
@@ -98,7 +96,9 @@ const ListProduct = () => {
       setLoading("미발송 정보를 불러왔습니다.");
     };
     callLast();
-  }, [dispatch]);
+    setPreProduct(products);
+  }, [dispatch, products]);
+
   return (
     <div className="flex flex-col w-full">
       <form
