@@ -6,6 +6,7 @@ import HiddenLists from "./HiddenLists";
 import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined";
 import LocalShippingOutlinedIcon from "@material-ui/icons/LocalShippingOutlined";
 import { Link } from "react-router-dom";
+
 const OrderListRow = ({
   id,
   createdAt,
@@ -15,6 +16,7 @@ const OrderListRow = ({
   order,
   setCheckedAllItems,
   checkedAllItems,
+  orders,
 }) => {
   const history = useHistory();
   const today = new Date();
@@ -87,9 +89,19 @@ const OrderListRow = ({
               className="cursor-pointer"
               onClick={() => handleHidden(forHidden)}
             />
-            <AssignmentOutlinedIcon
-              onClick={() => console.log(checkedInputs)}
-            />
+            <Link
+              to={{
+                pathname: "/invoice",
+                state: checkedInputs,
+                orders,
+                order,
+              }}
+              // target="_blank"
+            >
+              <AssignmentOutlinedIcon
+                onClick={() => console.log(checkedInputs)}
+              />
+            </Link>
             <LocalShippingOutlinedIcon />
             <input
               type="checkbox"

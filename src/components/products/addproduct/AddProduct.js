@@ -4,41 +4,30 @@ import useInputs from "../../../hooks/useInput";
 import { db } from "../../../firebase";
 import axios from "axios";
 import { InitDataContext, InitDispatchContext } from "../../../App";
+import AddBigc from "./AddBigc";
 
 const AddProduct = () => {
   const history = useHistory();
   const state = useContext(InitDataContext);
   const { allOrderProductsList, user } = state;
-  const [
-    {
-      sku,
-      title,
-      purchasePrice,
-      artist,
-      ent,
-      category,
-      thumbNail,
-      descrip,
-      weight,
-      x,
-      y,
-      z,
-      relDate,
-      preOrderDeadline,
-      poster,
-      pob,
-      photocard,
-      weverseGift,
-      interAsiaPhotocard,
-      barcode,
-      reStockable,
-      stock,
-      exposeToB2b,
-      price,
-    },
-    onChange,
-    reset,
-  ] = useInputs({
+  const [cats, setCats] = useState([]);
+  const [parentCat, setParentCat] = useState([]);
+  const [childCat, setChildCat] = useState([]);
+  const [lastId, setLastId] = useState("");
+  const [bigC, setBigC] = useState("");
+  // 체크박스
+  const [checkedInputs, setCheckedInputs] = useState([]);
+
+  const changeHandler = (checked, id) => {
+    if (checked) {
+      setCheckedInputs([...checkedInputs, id]);
+    } else {
+      // 체크 해제
+      setCheckedInputs(checkedInputs.filter(el => el !== id));
+    }
+  };
+
+  const [form, onChange, reset] = useInputs({
     sku: "",
     title: "",
     purchasePrice: 0,
@@ -63,12 +52,17 @@ const AddProduct = () => {
     reStockable: "",
     exposeToB2b: "",
     stock: 0,
+    inventoryLevel: 0,
+    brandId: "",
+    brandName: "",
+    customFieldName: "RELEASE DATE",
   });
 
   // 텍스트 숫자인풋
   const Inputs = [
     { sku: "sku" },
     { title: "제목" },
+    { price: "도매가" },
     { purchasePrice: "매입가" },
     { artist: "그룹명" },
     { ent: "소속사" },
@@ -80,7 +74,6 @@ const AddProduct = () => {
     { z: "높이" },
     { barcode: "바코드" },
     { stock: "재고" },
-    { price: "도매가" },
   ];
 
   // 셀렉트인풋
@@ -107,64 +100,192 @@ const AddProduct = () => {
     { weverseGift: "Weverse Gift" },
     { interAsiaPhotocard: " InterAsia Photocard" },
   ];
+
+  const {
+    sku,
+    title,
+    purchasePrice,
+    artist,
+    ent,
+    category,
+    thumbNail,
+    descrip,
+    weight,
+    x,
+    y,
+    z,
+    relDate,
+    preOrderDeadline,
+    poster,
+    pob,
+    photocard,
+    weverseGift,
+    interAsiaPhotocard,
+    barcode,
+    reStockable,
+    stock,
+    exposeToB2b,
+    price,
+    // 이하 빅커머스용 변수
+    inventoryLevel,
+    brandId,
+    brandName,
+    customFieldName,
+  } = form;
+
+  const callCats = async () => {
+    await axios
+      .get(`/stores/7uw7zc08qw/v3/catalog/categories`, {
+        headers: {
+          "x-auth-token": "23t2vx6zwiq32xa8b0uspfo7mb7181x",
+          accept: "application/json",
+          "content-type": "application/json",
+        },
+      })
+      .then(cats => setCats(cats.data.data))
+      .catch(error => console.log(error));
+  };
+
+  const callLastId = async () => {
+    await axios
+      .get(`/stores/7uw7zc08qw/v3/catalog/products`, {
+        params: { sort: "id", direction: "desc", limit: 1 },
+        headers: {
+          "x-auth-token": "23t2vx6zwiq32xa8b0uspfo7mb7181x",
+          accept: "application/json",
+          "content-type": "application/json",
+        },
+      })
+      .then(ids => setLastId(ids.data.data))
+      .catch(error => console.log(error));
+  };
   const Appp = async e => {
     e.preventDefault();
+    // 빅커머스 가장 최근 아이디 가져와서
+    //  + 1 해서 id 로 저장
+    if (lastId) {
+      const headers = {
+        "x-auth-token": "23t2vx6zwiq32xa8b0uspfo7mb7181x",
+        accept: "application/json",
+        "content-type": "application/json",
+      };
 
-    await db
-      .collection("products")
-      .doc()
-      .set({
-        sku,
-        purchasePrice: Number(purchasePrice),
-        price: Number(price),
-        artist,
-        ent,
-        x: Number(x),
-        stock: stock,
-        y: Number(y),
-        z: Number(z),
-        title,
-        thumbNail,
-        descrip,
-        weight: Number(weight),
-        category,
-        relDate: new Date(relDate),
-        preOrderDeadline: new Date(preOrderDeadline),
-        options: {
-          poster,
-          pob,
-          photocard,
-          weverseGift,
-          interAsiaPhotocard,
-        },
-        barcode,
-        reStockable: reStockable,
-        exposeToB2b: exposeToB2b,
-        bigC: {},
-        productMemo: [
+      await axios
+        .post(
+          `/stores/7uw7zc08qw/v3/catalog/products`,
           {
-            memo: "add product",
-            date: new Date(),
-            writer: "server",
+            name: title,
+            price: Number(price),
+            weight: Number(weight),
+            type: "physical",
+            custom_fields: [{ name: customFieldName, value: relDate }],
+            sku: sku,
+            upc: barcode,
+            inventory_tracking: "product",
+            inventory_level: inventoryLevel,
+            brand_name: brandName,
+            categories: checkedInputs,
           },
-        ],
-        limitedStock: false,
-        totalStock: stock,
-        totalSold: 0,
-        stockHistory: [
-          {
-            type: "add product on list",
-            writer: user.email,
-            amount: 0,
-            date: new Date(),
-          },
-        ],
-      });
+          { headers }
+        )
+        .then()
+        .catch(error => console.log(error));
 
-    await reset();
-    await alert("추가완료");
-    history.push("/listproduct");
+      await axios
+        .get(`/stores/7uw7zc08qw/v3/catalog/products/${lastId[0]?.id + 1}`, {
+          headers: {
+            "x-auth-token": "23t2vx6zwiq32xa8b0uspfo7mb7181x",
+            accept: "application/json",
+            "content-type": "application/json",
+          },
+        })
+        .then(pro => setBigC(pro.data.data))
+        .catch(error => console.log(error));
+
+      await db
+        .collection("products")
+        .doc(`${lastId[0]?.id + 1}`)
+        .set({
+          sku,
+          purchasePrice: Number(purchasePrice),
+          price: Number(price),
+          artist,
+          ent,
+          x: Number(x),
+          stock: stock,
+          y: Number(y),
+          z: Number(z),
+          title,
+          thumbNail,
+          descrip,
+          weight: Number(weight),
+          category,
+          relDate: new Date(relDate),
+          preOrderDeadline: new Date(preOrderDeadline),
+          options: {
+            poster,
+            pob,
+            photocard,
+            weverseGift,
+            interAsiaPhotocard,
+          },
+          barcode,
+          reStockable: reStockable,
+          exposeToB2b: exposeToB2b,
+          bigC: bigC,
+          productMemo: [
+            {
+              memo: "add product",
+              date: new Date(),
+              writer: "server",
+            },
+          ],
+          limitedStock: false,
+          totalStock: stock,
+          totalSold: 0,
+          stockHistory: [
+            {
+              type: "add product on list",
+              writer: user.email,
+              amount: 0,
+              date: new Date(),
+            },
+          ],
+        });
+      // 파이어 베이스 저장 후
+      // 빅커머스 상품등록
+      // 디폴트
+      // type : physical
+      // inventory_tracking : product
+
+      await reset();
+      await alert("추가완료");
+      // history.push("/listproduct");
+    } else {
+      alert("실패");
+    }
   };
+
+  useEffect(() => {
+    callCats();
+    callLastId();
+  }, []);
+  useEffect(() => {
+    setParentCat(
+      cats
+        .filter(cat => cat.parent_id === 0)
+        .sort((a, b) => {
+          return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+        })
+    );
+    setChildCat(
+      cats
+        .filter(cat => cat.parent_id !== 0)
+        .sort((a, b) => {
+          return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+        })
+    );
+  }, [cats]);
 
   return (
     <>
@@ -188,6 +309,7 @@ const AddProduct = () => {
                 type="text"
                 onChange={onChange}
                 name={Object.keys(doc)}
+                value={form[Object.keys(doc)]}
               />
             </div>
           ))}
@@ -199,6 +321,7 @@ const AddProduct = () => {
               className="col-span-3 border h-9 pl-3"
               type="date"
               onChange={onChange}
+              value={relDate}
               name="relDate"
             />
           </div>
@@ -209,6 +332,7 @@ const AddProduct = () => {
               className="col-span-3 border h-9 pl-3"
               type="date"
               onChange={onChange}
+              value={preOrderDeadline}
               name="preOrderDeadline"
             />
           </div>
@@ -297,6 +421,24 @@ const AddProduct = () => {
             </button>
           </div>
         </div>
+        {/* 빅커머스 */}
+        <AddBigc
+          sku={sku}
+          title={title}
+          price={price}
+          weight={weight}
+          relDate={relDate}
+          barcode={barcode}
+          inventoryLevel={inventoryLevel}
+          brandId={brandId}
+          brandName={brandName}
+          customFieldName={customFieldName}
+          parentCat={parentCat}
+          childCat={childCat}
+          checkedInputs={checkedInputs}
+          changeHandler={changeHandler}
+          onChange={onChange}
+        />
       </form>
     </>
   );

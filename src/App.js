@@ -27,7 +27,8 @@ import MyInfo from "./components/b2bshop/myorder/MyInfo";
 import OrderProductList from "./components/teamjangnim/OrderProductList";
 import Dev from "./dev/Dev";
 import Header from "./components/header/Header";
-import TotalInvoice from "./components/invoice/TotalInvoice";
+import PickUpList from "./components/invoice/PickUpList";
+import Invoice from "./components/invoice/Invoice";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -202,7 +203,7 @@ function App() {
                   <Route path="/myorderlist" component={MyOrderList} />
                   <Route path="/myinfo/:uid" component={MyInfo} />
                   <Route path="/b2border" component={B2bOrder} />
-                  <Route path="/b2bshop" component={B2bShop} />
+                  <Route path="/" component={B2bShop} />
                 </Switch>{" "}
               </div>
             </InitDataContext.Provider>{" "}
@@ -265,6 +266,8 @@ function App() {
                   <Route path="/myinfo/:uid" component={MyInfo} />
                   <Route path="/b2border" component={B2bOrder} />
                   <Route path="/b2bshop" component={B2bShop} />
+                  <Route path="/pickuplist" component={PickUpList} />
+                  <Route path="/invoice" component={Invoice} />
                   <Route path="/" component={B2bShop} />
                 </Switch>
               </div>

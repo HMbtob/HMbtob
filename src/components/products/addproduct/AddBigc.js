@@ -1,0 +1,182 @@
+import React from "react";
+
+const AddBigc = ({
+  sku,
+  title,
+  price,
+  weight,
+  relDate,
+  barcode,
+  inventoryLevel,
+  brandName,
+  onChange,
+  customFieldName,
+  parentCat,
+  childCat,
+  checkedInputs,
+  changeHandler,
+}) => {
+  return (
+    <>
+      <div
+        className="text-left text-2xl  
+text-gray-800 mb-1 ml-2 mt-10 "
+      >
+        상품 추가
+      </div>
+
+      <div className="bg-white p-10 border">
+        {/* 상품명 */}
+        <div className="grid grid-cols-4 p-2 items-center">
+          <div className="text-gray-600 text-right mr-3">Name </div>
+          <input
+            className="col-span-3 border h-9 pl-2"
+            type="text"
+            onChange={onChange}
+            name="title"
+            value={title}
+          />
+        </div>
+        {/* 가격 */}
+        <div className="grid grid-cols-4 p-2 items-center">
+          <div className="text-gray-600 text-right mr-3">Price </div>
+          <input
+            className="col-span-3 border h-9 pl-2"
+            type="number"
+            onChange={onChange}
+            name="price"
+            value={price}
+          />
+        </div>
+        {/* 카테고리.... */}
+        <div className="grid grid-cols-4 p-2 items-center">
+          <div className="text-gray-600 text-right mr-3 col-span-1">
+            Category{" "}
+          </div>
+          <div className="col-span-3 w-full text-sm">
+            {parentCat &&
+              parentCat.map((cat, i) => (
+                <div key={i} className=" flex-col flex w-full">
+                  <div className="flex-row flex items-center justify-start mt-2">
+                    <input
+                      type="checkbox"
+                      id={cat.id}
+                      className="mr-1"
+                      onChange={e => {
+                        changeHandler(e.currentTarget.checked, cat.id);
+                      }}
+                      checked={checkedInputs.includes(cat.id) ? true : false}
+                    />{" "}
+                    <div>{cat.name}</div>
+                  </div>
+                  {childCat
+                    .filter(cCat => cCat.parent_id === cat.id)
+                    .map((doc, ii) => (
+                      <div
+                        key={ii}
+                        className="ml-5 flex flex-row items-center text-xs"
+                      >
+                        <input
+                          type="checkbox"
+                          id={doc.id}
+                          className="mr-1"
+                          onChange={e => {
+                            changeHandler(e.currentTarget.checked, doc.id);
+                          }}
+                          checked={
+                            checkedInputs.includes(doc.id) ? true : false
+                          }
+                        />{" "}
+                        <div>{doc.name}</div>
+                      </div>
+                    ))}
+                </div>
+              ))}
+          </div>
+        </div>
+
+        {/* sku */}
+        <div className="grid grid-cols-4 p-2 items-center">
+          <div className="text-gray-600 text-right mr-3">Product code/SKU</div>
+          <input
+            className="col-span-3 border h-9 pl-2"
+            type="text"
+            onChange={onChange}
+            name="sku"
+            value={sku}
+          />
+        </div>
+        {/* weight */}
+        <div className="grid grid-cols-4 p-2 items-center">
+          <div className="text-gray-600 text-right mr-3">weight</div>
+          <input
+            className="col-span-3 border h-9 pl-2"
+            type="number"
+            onChange={onChange}
+            name="weight"
+            value={weight}
+          />
+        </div>
+        {/* inventory_level */}
+        <div className="grid grid-cols-4 p-2 items-center">
+          <div className="text-gray-600 text-right mr-3">inventory_level</div>
+          <input
+            className="col-span-3 border h-9 pl-2"
+            type="number"
+            onChange={onChange}
+            name="inventoryLevel"
+            value={inventoryLevel}
+          />
+        </div>
+        {/* brand Name */}
+        <div className="grid grid-cols-4 p-2 items-center">
+          <div className="text-gray-600 text-right mr-3">Brand Name</div>
+          {/* FIXME: get all brand 로 브랜드값 가져오기 */}
+          {/* <select name="brand_id" onChange={onChange} value={brandId}>
+            <option value="">Brand를 선택하세요</option>
+            <option value="127">BIGBANG</option>
+          </select>
+          <div>or create one</div> */}
+          <input
+            className="col-span-2 border h-9 pl-2"
+            type="text"
+            onChange={onChange}
+            name="brandName"
+            value={brandName}
+          />
+        </div>
+        {/* inventory_level */}
+        <div className="grid grid-cols-4 p-2 items-center">
+          <div className="text-gray-600 text-right mr-3">Product UPC/EAN</div>
+          <input
+            className="col-span-3 border h-9 pl-2"
+            type="number"
+            onChange={onChange}
+            name="barcode"
+            value={barcode}
+          />
+        </div>
+        {/* Custom_fields */}
+        <div className="grid grid-cols-4 p-2 items-center">
+          <div className="text-gray-600 text-right mr-3">Custom_fields</div>
+          <input
+            className="col-span-1 border h-9 pl-2"
+            type="text"
+            onChange={onChange}
+            name="customFieldName"
+            value={customFieldName}
+          />
+          <input
+            className="col-span-2 border h-9 pl-2"
+            type="date"
+            onChange={onChange}
+            name="relDate"
+            value={relDate}
+          />
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default AddBigc;
