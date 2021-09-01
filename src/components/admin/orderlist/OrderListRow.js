@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import { useState } from "react";
+import { Link } from "react-router-dom";
 import HiddenLists from "./HiddenLists";
 import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined";
 import LocalShippingOutlinedIcon from "@material-ui/icons/LocalShippingOutlined";
-import { Link } from "react-router-dom";
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 
 const OrderListRow = ({
   id,
@@ -37,16 +36,14 @@ const OrderListRow = ({
     if (checked) {
       setCheckedInputs([...checkedInputs, id]);
       setCheckedAllItems([...checkedAllItems, id]);
-      console.log(checkedAllItems);
     } else {
       // 체크 해제
       setCheckedInputs(checkedInputs.filter(el => el !== id));
       setCheckedAllItems(checkedAllItems.filter(el => el !== id));
-      console.log(checkedAllItems);
     }
   };
-  const idArray = [];
 
+  const idArray = [];
   const handleAllCheck = (checked, id) => {
     if (checked) {
       // 전체 체크 박스가 체크 되면 id를 가진 모든 elements를 배열에 넣어주어서,
@@ -71,6 +68,7 @@ const OrderListRow = ({
     }
     return i || false;
   }, false);
+
   if (order) {
     return (
       <div className="border-b w-full">
@@ -98,9 +96,7 @@ const OrderListRow = ({
               }}
               // target="_blank"
             >
-              <AssignmentOutlinedIcon
-                onClick={() => console.log(checkedInputs)}
-              />
+              <AssignmentOutlinedIcon />
             </Link>
             <LocalShippingOutlinedIcon />
             <input

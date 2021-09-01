@@ -1,10 +1,7 @@
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import React from "react";
-import { useEffect } from "react";
-import { useRef } from "react";
-import { useState } from "react";
-import { db } from "../../../firebase";
 import firebase from "firebase";
+import { db } from "../../../firebase";
 
 const TopStoreProduct = ({ products, user, exchangeRate }) => {
   const [inputStock, setInputStock] = useState();
@@ -51,11 +48,7 @@ const TopStoreProduct = ({ products, user, exchangeRate }) => {
   const handleSubmit2 = async e => {
     e.preventDefault();
     // 재고수불부 업데이트
-    console.log(
-      inputProduct.data.totalStock,
-      inputStock,
-      bigcTotalSold.total_sold
-    );
+
     await db
       .collection("products")
       .doc(inputProduct.id)
@@ -73,15 +66,7 @@ const TopStoreProduct = ({ products, user, exchangeRate }) => {
         }),
       });
     // 얼럿으로 완료
-    alert(`총 재고가 ${Number(inputStock)}로 수정되었습니다`);
-    alert(
-      `오차는 ${
-        (Number(inputProduct.data.totalStock) -
-          Number(inputStock) -
-          Number(bigcTotalSold.total_sold)) *
-        -1
-      } 입니다`
-    );
+
     setInputStock("");
     setInputBarcodes("");
     setInputProduct("");
@@ -89,7 +74,7 @@ const TopStoreProduct = ({ products, user, exchangeRate }) => {
   };
   useEffect(() => {
     bigcTotalsold();
-  }, [inputProduct]);
+  });
   return (
     <div
       className="grid grid-cols-36 text-center border-b p-1 items-center
@@ -127,7 +112,6 @@ const TopStoreProduct = ({ products, user, exchangeRate }) => {
         </>
       )}
 
-      {/* <div className="col-span-2">{inputProduct?.data.price}</div> */}
       <form onSubmit={handleSubmit2} className="col-span-1 w-20">
         <input
           type="number"

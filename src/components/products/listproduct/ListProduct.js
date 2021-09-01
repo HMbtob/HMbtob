@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { InitDataContext, InitDispatchContext } from "../../../App";
 import ListProductRow from "./ListProductRow";
@@ -17,9 +16,7 @@ const ListProduct = () => {
   const { products, orders, shippings, user, exchangeRate, reStockRequests } =
     state;
   const [page, setPage] = useState(0);
-  const [pages, setPages] = useState([-4, -3, -2, -1, 0, 1, 2, 3, 4]);
-  // 로딩관리
-  const [loading, setLoading] = useState("미발송 정보를 불러오는 중입니다.");
+  const [pages] = useState([-4, -3, -2, -1, 0, 1, 2, 3, 4]);
   // 헤더 항목
   const headers = [
     "BTN",
@@ -76,26 +73,6 @@ const ListProduct = () => {
   };
 
   useEffect(() => {
-    // FIXME:여기다가 미발송 건수 요청하는 함수 넣어서 랜더링 되면
-    // 실행해서 디스패치로 스테이트에 넣기
-    // 로딩관리
-
-    const callLast = async () => {
-      await axios
-        .get(
-          `https://us-central1-interasiastock.cloudfunctions.net/app/big/callOrdersByStatusId/9`
-        )
-        .then(r =>
-          dispatch({
-            type: "UNSHIPPED_PRODUCTS_ID_QTY",
-            unShippedProductsIdandQty: r.data,
-          })
-        )
-        .catch(e => console.log(e));
-
-      setLoading("미발송 정보를 불러왔습니다.");
-    };
-    callLast();
     setPreProduct(products);
   }, [dispatch, products]);
 
@@ -125,7 +102,6 @@ const ListProduct = () => {
         </div>
       </form>
       <div className="ml-28 mt-16 text-gray-800 text-xl">PRODUCT LIST</div>
-      <div className="ml-28 mt-2 text-gray-800 text-xs">{loading}</div>
       <div className="border w-11/12 m-auto mt-4 mb-12">
         <TopStoreProduct
           products={products}

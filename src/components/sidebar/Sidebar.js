@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { auth } from "../../firebase";
 import { useHistory } from "react-router-dom";
 import { InitDataContext } from "../../App";
 
@@ -21,18 +20,6 @@ const Sidebar = () => {
   return (
     //   d-1
     <div className="flex-col items-center w-auto text-gray-300 bg-gray-600">
-      {/* d-2 */}
-      {/* <div
-        onClick={() => auth.signOut()}
-        className="text-2xl font-mono font-bold text-center text-gray-200 bg-blue-900 p-6"
-      >
-        interasia
-      </div> */}
-      {/* d-2 */}
-      {/* <div className="py-8 text-gray-300 bg-blue-900 leading-7 p-6"> */}
-      {/* d-3 */}
-      {/* <div>좌상단 메뉴</div> */}
-      {/* </div> */}
       {/* d-2 */}
       <div className="bg-gray-600 p-8 text-lg text-gray-300 leading-10 text-center">
         {user?.email === "interasiadev@gmail.com" && (

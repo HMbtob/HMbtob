@@ -43,7 +43,6 @@ const PreOrderTable = ({
               product={product}
               user={user}
               exchangeRate={exchangeRate}
-              reStockRequest={reStockRequest}
               simpleList={simpleList}
             />
           ))}

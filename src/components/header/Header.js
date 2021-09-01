@@ -1,10 +1,8 @@
-import React, { useContext } from "react";
+import React from "react";
 import { useHistory } from "react-router";
 import { auth } from "../../firebase";
 
 const Header = () => {
-  // console.log(window.location.pathname);
-
   const history = useHistory();
   return (
     <div className=" bg-blue-900 w-screen p-3 sticky top-0 z-30 flex flex-row justify-between">

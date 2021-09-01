@@ -15,7 +15,6 @@ const MyOrderList = () => {
         >
           My Orders
         </div>
-        {/* <button>주문확인</button> */}
         <div
           className="grid grid-cols-7  grid-flow-col text-center 
        bg-gray-800 text-gray-100 py-1 rounded-sm text-xs font-semibold"
@@ -42,7 +41,6 @@ const MyOrderList = () => {
             ))}
         </div>
       </div>
-      {/* 디테일 페이지 만들어서 인보이스 발행기능, 수량 수정가능하게, 목록 삭제도 가능하게 삭제나 수정했을때 기존인보이스에 취소선? 주문에 list를 orderlist 랑 confirmlist 로 분화? */}
     </div>
   );
 };

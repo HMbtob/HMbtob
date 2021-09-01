@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
+import { InitDataContext } from "../../../App";
 import B2bPart from "./B2bPart";
 import CommonPart from "./CommonPart";
-import { InitDataContext } from "../../../App";
 import BigCPart from "./BigCPart";
 
 const DetailProduct = ({ match }) => {

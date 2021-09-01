@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import { InitDataContext } from "../../../App";
 import OrderListRow from "./OrderListRow";
@@ -10,8 +9,9 @@ import AssignmentIcon from "@material-ui/icons/Assignment";
 
 const OrderList = () => {
   const state = useContext(InitDataContext);
-  const { orders, user } = state;
+  const { orders } = state;
 
+  // 체크된 상품 전체
   const [checkedAllItems, setCheckedAllItems] = useState([]);
 
   // 주문들
@@ -93,9 +93,8 @@ const OrderList = () => {
                 state: checkedAllItems,
                 orders,
               }}
-              // target="_blank"
             >
-              <AssignmentIcon onClick={() => console.log(checkedAllItems)} />
+              <AssignmentIcon />
             </Link>
           </div>
           <div>No.</div>
@@ -126,7 +125,6 @@ const OrderList = () => {
             ))}
         </div>
       </div>
-      {/* 디테일 페이지 만들어서 인보이스 발행기능, 수량 수정가능하게, 목록 삭제도 가능하게 삭제나 수정했을때 기존인보이스에 취소선? 주문에 list를 orderlist 랑 confirmlist 로 분화? */}
     </div>
   );
 };

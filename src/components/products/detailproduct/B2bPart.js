@@ -1,8 +1,7 @@
 import React from "react";
 
-const B2bPart = ({ product }) => {
+const B2bPart = () => {
   //   B2B shop 에 활성/비활성
-  const handleExpose = () => {};
 
   return (
     <div className="w-5/6 m-auto my-20">

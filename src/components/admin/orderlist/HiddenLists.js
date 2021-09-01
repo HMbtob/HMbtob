@@ -1,11 +1,6 @@
 import React from "react";
 
-const HiddenLists = ({
-  order,
-  checkedInputs,
-  changeHandler,
-  handleCheckedAllItems,
-}) => {
+const HiddenLists = ({ order, checkedInputs, changeHandler }) => {
   const today = new Date();
   return (
     <div
@@ -19,7 +14,6 @@ const HiddenLists = ({
             className={`grid grid-cols-12 text-gray-700 
             items-center  ${li.relDate.toDate() > today && "bg-red-100"}`}
           >
-            {/* <div className="col-span-1">버튼</div> */}
             <input
               type="checkbox"
               className=" bg-yellow-300 w-full"

@@ -4,12 +4,13 @@ import Modal from "../../modal/Modal";
 import HiddenB2b from "./HiddenB2b";
 import HiddenBigc from "./HiddenBigc";
 import StockTable from "./StockTable";
+import ProductMemo from "./ProductMemo";
+import StoreProduct from "./StoreProduct";
 import BuildIcon from "@material-ui/icons/Build";
 import SyncAltIcon from "@material-ui/icons/SyncAlt";
 import CommentIcon from "@material-ui/icons/Comment";
-import ProductMemo from "./ProductMemo";
 import MouseIcon from "@material-ui/icons/Mouse";
-import StoreProduct from "./StoreProduct";
+
 const ListProductRow = ({
   id,
   sku,

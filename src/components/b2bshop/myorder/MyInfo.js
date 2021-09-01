@@ -1,9 +1,9 @@
 import React, { useContext, useState } from "react";
-import useInputs from "../../../hooks/useInput";
 import { InitDataContext } from "../../../App";
 import { db } from "../../../firebase";
-import CreditDetails from "../../admin/customer/CreditDetails";
 import Modal from "../../modal/Modal";
+import CreditDetails from "../../admin/customer/CreditDetails";
+import useInputs from "../../../hooks/useInput";
 
 const MyInfo = ({ match }) => {
   const { uid } = match.params;
@@ -20,15 +20,15 @@ const MyInfo = ({ match }) => {
     setModalOpen(false);
   };
   const [form, onChange] = useInputs({
-    recipientEmail: user.data.recipientEmail,
-    recipientPhoneNumber: user.data.recipientPhoneNumber,
-    street: user.data.street,
-    city: user.data.city,
-    states: user.data.states,
-    country: user.data.country,
-    zipcode: user.data.zipcode,
-    recipient: user.data.recipient,
-    shippingMessage: user.data.shippingMessage,
+    recipientEmail: user?.data.recipientEmail,
+    recipientPhoneNumber: user?.data.recipientPhoneNumber,
+    street: user?.data.street,
+    city: user?.data.city,
+    states: user?.data.states,
+    country: user?.data.country,
+    zipcode: user?.data.zipcode,
+    recipient: user?.data.recipient,
+    shippingMessage: user?.data.shippingMessage,
   });
 
   const {
@@ -72,24 +72,24 @@ const MyInfo = ({ match }) => {
           <div className="flex-col mb-10 flex space-y-2 w-1/2">
             <div className="grid grid-cols-2">
               <div>E-MAIL</div>
-              <div>{user.id}</div>
+              <div>{user?.id}</div>
             </div>
 
             <div className="grid grid-cols-2">
               <div>NAME</div>
-              <div>{user.data.displayName}</div>
+              <div>{user?.data.displayName}</div>
             </div>
 
             <div className="grid grid-cols-2">
               <div>NUMBER</div>
-              {user.data.phoneNumber}
+              {user?.data.phoneNumber}
             </div>
 
             <div className="grid grid-cols-2">
               <div>CREDIT</div>
               <div>
-                {Math.round(user.data.credit).toLocaleString("ko-KR")}{" "}
-                {user.data.currency}
+                {Math.round(user?.data.credit).toLocaleString("ko-KR")}{" "}
+                {user?.data.currency}
               </div>
             </div>
             <div className="grid grid-cols-3">

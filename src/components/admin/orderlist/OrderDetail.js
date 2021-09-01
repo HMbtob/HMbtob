@@ -1,33 +1,27 @@
 import React, { useContext, useEffect, useState } from "react";
+import firebase from "firebase";
+import { useHistory } from "react-router";
 import { InitDataContext } from "../../../App";
 import { db } from "../../../firebase";
-import useInputs from "../../../hooks/useInput";
 import OrderDetailRow from "./OrderDetailRow";
-import { useHistory } from "react-router";
 import ShippingList from "../shipping/ShippingList";
+import useInputs from "../../../hooks/useInput";
 import CancelIcon from "@material-ui/icons/Cancel";
 import UndoIcon from "@material-ui/icons/Undo";
 import LocalAirportIcon from "@material-ui/icons/LocalAirport";
-import firebase from "firebase";
+import { useCallback } from "react";
 
 const OrderDetail = ({ match }) => {
   const { id } = match.params;
   const state = useContext(InitDataContext);
-  const {
-    orders,
-    user,
-    shippingCounts,
-    shippings,
-    exchangeRate,
-    dhlShippingFee,
-  } = state;
+  const { orders, user, shippings, exchangeRate, dhlShippingFee } = state;
   const { z } = dhlShippingFee;
 
   const order = orders.find(order => order.id === id);
   const shipping = shippings.filter(arr => arr.data.orderId === id);
   const history = useHistory();
 
-  const [form, onChange, reset] = useInputs({
+  const [form, onChange] = useInputs({
     orderState: order.data.orderState,
     paymentMethod: order.data.paymentMethod,
     shippingType: order.data.shippingType,
@@ -391,8 +385,8 @@ const OrderDetail = ({ match }) => {
     await setCheckedInputs([]);
   };
 
-  useEffect(() => {
-    setCheckedItemPrice(
+  const ItemPrice = useCallback(async () => {
+    setCheckedItemPrice(() =>
       Number(
         order.data.list
           .filter(item => checkedInputs.includes(item.childOrderNumber))
@@ -407,8 +401,12 @@ const OrderDetail = ({ match }) => {
           }, 0)
       )
     );
+  }, [checkedInputs, order.data.list]);
 
-    setCheckedItemsFee(
+  useEffect(() => {
+    ItemPrice();
+
+    setCheckedItemsFee(() =>
       z && country.length > 0 && checkedWeight < 30 && checkedWeight > 0
         ? Number(
             Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
@@ -420,7 +418,18 @@ const OrderDetail = ({ match }) => {
         : (checkedWeight * order.data.shippingRate[shippingType]) /
           exchangeRate[order.data.currency]
     );
-  }, [checkedInputs, checkedWeight]);
+  }, [
+    z,
+    country.length,
+    checkedWeight,
+    zone,
+    num2,
+    order.data.currency,
+    exchangeRate,
+    order.data.shippingRate,
+    shippingType,
+    ItemPrice,
+  ]);
   return (
     // dep-1
     <div className="w-full h-full flex justify-center">

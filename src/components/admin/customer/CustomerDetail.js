@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
-import useInputs from "../../../hooks/useInput";
+import firebase from "firebase";
 import { InitDataContext } from "../../../App";
 import { db } from "../../../firebase";
-import firebase from "firebase";
 import CreditDetails from "./CreditDetails";
 import Modal from "../../modal/Modal";
+import useInputs from "../../../hooks/useInput";
 
 const CustomerDetail = ({ match }) => {
   const { uid } = match.params;
@@ -239,7 +239,7 @@ const CustomerDetail = ({ match }) => {
                 close={closeModal}
                 header={"CREDIT DETAILS"}
               >
-                <CreditDetails creditDetails={creditDetails} />
+                <CreditDetails creditDetails={creditDetails} reset={reset} />
               </Modal>
               <button
                 className="bg-gray-700 p-1 rounded text-gray-200 m-2"

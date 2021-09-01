@@ -1,13 +1,12 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { useHistory } from "react-router";
-import { useState } from "react";
 
 const PickUpList = ({ location }) => {
   const { state, orders, order } = location;
 
   console.log(order);
-  const [invoiceLists, setInvoiceLists] = useState(
+  const [invoiceLists] = useState(
     [].concat.apply(
       [],
       orders.map(order =>
@@ -79,34 +78,35 @@ const PickUpList = ({ location }) => {
               <div className="col-span-2">Amount</div>
             </div>
 
-            {invoiceLists
-              .sort((a, b) => {
-                return a.title < b.title ? -1 : a.title > b.title ? 1 : 0;
-              })
-              .map((list, i) => (
-                <div
-                  key={i}
-                  className="grid grid-cols-28 border-b border-black
+            {invoiceLists &&
+              invoiceLists
+                .sort((a, b) => {
+                  return a.title < b.title ? -1 : a.title > b.title ? 1 : 0;
+                })
+                .map((list, i) => (
+                  <div
+                    key={i}
+                    className="grid grid-cols-28 border-b border-black
                border-r border-l text-xs"
-                >
-                  <div className="col-span-1 text-center border-r border-black p-1">
-                    {i + 1}
+                  >
+                    <div className="col-span-1 text-center border-r border-black p-1">
+                      {i + 1}
+                    </div>
+                    <div className="col-span-18 text-left  border-r border-black p-1">
+                      {list.title}
+                    </div>
+                    <div className="col-span-3 text-center  border-r border-black p-1"></div>
+                    <div className="col-span-2 text-center  border-r border-black p-1">
+                      {list.quan} EA
+                    </div>
+                    <div className="col-span-2 text-center  border-r border-black p-1">
+                      {list.price} {list.currency}
+                    </div>
+                    <div className="col-span-2 text-center p-1">
+                      {list.totalPrice} {list.currency}
+                    </div>
                   </div>
-                  <div className="col-span-18 text-left  border-r border-black p-1">
-                    {list.title}
-                  </div>
-                  <div className="col-span-3 text-center  border-r border-black p-1"></div>
-                  <div className="col-span-2 text-center  border-r border-black p-1">
-                    {list.quan} EA
-                  </div>
-                  <div className="col-span-2 text-center  border-r border-black p-1">
-                    {list.price} {list.currency}
-                  </div>
-                  <div className="col-span-2 text-center p-1">
-                    {list.totalPrice} {list.currency}
-                  </div>
-                </div>
-              ))}
+                ))}
           </div>
         </div>
       );

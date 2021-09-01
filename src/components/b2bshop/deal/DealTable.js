@@ -4,11 +4,6 @@ import DealRow from "./DealRow";
 const DealTable = ({ dealProducts, onChange, user, exchangeRate }) => {
   return (
     <div className="flex flex-col w-11/12 h-64 mb-5">
-      {/* 표 */}
-
-      {/* 표 제목 */}
-
-      {/* 표 헤더 */}
       <div
         className="grid grid-cols-20 
         text-center bg-gray-800 p-1 

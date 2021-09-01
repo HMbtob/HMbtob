@@ -1,9 +1,7 @@
 import React from "react";
-import { useHistory } from "react-router";
 import { auth, provider } from "../../firebase";
 
 function Login() {
-  const history = useHistory();
   const signIn = async () => {
     await auth.signInWithRedirect(provider).catch(e => alert(e.message));
   };

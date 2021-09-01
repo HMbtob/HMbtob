@@ -27,7 +27,6 @@ const CustomerList = () => {
             <CustomerRow key={account.id} account={account} />
           ))}
       </div>
-      {/* 디테일 페이지 만들어서 인보이스 발행기능, 수량 수정가능하게, 목록 삭제도 가능하게 삭제나 수정했을때 기존인보이스에 취소선? 주문에 list를 orderlist 랑 confirmlist 로 분화? */}
     </div>
   );
 };

@@ -1,20 +1,36 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useHistory } from "react-router";
-import useInputs from "../../../hooks/useInput";
-import { db } from "../../../firebase";
 import axios from "axios";
-import { InitDataContext, InitDispatchContext } from "../../../App";
+import { InitDataContext } from "../../../App";
+import { db, storage } from "../../../firebase";
+import useInputs from "../../../hooks/useInput";
 import AddBigc from "./AddBigc";
 
 const AddProduct = () => {
-  const history = useHistory();
   const state = useContext(InitDataContext);
-  const { allOrderProductsList, user } = state;
+  const { user } = state;
   const [cats, setCats] = useState([]);
   const [parentCat, setParentCat] = useState([]);
   const [childCat, setChildCat] = useState([]);
   const [lastId, setLastId] = useState("");
   const [bigC, setBigC] = useState("");
+
+  // 썸넬
+  const [imgUrl, setImgUrl] = useState("");
+  const [imgAry, setImgAry] = useState("");
+  const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const handleThumbnail = e => {
+    setThumbnailUrl(e.target.value);
+  };
+  // 디스크립션-이미지
+  const [discUrl, setDiscUrl] = useState("");
+  const [discAry, setDiscAry] = useState("");
+  const [discripUrl, setDiscripUrl] = useState("");
+  const handleDiscrip = e => {
+    setDiscripUrl(e.target.value);
+  };
+  // 디스크립션 텍스트
+  const [descr, setDescr] = useState("");
+
   // 체크박스
   const [checkedInputs, setCheckedInputs] = useState([]);
 
@@ -34,7 +50,6 @@ const AddProduct = () => {
     price: 0,
     artist: "",
     ent: "",
-    thumbNail: "",
     descrip: "",
     weight: 0,
     x: 0,
@@ -66,8 +81,6 @@ const AddProduct = () => {
     { purchasePrice: "매입가" },
     { artist: "그룹명" },
     { ent: "소속사" },
-    { thumbNail: "썸네일" },
-    { descrip: "상세페이지" },
     { weight: "무게" },
     { x: "가로" },
     { y: "세로" },
@@ -108,7 +121,6 @@ const AddProduct = () => {
     artist,
     ent,
     category,
-    thumbNail,
     descrip,
     weight,
     x,
@@ -132,33 +144,69 @@ const AddProduct = () => {
     brandName,
     customFieldName,
   } = form;
-
   const callCats = async () => {
     await axios
-      .get(`/stores/7uw7zc08qw/v3/catalog/categories`, {
-        headers: {
-          "x-auth-token": "23t2vx6zwiq32xa8b0uspfo7mb7181x",
-          accept: "application/json",
-          "content-type": "application/json",
-        },
-      })
+      .get(
+        `https://us-central1-interasiastock.cloudfunctions.net/app/big/getcategory`
+      )
       .then(cats => setCats(cats.data.data))
       .catch(error => console.log(error));
   };
 
   const callLastId = async () => {
     await axios
-      .get(`/stores/7uw7zc08qw/v3/catalog/products`, {
-        params: { sort: "id", direction: "desc", limit: 1 },
-        headers: {
-          "x-auth-token": "23t2vx6zwiq32xa8b0uspfo7mb7181x",
-          accept: "application/json",
-          "content-type": "application/json",
-        },
-      })
+      .get(
+        `https://us-central1-interasiastock.cloudfunctions.net/app/big/getlastproductid`,
+
+        {
+          params: { sort: "id", direction: "desc", limit: 1 },
+          headers: {
+            "x-auth-token": "23t2vx6zwiq32xa8b0uspfo7mb7181x",
+            accept: "application/json",
+            "content-type": "application/json",
+          },
+        }
+      )
       .then(ids => setLastId(ids.data.data))
       .catch(error => console.log(error));
   };
+  // 섬넬
+  const getImages = async () => {
+    await setImgUrl(thumbnailUrl.substring(25));
+    await axios
+      .get(
+        `https://us-central1-interasiastock.cloudfunctions.net/app/big/getThumbnail`,
+        {
+          params: {
+            title: title,
+            url: thumbnailUrl,
+          },
+        }
+      )
+      .then(resp => setThumbnailUrl(resp.data))
+      .catch(e => console.log(e));
+  };
+  // 디스크립션
+  const getDisc = async () => {
+    await setDiscUrl(discripUrl.substring(25));
+    await axios
+      .get(discripUrl, {
+        //이미지 주소 result.img를 요청
+        responseType: "arraybuffer", //buffer가 연속적으로 들어있는 자료 구조를 받아온다
+      })
+      .then(res => setDiscAry(res));
+    await storage
+      .ref(`images/descrip/${title ? title : "descrip"}.jpg`)
+      .put(new Uint8Array(discAry.data), { contentType: "image/jpeg" })
+      .catch(e => console.log(e));
+
+    await storage
+      .ref(`images/descrip/${title ? title : "descrip"}.jpg`)
+      .getDownloadURL()
+      .then(url => setDiscripUrl(url))
+      .catch(e => console.log(e));
+  };
+
   const Appp = async e => {
     e.preventDefault();
     // 빅커머스 가장 최근 아이디 가져와서
@@ -179,6 +227,7 @@ const AddProduct = () => {
             weight: Number(weight),
             type: "physical",
             custom_fields: [{ name: customFieldName, value: relDate }],
+            images: [{ is_thumbnail: true, image_url: thumbnailUrl }],
             sku: sku,
             upc: barcode,
             inventory_tracking: "product",
@@ -216,7 +265,7 @@ const AddProduct = () => {
           y: Number(y),
           z: Number(z),
           title,
-          thumbNail,
+          thumbnailUrl,
           descrip,
           weight: Number(weight),
           category,
@@ -251,6 +300,7 @@ const AddProduct = () => {
               date: new Date(),
             },
           ],
+          descr,
         });
       // 파이어 베이스 저장 후
       // 빅커머스 상품등록
@@ -260,6 +310,7 @@ const AddProduct = () => {
 
       await reset();
       await alert("추가완료");
+      // FIXME: 저장버튼 어디다 둘지, 따로둘지, 저장후 어디로 갈지?
       // history.push("/listproduct");
     } else {
       alert("실패");
@@ -393,6 +444,40 @@ const AddProduct = () => {
               <option value="DEAL">DEAL</option>
             </select>
           </div>
+          {/*썸넬 */}
+          <div className="grid grid-cols-4 p-2 items-center">
+            <div className="text-gray-600 text-right mr-3">썸네일</div>
+            <input
+              className="col-span-3 border h-9 pl-2"
+              type="text"
+              onChange={handleThumbnail}
+              name="thumbnailUrl"
+              value={thumbnailUrl}
+              onKeyPress={e => {
+                if (e.key === "Enter") {
+                  getImages();
+                  return false;
+                }
+              }}
+            />
+          </div>
+          {/*disc */}
+          <div className="grid grid-cols-4 p-2 items-center">
+            <div className="text-gray-600 text-right mr-3">상세페이지</div>
+            <input
+              className="col-span-3 border h-9 pl-2"
+              type="text"
+              onChange={handleDiscrip}
+              name="discripUrl"
+              value={discripUrl}
+              onKeyPress={e => {
+                if (e.key === "Enter") {
+                  getDisc();
+                  return false;
+                }
+              }}
+            />
+          </div>
           {/* 체크박스 인풋 */}
           <div className="mt-10 mb-3 text-gray-800 text-lg">OPTIONS</div>
           <div className="grid grid-cols-3">
@@ -438,6 +523,11 @@ const AddProduct = () => {
           checkedInputs={checkedInputs}
           changeHandler={changeHandler}
           onChange={onChange}
+          thumbnailUrl={thumbnailUrl}
+          handleThumbnail={handleThumbnail}
+          discripUrl={discripUrl}
+          handleDiscrip={handleDiscrip}
+          setDescr={setDescr}
         />
       </form>
     </>

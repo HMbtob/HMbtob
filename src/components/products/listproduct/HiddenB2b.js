@@ -7,15 +7,9 @@ import SyncIcon from "@material-ui/icons/Sync";
 import SyncDisabledIcon from "@material-ui/icons/SyncDisabled";
 const HiddenB2b = ({
   id,
-  sku,
-  thumbNail,
-  title,
   price,
   stock,
-  totalSell,
-  unShipped,
   relDate,
-  preOrderDeadline,
   orders,
   shippings,
   product,
@@ -43,7 +37,7 @@ const HiddenB2b = ({
     }, 0);
 
   // 간단 수정창 input 관리
-  const [form, onChange, reset] = useInputs({
+  const [form, onChange] = useInputs({
     handlePrice: price,
     handleStock: stock,
   });

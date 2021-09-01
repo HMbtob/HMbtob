@@ -12,15 +12,12 @@ const PreOrderRow = ({
   product,
   user,
   exchangeRate,
-  reStockRequest,
   simpleList,
 }) => {
   let today = new Date().getTime();
   let gap = new Date(preOrderDeadline.seconds * 1000).getTime() - today;
   let day = Math.ceil(gap / (1000 * 60 * 60 * 24));
   let hour = Math.ceil((gap % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  let min = Math.ceil((gap % (1000 * 60 * 60)) / (1000 * 60));
-  let sec = Math.ceil((gap % (1000 * 60)) / 1000);
 
   return (
     <div

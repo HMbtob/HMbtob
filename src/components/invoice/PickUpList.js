@@ -1,11 +1,10 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { useHistory } from "react-router";
-import { useState } from "react";
 
 const PickUpList = ({ location }) => {
   const { state, orders } = location;
-  const [pickUpLists, setPickUpLists] = useState(
+  const [pickUpLists] = useState(
     [].concat.apply(
       [],
       orders.map(order =>
@@ -42,23 +41,24 @@ const PickUpList = ({ location }) => {
               <div className="col-span-1">qty</div>
             </div>
 
-            {pickUpLists
-              .sort((a, b) => {
-                return a.title < b.title ? -1 : a.title > b.title ? 1 : 0;
-              })
-              .map((list, i) => (
-                <div
-                  key={i}
-                  className="grid grid-cols-20 border-b
+            {pickUpLists &&
+              pickUpLists
+                .sort((a, b) => {
+                  return a.title < b.title ? -1 : a.title > b.title ? 1 : 0;
+                })
+                .map((list, i) => (
+                  <div
+                    key={i}
+                    className="grid grid-cols-20 border-b
                border-r border-l text-sm p-1"
-                >
-                  <div className="col-span-1 text-center">{i + 1}</div>
-                  <div className="col-span-4 text-center">{list.sku}</div>
-                  <div className="col-span-10">{list.title}</div>
-                  <div className="col-span-4"></div>
-                  <div className="col-span-1 text-center">{list.quan}</div>
-                </div>
-              ))}
+                  >
+                    <div className="col-span-1 text-center">{i + 1}</div>
+                    <div className="col-span-4 text-center">{list.sku}</div>
+                    <div className="col-span-10">{list.title}</div>
+                    <div className="col-span-4"></div>
+                    <div className="col-span-1 text-center">{list.quan}</div>
+                  </div>
+                ))}
           </div>
         </div>
       );

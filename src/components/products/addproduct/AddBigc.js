@@ -1,4 +1,6 @@
 import React from "react";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const AddBigc = ({
   sku,
@@ -15,6 +17,11 @@ const AddBigc = ({
   childCat,
   checkedInputs,
   changeHandler,
+  thumbnailUrl,
+  handleThumbnail,
+  discripUrl,
+  handleDiscrip,
+  setDescr,
 }) => {
   return (
     <>
@@ -70,7 +77,7 @@ text-gray-800 mb-1 ml-2 mt-10 "
                     <div>{cat.name}</div>
                   </div>
                   {childCat
-                    .filter(cCat => cCat.parent_id === cat.id)
+                    ?.filter(cCat => cCat.parent_id === cat.id)
                     .map((doc, ii) => (
                       <div
                         key={ii}
@@ -132,11 +139,6 @@ text-gray-800 mb-1 ml-2 mt-10 "
         <div className="grid grid-cols-4 p-2 items-center">
           <div className="text-gray-600 text-right mr-3">Brand Name</div>
           {/* FIXME: get all brand 로 브랜드값 가져오기 */}
-          {/* <select name="brand_id" onChange={onChange} value={brandId}>
-            <option value="">Brand를 선택하세요</option>
-            <option value="127">BIGBANG</option>
-          </select>
-          <div>or create one</div> */}
           <input
             className="col-span-2 border h-9 pl-2"
             type="text"
@@ -172,6 +174,42 @@ text-gray-800 mb-1 ml-2 mt-10 "
             onChange={onChange}
             name="relDate"
             value={relDate}
+          />
+        </div>
+        {/* thumbnail */}
+        <div className="grid grid-cols-4 p-2 items-center">
+          <div className="text-gray-600 text-right mr-3">Thumb Nail</div>
+          <input
+            className="col-span-3 border h-9 pl-2"
+            type="text"
+            onChange={handleThumbnail}
+            name="thumbnailUrl"
+            value={thumbnailUrl}
+          />
+        </div>
+        {/* thumbnail */}
+        <div className="grid grid-cols-4 p-2 items-center">
+          <div className="text-gray-600 text-right mr-3">Discription Image</div>
+          <input
+            className="col-span-3 border h-9 pl-2"
+            type="text"
+            onChange={handleDiscrip}
+            name="discripUrl"
+            value={discripUrl}
+          />
+        </div>
+        {/* disc */}
+        <div className="p-2 items-center w-full h-full">
+          <div className="text-gray-600 text-left mr-3">Discription</div>
+          <CKEditor
+            editor={ClassicEditor}
+            className="col-span-3 border pl-2 w-full"
+            type="text"
+            onChange={(ev, ed) => {
+              const data = ed.getData();
+              setDescr(data);
+            }}
+            name="disc"
           />
         </div>
       </div>

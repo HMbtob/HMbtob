@@ -1,13 +1,15 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
-import Rows from "./Rows";
 import { InitDataContext, InitDispatchContext } from "../../App";
-import { db } from "../../firebase";
+import Rows from "./Rows";
 
 const OrderProductList = () => {
   const state = useContext(InitDataContext);
-  const { allOrderProductsList, products, exchangeRate } = state;
   const dispatch = useContext(InitDispatchContext);
+  const { allOrderProductsList } = state;
+
+  const [sortedProducts, setSortedProducts] = useState([]);
+
   const callApi = async () => {
     await axios
       .get(
@@ -20,16 +22,18 @@ const OrderProductList = () => {
         })
       )
       .catch(error => console.log(error));
-  };
-  let sortedProducts = [];
-  if (allOrderProductsList && allOrderProductsList.data.length > 10) {
-    allOrderProductsList.data.sort((a, b) => {
+    let preSorted = [].concat.apply([], allOrderProductsList?.data);
+
+    preSorted.sort((a, b) => {
       return new Date(b.date_created) - new Date(a.date_created);
     });
-    sortedProducts = allOrderProductsList.data.filter(doc => {
-      return new Date(doc.date_created) > new Date("2021-01-01");
-    });
-  }
+    setSortedProducts(
+      preSorted.filter(doc => {
+        return new Date(doc.date_created) > new Date("2021-01-01");
+      })
+    );
+  };
+
   return (
     <div className="flex flex-col">
       <button className="border bg-gray-600 text-gray-200" onClick={callApi}>

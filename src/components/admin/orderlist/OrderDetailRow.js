@@ -8,7 +8,6 @@ const OrderDetailRow = ({
   price,
   quan,
   totalWeight,
-  dcRate,
   relDate,
   createdAt,
   changeHandler,
@@ -60,16 +59,17 @@ const OrderDetailRow = ({
         </div>
       </div>
       <div className="col-span-2">
-        {price.toLocaleString("ko-KR")} {order.data.currency}
+        {price && price?.toLocaleString("ko-KR")}{" "}
+        {order && order?.data?.currency}
       </div>
 
-      <div className="col-span-2">{quan} EA</div>
+      <div className="col-span-2">{quan && quan} EA</div>
       <div className="col-span-2">
-        {Math.round(totalWeight * 0.001 * 10) / 10} kg
+        {totalWeight && Math.round(totalWeight * 0.001 * 10) / 10} kg
       </div>
       <div className="col-span-2">
-        {(price.toFixed(2) * quan).toLocaleString("ko-KR")}{" "}
-        {order.data.currency}
+        {price && quan && (price.toFixed(2) * quan).toLocaleString("ko-KR")}{" "}
+        {order && order.data.currency}
       </div>
     </div>
   );

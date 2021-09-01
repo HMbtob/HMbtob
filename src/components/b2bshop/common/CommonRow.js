@@ -30,8 +30,8 @@ export default function CommonRow({
         src={thumbNail}
         alt=""
       />
-      <div className="col-span-2 z-10">{product.data.barcode}</div>
-      <div className="col-span-2 z-10">{product.data.sku}</div>
+      <div className="col-span-2 z-10">{product?.data.barcode}</div>
+      <div className="col-span-2 z-10">{product?.data.sku}</div>
       <div className="col-span-5 text-left z-10">{title}</div>
       <div className="col-span-3 z-10">
         {new Date(relDate.seconds * 1000).toISOString().substring(0, 10)}

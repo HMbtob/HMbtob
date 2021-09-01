@@ -1,17 +1,17 @@
 import React, { useContext, useState } from "react";
 import { useHistory } from "react-router";
-import { db } from "../../../firebase";
 import { InitDataContext, InitDispatchContext } from "../../../App";
+import { db } from "../../../firebase";
 import { Common } from "../common/Common";
 import NoticeTable from "../notice/NoticeTable";
 import PreOrderTable from "../preorder/PreOrderTable";
 import SimpleList from "../simplelist/SimpleList";
 import useSimpleList from "../../../hooks/useSimpleList";
 import DealTable from "../deal/DealTable";
-import SearchIcon from "@material-ui/icons/Search";
-import RestoreIcon from "@material-ui/icons/Restore";
 import Modal from "../../modal/Modal";
 import InSimpleList from "../../chat/InSimpleList";
+import SearchIcon from "@material-ui/icons/Search";
+import RestoreIcon from "@material-ui/icons/Restore";
 
 const B2bShop = () => {
   const history = useHistory();
@@ -452,12 +452,6 @@ const B2bShop = () => {
             <div className="text-center text-sm font-bold text-gray-800">
               SCHEDULE
             </div>
-            {/* <DealTable
-              dealProducts={deal}
-              exchangeRate={exchangeRate}
-              onChange={onChange}
-              user={user}
-            /> */}
             <iframe
               src="https://calendar.google.com/calendar/embed?height=400&wkst=1&bgcolor=%23F9FAFB&ctz=Asia%2FSeoul&src=aW50ZXJhc2lhZGV2QGdtYWlsLmNvbQ&src=YWRkcmVzc2Jvb2sjY29udGFjdHNAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&src=ZDZtNTV2b2tpaTh1MWNvazVqOXQ2djduZmdAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&src=a28uc291dGhfa29yZWEjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23039BE5&color=%2333B679&color=%23F6BF26&color=%230B8043&showTitle=0&showNav=1&showTz=0&showCalendars=0&showTabs=0&showPrint=1&showDate=1"
               style={{ borderWidth: 0 }}
@@ -465,11 +459,11 @@ const B2bShop = () => {
               height="500"
               frameBorder="0"
               scrolling="no"
+              title="cal"
             ></iframe>
           </>
         )}
         <SimpleList
-          // userData={userData}
           exchangeRate={exchangeRate}
           confirmChecked={confirmChecked}
           simpleList={simpleList && simpleList}

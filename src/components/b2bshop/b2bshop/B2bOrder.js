@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
+import firebase from "firebase";
 import { useHistory } from "react-router";
 import { InitDataContext } from "../../../App";
-import useInputs from "../../../hooks/useInput";
 import { db } from "../../../firebase";
-import firebase from "firebase";
+import useInputs from "../../../hooks/useInput";
 
 const B2bOrder = () => {
   const state = useContext(InitDataContext);
@@ -12,7 +12,7 @@ const B2bOrder = () => {
   const { user, simpleLists, products, dhlShippingFee, exchangeRate, orders } =
     state;
   const { z } = dhlShippingFee;
-
+  console.log(simpleLists);
   // order number를 위한 0 포함된 숫자 만드는 함수
   const addZeros = (n, digits) => {
     let zero = "";
@@ -22,6 +22,7 @@ const B2bOrder = () => {
     }
     return zero + n;
   };
+
   // order number를 위한 마지막 3자리 숫자 만들기
   const forOrderNumber = orders
     .filter(order => order.data.customer === user.email)
@@ -203,21 +204,6 @@ const B2bOrder = () => {
       shippingMessage,
     });
 
-    // if (paymentMethod === "credit") {
-    //   await db
-    //     .collection("accounts")
-    //     .doc(user.email)
-    //     .update({
-    //       credit: user.credit - amountPrice,
-    //       creditDetails: firebase.firestore.FieldValue.arrayUnion({
-    //         type: "makeOrder",
-    //         currency: user.currency,
-    //         amount: Number(amountPrice),
-    //         date: new Date(),
-    //         totalAmount: Number(user.credit) - Number(amountPrice),
-    //       }),
-    //     });
-    // }
     // totalsold 계산
     for (let i = 0; i < simpleLists.length; i++) {
       db.collection("products")
@@ -269,7 +255,11 @@ const B2bOrder = () => {
           <div className="flex-col mb-10 flex space-y-2  w-2/5">
             <div className="grid grid-cols-2">
               <div>Order Number</div>
-              {state.orderNumber && <div>{state.orderNumber}</div>}
+              {user &&
+                `${user.alias}-${new Date(today)
+                  .toISOString()
+                  .substring(2, 10)
+                  .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)} `}
             </div>
             {user && (
               <>

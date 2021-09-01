@@ -5,6 +5,7 @@ import MyOrderDetailRow from "./MyOrderDetailRow";
 import CancelIcon from "@material-ui/icons/Cancel";
 import UndoIcon from "@material-ui/icons/Undo";
 import LocalAirportIcon from "@material-ui/icons/LocalAirport";
+
 const MyOrderDetail = ({ match }) => {
   const { id } = match.params;
   const state = useContext(InitDataContext);
@@ -43,19 +44,19 @@ const MyOrderDetail = ({ match }) => {
             </div>
             <div className="grid grid-cols-2">
               <div>DATE</div>
-              {new Date(order.data.createdAt.toDate()).toLocaleString()}
+              {new Date(order?.data.createdAt.toDate()).toLocaleString()}
             </div>
             <div className="grid grid-cols-2">
               <div>PAYMENTMETHOD</div>
-              <div>{order.data.paymentMethod}</div>
+              <div>{order?.data.paymentMethod}</div>
             </div>
             <div className="grid grid-cols-2">
               <div>SHIPPING</div>
-              <div>{order.data.shippingType}</div>
+              <div>{order?.data.shippingType}</div>
             </div>
             <div className="grid grid-cols-2">
               <div>PHONE</div>
-              <div>{account.data.phoneNumber}</div>
+              <div>{account?.data.phoneNumber}</div>
             </div>
           </div>
           {/* 수령인 파트 */}
@@ -63,40 +64,40 @@ const MyOrderDetail = ({ match }) => {
           <div className="flex-col mb-10 flex space-y-2 w-1/3">
             <div className="grid grid-cols-2">
               <div>Recipient</div>
-              <div>{order.data.recipient}</div>
+              <div>{order?.data.recipient}</div>
             </div>
             <div className="grid grid-cols-2">
               <div>Email</div>
-              <div>{order.data.recipientEmail}</div>
+              <div>{order?.data.recipientEmail}</div>
             </div>
             <div className="grid grid-cols-2">
               <div>Number</div>
-              <div>{order.data.recipientPhoneNumber}</div>
+              <div>{order?.data.recipientPhoneNumber}</div>
             </div>
             <div className="grid grid-cols-2">
               <div>Street</div>
-              <div>{order.data.street}</div>
+              <div>{order?.data.street}</div>
             </div>
             <div className="grid grid-cols-2">
               <div>City</div>
-              <div>{order.data.city}</div>
+              <div>{order?.data.city}</div>
             </div>
             <div className="grid grid-cols-2">
               <div>State</div>
-              <div>{order.data.states}</div>
+              <div>{order?.data.states}</div>
             </div>
             <div className="grid grid-cols-2">
               <div>Country</div>
-              <div>{order.data.country}</div>
+              <div>{order?.data.country}</div>
             </div>
             <div className="grid grid-cols-2">
               <div>Zipcode</div>
-              <div>{order.data.zipcode}</div>
+              <div>{order?.data.zipcode}</div>
             </div>
 
             <div className="grid grid-cols-2">
               <div>Memo</div>
-              <div>{order.data.shippingMessage}</div>
+              <div>{order?.data.shippingMessage}</div>
             </div>
           </div>
         </div>
@@ -136,7 +137,6 @@ const MyOrderDetail = ({ match }) => {
             <MyOrderDetailRow
               key={doc.childOrderNumber}
               id={doc.childOrderNumber}
-              totalWeight={doc.weight * doc.quan}
               order={doc}
               currency={order.data.currency}
             />

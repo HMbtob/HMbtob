@@ -2,25 +2,9 @@ import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { InitDataContext } from "../../../App";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
-
 import VisibilityIcon from "@material-ui/icons/Visibility";
 
-const HiddenBigc = ({
-  id,
-  sku,
-  thumbNail,
-  title,
-  price,
-  stock,
-  totalSell,
-  unShipped,
-  relDate,
-  preOrderDeadline,
-  orders,
-  shippings,
-  bigcProductId,
-  handleBigTotalSold,
-}) => {
+const HiddenBigc = ({ relDate, bigcProductId, handleBigTotalSold }) => {
   const state = useContext(InitDataContext);
   const { unShippedProductsIdandQty } = state;
   const [product, setProduct] = useState({
@@ -31,8 +15,8 @@ const HiddenBigc = ({
     isVisible: "",
   });
 
-  const { isVisible } = product;
-  const { handlePrice, handleStock, total_sold, productName } = product;
+  const { isVisible, handlePrice, handleStock, total_sold, productName } =
+    product;
 
   const onChange = e => {
     const { name, value } = e.target;
@@ -71,7 +55,7 @@ const HiddenBigc = ({
   useEffect(() => {
     sdadasdasd();
     handleBigTotalSold(total_sold);
-  }, [bigcProductId, total_sold]);
+  }, [total_sold, sdadasdasd, bigcProductId]);
   return (
     <div
       className="grid grid-cols-36 items-center 

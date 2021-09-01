@@ -3,11 +3,9 @@ import React from "react";
 const DealRow = ({
   id,
   title,
-  relDate,
   thumbNail,
   onChange,
   name,
-  preOrderDeadline,
   price,
   product,
   user,

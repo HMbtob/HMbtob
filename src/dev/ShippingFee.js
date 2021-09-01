@@ -1,14 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import { db } from "../firebase";
 import { SPREADSHEET_ID, PRIVATE_KEY } from "../evir";
-import { InitDataContext } from "../App";
-import axios from "axios";
 
 const Sheets = () => {
-  const state = useContext(InitDataContext);
-  const { products } = state;
-  //   const SHEET_ID = "Sheet2";
   const CLIENT_EMAIL = "forsheet@interasiastock.iam.gserviceaccount.com";
 
   const doc = new GoogleSpreadsheet(SPREADSHEET_ID);

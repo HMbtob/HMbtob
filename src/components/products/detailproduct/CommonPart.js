@@ -1,6 +1,6 @@
 import React from "react";
-import useInputs from "../../../hooks/useInput";
 import { db } from "../../../firebase";
+import useInputs from "../../../hooks/useInput";
 
 const CommonPart = ({ product, id }) => {
   const [form, onChange] = useInputs({

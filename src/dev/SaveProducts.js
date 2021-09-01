@@ -7,7 +7,7 @@ import axios from "axios";
 
 const SaveProducts = () => {
   const state = useContext(InitDataContext);
-  const { products, allOrderProductsList, user } = state;
+  const { allOrderProductsList, user } = state;
   const CLIENT_EMAIL = "forsheet@interasiastock.iam.gserviceaccount.com";
 
   const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
@@ -29,10 +29,7 @@ const SaveProducts = () => {
     const rows = await sheet.getRows();
 
     for (let i = 0; i < 50; i++) {
-      console.log(i, "번째 시작");
-      const barcode = allOrderProductsList?.data[i]?.upc;
       const productId = allOrderProductsList?.data[i]?.id;
-      console.log(productId);
       const productRef = db.collection("products").doc(`${productId}`);
       // id로 도매가 가져오기
       const price = Number(

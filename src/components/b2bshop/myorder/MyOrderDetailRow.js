@@ -3,15 +3,11 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import UndoIcon from "@material-ui/icons/Undo";
 import LocalAirportIcon from "@material-ui/icons/LocalAirport";
 
-const MyOrderDetailRow = ({ order, id, totalWeight, currency }) => {
+const MyOrderDetailRow = ({ order, id, currency }) => {
   const today = new Date();
   const preOrder = order.relDate.toDate() < today;
   return (
     <div
-      // className={` text-xs place-items-center grid grid-cols-28
-      // grid-flow-col text-center border-b border-l border-r py-1 ${
-      //   !preOrder ? "bg-red-200" : ""
-      // }`}
       className={`${order.shipped && " bg-blue-300"} ${
         (order?.moved || order?.canceled) && "bg-gray-300"
       } text-xs place-items-center grid grid-cols-28 grid-flow-col 

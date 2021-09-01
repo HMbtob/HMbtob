@@ -10,7 +10,6 @@ import B2bShop from "./components/b2bshop/b2bshop/B2bShop";
 import B2bOrder from "./components/b2bshop/b2bshop/B2bOrder";
 import OrderList from "./components/admin/orderlist/OrderList";
 import Sidebar from "./components/sidebar/Sidebar";
-import Home from "./components/home/Home";
 import Login from "./components/login/Login";
 import ListProduct from "./components/products/listproduct/ListProduct";
 import AddProduct from "./components/products/addproduct/AddProduct";
