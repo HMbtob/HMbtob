@@ -22,20 +22,20 @@ const OrderDetail = ({ match }) => {
   const history = useHistory();
 
   const [form, onChange] = useInputs({
-    orderState: order.data.orderState,
-    paymentMethod: order.data.paymentMethod,
-    shippingType: order.data.shippingType,
-    recipientEmail: order.data.recipientEmail,
-    recipientPhoneNumber: order.data.recipientPhoneNumber,
-    street: order.data.street,
-    city: order.data.city,
-    states: order.data.states,
-    country: order.data.country,
-    zipcode: order.data.zipcode,
-    recipient: order.data.recipient,
-    shippingMessage: order.data.shippingMessage,
+    orderState: order?.data.orderState,
+    paymentMethod: order?.data.paymentMethod,
+    shippingType: order?.data.shippingType,
+    recipientEmail: order?.data.recipientEmail,
+    recipientPhoneNumber: order?.data.recipientPhoneNumber,
+    street: order?.data.street,
+    city: order?.data.city,
+    states: order?.data.states,
+    country: order?.data.country,
+    zipcode: order?.data.zipcode,
+    recipient: order?.data.recipient,
+    shippingMessage: order?.data.shippingMessage,
     orderNumberSelect: "",
-    memo: order.data.memo,
+    memo: order?.data.memo,
   });
 
   const {
@@ -209,6 +209,9 @@ const OrderDetail = ({ match }) => {
   const checkItemAmountPrice = checkedItemPrice + checkedItemsFee;
   // 재계산 버튼
   const saveRecal = () => {
+    setPreTotalPrice(totalPrice);
+    setPreFee(fee);
+    setPreAmountPrice(amountPrice);
     db.collection("orders")
       .doc("b2b")
       .collection("b2borders")

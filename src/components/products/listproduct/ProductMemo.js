@@ -24,8 +24,8 @@ const ProductMemo = ({ productMemo, id, user }) => {
   return (
     <div className="overflow-y-auto">
       <div className="grid grid-cols-8 text-gray-200 bg-gray-800 text-center">
-        <div className="col-span-2">Writer</div>
         <div className="col-span-2">Date</div>
+        <div className="col-span-2">Writer</div>
         <div className="col-span-4">Content</div>
       </div>
       {productMemo &&
@@ -35,11 +35,10 @@ const ProductMemo = ({ productMemo, id, user }) => {
             className="grid grid-cols-8 text-center 
           border-b p-2 py-1 place-items-center"
           >
-            <div className="col-span-2 text-sm"> {de.writer}</div>
-
             <div className="col-span-2">
               {de.date.toDate().toLocaleString()}
             </div>
+            <div className="col-span-2 text-sm"> {de.writer}</div>
 
             <div
               className="col-span-4"

@@ -12,7 +12,19 @@ const HiddenLists = ({ order, checkedInputs, changeHandler }) => {
           <div
             key={i}
             className={`grid grid-cols-12 text-gray-700 
-            items-center  ${li.relDate.toDate() > today && "bg-red-100"}`}
+            items-center  ${
+              li.relDate.toDate() > today &&
+              li.moved === false &&
+              li.canceled === false
+                ? "bg-red-100"
+                : li.moved === true && li.canceled === false
+                ? "bg-green-300"
+                : li.moved === false && li.canceled === true
+                ? "bg-gray-300"
+                : li.shipped === true
+                ? "bg-blue-300"
+                : ""
+            }  `}
           >
             <input
               type="checkbox"
@@ -24,11 +36,12 @@ const HiddenLists = ({ order, checkedInputs, changeHandler }) => {
               checked={
                 checkedInputs.includes(li.childOrderNumber) ? true : false
               }
+              disabled={li.moved || li.canceled || li.shipped}
             />
-            <div className="col-span-4 text-left">{li.title}</div>
+            <div className="col-span-5 text-left">{li.title}</div>
             <div className="col-span-1">{li.quan} ea</div>
             <div className="col-span-1">{li.barcode}</div>
-            <div className="col-span-1">{li.sku}</div>
+            <div className="col-span-2">{li.sku}</div>
             <div className={`col-span-2 `}>
               {new Date(li.relDate.seconds * 1000)
                 .toISOString()

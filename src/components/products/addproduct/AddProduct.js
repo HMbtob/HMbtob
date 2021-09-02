@@ -15,15 +15,13 @@ const AddProduct = () => {
   const [bigC, setBigC] = useState("");
 
   // 썸넬
-  const [imgUrl, setImgUrl] = useState("");
-  const [imgAry, setImgAry] = useState("");
+
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const handleThumbnail = e => {
     setThumbnailUrl(e.target.value);
   };
   // 디스크립션-이미지
-  const [discUrl, setDiscUrl] = useState("");
-  const [discAry, setDiscAry] = useState("");
+
   const [discripUrl, setDiscripUrl] = useState("");
   const handleDiscrip = e => {
     setDiscripUrl(e.target.value);
@@ -58,6 +56,7 @@ const AddProduct = () => {
     category: "",
     relDate: new Date(),
     preOrderDeadline: new Date(),
+    preOrderDeadlineTime: new Date(),
     pob: false,
     poster: false,
     photocard: false,
@@ -128,6 +127,7 @@ const AddProduct = () => {
     z,
     relDate,
     preOrderDeadline,
+    preOrderDeadlineTime,
     poster,
     pob,
     photocard,
@@ -172,38 +172,33 @@ const AddProduct = () => {
   };
   // 섬넬
   const getImages = async () => {
-    await setImgUrl(thumbnailUrl.substring(25));
+    // await setImgUrl(thumbnailUrl.substring(25));
     await axios
       .get(
         `https://us-central1-interasiastock.cloudfunctions.net/app/big/getThumbnail`,
         {
           params: {
-            title: title,
             url: thumbnailUrl,
+            title: title,
           },
         }
       )
-      .then(resp => setThumbnailUrl(resp.data))
+      .then(res => setThumbnailUrl(res.data))
       .catch(e => console.log(e));
   };
   // 디스크립션
   const getDisc = async () => {
-    await setDiscUrl(discripUrl.substring(25));
     await axios
-      .get(discripUrl, {
-        //이미지 주소 result.img를 요청
-        responseType: "arraybuffer", //buffer가 연속적으로 들어있는 자료 구조를 받아온다
-      })
-      .then(res => setDiscAry(res));
-    await storage
-      .ref(`images/descrip/${title ? title : "descrip"}.jpg`)
-      .put(new Uint8Array(discAry.data), { contentType: "image/jpeg" })
-      .catch(e => console.log(e));
-
-    await storage
-      .ref(`images/descrip/${title ? title : "descrip"}.jpg`)
-      .getDownloadURL()
-      .then(url => setDiscripUrl(url))
+      .get(
+        `https://us-central1-interasiastock.cloudfunctions.net/app/big/getdesc`,
+        {
+          params: {
+            url: discripUrl,
+            title: title,
+          },
+        }
+      )
+      .then(res => setDiscripUrl(res.data))
       .catch(e => console.log(e));
   };
 
@@ -234,6 +229,7 @@ const AddProduct = () => {
             inventory_level: inventoryLevel,
             brand_name: brandName,
             categories: checkedInputs,
+            description: `${descr} + <img src=${discripUrl} alt="" />`,
           },
           { headers }
         )
@@ -271,6 +267,7 @@ const AddProduct = () => {
           category,
           relDate: new Date(relDate),
           preOrderDeadline: new Date(preOrderDeadline),
+          preOrderDeadlineTime: new Date(preOrderDeadlineTime),
           options: {
             poster,
             pob,
@@ -355,7 +352,6 @@ const AddProduct = () => {
                 {Object.values(doc)}
               </div>
               <input
-                required
                 className="col-span-3 border h-9 pl-2"
                 type="text"
                 onChange={onChange}
@@ -368,7 +364,6 @@ const AddProduct = () => {
           <div className="grid grid-cols-4 p-2 items-center">
             <div className="text-gray-600 text-right  mr-3">출시일</div>
             <input
-              required
               className="col-span-3 border h-9 pl-3"
               type="date"
               onChange={onChange}
@@ -377,14 +372,22 @@ const AddProduct = () => {
             />
           </div>
           <div className="grid grid-cols-4 p-2 items-center">
-            <div className="text-gray-600 text-right  mr-3">주문마감일</div>
+            <div className="text-gray-600 col-span-1 text-right  mr-3">
+              주문마감일
+            </div>
             <input
-              required
-              className="col-span-3 border h-9 pl-3"
+              className="col-span-2 border h-9 pl-3"
               type="date"
               onChange={onChange}
               value={preOrderDeadline}
               name="preOrderDeadline"
+            />
+            <input
+              className="col-span-1 border h-9 pl-3"
+              type="time"
+              onChange={onChange}
+              value={preOrderDeadlineTime}
+              name="preOrderDeadlineTime"
             />
           </div>
           {/* 드랍박스 인풋 */}

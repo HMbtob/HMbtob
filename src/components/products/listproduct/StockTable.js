@@ -16,10 +16,10 @@ const StockTable = ({ stockHistory, bigTotalSold, totalStock }) => {
             className="grid grid-cols-8 text-center 
       border-b  py-1 place-items-center"
           >
-            <div className="col-span-2">{de.type}</div>
             <div className="col-span-2">
               {de.date.toDate().toLocaleString()}
             </div>
+            <div className="col-span-2">{de.type}</div>
             <div className="col-span-3 text-sm"> {de.writer}</div>
 
             <div>

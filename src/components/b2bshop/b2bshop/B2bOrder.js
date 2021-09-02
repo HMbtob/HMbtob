@@ -12,7 +12,6 @@ const B2bOrder = () => {
   const { user, simpleLists, products, dhlShippingFee, exchangeRate, orders } =
     state;
   const { z } = dhlShippingFee;
-  console.log(simpleLists);
   // order number를 위한 0 포함된 숫자 만드는 함수
   const addZeros = (n, digits) => {
     let zero = "";

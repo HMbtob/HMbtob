@@ -112,7 +112,7 @@ const TopStoreProduct = ({ products, user, exchangeRate }) => {
         </>
       )}
 
-      <form onSubmit={handleSubmit2} className="col-span-1 w-20">
+      <form onSubmit={handleSubmit2} className="col-span-2 w-20">
         <input
           type="number"
           className="border p-1 pl-3 
@@ -120,12 +120,12 @@ const TopStoreProduct = ({ products, user, exchangeRate }) => {
           value={inputStock}
           onChange={handleInputStock}
           ref={inputRef1}
-          placeholder="입고수량"
+          placeholder="총수량"
         />
 
         <button type="submit"></button>
       </form>
-      <div className=" col-span-9"></div>
+      <div className=" col-span-8"></div>
     </div>
   );
 };

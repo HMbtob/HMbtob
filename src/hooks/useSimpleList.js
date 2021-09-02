@@ -7,6 +7,7 @@ function reducer(state, action) {
         ...state,
         [action.name]: action.value,
       };
+
     case "RESET":
       return Object.keys(state).reduce((acc, current) => {
         acc[current] = "";
@@ -17,7 +18,7 @@ function reducer(state, action) {
   }
 }
 
-function useSimpleList(initialForm, f, p) {
+function useSimpleList(initialForm, f, p, simpleList) {
   const [form, dispatch] = useReducer(reducer, initialForm);
   // change
   const onChange = useCallback(
@@ -48,13 +49,9 @@ function useSimpleList(initialForm, f, p) {
   );
   const reset = useCallback(() => dispatch({ type: "RESET" }), []);
 
-  const deleteList = useCallback(
-    name => {
-      dispatch({ type: "CHANGE", name, value: 0 });
-      f(false);
-    },
-    [f]
-  );
+  const deleteList = useCallback(name => {
+    dispatch({ type: "CHANGE", name, value: 0 });
+  }, []);
 
   return [form, onChange, reset, deleteList];
 }

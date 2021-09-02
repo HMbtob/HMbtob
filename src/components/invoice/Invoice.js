@@ -1,11 +1,12 @@
 import React, { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { useHistory } from "react-router";
+import useInputs from "./../../hooks/useInput";
+import InvoiceRow from "./InvoiceRow";
 
 const PickUpList = ({ location }) => {
   const { state, orders, order } = location;
 
-  console.log(order);
   const [invoiceLists] = useState(
     [].concat.apply(
       [],
@@ -25,57 +26,128 @@ const PickUpList = ({ location }) => {
     handlePrint();
     history.goBack();
   };
+
+  const [form, onchange] = useInputs({
+    recipient: order.data.recipient,
+    street: order.data.street,
+    city: order.data.city,
+    zipcode: order.data.zipcode,
+    states: order.data.states,
+    country: order.data.country,
+    recipientEmail: order.data.recipientEmail,
+    shippingFee: order.data.shippingFee,
+    amountPrice: order.data.amountPrice,
+  });
+
+  const {
+    recipient,
+    street,
+    city,
+    zipcode,
+    states,
+    country,
+    recipientEmail,
+    shippingFee,
+    amountPrice,
+  } = form;
   class ComponentToPrint extends React.Component {
     render() {
       return (
-        <div className="m-auto mt-10 w-11/12 ">
+        <div className="m-auto mt-20 w-11/12 ">
           <div className="w-full">
             <div className="text-left text-2xl font-semibold mb-5">INVOICE</div>
             <div className="flex-row flex w-full mb-5">
               <div className="w-2/3">
-                <div className="text-lg font-semibold">Seller</div>
-                <div>INTERASIA</div>
-                <div>#417, 78 Digital-ro 10-gil</div>
-                <div>Geumcheon-gu, Seoul, Korea</div>
-                <div>Tel: +82 2 10 2088 0022</div>
-                <div>Fax: +82 2 3281 0125</div>
+                <div className="text-base font-semibold">Seller</div>
+                <div className="text-sm">INTERASIA</div>
+                <div className="text-sm">#417, 78 Digital-ro 10-gil</div>
+                <div className="text-sm">Geumcheon-gu, Seoul, Korea</div>
+                <div className="text-sm">Tel: +82 2 10 2088 0022</div>
+                <div className="text-sm">Fax: +82 2 3281 0125</div>
               </div>
-              <div className="w-1/3 flex flex-col justify-center">
+              <div className="w-1/3 flex flex-col justify-center text-sm">
                 <div>invoice No.:</div>
                 <div>invoice Date:</div>
               </div>
             </div>
             <div className="flex-row flex w-full mb-5">
               <div className="w-2/3">
-                <div className="text-lg font-semibold">Consignee</div>
+                <div className="text-base font-semibold">Consignee</div>
                 {order && (
                   <>
-                    <div>{order.data.recipient}</div>
-                    <div>{order.data.street}</div>
-                    <div>{order.data.city}</div>
-                    <div>
-                      {order.data.zipcode}, {order.data.states},
-                      {order.data.country}
+                    <div className="flex flex-col w-40 text-sm">
+                      <input
+                        className="   outline-none"
+                        type="text"
+                        value={recipient}
+                        name="recipient"
+                        onChange={onchange}
+                      />
+                      <input
+                        className="   outline-none"
+                        type="text"
+                        value={street}
+                        name="street"
+                        onChange={onchange}
+                      />
+                      <input
+                        className="   outline-none"
+                        type="text"
+                        value={city}
+                        name="city"
+                        onChange={onchange}
+                      />
                     </div>
-                    <div>{order.data.recipientEmail}</div>
+                    <div className="text-sm">
+                      <input
+                        className="  w-20 outline-none "
+                        type="text"
+                        value={zipcode}
+                        name="zipcode"
+                        onChange={onchange}
+                      />
+                      ,
+                      <input
+                        className="  w-24 outline-none"
+                        type="text"
+                        value={states}
+                        name="states"
+                        onChange={onchange}
+                      />
+                      ,
+                      <input
+                        className="  w-28 outline-none"
+                        type="text"
+                        value={country}
+                        name="country"
+                        onChange={onchange}
+                      />
+                    </div>
+                    <input
+                      className=" w-80 outline-none text-sm"
+                      type="text"
+                      value={recipientEmail}
+                      name="recipientEmail"
+                      onChange={onchange}
+                    />
                   </>
                 )}
               </div>
-              <div className="bw-1/3  flex flex-col justify-center">
+              <div className="bw-1/3  flex flex-col justify-center text-sm">
                 <div>Shipping :</div>
                 <div>Tracking No.:</div>
               </div>
             </div>
             <div
               className="grid grid-cols-28 text-center
-             bg-gray-700 text-white text-base"
+             bg-gray-700 text-white text-sm"
             >
               <div className="col-span-1">no.</div>
-              <div className="col-span-18">Description of goods</div>
+              <div className="col-span-16">Description of goods</div>
               <div className="col-span-3">Option</div>
               <div className="col-span-2">Qty</div>
-              <div className="col-span-2">Unit price</div>
-              <div className="col-span-2">Amount</div>
+              <div className="col-span-3">Unit price</div>
+              <div className="col-span-3">Amount</div>
             </div>
 
             {invoiceLists &&
@@ -83,30 +155,111 @@ const PickUpList = ({ location }) => {
                 .sort((a, b) => {
                   return a.title < b.title ? -1 : a.title > b.title ? 1 : 0;
                 })
-                .map((list, i) => (
-                  <div
-                    key={i}
-                    className="grid grid-cols-28 border-b border-black
-               border-r border-l text-xs"
-                  >
-                    <div className="col-span-1 text-center border-r border-black p-1">
-                      {i + 1}
-                    </div>
-                    <div className="col-span-18 text-left  border-r border-black p-1">
-                      {list.title}
-                    </div>
-                    <div className="col-span-3 text-center  border-r border-black p-1"></div>
-                    <div className="col-span-2 text-center  border-r border-black p-1">
-                      {list.quan} EA
-                    </div>
-                    <div className="col-span-2 text-center  border-r border-black p-1">
-                      {list.price} {list.currency}
-                    </div>
-                    <div className="col-span-2 text-center p-1">
-                      {list.totalPrice} {list.currency}
-                    </div>
-                  </div>
-                ))}
+                .map((list, i) => <InvoiceRow key={i} list={list} index={i} />)}
+            <div
+              className="grid grid-cols-28 text-center
+             text-sm border-r border-l border-black border-b"
+            >
+              <div className="col-span-1  border-r border-black"></div>
+              <div className="col-span-16 border-r border-black text-left pl-2 flex items-center">
+                {order?.data.shippingType.toUpperCase()}
+              </div>
+              <div className="col-span-3 border-r border-black"></div>
+              <div className="col-span-2 border-r border-black"></div>
+              <div className="col-span-3 border-r border-black"> </div>
+              <div className="col-span-3 justify-center flex flex-row items-center w-full p-1">
+                <input
+                  className="w-full text-center text-sm outline-none pr-2"
+                  type="text"
+                  value={shippingFee.toFixed(2)}
+                  name="shippingFee"
+                  onChange={onchange}
+                />
+                {order?.data.currency}
+              </div>
+            </div>
+            <div
+              className="grid grid-cols-28 text-center
+             text-base border-r border-l border-black text-gray-50 border-b"
+            >
+              <div className="col-span-1  border-r border-black"></div>
+              <div className="col-span-16 border-r border-black"></div>
+              <div className="col-span-3 border-r border-black">a</div>
+              <div className="col-span-2 border-r border-black"></div>
+              <div className="col-span-3 border-r border-black"> </div>
+              <div className="col-span-2"></div>
+            </div>
+            <div
+              className="grid grid-cols-28 text-center
+             text-base border-r border-l border-black text-gray-50 border-b"
+            >
+              <div className="col-span-1  border-r border-black"></div>
+              <div className="col-span-16 border-r border-black"></div>
+              <div className="col-span-3 border-r border-black">a</div>
+              <div className="col-span-2 border-r border-black"></div>
+              <div className="col-span-3 border-r border-black"> </div>
+              <div className="col-span-3"></div>
+            </div>
+            <div
+              className="grid grid-cols-28 text-center
+             text-base border-r border-l border-black text-gray-50 border-b"
+            >
+              <div className="col-span-1  border-r border-black"></div>
+              <div className="col-span-16 border-r border-black"></div>
+              <div className="col-span-3 border-r border-black">a</div>
+              <div className="col-span-2 border-r border-black"></div>
+              <div className="col-span-3 border-r border-black"> </div>
+              <div className="col-span-3"></div>
+            </div>
+            <div
+              className="grid grid-cols-28 text-center
+             text-sm border-r border-l border-black "
+            >
+              <div className="col-span-1  border-r border-black"></div>
+              <div className="col-span-16 border-r border-black p-1 font-semibold  text-left pl-2">
+                Total Amount in{" "}
+              </div>
+              <div className="col-span-3 border-r border-black"></div>
+              <div className="col-span-2 border-r border-black"></div>
+              <div className="col-span-3 border-r border-black"></div>
+              <div className="col-span-3 flex flex-row items-center justify-center w-full">
+                <input
+                  className="text-center py-1 outline-none w-full"
+                  type="text"
+                  value={amountPrice.toFixed(2)}
+                  name="amountPrice"
+                  onChange={onchange}
+                />
+                {order?.data.currency}
+              </div>
+            </div>
+            <div
+              className="grid grid-cols-28 text-center
+             text-lg font-semibold border border-black"
+            >
+              <div className="col-span-20 border-r border-black p-1">
+                {"Declaration of origin"}
+              </div>
+              <div className="col-span-8 p-1">{"Date & Company Chop"}</div>
+            </div>
+            <div
+              className="grid grid-cols-28 text-center
+             text-lg font-semibold border border-black h-48"
+            >
+              <div className="col-span-20 border-r border-black p-12">
+                {"We the undersigned, the exporter of the products, "}
+                {
+                  "covered by this document, declare that, except where otherwise"
+                }
+                {
+                  "clearly indicated, these products are of South Korea preferntial origin."
+                }
+              </div>
+              <div className="col-span-8 flex- flex-col">
+                <div className=" h-36"></div>
+                <div className="border-t border-black p-2">INTERASIA</div>
+              </div>
+            </div>
           </div>
         </div>
       );

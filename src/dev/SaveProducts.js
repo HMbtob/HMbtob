@@ -130,6 +130,10 @@ const SaveProducts = () => {
           relDate?.length < 11 && relDate?.length
             ? new Date(relDate)
             : new Date(),
+        preOrderDeadlineTime:
+          relDate?.length < 11 && relDate?.length
+            ? new Date(relDate)
+            : new Date(),
         options: {
           poster: false,
           pob: false,

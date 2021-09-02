@@ -12,6 +12,7 @@ import Modal from "../../modal/Modal";
 import InSimpleList from "../../chat/InSimpleList";
 import SearchIcon from "@material-ui/icons/Search";
 import RestoreIcon from "@material-ui/icons/Restore";
+import { useEffect } from "react";
 
 const B2bShop = () => {
   const history = useHistory();
@@ -235,7 +236,6 @@ const B2bShop = () => {
         })
     );
   };
-
   // {title(id):quan} 형태로 가져오기
   const [confirmChecked, setConfirmCheck] = useState(false);
   const [form, onChange, reset, deleteList] = useSimpleList(
@@ -245,6 +245,13 @@ const B2bShop = () => {
   );
   // list 만들기
   let simpleList = [];
+  const handleCheck = () => {
+    if (simpleList.length > 0) {
+      setConfirmCheck(true);
+    } else if (simpleList.length === 0) {
+      setConfirmCheck(false);
+    }
+  };
   if (form && products) {
     let i = 0;
     for (let key in form) {
@@ -340,6 +347,9 @@ const B2bShop = () => {
     });
     alert("요청되었습니다");
   };
+  useEffect(() => {
+    handleCheck();
+  }, [simpleList]);
 
   return (
     <div className="w-full h-auto flex ">
