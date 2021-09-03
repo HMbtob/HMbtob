@@ -75,7 +75,7 @@ const PreOrderRow = ({
         name={name}
         onChange={onChange}
         value={simpleList?.find(list => list.productId === name)?.quan}
-        className="w-1/2 h-6 border text-center col-span-2"
+        className="w-1/2 h-6 border text-center col-span-2 outline-none"
       />
       {Number(product.data.stock) > 0 ? (
         ""

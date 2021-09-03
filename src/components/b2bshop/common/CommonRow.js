@@ -71,7 +71,7 @@ export default function CommonRow({
         name={name}
         onChange={onChange}
         value={simpleList?.find(list => list.productId === name)?.quan}
-        className="w-1/2 h-7 border text-center col-span-2"
+        className="w-1/2 h-7 border text-center col-span-2 outline-none"
       />
       {Number(product.data.stock) > 0 || product.data.limitedStock === false ? (
         ""

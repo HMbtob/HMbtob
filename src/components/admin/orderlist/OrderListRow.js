@@ -48,7 +48,12 @@ const OrderListRow = ({
     if (checked) {
       // 전체 체크 박스가 체크 되면 id를 가진 모든 elements를 배열에 넣어주어서,
       // 전체 체크 박스 체크
-      order?.data?.list?.forEach(el => idArray.push(el.childOrderNumber));
+      order?.data?.list
+        .filter(
+          li =>
+            li.moved === false && li.canceled === false && li.shipped === false
+        )
+        .forEach(el => idArray.push(el.childOrderNumber));
       setCheckedInputs(idArray);
       setCheckedAllItems([...checkedAllItems, ...idArray]);
     }
@@ -75,7 +80,7 @@ const OrderListRow = ({
         <div
           className={`grid grid-cols-12 grid-flow-col text-center
         border-b border-l border-r py-1 items-center text-sm bg-white ${
-          included ? " bg-red-200" : ""
+          included ? " bg-red-100" : ""
         }`}
         >
           <div

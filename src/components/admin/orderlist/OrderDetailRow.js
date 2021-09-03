@@ -47,12 +47,12 @@ const OrderDetailRow = ({
   return (
     <form
       onSubmit={saveFix}
-      className={`${aList.shipped && " bg-blue-300"}
-      ${aList?.moved && "bg-green-300"} ${
-        aList?.canceled && "bg-gray-300"
+      className={`${aList.shipped && " bg-blue-100"}
+      ${aList?.moved && "bg-green-100"} ${
+        aList?.canceled && "bg-gray-100"
       } text-xs place-items-center grid grid-cols-28 grid-flow-colfixedPrice 
       text-center border-b border-l border-r py-1 ${
-        !preOrder && !aList?.moved && !aList?.canceled ? "bg-red-200" : ""
+        !preOrder && !aList?.moved && !aList?.canceled ? "bg-red-100" : ""
       }`}
     >
       <input
@@ -63,10 +63,10 @@ const OrderDetailRow = ({
         checked={checkedInputs.includes(id) ? true : false}
         disabled={aList?.moved || aList?.canceled || aList?.shipped}
       />
-      <div>{id}</div>
-      <div className="col-span-3">{createdAt}</div>
+      <div className="col-span-3">{id}</div>
+      <div className="col-span-2">{createdAt}</div>
 
-      <div className="col-span-3">{relDate.toDate().toLocaleDateString()} </div>
+      <div className="col-span-2">{relDate.toDate().toLocaleDateString()} </div>
       <div className="col-span-12 text-left w-full flex flex-row">
         {aList?.moved && (
           <>
@@ -92,6 +92,7 @@ const OrderDetailRow = ({
           type="number"
           value={fixedPrice}
           onChange={handleFixedPrice}
+          step="0.01"
           className="w-16 text-center outline-none"
         />
         {order && order?.data?.currency}
@@ -102,6 +103,7 @@ const OrderDetailRow = ({
           type="number"
           value={fixedQuan}
           onChange={handleFixedQuan}
+          step="0.01"
           className="w-12 text-center outline-none"
         />
         {/* {quan && quan}  */}

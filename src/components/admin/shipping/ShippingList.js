@@ -7,7 +7,9 @@ const ShippingList = ({ shipping, from }) => {
   const { shippings } = state;
   return (
     <div className="w-full flex justify-center mb-20">
-      <div className=" w-11/12 flex-col mt-20">
+      <div
+        className={`${from === "detail" ? "w-full" : "w-11/12"} flex-col mt-20`}
+      >
         <div
           className="w-full text-center my-4 
         text-gray-800 font-semibold"
@@ -15,16 +17,18 @@ const ShippingList = ({ shipping, from }) => {
           Shipped Items{" "}
         </div>
         <div
-          className="grid grid-cols-20  grid-flow-col text-center 
+          className="grid grid-cols-28  grid-flow-col text-center 
            bg-gray-800 text-gray-100 py-1 rounded-sm text-xs"
         >
-          <div className="col-span-1">.No</div>
+          <div className="col-span-3">Shipping No.</div>
           <div className="col-span-3">Ship Date</div>
-          <div className="col-span-1">Order No.</div>
+          <div className="col-span-3">Order No.</div>
           <div className="col-span-3">Order Date</div>
+          <div className="col-span-2">Tracking No.</div>
+          <div></div>
           <div className="col-span-3">Email</div>
           <div>Company</div>
-          <div>Country</div>
+          <div className="col-span-2">Country</div>
           <div className="col-span-1">Sorts</div>
           <div className="col-span-1">EA</div>
           <div className="col-span-1">Weight</div>

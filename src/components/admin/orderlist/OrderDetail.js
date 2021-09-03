@@ -73,7 +73,11 @@ const OrderDetail = ({ match }) => {
     });
     alert("저장 완료");
   };
-
+  // 트래킹넘버 / textarea
+  const [trackingNumber, setTrackingNumber] = useState([]);
+  const handleTrackingNumber = e => {
+    setTrackingNumber(e.target.value);
+  };
   const [checkedInputs, setCheckedInputs] = useState([]);
 
   const changeHandler = (checked, id) => {
@@ -138,6 +142,7 @@ const OrderDetail = ({ match }) => {
     }
     num2++;
   }
+
   // 어느나라에 걸리는지
   const zone =
     z &&
@@ -167,10 +172,25 @@ const OrderDetail = ({ match }) => {
       : (totalWeight * order.data.shippingRate[shippingType]) /
         exchangeRate[order.data.currency];
 
+  // 입력 배송비
+  const [calFee, setCalFee] = useState("");
+  const [inputWeight, setInputWeight] = useState("");
+  let num3 = 1;
+  for (let i = 1; i < 31; i++) {
+    let j = i * 0.5;
+    if (j > inputWeight) {
+      break;
+    }
+    num3++;
+  }
+  const handleCalFee = e => {
+    setInputWeight(Number(Number(e.target.value)));
+  };
+
   // 체크된 상품 배송비
   const [checkedItemsFee, setCheckedItemsFee] = useState("");
   const handleCheckedItemFee = e => {
-    setCheckedItemsFee(Number(e.target.value));
+    setCheckedItemsFee(Number(Number(e.target.value)));
   };
 
   // 상품 total price
@@ -206,7 +226,10 @@ const OrderDetail = ({ match }) => {
   // 재계산 amount
   const amountPrice = totalPrice + fee;
   // 체크된 아이템 총액
-  const checkItemAmountPrice = checkedItemPrice + checkedItemsFee;
+  const checkItemAmountPrice =
+    inputWeight > 0
+      ? Number(checkedItemPrice) + Number(calFee)
+      : Number(checkedItemPrice) + Number(checkedItemsFee);
   // 재계산 버튼
   const saveRecal = () => {
     setPreTotalPrice(totalPrice);
@@ -323,69 +346,76 @@ const OrderDetail = ({ match }) => {
   // TODO:  쉬핑 넘버 없이 카운츠로 넘버만들어서 저장-> 되면 오더에도 적용
   const makeShipping = async e => {
     e.preventDefault();
-    await db
-      .collection("shipping")
-      .doc()
-      .set({
-        orderId: id,
-        orderNumber: order.data.orderNumber,
-        shippingNumber: order.data.orderNumber,
-        shippedDate: new Date(),
-        shippingType,
-        customer: order.data.customer,
-        orderCreatedAt: order.data.createdAt,
-        recipientEmail,
-        recipientPhoneNumber,
-        street,
-        city,
-        states,
-        country,
-        zipcode,
-        recipient,
-        shippingMessage,
-        shippingRate: order.data.shippingRate,
-        list: order.data.list.filter(item =>
-          checkedInputs.includes(item.childOrderNumber)
-        ),
-        checkedItemsFee,
-        checkedItemPrice,
-        checkItemAmountPrice,
-      });
-    await db
-      .collection("accounts")
-      .doc(user.email)
-      .update({
-        credit: user.credit - checkItemAmountPrice,
-        creditDetails: firebase.firestore.FieldValue.arrayUnion({
-          type: "makeOrder",
-          currency: user.currency,
-          amount: Number(checkItemAmountPrice),
-          date: new Date(),
-          totalAmount: Number(user.credit) - Number(checkItemAmountPrice),
-        }),
-      });
-    await db
-      .collection("orders")
-      .doc("b2b")
-      .collection("b2borders")
-      .doc(id)
-      .update({
-        list: [
-          ...order.data.list.filter(
-            item => !checkedInputs.includes(item.childOrderNumber)
+    if (trackingNumber.length < 1) {
+      alert("Tracking Number를 입력해 주세요");
+    } else {
+      await db
+        .collection("shipping")
+        .doc()
+        .set({
+          orderId: id,
+          orderNumber: order.data.orderNumber,
+          shippingNumber: order.data.orderNumber,
+          shippedDate: new Date(),
+          shippingType,
+          customer: order.data.customer,
+          orderCreatedAt: order.data.createdAt,
+          recipientEmail,
+          recipientPhoneNumber,
+          street,
+          city,
+          states,
+          country,
+          zipcode,
+          recipient,
+          shippingMessage,
+          shippingRate: order.data.shippingRate,
+          list: order.data.list.filter(item =>
+            checkedInputs.includes(item.childOrderNumber)
           ),
-          ...checkedInputs
-            .map(doc =>
-              order.data.list.find(arr => arr.childOrderNumber === doc)
-            )
-            .map(doc2 => {
-              doc2.shipped = true;
-              return doc2;
-            }),
-        ],
-      });
+          checkedItemsFee: inputWeight > 0 ? calFee : checkedItemsFee,
+          checkedItemPrice,
+          checkItemAmountPrice,
+          trackingNumber,
+        });
+      await db
+        .collection("accounts")
+        .doc(user.email)
+        .update({
+          credit: user.credit - checkItemAmountPrice,
+          creditDetails: firebase.firestore.FieldValue.arrayUnion({
+            type: "makeOrder",
+            currency: user.currency,
+            amount: Number(checkItemAmountPrice),
+            date: new Date(),
+            totalAmount: Number(user.credit) - Number(checkItemAmountPrice),
+          }),
+        });
+      await db
+        .collection("orders")
+        .doc("b2b")
+        .collection("b2borders")
+        .doc(id)
+        .update({
+          list: [
+            ...order.data.list.filter(
+              item => !checkedInputs.includes(item.childOrderNumber)
+            ),
+            ...checkedInputs
+              .map(doc =>
+                order.data.list.find(arr => arr.childOrderNumber === doc)
+              )
+              .map(doc2 => {
+                doc2.shipped = true;
+                return doc2;
+              }),
+          ],
+        });
 
-    await setCheckedInputs([]);
+      await setInputWeight("");
+      await setTrackingNumber([]);
+      await setCheckedInputs([]);
+    }
   };
 
   const ItemPrice = useCallback(async () => {
@@ -402,7 +432,7 @@ const OrderDetail = ({ match }) => {
           .reduce((i, c) => {
             return i + c.price * c.quan;
           }, 0)
-      )
+      ).toFixed(2)
     );
   }, [checkedInputs, order.data.list]);
 
@@ -411,22 +441,44 @@ const OrderDetail = ({ match }) => {
 
     setCheckedItemsFee(() =>
       z && country.length > 0 && checkedWeight < 30 && checkedWeight > 0
-        ? Number(
-            Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
-              .fee[num2 - 1].split(",")
-              .join("")
-          ) / exchangeRate[order.data.currency]
+        ? (
+            Number(
+              Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
+                .fee[num2 - 1].split(",")
+                .join("")
+            ) / exchangeRate[order.data.currency]
+          ).toFixed(2)
         : checkedWeight === 0
         ? 0
-        : (checkedWeight * order.data.shippingRate[shippingType]) /
-          exchangeRate[order.data.currency]
+        : (
+            (checkedWeight * order.data.shippingRate[shippingType]) /
+            exchangeRate[order.data.currency]
+          ).toFixed(2)
+    );
+    setCalFee(
+      z && country.length > 0 && inputWeight < 30 && inputWeight > 0
+        ? (
+            Number(
+              Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
+                .fee[num3 - 1].split(",")
+                .join("")
+            ) / exchangeRate[order.data.currency]
+          ).toFixed(2)
+        : inputWeight === 0
+        ? 0
+        : (
+            (inputWeight * order.data.shippingRate[shippingType]) /
+            exchangeRate[order.data.currency]
+          ).toFixed(2)
     );
   }, [
+    inputWeight,
     z,
     country.length,
     checkedWeight,
     zone,
     num2,
+    num3,
     order.data.currency,
     exchangeRate,
     order.data.shippingRate,
@@ -670,7 +722,7 @@ const OrderDetail = ({ match }) => {
               <div className="bg-gray-300 w-44 pl-3 rounded-md  mb-1">
                 <CancelIcon style={{ fontSize: "small" }} />: canceled item
               </div>
-              <div className="bg-gray-300 w-44 pl-3 rounded-md  mb-1">
+              <div className="bg-green-300 w-44 pl-3 rounded-md  mb-1">
                 <UndoIcon style={{ fontSize: "small" }} />: moved item
               </div>
               <div className="bg-blue-300 w-44 pl-3 rounded-md  mb-1">
@@ -683,9 +735,9 @@ const OrderDetail = ({ match }) => {
             text-sm font-semibold rounded-sm text-gray-100"
             >
               <div></div>
-              <div>No.</div>
-              <div className="col-span-3">DATE</div>
-              <div className="col-span-3">RELEASE</div>
+              <div className="col-span-3">No.</div>
+              <div className="col-span-2">DATE</div>
+              <div className="col-span-2">RELEASE</div>
               <div className="col-span-12">TITLE</div>
               <div className="col-span-2">PRICE</div>
               <div className="col-span-2">EA</div>
@@ -784,16 +836,13 @@ const OrderDetail = ({ match }) => {
 
             {/* dep-3-6 */}
 
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row justify-between ">
               {/* ship 하는(체크됨) 상품들 가격들 */}
-              <div className="text-right flex flex-col items-end mt-6 text-lg">
-                <div className="grid grid-cols-2 mb-3 items-center">
-                  <div>PRICE</div>
-                  <div className="flex flex-row items-center justify-end w-64">
-                    <div
-                      className="border flex flex-row bg-white w-2/3
-                   items-center justify-end text-sm p-1"
-                    >
+              <div className="text-right flex flex-col items-center mt-6 text-lg w-1/2 ">
+                <div className="grid grid-cols-2 mb-3 w-2/3">
+                  <div className="w-1/2">PRICE</div>
+                  <div className="flex flex-row w-1/2">
+                    <div className="border flex flex-row bg-white text-sm p-1">
                       <input
                         type="number"
                         value={checkedItemPrice}
@@ -804,42 +853,70 @@ const OrderDetail = ({ match }) => {
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 mb-3 items-center">
-                  <div>SHIPPING FEE</div>
-                  <div className="flex flex-row items-center justify-end w-64">
+                <div className="grid grid-cols-2 mb-3 items-center w-2/3 ">
+                  <div className="w-1/2">SHIPPING FEE</div>
+                  <div className="flex flex-row w-3/4">
+                    {/* 무게입력시 배송비 계산 */}
                     <div
                       className="border flex flex-row bg-white w-2/3
                    items-center justify-end text-sm p-1"
                     >
                       <input
                         type="number"
-                        value={checkedItemsFee}
+                        value={inputWeight > 0 ? calFee : checkedItemsFee}
                         onChange={handleCheckedItemFee}
                         className="w-full text-center outline-none text-sm"
                       />
                       {order?.data.currency}
                     </div>
+                    <div
+                      className="border flex flex-row bg-white w-1/3
+                   items-center justify-end text-sm p-1"
+                    >
+                      <input
+                        type="number"
+                        value={inputWeight}
+                        onChange={handleCalFee}
+                        className="w-full text-center outline-none text-sm"
+                      />
+                      KG
+                    </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 w-96 ">
-                  <div>AMOUNT</div>
-                  <div className="flex flex-row items-center justify-end">
-                    <div>
+                <div className="grid grid-cols-2 w-2/3 items-center">
+                  <div className="w-1/2">AMOUNT</div>
+                  <div className="flex flex-row">
+                    <div className="pl-10">
                       {checkItemAmountPrice?.toLocaleString("ko-KR")}{" "}
                       {order?.data.currency}
                     </div>
                   </div>
                 </div>
-                <button
-                  onClick={makeShipping}
-                  className="bg-gray-800 text-gray-200 px-2 
-                 text-sm p-1 mt-3 rounded-sm"
+                <form
+                  className="grid grid-cols-3 w-full mt-3"
+                  onSubmit={makeShipping}
                 >
-                  SHIP
-                </button>
+                  <textarea
+                    required
+                    cols="25"
+                    rows="5"
+                    value={trackingNumber}
+                    onChange={handleTrackingNumber}
+                    className="col-span-2 ml-20 outline-none border pl-2 text-sm"
+                    placeholder="tracking number / 2개 이상은 엔터로 구분 "
+                  ></textarea>
+                  <button
+                    type="submit"
+                    onClick={makeShipping}
+                    className="bg-gray-800 text-gray-200
+                 text-sm rounded-sm h-10 m-auto px-12 "
+                  >
+                    SHIP
+                  </button>
+                </form>
                 {/* 남아있는 상품 가격 */}
               </div>
-              <div className="text-right flex flex-col items-end mt-6 text-lg">
+              <div className="text-right flex flex-col items-end mt-6 text-lg w/1/2 ">
                 <div className="grid grid-cols-2 mb-3 items-center">
                   <div>PRICE</div>
                   <div className="flex flex-row items-center justify-end w-64">

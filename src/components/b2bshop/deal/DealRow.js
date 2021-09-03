@@ -51,7 +51,7 @@ const DealRow = ({
         type="number"
         name={name}
         onChange={onChange}
-        className="w-1/2 h-6 border text-center col-span-4"
+        className="w-1/2 h-6 border text-center col-span-4 outline-none"
       />
       {Number(product.data.stock) > 0 || product.data.limitedStock === false ? (
         ""

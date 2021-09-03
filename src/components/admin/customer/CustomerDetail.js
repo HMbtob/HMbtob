@@ -9,12 +9,19 @@ import useInputs from "../../../hooks/useInput";
 const CustomerDetail = ({ match }) => {
   const { uid } = match.params;
   const state = useContext(InitDataContext);
-  const { accounts } = state;
+  const { accounts, dhlShippingFee } = state;
+  const { z } = dhlShippingFee;
+
   const user = accounts.find(account => account.data.uid === uid);
   const inCharges = accounts.filter(account => account.data.type === "admin");
   const { creditDetails } = user.data;
   const [modalOpen, setModalOpen] = useState(false);
 
+  const countries = [].concat(
+    ...z
+      ?.map(zo => Object.values(zo).map(co => co.country))
+      .map(doc => [].concat(...doc))
+  );
   const openModal = () => {
     setModalOpen(true);
   };
@@ -23,34 +30,34 @@ const CustomerDetail = ({ match }) => {
   };
 
   const [form, onChange, reset, credit_reset] = useInputs({
-    type: user.data.type,
-    recipientEmail: user.data.recipientEmail,
-    recipientPhoneNumber: user.data.recipientPhoneNumber,
-    street: user.data.street,
-    city: user.data.city,
-    states: user.data.states,
-    country: user.data.country,
-    zipcode: user.data.zipcode,
-    recipient: user.data.recipient,
-    shippingMessage: user.data.shippingMessage,
+    type: user?.data.type,
+    recipientEmail: user?.data.recipientEmail,
+    recipientPhoneNumber: user?.data.recipientPhoneNumber,
+    street: user?.data.street,
+    city: user?.data.city,
+    states: user?.data.states,
+    country: user?.data.country,
+    zipcode: user?.data.zipcode,
+    recipient: user?.data.recipient,
+    shippingMessage: user?.data.shippingMessage,
     // 담당자
-    inCharge: user.data.inCharge,
-    cd: user.data.dcRates.cd * 100,
-    dvdBlueRay: user.data.dcRates.dvdBlueRay * 100,
-    goods: user.data.dcRates.goods * 100,
-    photoBook: user.data.dcRates.photoBook * 100,
-    officialStore: user.data.dcRates.officialStore * 100,
-    beauty: user.data.dcRates.beauty * 100,
-    dhl: user.data.shippingRate.dhl,
+    inCharge: user?.data.inCharge,
+    cd: user?.data.dcRates.cd * 100,
+    dvdBlueRay: user?.data.dcRates.dvdBlueRay * 100,
+    goods: user?.data.dcRates.goods * 100,
+    photoBook: user?.data.dcRates.photoBook * 100,
+    officialStore: user?.data.dcRates.officialStore * 100,
+    beauty: user?.data.dcRates.beauty * 100,
+    dhl: user?.data.shippingRate.dhl,
     // 추후 기입
-    nickName: user.data.nickName,
-    memo: user.data.memo,
+    nickName: user?.data.nickName,
+    memo: user?.data.memo,
     // 크레딧
     handleCredit: "",
     // 커런시
-    currency: user.data.currency,
+    currency: user?.data.currency,
     // alias
-    alias: user.data.alias,
+    alias: user?.data.alias,
   });
 
   const {
@@ -367,12 +374,18 @@ const CustomerDetail = ({ match }) => {
             </div>
             <div className="grid grid-cols-2">
               <div>Country</div>
-              <input
+              <select
                 name="country"
                 value={country}
                 onChange={onChange}
-                className="border p-1"
-              />{" "}
+                className="border p-1 pl-2"
+              >
+                {countries.sort().map((co, i) => (
+                  <option key={i} value={co}>
+                    {co}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="grid grid-cols-2">
               <div>Zipcode</div>

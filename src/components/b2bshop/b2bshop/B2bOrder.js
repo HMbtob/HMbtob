@@ -393,7 +393,7 @@ const B2bOrder = () => {
                         .data.sku
                     }
                   </div>
-                  <div className="col-span-5">{doc.title}</div>
+                  <div className="col-span-5 text-left">{doc.title}</div>
                   <div className="col-span-1">
                     {new Date(doc.relDate.toDate()).toLocaleDateString()}
                   </div>

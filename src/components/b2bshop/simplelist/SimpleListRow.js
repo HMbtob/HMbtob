@@ -20,7 +20,7 @@ const SimpleListRow = ({
           name={id}
           onChange={onChange}
           value={simpleList?.find(list => list.productId === id)?.quan}
-          className=" w-1/3 h-7 border text-center"
+          className=" w-1/3 h-7 border text-center outline-none"
         />
         <HighlightOffIcon onClick={() => deleteList(id)} />{" "}
       </div>

@@ -18,11 +18,11 @@ const HiddenLists = ({ order, checkedInputs, changeHandler }) => {
               li.canceled === false
                 ? "bg-red-100"
                 : li.moved === true && li.canceled === false
-                ? "bg-green-300"
+                ? "bg-green-100"
                 : li.moved === false && li.canceled === true
-                ? "bg-gray-300"
+                ? "bg-gray-100"
                 : li.shipped === true
-                ? "bg-blue-300"
+                ? "bg-blue-100"
                 : ""
             }  `}
           >

@@ -8,7 +8,13 @@ import useInputs from "../../../hooks/useInput";
 const MyInfo = ({ match }) => {
   const { uid } = match.params;
   const state = useContext(InitDataContext);
-  const { accounts } = state;
+  const { accounts, dhlShippingFee } = state;
+  const { z } = dhlShippingFee;
+  const countries = [].concat(
+    ...z
+      ?.map(zo => Object.values(zo).map(co => co.country))
+      .map(doc => [].concat(...doc))
+  );
   const user = accounts.find(account => account.data.uid === uid);
   const { creditDetails } = user.data;
 
@@ -158,12 +164,18 @@ const MyInfo = ({ match }) => {
             </div>
             <div className="grid grid-cols-2">
               <div>Country</div>
-              <input
+              <select
                 name="country"
                 value={country}
                 onChange={onChange}
-                className="border p-1"
-              />{" "}
+                className="border p-1 pl-2"
+              >
+                {countries.sort().map((co, i) => (
+                  <option key={i} value={co}>
+                    {co}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="grid grid-cols-2">
               <div>Zipcode</div>
