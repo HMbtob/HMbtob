@@ -14,8 +14,27 @@ const OrderList = () => {
   // 체크된 상품 전체
   const [checkedAllItems, setCheckedAllItems] = useState([]);
 
+  // 전체 펼치기
+  const [hiddenAll, setHiddenAll] = useState(true);
+  const handelHiddenAll = hiddenAll => {
+    if (hiddenAll === true) {
+      setHiddenAll(false);
+    } else if (hiddenAll === false) {
+      setHiddenAll(true);
+    }
+  };
   // 주문들
   const [order, setOrder] = useState(orders);
+
+  // sort default
+  const [sortDefault, setSortDefault] = useState(true);
+  const handleSortDefault = () => {
+    if (sortDefault === true) {
+      setSortDefault(false);
+    } else if (sortDefault === false) {
+      setSortDefault(true);
+    }
+  };
 
   // 검색어
   const [query, setQuery] = useState();
@@ -46,7 +65,30 @@ const OrderList = () => {
     );
   };
 
-  // 초기화 버튼
+  // 주문자정렬
+  const sortProductByCustomer = e => {
+    e.preventDefault();
+    if (sortDefault === false) {
+      setOrder(
+        order.sort((a, b) => {
+          if (a.data.customer < b.data.customer) return 1;
+          if (a.data.customer > b.data.customer) return -1;
+          if (a.data.customer === b.data.customer) return 0;
+        })
+      );
+      handleSortDefault(true);
+    } else if (sortDefault === true) {
+      setOrder(
+        order.sort((a, b) => {
+          if (a.data.customer < b.data.customer) return -1;
+          if (a.data.customer > b.data.customer) return 1;
+          if (a.data.customer === b.data.customer) return 0;
+        })
+      );
+      handleSortDefault(false);
+    }
+  };
+  // 초기화 ;버튼
   const handleClear = e => {
     e.preventDefault();
     setOrder(orders);
@@ -86,7 +128,11 @@ const OrderList = () => {
            bg-gray-800 text-gray-100 py-1 rounded-sm text-sm"
         >
           <div className="flex flex-row justify-around">
-            <AddCircleOutlinedIcon style={{ marginLeft: "11" }} />
+            <AddCircleOutlinedIcon
+              style={{ marginLeft: "11" }}
+              className="cursor-pointer"
+              onClick={() => handelHiddenAll(hiddenAll)}
+            />
             <Link
               to={{
                 pathname: "/pickuplist",
@@ -99,7 +145,12 @@ const OrderList = () => {
           </div>
           <div>No.</div>
           <div className="col-span-2">Date</div>
-          <div className="col-span-2">CUSTOMER</div>
+          <div
+            className="col-span-2 cursor-pointer"
+            onClick={sortProductByCustomer}
+          >
+            CUSTOMER
+          </div>
           <div>STATUS</div>
           <div>PRICE</div>
           <div>AMOUNT</div>
@@ -121,6 +172,8 @@ const OrderList = () => {
                 orders={orders}
                 setCheckedAllItems={setCheckedAllItems}
                 checkedAllItems={checkedAllItems}
+                hiddenAll={hiddenAll}
+                handelHiddenAll={handelHiddenAll}
               />
             ))}
         </div>

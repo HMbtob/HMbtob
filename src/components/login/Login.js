@@ -1,18 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { auth, provider } from "../../firebase";
 import Modal from "../modal/Modal";
-import EmailSignIn from "./EmailSignIn";
+import EmailSignUp from "./EmailSignUp";
+
 function Login() {
-  const signIn = async () => {
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const signInWithGoogle = async () => {
     await auth.signInWithRedirect(provider).catch(e => alert(e.message));
   };
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const openModal = () => {
-    setModalOpen(true);
+  const signInWithEmail = e => {
+    e.preventDefault();
+    auth
+      .signInWithEmailAndPassword(
+        emailRef.current.value,
+        passwordRef.current.value
+      )
+      .then(authUser => console.log(authUser))
+      .catch(e => {
+        alert(e.message);
+      });
   };
-  const closeModal = () => {
-    setModalOpen(false);
+
+  const [modal1Open, setModal1Open] = useState(false);
+  const [modal2Open, setModal2Open] = useState(false);
+  const openModal = e => {
+    const { name } = e.target;
+    if (name === "modal1") {
+      setModal1Open(true);
+    } else if (name === "modal2") {
+      setModal2Open(true);
+    }
+  };
+  const closeModal = e => {
+    // const { name } = e.target;
+    // if (name === "modal1") {
+    setModal1Open(false);
+    // } else if (name === "modal2") {
+    setModal2Open(false);
+    // }
   };
   return (
     <div className="h-screen grid place-items-center bg-gray-100">
@@ -22,24 +48,52 @@ function Login() {
           alt="logo"
           className="bg-contain h-96"
         />
+        <div className="flex flex-col w-80">
+          <input
+            ref={emailRef}
+            type="email"
+            placeholder="E-mail"
+            className="p-3 border mt-3 rounded"
+          />
+          <input
+            ref={passwordRef}
+            type="password"
+            placeholder="Password"
+            className="p-3 mt-3 border rounded"
+          />
+        </div>
         <button
-          className="mt-6 bg-gray-800 text-2xl text-gray-50 px-8 py-3 rounded-sm"
-          onClick={signIn}
+          type="submit"
+          onClick={signInWithEmail}
+          className="text-lg font-semibold bg-gray-400 w-80 p-2
+           rounded mt-3 text-white"
+        >
+          Sign In
+        </button>
+        <div className="flex flex-row mt-5 w-80 justify-start">
+          <div className="text-gray-700">{"New to INTERASIA ?  "}</div>
+          <button
+            className=" font-bold cursor-pointer text-gray-800"
+            name="modal1"
+            onClick={openModal}
+          >
+            {" Sign Up with e-mail !"}
+          </button>
+        </div>
+        <div className="mt-5 text-2xl font-semibold text-gray-800">or</div>
+        <button
+          className="mt-5 bg-gray-800 text-lg text-gray-50 px-8 p-2 rounded"
+          onClick={signInWithGoogle}
         >
           Sign in with Google
         </button>
-        <button
-          className="mt-6 bg-gray-800 text-2xl text-gray-50 px-8 py-3 rounded-sm"
-          onClick={openModal}
-        >
-          Sign in with E-mail
-        </button>
+
         <Modal
-          open={modalOpen}
+          open={modal1Open}
           close={closeModal}
           header={"Sign in with E-mail"}
         >
-          <EmailSignIn />
+          <EmailSignUp />
         </Modal>
       </div>
     </div>

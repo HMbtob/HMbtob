@@ -105,16 +105,16 @@ const MyOrderDetail = ({ match }) => {
           Ordered Items
         </div>
         <div className="flex flex-col items-end text-xs mb-3 rounded-md">
-          <div className="bg-red-200 w-44 pl-3 rounded-md mb-1">
+          <div className="bg-red-100 w-44 pl-3 rounded-md mb-1">
             &nbsp;&nbsp;&nbsp;&nbsp;: Items not yet released{" "}
           </div>
-          <div className="bg-gray-300 w-44 pl-3 rounded-md  mb-1">
+          <div className="bg-gray-100 w-44 pl-3 rounded-md  mb-1">
             <CancelIcon style={{ fontSize: "small" }} />: canceled item
           </div>
-          <div className="bg-gray-300 w-44 pl-3 rounded-md  mb-1">
+          <div className="bg-green-100 w-44 pl-3 rounded-md  mb-1">
             <UndoIcon style={{ fontSize: "small" }} />: moved item
           </div>
-          <div className="bg-blue-300 w-44 pl-3 rounded-md  mb-1">
+          <div className="bg-blue-100 w-44 pl-3 rounded-md  mb-1">
             <LocalAirportIcon style={{ fontSize: "small" }} />: shipped item
           </div>
         </div>
@@ -165,7 +165,7 @@ const MyOrderDetail = ({ match }) => {
             </div>
           </div>
         </div>
-        <ShippingList shipping={shipping} from="detail" />
+        <ShippingList shipping={shipping} from="myorder" />
       </div>
     </div>
   );

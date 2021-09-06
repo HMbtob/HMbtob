@@ -5,7 +5,7 @@ const HiddenLists = ({ order, checkedInputs, changeHandler }) => {
   return (
     <div
       className="grid-flow-col text-center
-        border-b border-l border-r py-1 text-sm bg-white"
+        text-sm bg-white"
     >
       {order &&
         order?.data?.list?.map((li, i) => (

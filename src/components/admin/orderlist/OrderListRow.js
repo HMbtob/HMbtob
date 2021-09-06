@@ -5,6 +5,7 @@ import HiddenLists from "./HiddenLists";
 import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined";
 import LocalShippingOutlinedIcon from "@material-ui/icons/LocalShippingOutlined";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import { useEffect } from "react";
 
 const OrderListRow = ({
   id,
@@ -16,6 +17,8 @@ const OrderListRow = ({
   setCheckedAllItems,
   checkedAllItems,
   orders,
+  hiddenAll,
+  handelHiddenAll,
 }) => {
   const history = useHistory();
   const today = new Date();
@@ -73,13 +76,16 @@ const OrderListRow = ({
     }
     return i || false;
   }, false);
+  // useEffect(() => {
+  //   handleHidden(forHidden, hiddenAll);
+  // }, [hiddenAll]);
 
   if (order) {
     return (
-      <div className="border-b w-full">
+      <div className="border-b border-l border-r w-full border-black">
         <div
           className={`grid grid-cols-12 grid-flow-col text-center
-        border-b border-l border-r py-1 items-center text-sm bg-white ${
+        border-b py-1 items-center text-sm bg-white ${
           included ? " bg-red-100" : ""
         }`}
         >
@@ -170,6 +176,13 @@ const OrderListRow = ({
             changeHandler={changeHandler}
           />
         )}
+        {/* {forHidden === true  ?<HiddenLists
+            order={order}
+            checkedInputs={checkedInputs}
+            changeHandler={changeHandler}
+          /> (
+          ""
+        )}  */}
       </div>
     );
   }

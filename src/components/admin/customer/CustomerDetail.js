@@ -139,7 +139,7 @@ const CustomerDetail = ({ match }) => {
 
   return (
     <div className="w-full h-full flex justify-center">
-      <div className="w-11/12 flex-col mt-20">
+      <div className="w-11/12 flex-col mt-20 flex items-center">
         <div
           className="text-center text-md bg-gray-800 
         rounded-sm text-gray-100 mb-5 w-full"
@@ -148,13 +148,13 @@ const CustomerDetail = ({ match }) => {
         </div>
         <div className="flex flex-row justify-evenly">
           {/* 주문내용 확인 */}
-          <div className="flex-col mb-10 flex space-y-2 w-1/2">
-            <div className="grid grid-cols-2">
-              <div>Email</div>
+          <div className="flex-col flex space-y-2 w-1/2">
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Email</div>
               <div>{user.id}</div>
             </div>
-            <div className="grid grid-cols-2">
-              <div>Permission</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Permission</div>
               <select
                 name="type"
                 className="border p-1"
@@ -167,18 +167,28 @@ const CustomerDetail = ({ match }) => {
                 <option value="admin">admin</option>
               </select>
             </div>
-            <div className="grid grid-cols-2">
-              <div>Name</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Name</div>
               <div>{user.data.displayName}</div>
             </div>
 
-            <div className="grid grid-cols-2">
-              <div>Number</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Number</div>
               {user.data.phoneNumber}
             </div>
-            <div className="grid grid-cols-2">
-              <div>In Charge</div>
-              <select name="inCharge" value={inCharge} onChange={onChange}>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Member since</div>
+              {user?.data?.createdAt &&
+                new Date(user?.data?.createdAt.toDate()).toLocaleString()}
+            </div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">In Charge</div>
+              <select
+                name="inCharge"
+                className="border p-1"
+                value={inCharge}
+                onChange={onChange}
+              >
                 <option>담당자선택</option>
                 {inCharges &&
                   inCharges.map((inCharge, index) => (
@@ -188,8 +198,8 @@ const CustomerDetail = ({ match }) => {
                   ))}
               </select>
             </div>
-            <div className="grid grid-cols-2">
-              <div>Currency</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Currency</div>
               <select
                 name="currency"
                 value={currency}
@@ -204,17 +214,17 @@ const CustomerDetail = ({ match }) => {
                 <option value="CNY">CNY</option>
               </select>
             </div>
-            <div className="grid grid-cols-2">
-              <div>Nick name</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Nick name</div>
               <input
-                name="nickname"
+                name="nickName"
                 value={nickName}
                 onChange={onChange}
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>Alias</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Alias</div>
               <input
                 name="alias"
                 value={alias}
@@ -222,8 +232,8 @@ const CustomerDetail = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>Memo About Customer</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Memo About Customer</div>
               <textarea
                 name="memo"
                 cols="40"
@@ -233,41 +243,7 @@ const CustomerDetail = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>CREDIT</div>
-              <div>
-                {Math.round(user.data.credit).toLocaleString("ko-KR")}{" "}
-                {user.data.currency}
-              </div>
-            </div>
-            <div className="grid grid-cols-3">
-              <Modal
-                open={modalOpen}
-                close={closeModal}
-                header={"CREDIT DETAILS"}
-              >
-                <CreditDetails creditDetails={creditDetails} reset={reset} />
-              </Modal>
-              <button
-                className="bg-gray-700 p-1 rounded text-gray-200 m-2"
-                onClick={openModal}
-              >
-                Details
-              </button>
-              <button
-                className="bg-gray-700 p-1 rounded text-gray-200 m-2"
-                onClick={saveCredit}
-              >
-                Charge
-              </button>
-              <input
-                name="handleCredit"
-                value={handleCredit}
-                onChange={onChange}
-                placeholder="charge"
-                className="border p-1 m-1"
-              />
-            </div>
+
             {/* 할인율 */}
             <div className="grid grid-cols-1">
               <div className="text-center my-1 font-semibold">
@@ -326,9 +302,9 @@ const CustomerDetail = ({ match }) => {
           </div>
           {/* 수령인 파트 */}
 
-          <div className="flex-col mb-10 flex space-y-2">
-            <div className="grid grid-cols-2">
-              <div>Recipient Email</div>
+          <div className="flex-col flex space-y-2">
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Recipient Email</div>
               <input
                 name="recipientEmail"
                 value={recipientEmail}
@@ -336,8 +312,8 @@ const CustomerDetail = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>Recipient PhoneNumber</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Recipient PhoneNumber</div>
               <input
                 name="recipientPhoneNumber"
                 value={recipientPhoneNumber}
@@ -345,8 +321,8 @@ const CustomerDetail = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>Street</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Street</div>
               <input
                 name="street"
                 value={street}
@@ -354,8 +330,8 @@ const CustomerDetail = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>City</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">City</div>
               <input
                 name="city"
                 value={city}
@@ -363,8 +339,8 @@ const CustomerDetail = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>State</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">State</div>
               <input
                 name="states"
                 value={states}
@@ -372,8 +348,8 @@ const CustomerDetail = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>Country</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Country</div>
               <select
                 name="country"
                 value={country}
@@ -387,8 +363,8 @@ const CustomerDetail = ({ match }) => {
                 ))}
               </select>
             </div>
-            <div className="grid grid-cols-2">
-              <div>Zipcode</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Zipcode</div>
               <input
                 name="zipcode"
                 value={zipcode}
@@ -396,8 +372,8 @@ const CustomerDetail = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>Recipient</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Recipient</div>
               <input
                 name="recipient"
                 value={recipient}
@@ -405,8 +381,8 @@ const CustomerDetail = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>Shipping Message</div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Shipping Message</div>
               <textarea
                 rows="5"
                 cols="30"
@@ -414,11 +390,80 @@ const CustomerDetail = ({ match }) => {
                 value={shippingMessage}
                 onChange={onChange}
                 className="border p-1"
-              />{" "}
+              ></textarea>
             </div>
-            <button onClick={saveDetails}>수정하기</button>
           </div>
         </div>
+        <button
+          onClick={saveDetails}
+          className="bg-gray-600 text-white py-1 px-12 rounded mb-12"
+        >
+          수정하기
+        </button>
+
+        <div className="w-1/2 mb-12">
+          <div
+            className="text-center text-md bg-gray-800 
+          rounded text-gray-100 mb-5 mt-5 w-full py-1"
+          >
+            CREDIT
+          </div>
+          <div className="grid grid-cols-2 text-center mb-3">
+            <div>CREDIT :</div>
+            <div>
+              {Math.round(user.data.credit).toLocaleString("ko-KR")}{" "}
+              {user.data.currency}
+            </div>
+          </div>
+          <div className="grid grid-cols-3 mb-12">
+            <Modal
+              open={modalOpen}
+              close={closeModal}
+              header={"CREDIT DETAILS"}
+            >
+              <CreditDetails creditDetails={creditDetails} reset={reset} />
+            </Modal>
+            <button
+              className="bg-gray-700 p-1 rounded text-gray-200 m-2"
+              onClick={openModal}
+            >
+              Details
+            </button>
+            <button
+              className="bg-gray-700 p-1 rounded text-gray-200 m-2"
+              onClick={saveCredit}
+            >
+              Charge
+            </button>
+            <input
+              name="handleCredit"
+              value={handleCredit}
+              onChange={onChange}
+              placeholder="charge"
+              className="border p-1 m-1"
+            />
+          </div>
+        </div>
+        {user.data.survay && (
+          <div className="w-1/2 mb-12">
+            <div
+              className="text-center text-md bg-gray-800 
+          rounded text-gray-100 mb-5 mt-5 w-full py-1"
+            >
+              SURVAY
+            </div>
+            <div>
+              {Object.keys(user?.data?.survay).map((sur, i) => (
+                <div key={i} className="grid grid-cols-3 p-1 text-gray-800">
+                  <div className="text-right pr-2">{sur} :</div>
+                  <div className="col-span-2">
+                    {Object.values(user?.data?.survay)[i]}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

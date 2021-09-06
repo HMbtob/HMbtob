@@ -8,7 +8,9 @@ const ShippingList = ({ shipping, from }) => {
   return (
     <div className="w-full flex justify-center mb-20">
       <div
-        className={`${from === "detail" ? "w-full" : "w-11/12"} flex-col mt-20`}
+        className={`${
+          from === "detail" || from === "myorder" ? "w-full" : "w-11/12"
+        } flex-col mt-20`}
       >
         <div
           className="w-full text-center my-4 
@@ -37,6 +39,14 @@ const ShippingList = ({ shipping, from }) => {
         </div>
         <div>
           {from === "detail" && shipping
+            ? shipping.map(ship => (
+                <ShippingListRow
+                  key={ship.id}
+                  id={shipping.id}
+                  shipping={ship}
+                />
+              ))
+            : from === "myorder" && shipping
             ? shipping.map(ship => (
                 <ShippingListRow
                   key={ship.id}

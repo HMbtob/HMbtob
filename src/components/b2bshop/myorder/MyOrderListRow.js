@@ -17,7 +17,7 @@ const MyOrderListRow = ({ id, orderNumber, createdAt, orderState, order }) => {
         onClick={() => history.push(`/myorderlist/${id}`)}
         className={`grid grid-cols-7 grid-flow-col text-center 
         border-b border-l border-r py-1 text-sm cursor-pointer  ${
-          included ? " bg-red-200" : ""
+          included ? " bg-red-100" : ""
         }`}
       >
         <div>{orderNumber}</div>

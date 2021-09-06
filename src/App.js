@@ -184,7 +184,11 @@ function App() {
   }
   if (user && userType === "none") {
     return (
-      <div className="flex bg-gray-50 h-auto">관리자에게 문의해주세요</div>
+      <div className="grid place-items-center h-screen w-full">
+        <div className="flex  h-auto">
+          We are checking the contents of the survey.
+        </div>
+      </div>
     );
   }
   if (user && userType === "customer") {
@@ -278,7 +282,11 @@ function App() {
   }
 
   if (!user) {
-    return <Login />;
+    return (
+      <InitDataContext.Provider value={state}>
+        <Login />
+      </InitDataContext.Provider>
+    );
   }
   return (
     <>

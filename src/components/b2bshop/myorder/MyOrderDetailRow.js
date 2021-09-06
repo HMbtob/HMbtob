@@ -8,11 +8,13 @@ const MyOrderDetailRow = ({ order, id, currency }) => {
   const preOrder = order.relDate.toDate() < today;
   return (
     <div
-      className={`${order.shipped && " bg-blue-300"} ${
-        (order?.moved || order?.canceled) && "bg-gray-300"
+      className={`${order.shipped && " bg-blue-100"} ${
+        order?.canceled && "bg-gray-100"
+      } ${
+        order?.moved && "bg-green-100"
       } text-xs place-items-center grid grid-cols-28 grid-flow-col 
       text-center border-b border-l border-r py-1 ${
-        !preOrder && !order?.moved && !order?.canceled ? "bg-red-200" : ""
+        !preOrder && !order?.moved && !order?.canceled ? "bg-red-100" : ""
       }`}
     >
       <div className="col-span-3">{id}</div>

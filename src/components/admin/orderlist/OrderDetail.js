@@ -343,11 +343,14 @@ const OrderDetail = ({ match }) => {
     await setCheckedInputs([]);
     await alert("취소되었습니다");
   };
+
   // TODO:  쉬핑 넘버 없이 카운츠로 넘버만들어서 저장-> 되면 오더에도 적용
   const makeShipping = async e => {
     e.preventDefault();
     if (trackingNumber.length < 1) {
-      alert("Tracking Number를 입력해 주세요");
+      alert("Tracking Number를 입력해 주세요.");
+    } else if (checkedInputs.length === 0) {
+      alert("발송할 상품을 선택해 주세요.");
     } else {
       await db
         .collection("shipping")
