@@ -33,6 +33,8 @@ const ListProductRow = ({
   products,
 }) => {
   const history = useHistory();
+  const today = new Date();
+
   const [forHidden, setForHidden] = useState(true);
   const handleHidden = forHidden => {
     if (forHidden === true) {
@@ -70,8 +72,10 @@ const ListProductRow = ({
   return (
     <div className="border-b w-full">
       <div
-        className="grid grid-cols-36 items-center place-items-center 
-        text-xs bg-white w-full"
+        className={`grid grid-cols-36 items-center place-items-center 
+        text-xs ${
+          relDate.toDate() > today ? "bg-red-100 " : "bg-white "
+        } w-full`}
       >
         <div className="col-span-4 flex flex-row justify-evenly w-full items-center">
           {/* 메모 아이콘 */}

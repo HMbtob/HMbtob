@@ -70,7 +70,7 @@ const OrderList = () => {
     e.preventDefault();
     if (sortDefault === false) {
       setOrder(
-        order.sort((a, b) => {
+        orders.sort((a, b) => {
           if (a.data.customer < b.data.customer) return 1;
           if (a.data.customer > b.data.customer) return -1;
           if (a.data.customer === b.data.customer) return 0;
@@ -79,7 +79,7 @@ const OrderList = () => {
       handleSortDefault(true);
     } else if (sortDefault === true) {
       setOrder(
-        order.sort((a, b) => {
+        orders.sort((a, b) => {
           if (a.data.customer < b.data.customer) return -1;
           if (a.data.customer > b.data.customer) return 1;
           if (a.data.customer === b.data.customer) return 0;
@@ -88,6 +88,32 @@ const OrderList = () => {
       handleSortDefault(false);
     }
   };
+  // 시간정렬
+  const sortProductByDate = e => {
+    e.preventDefault();
+    if (sortDefault === false) {
+      setOrder(
+        orders.sort((a, b) => {
+          return (
+            new Date(a.data.createdAt.seconds) -
+            new Date(b.data.createdAt.seconds)
+          );
+        })
+      );
+      handleSortDefault(true);
+    } else if (sortDefault === true) {
+      setOrder(
+        orders.sort((a, b) => {
+          return (
+            new Date(b.data.createdAt.seconds) -
+            new Date(a.data.createdAt.seconds)
+          );
+        })
+      );
+      handleSortDefault(false);
+    }
+  };
+
   // 초기화 ;버튼
   const handleClear = e => {
     e.preventDefault();
@@ -144,7 +170,12 @@ const OrderList = () => {
             </Link>
           </div>
           <div>No.</div>
-          <div className="col-span-2">Date</div>
+          <div
+            className="col-span-2 cursor-pointer"
+            onClick={sortProductByDate}
+          >
+            Date
+          </div>
           <div
             className="col-span-2 cursor-pointer"
             onClick={sortProductByCustomer}

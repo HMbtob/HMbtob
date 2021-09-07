@@ -75,30 +75,30 @@ const MyInfo = ({ match }) => {
         </div>
         <div className="flex flex-row justify-evenly">
           {/* 주문내용 확인 */}
-          <div className="flex-col mb-10 flex space-y-2 w-1/2">
+          <div className="flex-col mb-10 flex space-y-2 w-1/2 items-center">
             <div className="grid grid-cols-2">
-              <div>E-MAIL</div>
+              <div className="text-right pr-2">E-MAIL :</div>
               <div>{user?.id}</div>
             </div>
 
             <div className="grid grid-cols-2">
-              <div>NAME</div>
+              <div className="text-right pr-2">NAME :</div>
               <div>{user?.data.displayName}</div>
             </div>
 
             <div className="grid grid-cols-2">
-              <div>NUMBER</div>
+              <div className="text-right pr-2">NUMBER :</div>
               {user?.data.phoneNumber}
             </div>
 
             <div className="grid grid-cols-2">
-              <div>CREDIT</div>
+              <div className="text-right pr-2">CREDIT :</div>
               <div>
                 {Math.round(user?.data.credit).toLocaleString("ko-KR")}{" "}
                 {user?.data.currency}
               </div>
             </div>
-            <div className="grid grid-cols-3">
+            <div className="">
               <Modal
                 open={modalOpen}
                 close={closeModal}
@@ -108,17 +108,17 @@ const MyInfo = ({ match }) => {
               </Modal>
               <button
                 onClick={openModal}
-                className="bg-gray-500 p-1 rounded text-gray-200"
+                className="bg-gray-500 p-1 rounded text-gray-200 mt-2 px-3"
               >
-                details
+                Credit Details
               </button>
             </div>
           </div>
           {/* 수령인 파트 */}
 
-          <div className="flex-col mb-10 flex space-y-2">
-            <div className="grid grid-cols-2">
-              <div>Email</div>
+          <div className="flex-col mb-10 flex space-y-2 items-center">
+            <div className="grid grid-cols-2 items-center  w-full">
+              <div className="text-right pr-2">Email</div>
               <input
                 name="recipientEmail"
                 value={recipientEmail}
@@ -126,8 +126,8 @@ const MyInfo = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>PhoneNumber</div>
+            <div className="grid grid-cols-2 items-center  w-full">
+              <div className="text-right pr-2">PhoneNumber</div>
               <input
                 name="recipientPhoneNumber"
                 value={recipientPhoneNumber}
@@ -135,8 +135,8 @@ const MyInfo = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>Street</div>
+            <div className="grid grid-cols-2 items-center  w-full">
+              <div className="text-right pr-2">Street</div>
               <input
                 name="street"
                 value={street}
@@ -144,8 +144,8 @@ const MyInfo = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>City</div>
+            <div className="grid grid-cols-2 items-center  w-full">
+              <div className="text-right pr-2">City</div>
               <input
                 name="city"
                 value={city}
@@ -153,8 +153,8 @@ const MyInfo = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>state</div>
+            <div className="grid grid-cols-2 items-center w-full">
+              <div className="text-right pr-2">state</div>
               <input
                 name="states"
                 value={states}
@@ -162,8 +162,8 @@ const MyInfo = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>Country</div>
+            <div className="grid grid-cols-2 items-center  w-full">
+              <div className="text-right pr-2">Country</div>
               <select
                 name="country"
                 value={country}
@@ -177,8 +177,8 @@ const MyInfo = ({ match }) => {
                 ))}
               </select>
             </div>
-            <div className="grid grid-cols-2">
-              <div>Zipcode</div>
+            <div className="grid grid-cols-2 items-center  w-full">
+              <div className="text-right pr-2">Zipcode</div>
               <input
                 name="zipcode"
                 value={zipcode}
@@ -186,8 +186,8 @@ const MyInfo = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>Recipient</div>
+            <div className="grid grid-cols-2 items-center  w-full">
+              <div className="text-right pr-2">Recipient</div>
               <input
                 name="recipient"
                 value={recipient}
@@ -195,8 +195,8 @@ const MyInfo = ({ match }) => {
                 className="border p-1"
               />{" "}
             </div>
-            <div className="grid grid-cols-2">
-              <div>MEMO</div>
+            <div className="grid grid-cols-2 items-center  w-full">
+              <div className="text-right pr-2">MEMO</div>
               <textarea
                 required
                 rows="5"
@@ -209,9 +209,9 @@ const MyInfo = ({ match }) => {
             </div>
             <button
               onClick={saveDetails}
-              className="bg-gray-500 p-1 rounded text-gray-200"
+              className="bg-gray-500 p-1 rounded text-gray-200 w-28"
             >
-              FIX
+              SAVE
             </button>
           </div>
         </div>

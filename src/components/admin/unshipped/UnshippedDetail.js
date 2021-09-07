@@ -1,13 +1,13 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { InitDataContext } from "../../../App";
 import UnshippedDetailRow from "./UnshippedDetailRow";
 
 const UnshippedDetail = ({ match }) => {
   const { uid } = match.params;
-  const today = new Date();
-
   const state = useContext(InitDataContext);
   const { accounts, orders } = state;
+  const [customerId, setCustomerId] = useState("");
+  const [unshipped, setUnshipped] = useState([]);
 
   const [checkedInputs, setCheckedInputs] = useState([]);
 
@@ -19,6 +19,21 @@ const UnshippedDetail = ({ match }) => {
       setCheckedInputs(checkedInputs.filter(el => el !== id));
     }
   };
+
+  useEffect(() => {
+    setCustomerId(accounts.find(acc => acc.data.uid === uid).id);
+    setUnshipped(
+      [].concat
+        .apply(
+          [],
+          orders
+            .filter(arr1 => arr1.data.customer === customerId)
+            .map(arr2 => arr2.data.list)
+        )
+        .filter(arr3 => arr3.shipped === false)
+    );
+  }, [orders, uid, customerId]);
+
   return (
     <div className="w-full h-full flex justify-center">
       <div className="w-11/12 flex-col mt-20">
@@ -91,43 +106,24 @@ const UnshippedDetail = ({ match }) => {
           className="grid grid-cols-28 text-center bg-gray-800 
         rounded-sm text-gray-100 text-sm py-1"
         >
-          <div className="col-span-2">No.</div>
+          <div className="col-span-3">No.</div>
           <div className="col-span-2">주문일</div>
           <div className="col-span-2">발매일</div>
-          <div className="col-span-11">앨범명</div>
-          <div className="col-span-2">판매가</div>
+          <div className="col-span-10">앨범명</div>
           <div className="col-span-4">할인가</div>
-          <div>무게</div>
-          <div>수량</div>
-          <div>총무게</div>
-          <div className="col-span-2">총액</div>
+          <div className="col-span-2">수량</div>
+          <div className="col-span-2">총무게</div>
+          <div className="col-span-3">총액</div>
         </div>
-        {orders &&
-          [].concat
-            .apply(
-              [],
-              orders
-                .filter(
-                  arr1 =>
-                    arr1.data.customer ===
-                    accounts.find(acc => acc.data.uid === uid).id
-                )
-                .map(arr2 =>
-                  arr2.data.list.filter(
-                    arr3 =>
-                      arr3.relDate.toDate().toLocaleDateString() >
-                      today.toLocaleDateString()
-                  )
-                )
-            )
-            .map(arr4 => (
-              <UnshippedDetailRow
-                key={arr4.childOrderNumber}
-                list={arr4}
-                checkedInputs={checkedInputs}
-                changeHandler={changeHandler}
-              />
-            ))}
+        {unshipped &&
+          unshipped.map(arr4 => (
+            <UnshippedDetailRow
+              key={arr4.childOrderNumber}
+              list={arr4}
+              checkedInputs={checkedInputs}
+              changeHandler={changeHandler}
+            />
+          ))}
       </div>
     </div>
   );

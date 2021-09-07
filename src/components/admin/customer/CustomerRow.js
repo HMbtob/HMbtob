@@ -6,7 +6,7 @@ const CustomerRow = ({ account }) => {
   return (
     <div
       onClick={() => history.push(`/customerdetail/${account.data.uid}`)}
-      className={`grid grid-cols-6 text-center py-1 
+      className={`grid grid-cols-7 text-center py-1 
       bg-white border cursor-pointer ${
         account.data.type === "none" || account.data.inCharge.length < 1
           ? "bg-red-100"
@@ -21,6 +21,10 @@ const CustomerRow = ({ account }) => {
       <div className="col-span-2">{account.data.email}</div>
       <div>{account.data.displayName}</div>
       <div>{account.data.nickName}</div>
+      <div className="text-right">
+        {Number(account.data.credit?.toFixed(2))?.toLocaleString("ko-KR")}{" "}
+        {account.data.currency}
+      </div>
       <div>{account.data.alias}</div>
       <div>{account.data.type}</div>
     </div>

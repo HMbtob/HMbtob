@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { InitDataContext } from "../../../App";
 import ShippingListRow from "./ShippingListRow";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 const ShippingList = ({ shipping, from }) => {
   const state = useContext(InitDataContext);
@@ -27,13 +28,18 @@ const ShippingList = ({ shipping, from }) => {
           <div className="col-span-3">Order No.</div>
           <div className="col-span-3">Order Date</div>
           <div className="col-span-2">Tracking No.</div>
-          <div></div>
+          <div>
+            <ExpandMoreIcon
+              style={{ color: "white", marginRight: "10px" }}
+              className="cursor-pointer"
+            />
+          </div>
           <div className="col-span-3">Email</div>
           <div>Company</div>
           <div className="col-span-2">Country</div>
           <div className="col-span-1">Sorts</div>
           <div className="col-span-1">EA</div>
-          <div className="col-span-1">Weight</div>
+          {from !== "myorder" && <div className="col-span-1">Weight</div>}
           <div className="col-span-2">Fee</div>
           <div className="col-span-2">Amount</div>
         </div>
@@ -52,6 +58,7 @@ const ShippingList = ({ shipping, from }) => {
                   key={ship.id}
                   id={shipping.id}
                   shipping={ship}
+                  from="myorder"
                 />
               ))
             : !from && shippings

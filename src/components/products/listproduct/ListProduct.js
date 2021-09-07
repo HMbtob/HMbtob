@@ -29,8 +29,16 @@ const ListProduct = () => {
     "STOCK",
     "SOLD",
     "UNSHIPPED",
-    "RELEASE",
   ];
+  // sort default
+  const [sortDefault, setSortDefault] = useState(true);
+  const handleSortDefault = () => {
+    if (sortDefault === true) {
+      setSortDefault(false);
+    } else if (sortDefault === false) {
+      setSortDefault(true);
+    }
+  };
   // 검색기능구현
   // 상품들
   const [preProduct, setPreProduct] = useState(products);
@@ -65,6 +73,29 @@ const ListProduct = () => {
           );
         })
     );
+  };
+
+  const sortProductByDate = e => {
+    e.preventDefault();
+    if (sortDefault === false) {
+      setPreProduct(
+        products.sort((a, b) => {
+          return (
+            new Date(a.data.relDate.seconds) - new Date(b.data.relDate.seconds)
+          );
+        })
+      );
+      handleSortDefault(true);
+    } else if (sortDefault === true) {
+      setPreProduct(
+        products.sort((a, b) => {
+          return (
+            new Date(b.data.relDate.seconds) - new Date(a.data.relDate.seconds)
+          );
+        })
+      );
+      handleSortDefault(false);
+    }
   };
   // 초기화
   const handleClear = e => {
@@ -125,6 +156,12 @@ const ListProduct = () => {
               {header}
             </div>
           ))}
+          <div
+            className="col-span-2 cursor-pointer"
+            onClick={sortProductByDate}
+          >
+            RELEASE
+          </div>
         </div>
         <div className="w-full flex flex-col items-center">
           <div className="w-full">
@@ -166,7 +203,7 @@ const ListProduct = () => {
           {pages.map(
             (pag, i) =>
               pag + page > 0 &&
-              pag + page < products?.length / 20 + 1 && (
+              pag + page < parseInt(preProduct?.length / 20) + 1 && (
                 <div
                   key={i}
                   className={`cursor-pointer text-lg px-2 py-1 text-gray-600 ${
@@ -181,14 +218,14 @@ const ListProduct = () => {
           <ArrowRightIcon
             className="cursor-pointer"
             onClick={() =>
-              page === products?.length / 20 - 1
-                ? setPage(products?.length / 20 - 1)
+              page === parseInt(preProduct?.length / 20) - 1
+                ? setPage(parseInt(preProduct?.length / 20) - 1)
                 : setPage(page + 1)
             }
           />
           <LastPageIcon
             className="cursor-pointer"
-            onClick={() => setPage(products?.length / 20 - 1)}
+            onClick={() => setPage(parseInt(preProduct?.length / 20) - 1)}
           />
         </div>
       </div>

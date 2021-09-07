@@ -28,8 +28,10 @@ const OrderListRow = ({
   const handleHidden = forHidden => {
     if (forHidden === true) {
       setForHidden(false);
+      // handelHiddenAll(false);
     } else if (forHidden === false) {
       setForHidden(true);
+      // handelHiddenAll(true);
     }
   };
   // 체크박스
@@ -167,7 +169,7 @@ const OrderListRow = ({
             KG
           </div>
         </div>
-        {forHidden ? (
+        {forHidden && hiddenAll ? (
           ""
         ) : (
           <HiddenLists
@@ -176,13 +178,6 @@ const OrderListRow = ({
             changeHandler={changeHandler}
           />
         )}
-        {/* {forHidden === true  ?<HiddenLists
-            order={order}
-            checkedInputs={checkedInputs}
-            changeHandler={changeHandler}
-          /> (
-          ""
-        )}  */}
       </div>
     );
   }

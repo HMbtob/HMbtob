@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import HiddenRow from "./HiddenRow";
-const ShippingListRow = ({ shipping }) => {
+const ShippingListRow = ({ shipping, from }) => {
   const [forHidden, setForHidden] = useState(true);
   const handleHidden = forHidden => {
     if (forHidden === true) {
@@ -58,14 +58,16 @@ const ShippingListRow = ({ shipping }) => {
             )}{" "}
             EA
           </div>
-          <div className="col-span-1">
-            {Number(
-              shipping?.data?.list.reduce((i, c) => {
-                return i + c.weight * c.quan;
-              }, 0)
-            ) / 1000}{" "}
-            KG
-          </div>
+          {from !== "myorder" && (
+            <div className="col-span-1">
+              {Number(
+                shipping?.data?.list.reduce((i, c) => {
+                  return i + c.weight * c.quan;
+                }, 0)
+              ) / 1000}{" "}
+              KG
+            </div>
+          )}
           <div className="col-span-2">
             {" "}
             {Math.round(
@@ -80,6 +82,7 @@ const ShippingListRow = ({ shipping }) => {
                 )
             ).toLocaleString("ko-KR")}
           </div>
+
           <div className="col-span-2">
             {" "}
             {Math.round(
