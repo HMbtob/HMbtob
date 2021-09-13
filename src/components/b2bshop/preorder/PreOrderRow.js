@@ -55,12 +55,17 @@ const PreOrderRow = ({
       <div className="col-span-2 z-10">
         {exchangeRate[user?.currency] === 1
           ? (
-              (price - price * user?.dcRates[product.data.category]) /
+              (price -
+                price * user?.dcRates[product.data.category] -
+                user?.dcAmount[`${product.data.category}A`]) /
               exchangeRate[user?.currency]
             ).toLocaleString("ko-KR")
           : (
               (price -
-                (price * user?.dcRates[product.data.category])?.toFixed(2)) /
+                (
+                  price * user?.dcRates[product.data.category] -
+                  user?.dcAmount[`${product.data.category}A`]
+                )?.toFixed(2)) /
               exchangeRate[user?.currency]
             )
               .toFixed(2)
@@ -70,14 +75,18 @@ const PreOrderRow = ({
       {/* 재고 */}
       <input
         id={id}
-        disabled={Number(product.data.stock) > 0 ? false : true}
+        disabled={
+          Number(product.data.stock) > 0 || product.data.limitedStock === false
+            ? false
+            : true
+        }
         type="number"
         name={name}
         onChange={onChange}
         value={simpleList?.find(list => list.productId === name)?.quan}
         className="w-1/2 h-6 border text-center col-span-2 outline-none"
       />
-      {Number(product.data.stock) > 0 ? (
+      {Number(product.data.stock) > 0 || product.data.limitedStock === false ? (
         ""
       ) : (
         // FIXME: 요청하면 어디서 받을지 확인 후 수정

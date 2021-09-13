@@ -91,7 +91,7 @@ const B2bShop = () => {
           new Date(b.data.relDate.seconds) - new Date(a.data.relDate.seconds)
         );
       })
-      .slice(0, 150)
+      .slice(0, 500)
   );
   const [deal, setDeal] = useState(
     products
@@ -140,7 +140,7 @@ const B2bShop = () => {
             new Date(b.data.relDate.seconds) - new Date(a.data.relDate.seconds)
           );
         })
-        .slice(0, 150)
+        .slice(0, 500)
     );
     // 특별가
     setDeal(
@@ -177,6 +177,8 @@ const B2bShop = () => {
           doc =>
             doc.data.title.toLowerCase().includes(query.split(" ")[0]) ||
             doc.data.title.toLowerCase().includes(query.split(" ")[1]) ||
+            doc.data.title.toUpperCase().includes(query.split(" ")[0]) ||
+            doc.data.title.toUpperCase().includes(query.split(" ")[1]) ||
             doc.data.sku.includes(query.split(" ")[0]) ||
             doc.data.sku.includes(query.split(" ")[1]) ||
             doc.data.barcode.toLowerCase().includes(query.split(" ")[0]) ||
@@ -201,6 +203,8 @@ const B2bShop = () => {
           doc =>
             doc.data.title.toLowerCase().includes(query.split(" ")[0]) ||
             doc.data.title.toLowerCase().includes(query.split(" ")[1]) ||
+            doc.data.title.toUpperCase().includes(query.split(" ")[0]) ||
+            doc.data.title.toUpperCase().includes(query.split(" ")[1]) ||
             doc.data.sku.includes(query.split(" ")[0]) ||
             doc.data.sku.includes(query.split(" ")[1]) ||
             doc.data.barcode.toLowerCase().includes(query.split(" ")[0]) ||
@@ -224,6 +228,8 @@ const B2bShop = () => {
           doc =>
             doc.data.title.toLowerCase().includes(query.split(" ")[0]) ||
             doc.data.title.toLowerCase().includes(query.split(" ")[1]) ||
+            doc.data.title.toUpperCase().includes(query.split(" ")[0]) ||
+            doc.data.title.toUpperCase().includes(query.split(" ")[1]) ||
             doc.data.sku.includes(query.split(" ")[0]) ||
             doc.data.sku.includes(query.split(" ")[1]) ||
             doc.data.barcode.toLowerCase().includes(query.split(" ")[0]) ||
@@ -263,6 +269,7 @@ const B2bShop = () => {
             .substring(2, 10)
             .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)} `,
           currency: user.currency,
+          nickName: user.nickName,
           productId: key,
           title: products.find(product => product.id === key).data.title,
           quan: Number(form[key]),
@@ -271,10 +278,15 @@ const B2bShop = () => {
               (
                 (products.find(product => product.id === key).data.price /
                   exchangeRate[user?.currency]) *
-                (1 -
-                  user.dcRates[
+                  (1 -
+                    user.dcRates[
+                      products.find(product => product.id === key).data.category
+                    ]) -
+                user.dcAmount[
+                  `${
                     products.find(product => product.id === key).data.category
-                  ])
+                  }A`
+                ]
               ).toFixed(2)
             ) || 0,
           totalPrice:
@@ -284,7 +296,12 @@ const B2bShop = () => {
                 (1 -
                   user.dcRates[
                     products.find(product => product.id === key).data.category
-                  ])
+                  ]) -
+                user.dcAmount[
+                  `${
+                    products.find(product => product.id === key).data.category
+                  }A`
+                ]
             ).toFixed(2) * Number(form[key]) || 0,
           weight:
             Number(products.find(product => product.id === key).data.weight) ||
@@ -324,12 +341,6 @@ const B2bShop = () => {
   const B2bMakeOrder = async () => {
     // dispatch로 심플리스트 스테이트로 업데이트하고
     await dispatch({ type: "SIMPLELIST", simpleList });
-    // 주문번호생성하고
-    await dispatch({
-      type: "ORDER_NUMBER",
-      orderNumber: state.orderCounts + 1000,
-    });
-    // ㅍ히스토리푸시로  라우팅
     reset();
     history.push(`/b2border`);
   };
@@ -462,15 +473,6 @@ const B2bShop = () => {
             <div className="text-center text-sm font-bold text-gray-800">
               SCHEDULE
             </div>
-            <iframe
-              src="https://calendar.google.com/calendar/embed?height=400&wkst=1&bgcolor=%23F9FAFB&ctz=Asia%2FSeoul&src=aW50ZXJhc2lhZGV2QGdtYWlsLmNvbQ&src=YWRkcmVzc2Jvb2sjY29udGFjdHNAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&src=ZDZtNTV2b2tpaTh1MWNvazVqOXQ2djduZmdAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&src=a28uc291dGhfa29yZWEjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23039BE5&color=%2333B679&color=%23F6BF26&color=%230B8043&showTitle=0&showNav=1&showTz=0&showCalendars=0&showTabs=0&showPrint=1&showDate=1"
-              style={{ borderWidth: 0 }}
-              width="600"
-              height="500"
-              frameBorder="0"
-              scrolling="no"
-              title="cal"
-            ></iframe>
           </>
         )}
         <SimpleList

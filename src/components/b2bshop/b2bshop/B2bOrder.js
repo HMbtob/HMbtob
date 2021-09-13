@@ -107,10 +107,7 @@ const B2bOrder = () => {
 
   const options = [
     [{ credit: "Bank Transfer(Credit)" }],
-    [
-      { dhl: "DHL" },
-      // { ems: "EMS" }
-    ],
+    [{ dhl: "DHL" }, { EMS: "EMS" }],
   ];
 
   // 운임, 총무게
@@ -157,6 +154,13 @@ const B2bOrder = () => {
   }, 0);
   // amount price
   const amountPrice = totalPrice + fee;
+
+  const included = simpleLists.reduce((i, c) => {
+    if (c.moved === false && c.canceled === false && c.shipped === false) {
+      return i || c.relDate.toDate() > today;
+    }
+    return i || false;
+  }, false);
   const confirmOrder = async e => {
     e.preventDefault();
     await db
@@ -164,7 +168,7 @@ const B2bOrder = () => {
       .doc("b2b")
       .collection("b2borders")
       .add({
-        orderState: "confirmOrder",
+        orderState: included ? "Pre-Order" : "Order",
         paymentMethod,
         recipient,
         shippingType,
@@ -184,6 +188,7 @@ const B2bOrder = () => {
         customer: orderEmail,
         list: simpleLists,
         dcRates: user.dcRates,
+        dcAmount: user.dcAmount,
         shippingRate: user.shippingRate,
         currency: user.currency,
         shippingFee: Number(fee.toFixed(2)),
@@ -238,7 +243,7 @@ const B2bOrder = () => {
     <div className="w-full h-full flex justify-center">
       {/* dep-2 */}
       <form
-        className="w-4/5 flex-col mt-20 flex items-center"
+        className="w-11/12 flex-col mt-20 flex items-center"
         onSubmit={confirmOrder}
       >
         {/* dep-3-1 */}
@@ -370,9 +375,9 @@ const B2bOrder = () => {
             className="grid grid-cols-12 text-center bg-gray-800 rounded-sm 
          text-sm font-semibold text-gray-100"
           >
-            <div>No.</div>
+            <div className="col-span-2">No.</div>
             <div className="col-span-2">SKU</div>
-            <div className="col-span-5">TITLE</div>
+            <div className="col-span-4">TITLE</div>
             <div className="col-span-1">RELEASE</div>
             <div>PRICE</div>
             <div>EA</div>
@@ -386,14 +391,14 @@ const B2bOrder = () => {
                   border-b border-r border-l py-1"
                   key={index}
                 >
-                  <div>{doc.childOrderNumber}</div>
+                  <div className="col-span-2">{doc.childOrderNumber}</div>
                   <div className="col-span-2">
                     {
                       products?.find(product => product.id === doc.productId)
                         .data.sku
                     }
                   </div>
-                  <div className="col-span-5 text-left">{doc.title}</div>
+                  <div className="col-span-4 text-left">{doc.title}</div>
                   <div className="col-span-1">
                     {new Date(doc.relDate.toDate()).toLocaleDateString()}
                   </div>

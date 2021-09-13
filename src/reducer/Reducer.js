@@ -7,7 +7,6 @@ export const initState = {
   user: null,
   category: "cd",
   orderCounts: null,
-  orderNumber: null,
   shippingCounts: null,
   shippingNumber: null,
   simpleLists: [],
@@ -44,8 +43,6 @@ export function dataReducer(state, action) {
       return { ...state, category: action.category };
     case "ORDER_COUNTS":
       return { ...state, orderCounts: action.orderCounts };
-    case "ORDER_NUMBER":
-      return { ...state, orderNumber: action.orderNumber };
     case "SHIPPING_COUNTS":
       return { ...state, shippingCounts: action.shippingCounts };
     case "SHIPPING_NUMBER":

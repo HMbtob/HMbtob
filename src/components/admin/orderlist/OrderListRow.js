@@ -163,9 +163,11 @@ const OrderListRow = ({
             EA
           </div>
           <div>
-            {order.data.list.reduce((i, c) => {
-              return i + c.weight * c.quan;
-            }, 0) / 1000}{" "}
+            {(
+              order.data.list.reduce((i, c) => {
+                return i + c.weight * c.quan;
+              }, 0) / 1000
+            ).toFixed(2)}{" "}
             KG
           </div>
         </div>

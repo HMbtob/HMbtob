@@ -10,7 +10,16 @@ import BuildIcon from "@material-ui/icons/Build";
 import SyncAltIcon from "@material-ui/icons/SyncAlt";
 import CommentIcon from "@material-ui/icons/Comment";
 import MouseIcon from "@material-ui/icons/Mouse";
-
+import FileCopyIcon from "@material-ui/icons/FileCopy";
+import SyncIcon from "@material-ui/icons/Sync";
+import SyncDisabledIcon from "@material-ui/icons/SyncDisabled";
+import { db } from "../../../firebase";
+import useInputs from "../../../hooks/useInput";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import LockIcon from "@material-ui/icons/Lock";
+import LockOpenIcon from "@material-ui/icons/LockOpen";
 const ListProductRow = ({
   id,
   sku,
@@ -31,11 +40,13 @@ const ListProductRow = ({
   exchangeRate,
   product,
   products,
+  weight,
 }) => {
   const history = useHistory();
   const today = new Date();
 
   const [forHidden, setForHidden] = useState(true);
+
   const handleHidden = forHidden => {
     if (forHidden === true) {
       setForHidden(false);
@@ -56,7 +67,7 @@ const ListProductRow = ({
   };
 
   // 재고수불부에서 빅커머스 total_sold 가져가려고 만든 state
-  const [bigTotalSold, setBigTotalSold] = useState();
+  const [bigTotalSold, setBigTotalSold] = useState(null);
   const handleBigTotalSold = q => {
     setBigTotalSold(q);
   };
@@ -69,15 +80,46 @@ const ListProductRow = ({
   const closeModal2 = () => {
     setModalOpen2(false);
   };
+
+  const [form, onChange] = useInputs({
+    barcode2: barcode,
+    sku2: sku,
+    weight2: weight,
+  });
+
+  const { barcode2, sku2, weight2 } = form;
+
+  const [category, setCategory] = useState(product.data.category);
+  const handleCat = e => {
+    setCategory(e.target.value);
+    db.collection("products").doc(id).update({ category: e.target.value });
+  };
+
+  const handleDelete = () => {
+    let con = window.confirm("정말로 삭제하시겠습니까?");
+    if (con === true) {
+      db.collection("products").doc(id).delete();
+    } else if (con === false) {
+      return;
+    }
+  };
   return (
-    <div className="border-b w-full">
+    <div
+      className={`border-b  border-gray-500 w-full py-1 ${
+        relDate.toDate() > today ? "bg-red-100 " : "bg-white "
+      }`}
+    >
       <div
         className={`grid grid-cols-36 items-center place-items-center 
-        text-xs ${
-          relDate.toDate() > today ? "bg-red-100 " : "bg-white "
-        } w-full`}
+        text-xs  w-full`}
       >
         <div className="col-span-4 flex flex-row justify-evenly w-full items-center">
+          <DeleteOutlineIcon
+            className="cursor-pointer"
+            fontSize="small"
+            style={{ color: "gray" }}
+            onClick={handleDelete}
+          />
           {/* 메모 아이콘 */}
           <CommentIcon
             className="cursor-pointer"
@@ -96,6 +138,11 @@ const ListProductRow = ({
           <button onClick={() => history.push(`/detailproduct/${id}`)}>
             <BuildIcon fontSize="small" style={{ color: "gray" }} />
           </button>
+          <button
+          // onClick={() => history.push(`/detailproduct/${id}`)}
+          >
+            <FileCopyIcon fontSize="small" style={{ color: "gray" }} />
+          </button>
           {/* 재고수불부 아이콘 */}
           <button onClick={openModal}>
             <SyncAltIcon fontSize="small" style={{ color: "gray" }} />
@@ -109,14 +156,100 @@ const ListProductRow = ({
           </Modal>
         </div>
 
-        <div className="col-span-3">{barcode}</div>
-        <div className="col-span-3">{sku}</div>
+        <div className="col-span-3">
+          <input
+            type="text"
+            value={barcode2}
+            onChange={onChange}
+            name="barcode2"
+            className="p-1 outline-none bg-transparent"
+            onKeyPress={e => {
+              if (e.key === "Enter") {
+                db.collection("products").doc(id).update({ barcode: barcode2 });
+                return false;
+              }
+            }}
+          />
+        </div>
+        <div className="col-span-3">
+          <input
+            type="text"
+            value={sku2}
+            onChange={onChange}
+            name="sku2"
+            className="p-1 outline-none bg-transparent"
+            onKeyPress={e => {
+              if (e.key === "Enter") {
+                db.collection("products").doc(id).update({ sku: sku2 });
+                return false;
+              }
+            }}
+          />
+        </div>
         <img className="col-span-2 h-8 rounded-sm " src={thumbNail} alt="" />
         <div
-          className="col-span-12 cursor-pointer text-left w-full flex flex-row items-center"
-          onClick={() => handleHidden(forHidden)}
+          className="col-span-12 text-left 
+          w-full flex flex-col items-start"
         >
-          <div> {title}</div>
+          <div className=" bg-transparent text-gray-600 text-xs w-auto items-center flex">
+            {/* 노출/숨김 버튼 */}
+            {product.data.exposeToB2b === "숨김" && (
+              <VisibilityOffIcon
+                className="cursor-pointer"
+                style={{ color: "red", fontSize: "18", opacity: "0.7" }}
+                onClick={() =>
+                  db
+                    .collection("products")
+                    .doc(id)
+                    .update({ exposeToB2b: "노출" })
+                }
+              />
+            )}
+            {product.data.exposeToB2b === "노출" && (
+              <VisibilityIcon
+                className="cursor-pointer"
+                style={{ color: "blue", fontSize: "16", opacity: "0.7" }}
+                onClick={() =>
+                  db
+                    .collection("products")
+                    .doc(id)
+                    .update({ exposeToB2b: "숨김" })
+                }
+              />
+            )}
+            <select
+              name="category"
+              value={category}
+              onChange={handleCat}
+              className="bg-transparent outline-none ml-3"
+            >
+              <option value="cd">
+                cd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
+              </option>
+              <option value="dvdBlueRay">
+                dvdBlueRay&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
+              </option>
+              <option value="photoBook">
+                photoBook&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
+              </option>
+              <option value="goods">
+                goods&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
+              </option>
+              <option value="officialStore">
+                officialStore&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
+              </option>
+              <option value="beauty">
+                beauty&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
+              </option>
+            </select>
+          </div>
+          <div
+            onClick={() => handleHidden(forHidden)}
+            className="cursor-pointer"
+          >
+            {" "}
+            {title}
+          </div>
         </div>
         <div className="col-span-2">
           {exchangeRate[user?.currency] === 1
@@ -126,7 +259,7 @@ const ListProductRow = ({
                 ?.toLocaleString("ko-KR")}{" "}
           {user?.currency}
         </div>
-        <div className="col-span-2">
+        <div className="col-span-2 flex flex-row items-center">
           <StoreProduct
             stockHistory={product.data.stockHistory}
             bigTotalSold={bigTotalSold}
@@ -135,13 +268,90 @@ const ListProductRow = ({
             user={user}
             products={products}
           />
+          <div>
+            {/* 무한재고 */}
+            {product.data.limitedStock === false ? (
+              <SyncIcon
+                className="cursor-pointer"
+                fontSize="small"
+                style={{ color: "blue", opacity: "0.7", fontSize: "15" }}
+                onClick={async () =>
+                  await db
+                    .collection("products")
+                    .doc(id)
+                    .update({ limitedStock: true })
+                }
+              />
+            ) : product.data.limitedStock === true ? (
+              <SyncDisabledIcon
+                className="cursor-pointer"
+                fontSize="small"
+                style={{ color: "red", opacity: "0.7", fontSize: "15" }}
+                onClick={async () =>
+                  await db
+                    .collection("products")
+                    .doc(id)
+                    .update({ limitedStock: false })
+                }
+              />
+            ) : (
+              ""
+            )}
+            {/* 재입고 가능 */}
+            {product.data.reStockable === "불가능" ? (
+              <LockIcon
+                className="cursor-pointer"
+                fontSize="small"
+                style={{ color: "red", opacity: "0.7", fontSize: "15" }}
+                onClick={async () =>
+                  await db
+                    .collection("products")
+                    .doc(id)
+                    .update({ reStockable: "가능" })
+                }
+              />
+            ) : product.data.reStockable === "가능" ? (
+              <LockOpenIcon
+                className="cursor-pointer"
+                fontSize="small"
+                style={{ color: "blue", opacity: "0.7", fontSize: "15" }}
+                onClick={async () =>
+                  await db
+                    .collection("products")
+                    .doc(id)
+                    .update({ reStockable: "불가능" })
+                }
+              />
+            ) : (
+              ""
+            )}
+          </div>
         </div>
         <div className="col-span-2">
-          {bigTotalSold && (totalStock - bigTotalSold).toLocaleString("ko-KR")}
-          {!bigTotalSold && <MouseIcon style={{ color: "darkgray" }} />}
+          {bigTotalSold || bigTotalSold === 0 ? totalStock - bigTotalSold : ""}
         </div>
-        <div className="col-span-2">{totalSell?.toLocaleString("ko-KR")}</div>
-        <div className="col-span-2">{unShipped?.toLocaleString("ko-KR")}</div>
+        <div className="col-span-1">
+          {totalSell ? totalSell.toLocaleString("ko-KR") : ""}
+        </div>
+        <div className="col-span-1">
+          {unShipped ? unShipped.toLocaleString("ko-KR") : ""}
+        </div>
+        <div className="col-span-2 justify-center flex">
+          {" "}
+          <input
+            type="text"
+            value={weight2}
+            onChange={onChange}
+            name="weight2"
+            className="p-1 outline-none w-3/4 text-center bg-transparent"
+            onKeyPress={e => {
+              if (e.key === "Enter") {
+                db.collection("products").doc(id).update({ weight: weight2 });
+                return false;
+              }
+            }}
+          />{" "}
+        </div>
         <div className="col-span-2 text-xs">
           {relDate &&
             new Date(relDate.seconds * 1000).toISOString().substring(0, 10)}

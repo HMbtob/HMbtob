@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import HiddenRow from "./HiddenRow";
-const ShippingListRow = ({ shipping, from }) => {
+const ShippingListRow = ({ shipping, from, hiddenAll }) => {
   const [forHidden, setForHidden] = useState(true);
   const handleHidden = forHidden => {
     if (forHidden === true) {
@@ -58,41 +58,30 @@ const ShippingListRow = ({ shipping, from }) => {
             )}{" "}
             EA
           </div>
+          {console.log(shipping)}
           {from !== "myorder" && (
             <div className="col-span-1">
-              {Number(
-                shipping?.data?.list.reduce((i, c) => {
-                  return i + c.weight * c.quan;
-                }, 0)
-              ) / 1000}{" "}
+              {shipping.data.inputWeight && shipping.data.inputWeight > 0
+                ? shipping.data.inputWeight
+                : Number(
+                    shipping?.data?.list.reduce((i, c) => {
+                      return i + c.weight * c.quan;
+                    }, 0)
+                  ) / 1000}{" "}
               KG
             </div>
           )}
           <div className="col-span-2">
-            {" "}
-            {Math.round(
-              (Number(
-                shipping?.data?.list.reduce((i, c) => {
-                  return i + c.weight * c.quan;
-                }, 0)
-              ) /
-                1000) *
-                Number(
-                  shipping?.data?.shippingRate[shipping?.data?.shippingType]
-                )
-            ).toLocaleString("ko-KR")}
+            {Number(shipping.data.checkedItemsFee).toLocaleString("ko-KR")}{" "}
+            {shipping.data.currency}
           </div>
 
           <div className="col-span-2">
-            {" "}
-            {Math.round(
-              shipping?.data?.list.reduce((i, c) => {
-                return i + (c.price - c.dcRate * c.price) * c.quan;
-              }, 0)
-            ).toLocaleString("ko-KR")}{" "}
+            {Number(shipping.data.checkItemAmountPrice).toLocaleString("ko-KR")}{" "}
+            {shipping.data.currency}
           </div>
         </div>
-        {forHidden ? "" : <HiddenRow shipping={shipping} />}
+        {forHidden && hiddenAll ? "" : <HiddenRow shipping={shipping} />}
       </div>
     );
   }

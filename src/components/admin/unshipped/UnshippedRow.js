@@ -36,13 +36,14 @@ const UnshippedRow = ({ customer, orders }) => {
   return (
     <div
       onClick={() => history.push(`/Unshipped/${customer.data.uid}`)}
-      className={`grid grid-cols-7 text-center cursor-pointer ${
+      className={`grid grid-cols-8 text-center cursor-pointer ${
         included ? "bg-red-100" : "bg-white"
       }  border py-1 text-sm`}
     >
       {" "}
       <div className="col-span-2">{customer && customer.data.email}</div>
       <div>{customer && customer.data.displayName}</div>
+      <div>{customer && customer.data.nickName}</div>
       <div>{unshipped && unshipped.length} 종</div>
       <div>
         {unshipped &&

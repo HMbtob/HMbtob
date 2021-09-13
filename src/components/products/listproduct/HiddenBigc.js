@@ -59,7 +59,7 @@ const HiddenBigc = ({ relDate, bigcProductId, handleBigTotalSold }) => {
   return (
     <div
       className="grid grid-cols-36 items-center 
-place-items-center text-xs bg-white"
+place-items-center text-xs bg-transparent"
     >
       {bigcProductId && (
         <>
@@ -138,9 +138,9 @@ place-items-center text-xs bg-white"
             value={handleStock}
             onChange={onChange}
           />
-          <div className="col-span-2">{total_sold && total_sold}</div>
+          <div className="col-span-1">{total_sold && total_sold}</div>
 
-          <div className="col-span-2">
+          <div className="col-span-1">
             {unShippedProductsIdandQty &&
               (unShippedProductsIdandQty.filter(
                 doc => Object.keys(doc)[0] === bigcProductId.toString()
@@ -152,6 +152,7 @@ place-items-center text-xs bg-white"
                   )
                 : 0)}
           </div>
+          <div className="col-span-2"></div>
 
           <div className="col-span-2 text-xs">
             {relDate &&

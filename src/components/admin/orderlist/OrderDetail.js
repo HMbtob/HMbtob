@@ -12,6 +12,7 @@ import LocalAirportIcon from "@material-ui/icons/LocalAirport";
 import { useCallback } from "react";
 
 const OrderDetail = ({ match }) => {
+  const today = new Date();
   const { id } = match.params;
   const state = useContext(InitDataContext);
   const { orders, user, shippings, exchangeRate, dhlShippingFee } = state;
@@ -344,6 +345,36 @@ const OrderDetail = ({ match }) => {
     await alert("취소되었습니다");
   };
 
+  // shipping number 만들기
+  // order number를 위한 0 포함된 숫자 만드는 함수
+  const addZeros = (n, digits) => {
+    let zero = "";
+    n = n.toString();
+    if (n.length < digits) {
+      for (var i = 0; i < digits - n.length; i++) zero += "0";
+    }
+    return zero + n;
+  };
+
+  const forShippingNumber = shippings
+    .filter(ship => ship.data.customer === user.email)
+    .filter(
+      ship =>
+        new Date(ship.data.shippedDate.seconds * 1000)
+          .toISOString()
+          .substring(0, 10) === new Date(today).toISOString().substring(0, 10)
+    )
+    ? shippings
+        .filter(ship => ship.data.customer === user.email)
+        .filter(
+          ship =>
+            new Date(ship.data.shippedDate.seconds * 1000)
+              .toISOString()
+              .substring(0, 10) ===
+            new Date(today).toISOString().substring(0, 10)
+        ).length
+    : 0;
+
   // TODO:  쉬핑 넘버 없이 카운츠로 넘버만들어서 저장-> 되면 오더에도 적용
   const makeShipping = async e => {
     e.preventDefault();
@@ -358,7 +389,10 @@ const OrderDetail = ({ match }) => {
         .set({
           orderId: id,
           orderNumber: order.data.orderNumber,
-          shippingNumber: order.data.orderNumber,
+          currency: order.data.currency,
+          shippingNumber: `${order.data.orderNumber
+            .replaceAll("-", "")
+            .replaceAll(" ", "")}-${addZeros(forShippingNumber, 2)}`,
           shippedDate: new Date(),
           shippingType,
           customer: order.data.customer,
@@ -380,6 +414,7 @@ const OrderDetail = ({ match }) => {
           checkedItemPrice,
           checkItemAmountPrice,
           trackingNumber,
+          inputWeight,
         });
       await db
         .collection("accounts")
@@ -387,7 +422,7 @@ const OrderDetail = ({ match }) => {
         .update({
           credit: user.credit - checkItemAmountPrice,
           creditDetails: firebase.firestore.FieldValue.arrayUnion({
-            type: "makeOrder",
+            type: "Shipped Amount",
             currency: user.currency,
             amount: Number(checkItemAmountPrice),
             date: new Date(),
@@ -521,10 +556,11 @@ const OrderDetail = ({ match }) => {
                     onChange={onChange}
                     className="border p-1"
                   >
-                    <option value="makeOrder">주문서작성중</option>
-                    <option value="confirmOrder">주문완료</option>
-                    <option value="packaging">포장중</option>
-                    <option value="shipping">배송중</option>
+                    <option value="Order">Order</option>
+                    <option value="Pre-Order">Pre Order</option>
+                    <option value="Ready-to-ship">Ready to ship</option>
+                    <option value="Patially-shipped">Patially shipped</option>
+                    <option value="Shipped">Shipped</option>
                   </select>
                 </div>
                 <div className="grid grid-cols-2 items-center h-8">
@@ -556,7 +592,7 @@ const OrderDetail = ({ match }) => {
                     className="border p-1"
                   >
                     <option value="dhl">DHL</option>
-                    <option value="ems">EMS</option>
+                    <option value="EMS">EMS</option>
                   </select>
                 </div>
                 <div className="grid grid-cols-2 h-8 items-center">
@@ -585,9 +621,16 @@ const OrderDetail = ({ match }) => {
                       <div key={index}>{doc.toUpperCase()}</div>
                     ))}
                   </div>
-                  <div className="grid grid-cols-6 text-center border-b px-1 border-l border-r text-sm">
+                  <div className="grid grid-cols-6 text-center border-b px-1 border-l border-r text-xs">
                     {Object.values(order?.data.dcRates).map((doc, index) => (
                       <div key={index}>{doc * 100} %</div>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-6 text-center border-b px-1 border-l border-r text-xs">
+                    {Object.values(order?.data.dcAmount).map((doc, index) => (
+                      <div key={index}>
+                        {doc} {order?.data.currency}{" "}
+                      </div>
                     ))}
                   </div>
                   <div className="text-center my-1 font-semibold mt-3">
@@ -719,16 +762,16 @@ const OrderDetail = ({ match }) => {
               Ordered Items
             </div>
             <div className="flex flex-col items-end text-xs mb-3 rounded-md">
-              <div className="bg-red-200 w-44 pl-3 rounded-md mb-1">
+              <div className="bg-red-100 w-44 pl-3 rounded-md mb-1">
                 &nbsp;&nbsp;&nbsp;&nbsp;: Items not yet released{" "}
               </div>
-              <div className="bg-gray-300 w-44 pl-3 rounded-md  mb-1">
+              <div className="bg-gray-100 w-44 pl-3 rounded-md  mb-1">
                 <CancelIcon style={{ fontSize: "small" }} />: canceled item
               </div>
-              <div className="bg-green-300 w-44 pl-3 rounded-md  mb-1">
+              <div className="bg-green-100 w-44 pl-3 rounded-md  mb-1">
                 <UndoIcon style={{ fontSize: "small" }} />: moved item
               </div>
-              <div className="bg-blue-300 w-44 pl-3 rounded-md  mb-1">
+              <div className="bg-blue-100 w-44 pl-3 rounded-md  mb-1">
                 <LocalAirportIcon style={{ fontSize: "small" }} />: shipped item
               </div>
             </div>

@@ -46,11 +46,12 @@ const Unshiped = () => {
           유저별 미발송
         </div>
         <div
-          className="grid grid-cols-7  grid-flow-col text-center 
+          className="grid grid-cols-8  grid-flow-col text-center 
        bg-gray-800 text-gray-100 py-1 rounded-sm text-xs"
         >
           <div className="col-span-2">E-mail</div>
           <div className="col-span-1">Name</div>
+          <div className="col-span-1">Nick</div>
           <div className="col-span-1">종류</div>
           <div className="col-span-1">갯수</div>
           <div className="col-span-1">무게</div>

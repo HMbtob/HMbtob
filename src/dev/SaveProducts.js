@@ -28,7 +28,10 @@ const SaveProducts = () => {
     // 행으로 입력하기
     const rows = await sheet.getRows();
 
-    for (let i = 0; i < 50; i++) {
+    console.log("반복문 시작");
+    for (let i = 3036; i < 3066; i++) {
+      console.log(i, "번째");
+
       const productId = allOrderProductsList?.data[i]?.id;
       const productRef = db.collection("products").doc(`${productId}`);
       // id로 도매가 가져오기
@@ -53,7 +56,7 @@ const SaveProducts = () => {
       );
 
       // id로 출시일 가져오기
-      const relDate = await axios
+      let relDate = await axios
         .get(
           `/stores/7uw7zc08qw/v3/catalog/products/${productId}/custom-fields`,
           {
@@ -64,9 +67,103 @@ const SaveProducts = () => {
             },
           }
         )
-        .then(field => field?.data?.data[0]?.value)
+        .then(field =>
+          field?.data?.data[0]?.name === "RELEASE DATE"
+            ? field?.data?.data[0]?.value
+            : "2024-01-01"
+        )
         .catch(error => console.log(error));
+      console.log(relDate);
 
+      relDate =
+        relDate.includes("Jan") ||
+        relDate.includes("Feb") ||
+        relDate.includes("Mar") ||
+        relDate.includes("Apr") ||
+        relDate.includes("May") ||
+        relDate.includes("Jun") ||
+        relDate.includes("Jul") ||
+        relDate.includes("Aug") ||
+        relDate.includes("Sep") ||
+        relDate.includes("Oct") ||
+        relDate.includes("Nov") ||
+        relDate.includes("Dec")
+          ? relDate
+          : relDate.includes(".") && relDate.length >= 9
+          ? relDate.replaceAll(".", "/")
+          : relDate.includes("/") && relDate.length >= 9
+          ? relDate
+          : relDate
+              .replaceAll("-", "")
+              .replaceAll("/", "")
+              .replaceAll("_", "")
+              .replaceAll(",", "")
+              .replaceAll(".", "").length === 8
+          ? relDate
+              .replaceAll("-", "")
+              .replaceAll("/", "")
+              .replaceAll("_", "")
+              .replaceAll(",", "")
+              .replaceAll(".", "")
+              .slice(0, 4) +
+            "-" +
+            relDate
+              .replaceAll("-", "")
+              .replaceAll("/", "")
+              .replaceAll("_", "")
+              .replaceAll(",", "")
+              .replaceAll(".", "")
+              .slice(4, 6) +
+            "-" +
+            relDate
+              .replaceAll("-", "")
+              .replaceAll("/", "")
+              .replaceAll("_", "")
+              .replaceAll(",", "")
+              .replaceAll(".", "")
+              .slice(6, 8)
+          : relDate
+              .replaceAll("-", "")
+              .replaceAll("/", "")
+              .replaceAll("_", "")
+              .replaceAll(",", "")
+              .replaceAll(".", "").length === 6
+          ? ("20" + relDate)
+              .replaceAll("-", "")
+              .replaceAll("/", "")
+              .replaceAll("_", "")
+              .replaceAll(",", "")
+              .replaceAll(".", "")
+              .slice(0, 4) +
+            "/" +
+            ("20" + relDate)
+              .replaceAll("-", "")
+              .replaceAll("/", "")
+              .replaceAll("_", "")
+              .replaceAll(",", "")
+              .replaceAll(".", "")
+              .slice(4, 6) +
+            "/" +
+            ("20" + relDate)
+              .replaceAll("-", "")
+              .replaceAll("/", "")
+              .replaceAll("_", "")
+              .replaceAll(",", "")
+              .replaceAll(".", "")
+              .slice(6, 8)
+          : "2023-01-01";
+
+      // relDate.length === 8
+      //   ? relDate.slice(0, 4) +
+      //     "-" +
+      //     relDate.slice(4, 6) +
+      //     "-" +
+      //     relDate.slice(6, 8)
+      //   : relDate === 6
+      //   ? "20" + relDate
+      //   : "2023-01-01";
+
+      console.log(relDate);
       // 썸네일 주소
       const thumb = await axios
         .get(`/stores/7uw7zc08qw/v3/catalog/products/${productId}/images`, {
@@ -78,7 +175,13 @@ const SaveProducts = () => {
         })
         .then(imageUrl => imageUrl?.data?.data[0]?.url_thumbnail)
         .catch(error => console.log(error));
-
+      // console.log(
+      //   relDate?.length === 8
+      //     ? new Date("20".concat(relDate))
+      //     : (relDate?.length < 12 && relDate?.length) > 7
+      //     ? new Date(relDate)
+      //     : new Date("20 Oct 2021")
+      // );
       await batch.set(productRef, {
         sku: allOrderProductsList?.data[i]?.sku || "...",
         purchasePrice: pPrice || 0,
@@ -86,7 +189,6 @@ const SaveProducts = () => {
         artist: "...",
         ent: "...",
         x: 0,
-        stock: allOrderProductsList?.data[i]?.inventory_level,
         y: 0,
         z: 0,
         title: allOrderProductsList?.data[i]?.name,
@@ -122,18 +224,24 @@ const SaveProducts = () => {
               ).length > 0
             ? "beauty"
             : "beauty",
-        relDate:
-          relDate?.length < 11 && relDate?.length > 7
-            ? new Date(relDate)
-            : new Date(),
-        preOrderDeadline:
-          relDate?.length < 11 && relDate?.length
-            ? new Date(relDate)
-            : new Date(),
-        preOrderDeadlineTime:
-          relDate?.length < 11 && relDate?.length
-            ? new Date(relDate)
-            : new Date(),
+        relDate: new Date(relDate),
+        // // relDate?.length === 8
+        // //   ? new Date("20".concat(relDate))
+        // //   : relDate?.length < 12 && relDate?.length > 6
+        // //   ? new Date(relDate)
+        // //   : new Date("20 Oct 2021")
+        preOrderDeadline: new Date(relDate),
+        // // relDate?.length === 8
+        // //   ? new Date("20".concat(relDate))
+        // //   : relDate?.length < 12 && relDate?.length > 6
+        // //   ? new Date(relDate)
+        // //   : new Date("20 Oct 2021")
+        preOrderDeadlineTime: new Date(relDate),
+        // // relDate?.length === 8
+        // //   ? new Date("20".concat(relDate))
+        // //   : relDate?.length < 12 && relDate?.length > 6
+        // //   ? new Date(relDate)
+        // //   : new Date("20 Oct 2021")
         options: {
           poster: false,
           pob: false,
@@ -142,12 +250,17 @@ const SaveProducts = () => {
           interAsiaPhotocard: false,
         },
         barcode: allOrderProductsList?.data[i]?.upc || "...",
-        reStockable: "불가능",
+        reStockable:
+          allOrderProductsList.data[i].inventory_level === 0
+            ? "불가능"
+            : "가능",
+        stock: allOrderProductsList.data[i].inventory_level,
         exposeToB2b: allOrderProductsList?.data[i]?.is_visible
           ? "노출"
           : "숨김",
         bigC: { ...allOrderProductsList?.data[i] },
-        limitedStock: false,
+        limitedStock:
+          allOrderProductsList.data[i].inventory_level === 0 ? true : false,
         productMemo: [
           {
             memo: "add product",
@@ -163,7 +276,9 @@ const SaveProducts = () => {
             date: new Date(),
           },
         ],
-        totalStock: 0,
+        totalStock:
+          allOrderProductsList.data[i].inventory_level +
+          allOrderProductsList.data[i].total_sold,
         totalSold: 0,
       });
     }
@@ -182,12 +297,26 @@ const SaveProducts = () => {
         test{" "}
       </button>
       <button
-        // onClick={saveProduct}
+        onClick={() => console.log(allOrderProductsList.data[3036])}
         className="text-left text-2xl  
          mb-1 ml-2 bg-gray-500 text-gray-200 p-1 rounded m-1"
       >
         상품 추가
       </button>
+      {/* <button
+        onClick={() => console.log(allOrderProductsList[982])}
+        className="text-left text-2xl  
+         mb-1 ml-2 bg-gray-500 text-gray-200 p-1 rounded m-1"
+      >
+        상품 추가
+      </button>
+      <button
+        onClick={() => console.log(allOrderProductsList[983])}
+        className="text-left text-2xl  
+         mb-1 ml-2 bg-gray-500 text-gray-200 p-1 rounded m-1"
+      >
+        상품 추가
+      </button> */}
     </>
   );
 };

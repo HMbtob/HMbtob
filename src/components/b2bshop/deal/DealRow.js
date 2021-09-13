@@ -28,12 +28,17 @@ const DealRow = ({
       <div className="col-span-4">
         {exchangeRate[user?.currency] === 1
           ? (
-              (price - price * user?.dcRates[product.data.category]) /
+              (price -
+                price * user?.dcRates[product.data.category] -
+                user?.dcAmount[`${product.data.category}A`]) /
               exchangeRate[user?.currency]
             ).toLocaleString("ko-KR")
           : (
               (price -
-                (price * user?.dcRates[product.data.category])?.toFixed(2)) /
+                (
+                  price * user?.dcRates[product.data.category] -
+                  user?.dcAmount[`${product.data.category}A`]
+                )?.toFixed(2)) /
               exchangeRate[user?.currency]
             )
               .toFixed(2)

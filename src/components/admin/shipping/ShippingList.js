@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { InitDataContext } from "../../../App";
 import ShippingListRow from "./ShippingListRow";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -6,6 +6,15 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 const ShippingList = ({ shipping, from }) => {
   const state = useContext(InitDataContext);
   const { shippings } = state;
+  // 전체 펼치기
+  const [hiddenAll, setHiddenAll] = useState(true);
+  const handelHiddenAll = hiddenAll => {
+    if (hiddenAll === true) {
+      setHiddenAll(false);
+    } else if (hiddenAll === false) {
+      setHiddenAll(true);
+    }
+  };
   return (
     <div className="w-full flex justify-center mb-20">
       <div
@@ -21,7 +30,7 @@ const ShippingList = ({ shipping, from }) => {
         </div>
         <div
           className="grid grid-cols-28  grid-flow-col text-center 
-           bg-gray-800 text-gray-100 py-1 rounded-sm text-xs"
+           bg-gray-800 text-gray-100 py-1 rounded-sm text-xs items-center"
         >
           <div className="col-span-3">Shipping No.</div>
           <div className="col-span-3">Ship Date</div>
@@ -32,15 +41,16 @@ const ShippingList = ({ shipping, from }) => {
             <ExpandMoreIcon
               style={{ color: "white", marginRight: "10px" }}
               className="cursor-pointer"
+              onClick={() => handelHiddenAll(hiddenAll)}
             />
           </div>
-          <div className="col-span-3">Email</div>
-          <div>Company</div>
+          <div className="col-span-3">Shop Name</div>
+          <div>Ship</div>
           <div className="col-span-2">Country</div>
           <div className="col-span-1">Sorts</div>
           <div className="col-span-1">EA</div>
           {from !== "myorder" && <div className="col-span-1">Weight</div>}
-          <div className="col-span-2">Fee</div>
+          <div className="col-span-2">Shipping Fee</div>
           <div className="col-span-2">Amount</div>
         </div>
         <div>
@@ -50,6 +60,8 @@ const ShippingList = ({ shipping, from }) => {
                   key={ship.id}
                   id={shipping.id}
                   shipping={ship}
+                  hiddenAll={hiddenAll}
+                  handelHiddenAll={handelHiddenAll}
                 />
               ))
             : from === "myorder" && shipping
@@ -59,6 +71,8 @@ const ShippingList = ({ shipping, from }) => {
                   id={shipping.id}
                   shipping={ship}
                   from="myorder"
+                  hiddenAll={hiddenAll}
+                  handelHiddenAll={handelHiddenAll}
                 />
               ))
             : !from && shippings
@@ -67,6 +81,8 @@ const ShippingList = ({ shipping, from }) => {
                   key={shipping.id}
                   id={shipping.id}
                   shipping={shipping}
+                  hiddenAll={hiddenAll}
+                  handelHiddenAll={handelHiddenAll}
                 />
               ))
             : ""}

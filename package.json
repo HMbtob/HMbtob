@@ -2,6 +2,7 @@
   "name": "interasia",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://api.bigcommerce.com/",
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^29.1.0",
     "@ckeditor/ckeditor5-image": "^29.1.0",
@@ -24,7 +25,7 @@
     "react-dom": "^17.0.2",
     "react-firebase-hooks": "^3.0.4",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^4.0.3",
     "react-spinkit": "^3.0.0",
     "react-to-print": "^2.13.0",
     "tailwind-scrollbar-hide": "^1.0.3",
@@ -58,6 +59,6 @@
   "devDependencies": {
     "autoprefixer": "^9.8.6",
     "postcss": "^7.0.36",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.7"
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.14"
   }
 }

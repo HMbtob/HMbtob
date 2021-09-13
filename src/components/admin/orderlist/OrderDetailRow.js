@@ -111,7 +111,7 @@ const OrderDetailRow = ({
         EA
       </div>
       <div className="col-span-2">
-        {totalWeight && Math.round(totalWeight * 0.001 * 10) / 10} kg
+        {totalWeight && ((totalWeight * 0.001 * 10) / 10).toFixed(2)} kg
       </div>
       <div className="col-span-2">
         {price && quan && (price.toFixed(2) * quan).toLocaleString("ko-KR")}{" "}

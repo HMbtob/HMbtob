@@ -40,7 +40,7 @@ const StoreProduct = ({ product, user }) => {
     <form onSubmit={e => handleSubmit(e)}>
       <input
         type="number"
-        className="border w-3/4 p-1 text-center"
+        className="border w-3/4 p-1 text-center outline-none"
         value={inputStock}
         onChange={handleInputStock}
       />

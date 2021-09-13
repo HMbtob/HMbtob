@@ -12,16 +12,16 @@ const DetailProduct = ({ match }) => {
 
   return (
     <div className="w-full h-full">
-      <div className="m-auto mt-20 mb-10 text-xl text-center font-semibold text-gray-800">
+      {/* <div className="m-auto mt-20 mb-10 text-xl text-center font-semibold text-gray-800">
         PRODUCT DETAIL / FIX
-      </div>
+      </div> */}
 
       {/* COMMON PART */}
       <CommonPart id={id} product={product} />
       {/* BIG C */}
-      <BigCPart id={id} product={product} />
+      {/* <BigCPart id={id} product={product} /> */}
       {/* B2B PART */}
-      <B2bPart id={id} product={product} />
+      {/* <B2bPart id={id} product={product} /> */}
     </div>
   );
 };

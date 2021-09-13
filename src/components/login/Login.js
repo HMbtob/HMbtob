@@ -42,9 +42,9 @@ function Login() {
   };
   return (
     <div className="h-screen grid place-items-center bg-gray-100">
-      <div className=" p-24 text-center rounded bg-white flex flex-col">
+      <div className=" p-24 text-center rounded bg-white flex flex-col items-center">
         <img
-          src="https://firebasestorage.googleapis.com/v0/b/interasiastock.appspot.com/o/assets%2Flo.jpeg?alt=media&token=ea92d0b2-5857-45a7-8552-6ff0b87e7db7"
+          src="https://firebasestorage.googleapis.com/v0/b/interasiastock.appspot.com/o/assets%2Finterlogo-500.jpeg?alt=media&token=af2ec17d-dc0b-4147-9c7a-650ab2db870a"
           alt="logo"
           className="bg-contain h-96"
         />
@@ -80,7 +80,7 @@ function Login() {
             {" Sign Up with e-mail !"}
           </button>
         </div>
-        <div className="mt-5 text-2xl font-semibold text-gray-800">or</div>
+        <div className="mt-5 text-2xl font-semibold text-gray-600">or</div>
         <button
           className="mt-5 bg-gray-800 text-lg text-gray-50 px-8 p-2 rounded"
           onClick={signInWithGoogle}

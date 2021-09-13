@@ -19,8 +19,8 @@ const UnshippedHidden = ({ title, unshipped, orders }) => {
                 orders.find(
                   order => order?.data?.orderNumber === li?.orderNumber
                 )?.data?.customer
-              }
-              / {li.orderNumber}
+              }{" "}
+              / {li.nickName} / {li.orderNumber}
             </div>
             <div className="text-center">{li.quan} ea</div>
             <div className="text-center col-span-2">

@@ -47,12 +47,17 @@ export default function CommonRow({
       <div className="col-span-2 z-10">
         {exchangeRate[user?.currency] === 1
           ? (
-              (price - price * user?.dcRates[product.data.category]) /
+              (price -
+                price * user?.dcRates[product.data.category] -
+                user?.dcAmount[`${product.data.category}A`]) /
               exchangeRate[user?.currency]
             ).toLocaleString("ko-KR")
           : (
               (price -
-                (price * user?.dcRates[product.data.category])?.toFixed(2)) /
+                (
+                  price * user?.dcRates[product.data.category] -
+                  user?.dcAmount[`${product.data.category}A`]
+                )?.toFixed(2)) /
               exchangeRate[user?.currency]
             )
               .toFixed(2)

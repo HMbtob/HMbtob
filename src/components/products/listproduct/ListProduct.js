@@ -28,7 +28,8 @@ const ListProduct = () => {
     "STORE",
     "STOCK",
     "SOLD",
-    "UNSHIPPED",
+    "UNSHIP",
+    "WEIGHT",
   ];
   // sort default
   const [sortDefault, setSortDefault] = useState(true);
@@ -41,7 +42,13 @@ const ListProduct = () => {
   };
   // 검색기능구현
   // 상품들
-  const [preProduct, setPreProduct] = useState(products);
+  const [preProduct, setPreProduct] = useState(
+    products.sort((a, b) => {
+      return (
+        new Date(b.data.relDate.seconds) - new Date(a.data.relDate.seconds)
+      );
+    })
+  );
   // 검색어
   const [query, setQuery] = useState();
   const queryOnChange = e => {
@@ -133,13 +140,16 @@ const ListProduct = () => {
         </div>
       </form>
       <div className="ml-28 mt-16 text-gray-800 text-xl">PRODUCT LIST</div>
-      <div className="border w-11/12 m-auto mt-4 mb-12">
+      <div className="border border-gray-500 w-11/12 m-auto mt-4 mb-12">
         <TopStoreProduct
           products={products}
           user={user}
           exchangeRate={exchangeRate}
         />
-        <div className="grid grid-cols-36 text-center border-b p-1 bg-gray-100 sticky top-0 text-sm">
+        <div
+          className="grid grid-cols-36 text-center border-b border-gray-500 p-1 
+        bg-gray-100 sticky top-0 text-sm"
+        >
           {headers.map((header, index) => (
             <div
               key={index}
@@ -150,6 +160,8 @@ const ListProduct = () => {
                   ? "col-span-3"
                   : header === "BTN"
                   ? "col-span-4"
+                  : header === "SOLD" || header === "UNSHIP"
+                  ? "col-span-1"
                   : "col-span-2"
               }
             >
@@ -165,7 +177,7 @@ const ListProduct = () => {
         </div>
         <div className="w-full flex flex-col items-center">
           <div className="w-full">
-            {preProduct?.slice(0 + page * 20, 20 + page * 20).map(product => (
+            {preProduct?.slice(0 + page * 50, 50 + page * 50).map(product => (
               <ListProductRow
                 key={product.id}
                 id={product.id}
@@ -179,6 +191,8 @@ const ListProduct = () => {
                 totalSell={product.data.totalSell}
                 unShipped={product.data.unShipped}
                 relDate={product.data.relDate}
+                weight={product.data.weight}
+                isVisible={product.data.isVisible}
                 preOrderDeadline={product.data.preOrderDeadline}
                 bigcProductId={product?.data?.bigC?.id}
                 product={product}
@@ -203,7 +217,7 @@ const ListProduct = () => {
           {pages.map(
             (pag, i) =>
               pag + page > 0 &&
-              pag + page < parseInt(preProduct?.length / 20) + 1 && (
+              pag + page < parseInt(preProduct?.length / 50) + 1 && (
                 <div
                   key={i}
                   className={`cursor-pointer text-lg px-2 py-1 text-gray-600 ${
@@ -218,14 +232,14 @@ const ListProduct = () => {
           <ArrowRightIcon
             className="cursor-pointer"
             onClick={() =>
-              page === parseInt(preProduct?.length / 20) - 1
-                ? setPage(parseInt(preProduct?.length / 20) - 1)
+              page === parseInt(preProduct?.length / 50) - 1
+                ? setPage(parseInt(preProduct?.length / 50) - 1)
                 : setPage(page + 1)
             }
           />
           <LastPageIcon
             className="cursor-pointer"
-            onClick={() => setPage(parseInt(preProduct?.length / 20) - 1)}
+            onClick={() => setPage(parseInt(preProduct?.length / 50) - 1)}
           />
         </div>
       </div>

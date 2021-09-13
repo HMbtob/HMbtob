@@ -42,18 +42,27 @@ const CustomerDetail = ({ match }) => {
     shippingMessage: user?.data.shippingMessage,
     // 담당자
     inCharge: user?.data.inCharge,
+    // 정률법
     cd: user?.data.dcRates.cd * 100,
     dvdBlueRay: user?.data.dcRates.dvdBlueRay * 100,
     goods: user?.data.dcRates.goods * 100,
     photoBook: user?.data.dcRates.photoBook * 100,
     officialStore: user?.data.dcRates.officialStore * 100,
     beauty: user?.data.dcRates.beauty * 100,
-    dhl: user?.data.shippingRate.dhl,
+    // 정액법
+    cdA: user?.data?.dcAmount?.cdA,
+    dvdBlueRayA: user?.data?.dcAmount?.dvdBlueRayA,
+    goodsA: user?.data?.dcAmount?.goodsA,
+    photoBookA: user?.data?.dcAmount?.photoBookA,
+    officialStoreA: user?.data?.dcAmount?.officialStoreA,
+    beautyA: user?.data?.dcAmount?.beautyA,
     // 추후 기입
+    dhl: user?.data.shippingRate.dhl,
     nickName: user?.data.nickName,
     memo: user?.data.memo,
     // 크레딧
     handleCredit: "",
+    creditType: "Store-Credit",
     // 커런시
     currency: user?.data.currency,
     // alias
@@ -78,15 +87,30 @@ const CustomerDetail = ({ match }) => {
     photoBook,
     officialStore,
     beauty,
+    cdA,
+    dvdBlueRayA,
+    goodsA,
+    photoBookA,
+    officialStoreA,
+    beautyA,
     dhl,
     nickName,
     memo,
     handleCredit,
+    creditType,
     currency,
     alias,
   } = form;
 
   const dcValues = { cd, dvdBlueRay, goods, photoBook, officialStore, beauty };
+  const dcAValues = {
+    beautyA,
+    cdA,
+    dvdBlueRayA,
+    goodsA,
+    officialStoreA,
+    photoBookA,
+  };
   const shippingRate = { dhl };
 
   const saveDetails = () => {
@@ -110,6 +134,14 @@ const CustomerDetail = ({ match }) => {
           officialStore: Number(officialStore) / 100,
           beauty: Number(beauty) / 100,
         },
+        dcAmount: {
+          cdA: Number(cdA),
+          dvdBlueRayA: Number(dvdBlueRayA),
+          goodsA: Number(goodsA),
+          photoBookA: Number(photoBookA),
+          officialStoreA: Number(officialStoreA),
+          beautyA: Number(beautyA),
+        },
         shippingRate: { dhl },
         nickName,
         inCharge,
@@ -127,7 +159,7 @@ const CustomerDetail = ({ match }) => {
       .update({
         credit: Number(user.data.credit) + Number(handleCredit),
         creditDetails: firebase.firestore.FieldValue.arrayUnion({
-          type: "charge",
+          type: creditType,
           amount: Number(handleCredit),
           currency: user.data.currency,
           date: new Date(),
@@ -146,6 +178,19 @@ const CustomerDetail = ({ match }) => {
         >
           USER DETAILS{" "}
         </div>
+        {type === "none" ||
+        inCharge.length < 1 ||
+        nickName.length < 1 ||
+        shippingRate.dhl < 1 ? (
+          <div className="flex flex-col items-end text-xs mb-3 rounded-md">
+            <div className="bg-red-100 w-auto px-2 py-1 rounded-sm mb-1">
+              Permission, In Charge, Nick name, 배송요율을 설정해주세요
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
+
         <div className="flex flex-row justify-evenly">
           {/* 주문내용 확인 */}
           <div className="flex-col flex space-y-2 w-1/2">
@@ -157,7 +202,7 @@ const CustomerDetail = ({ match }) => {
               <div className="text-right pr-5">Permission</div>
               <select
                 name="type"
-                className="border p-1"
+                className={`${type === "none" ? "bg-red-100" : ""} border p-1`}
                 value={type}
                 onChange={onChange}
               >
@@ -185,7 +230,9 @@ const CustomerDetail = ({ match }) => {
               <div className="text-right pr-5">In Charge</div>
               <select
                 name="inCharge"
-                className="border p-1"
+                className={`${
+                  inCharge.length < 1 ? "bg-red-100" : ""
+                } border p-1`}
                 value={inCharge}
                 onChange={onChange}
               >
@@ -220,7 +267,9 @@ const CustomerDetail = ({ match }) => {
                 name="nickName"
                 value={nickName}
                 onChange={onChange}
-                className="border p-1"
+                className={`${
+                  nickName.length < 1 ? "bg-red-100" : ""
+                } border p-1`}
               />{" "}
             </div>
             <div className="grid grid-cols-2 items-center">
@@ -257,18 +306,29 @@ const CustomerDetail = ({ match }) => {
                 {Object.keys(user.data.dcRates)
                   .sort()
                   .map((doc, index) => (
-                    <div
-                      key={index}
-                      className="grid grid-cols-1  bg-gray-600 text-center"
-                    >
-                      <div className="text-gray-100">{doc}</div>
+                    <div key={index} className="grid grid-cols-1  text-center">
+                      <div className="text-gray-100 bg-gray-600">{doc}</div>
                       <input
                         type="number"
                         name={doc}
                         value={dcValues[doc]}
                         onChange={onChange}
-                        className="text-center text-gray-800"
+                        className="text-center text-gray-800 text-sm py-1  border-r border-b"
                       />
+                      {user.data.dcAmount && (
+                        <div className="w-full flex flex-row items-center bg-white py-1 border-r">
+                          <input
+                            type="number"
+                            name={Object.keys(user.data.dcAmount).sort()[index]}
+                            value={dcAValues[`${doc}A`]}
+                            onChange={onChange}
+                            className="text-center pl-3 text-gray-800 w-2/3 text-sm outline-none"
+                          />
+                          <div className=" bg-white text-xs text-center w-1/3">
+                            {user.data.currency}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
               </div>
@@ -293,7 +353,9 @@ const CustomerDetail = ({ match }) => {
                         name={doc}
                         value={shippingRate[doc]}
                         onChange={onChange}
-                        className="text-center text-gray-800"
+                        className={`${
+                          shippingRate[doc] < 1 ? "bg-red-100" : ""
+                        } text-center text-gray-800 outline-none`}
                       />
                     </div>
                   ))}
@@ -401,7 +463,7 @@ const CustomerDetail = ({ match }) => {
           수정하기
         </button>
 
-        <div className="w-1/2 mb-12">
+        <div className="w-1/2 mb-12 flex flex-col items-center">
           <div
             className="text-center text-md bg-gray-800 
           rounded text-gray-100 mb-5 mt-5 w-full py-1"
@@ -415,7 +477,7 @@ const CustomerDetail = ({ match }) => {
               {user.data.currency}
             </div>
           </div>
-          <div className="grid grid-cols-3 mb-12">
+          <div className="grid grid-cols-2 mb-6">
             <Modal
               open={modalOpen}
               close={closeModal}
@@ -423,26 +485,37 @@ const CustomerDetail = ({ match }) => {
             >
               <CreditDetails creditDetails={creditDetails} reset={reset} />
             </Modal>
-            <button
-              className="bg-gray-700 p-1 rounded text-gray-200 m-2"
-              onClick={openModal}
+
+            <select
+              name="creditType"
+              className="border p-1 m-1"
+              value={creditType}
+              onChange={onChange}
             >
-              Details
-            </button>
-            <button
-              className="bg-gray-700 p-1 rounded text-gray-200 m-2"
-              onClick={saveCredit}
-            >
-              Charge
-            </button>
+              <option value="Store-Credit">Store-Credit</option>
+              <option value="Shipped-Amount">Shipped-Amount</option>
+              <option value="Refund">Refund</option>
+              <option value="Compensate">Compensate</option>
+            </select>
             <input
               name="handleCredit"
               value={handleCredit}
               onChange={onChange}
-              placeholder="charge"
-              className="border p-1 m-1"
+              placeholder="Amount"
+              className="border p-1 m-1 outline-none"
+              onKeyPress={e => {
+                if (e.key === "Enter") {
+                  saveCredit();
+                }
+              }}
             />
           </div>
+          <button
+            className="bg-gray-600 p-1 rounded text-gray-200 m-2 w-52"
+            onClick={openModal}
+          >
+            Credit Details
+          </button>
         </div>
         {user.data.survay && (
           <div className="w-1/2 mb-12">

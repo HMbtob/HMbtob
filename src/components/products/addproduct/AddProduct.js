@@ -48,7 +48,6 @@ const AddProduct = () => {
     price: 0,
     artist: "",
     ent: "",
-    descrip: "",
     weight: 0,
     x: 0,
     y: 0,
@@ -56,7 +55,6 @@ const AddProduct = () => {
     category: "",
     relDate: new Date(),
     preOrderDeadline: new Date(),
-    preOrderDeadlineTime: new Date(),
     pob: false,
     poster: false,
     photocard: false,
@@ -120,14 +118,12 @@ const AddProduct = () => {
     artist,
     ent,
     category,
-    descrip,
     weight,
     x,
     y,
     z,
     relDate,
     preOrderDeadline,
-    preOrderDeadlineTime,
     poster,
     pob,
     photocard,
@@ -261,13 +257,11 @@ const AddProduct = () => {
           y: Number(y),
           z: Number(z),
           title,
-          thumbnailUrl,
-          descrip,
+          thumbNail: thumbnailUrl,
           weight: Number(weight),
           category,
           relDate: new Date(relDate),
           preOrderDeadline: new Date(preOrderDeadline),
-          preOrderDeadlineTime: new Date(preOrderDeadlineTime),
           options: {
             poster,
             pob,
@@ -298,6 +292,7 @@ const AddProduct = () => {
             },
           ],
           descr,
+          discripUrl,
         });
       // 파이어 베이스 저장 후
       // 빅커머스 상품등록
@@ -337,7 +332,7 @@ const AddProduct = () => {
 
   return (
     <>
-      <form className="w-3/5 m-auto my-20" onSubmit={Appp}>
+      <div className="w-3/5 m-auto my-20">
         <div
           className="text-left text-2xl  
         text-gray-800 mb-1 ml-2 "
@@ -376,18 +371,11 @@ const AddProduct = () => {
               주문마감일
             </div>
             <input
-              className="col-span-2 border h-9 pl-3"
-              type="date"
+              className="col-span-3 border h-9 pl-3"
+              type="datetime-local"
               onChange={onChange}
               value={preOrderDeadline}
               name="preOrderDeadline"
-            />
-            <input
-              className="col-span-1 border h-9 pl-3"
-              type="time"
-              onChange={onChange}
-              value={preOrderDeadlineTime}
-              name="preOrderDeadlineTime"
             />
           </div>
           {/* 드랍박스 인풋 */}
@@ -456,6 +444,7 @@ const AddProduct = () => {
               onChange={handleThumbnail}
               name="thumbnailUrl"
               value={thumbnailUrl}
+              placeholder="이미지 주소 복사해서 붙혀넣기 후 엔터. 소요시간 10초"
               onKeyPress={e => {
                 if (e.key === "Enter") {
                   getImages();
@@ -473,6 +462,7 @@ const AddProduct = () => {
               onChange={handleDiscrip}
               name="discripUrl"
               value={discripUrl}
+              placeholder="이미지 주소 복사해서 붙혀넣기 후 엔터. 소요시간 10초"
               onKeyPress={e => {
                 if (e.key === "Enter") {
                   getDisc();
@@ -500,7 +490,8 @@ const AddProduct = () => {
           </div>
           <div className="flex justify-end">
             <button
-              type="submit"
+              // type="submit"
+              onClick={Appp}
               className="bg-gray-600 py-2 px-10 rounded 
             text-gray-200 text-lg font-light
              "
@@ -532,7 +523,7 @@ const AddProduct = () => {
           handleDiscrip={handleDiscrip}
           setDescr={setDescr}
         />
-      </form>
+      </div>
     </>
   );
 };

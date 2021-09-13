@@ -89,7 +89,7 @@ const EmailSignUp = () => {
                       requests: requests,
                     },
                   }),
-              5000
+              10000
             )
         )
         .catch(e => {
