@@ -8,6 +8,7 @@ import { initState, dataReducer } from "./reducer/Reducer";
 
 import B2bShop from "./components/b2bshop/b2bshop/B2bShop";
 import B2bOrder from "./components/b2bshop/b2bshop/B2bOrder";
+import B2bSpecialOrder from "./components/b2bshop/b2bshop/B2bSpecialOrder";
 import OrderList from "./components/admin/orderlist/OrderList";
 import Sidebar from "./components/sidebar/Sidebar";
 import Login from "./components/login/Login";
@@ -267,6 +268,7 @@ function App() {
                   <Route path="/myorderlist/:id" component={MyOrderDetail} />
                   <Route path="/myorderlist" component={MyOrderList} />
                   <Route path="/myinfo/:uid" component={MyInfo} />
+                  <Route path="/b2bspecialorder" component={B2bSpecialOrder} />
                   <Route path="/b2border" component={B2bOrder} />
                   <Route path="/b2bshop" component={B2bShop} />
                   <Route path="/pickuplist" component={PickUpList} />

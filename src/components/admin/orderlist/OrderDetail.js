@@ -558,6 +558,7 @@ const OrderDetail = ({ match }) => {
                   >
                     <option value="Order">Order</option>
                     <option value="Pre-Order">Pre Order</option>
+                    <option value="Special-Order">Special Order</option>
                     <option value="Ready-to-ship">Ready to ship</option>
                     <option value="Patially-shipped">Patially shipped</option>
                     <option value="Shipped">Shipped</option>

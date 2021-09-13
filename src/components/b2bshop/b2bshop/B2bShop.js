@@ -13,6 +13,7 @@ import InSimpleList from "../../chat/InSimpleList";
 import SearchIcon from "@material-ui/icons/Search";
 import RestoreIcon from "@material-ui/icons/Restore";
 import { useEffect } from "react";
+import SpecialOrder from "./SpecialOrder";
 
 const B2bShop = () => {
   const history = useHistory();
@@ -338,11 +339,18 @@ const B2bShop = () => {
     }
   }
 
+  // b2b make order
   const B2bMakeOrder = async () => {
     // dispatch로 심플리스트 스테이트로 업데이트하고
     await dispatch({ type: "SIMPLELIST", simpleList });
     reset();
     history.push(`/b2border`);
+  };
+
+  // b2b make special order
+  const B2bMakeSpecialOrder = async () => {
+    // dispatch로 심플리스트 스테이트로 업데이트하고
+    history.push(`/b2bspecialorder`);
   };
 
   // common 이랑 preorder 에 재고 재입고 요청하기
@@ -416,6 +424,17 @@ const B2bShop = () => {
             <Modal open={modalOpen} close={closeModal} header={"문의하기"}>
               <InSimpleList />
             </Modal>
+            <div
+              // onClick={openModal}
+              onClick={B2bMakeSpecialOrder}
+              className="text-sm font-mono font-bold text-center 
+          text-gray-200 bg-blue-900 mr-5 cursor-pointer"
+            >
+              Special-Order
+            </div>
+            {/* <Modal open={modalOpen} close={closeModal} header={"Special Order"}>
+              <SpecialOrder />
+            </Modal> */}
           </div>
         </form>
         {preordered && (

@@ -4,14 +4,16 @@ import { useHistory } from "react-router";
 import { InitDataContext } from "../../../App";
 import { db } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 
-const B2bOrder = () => {
+const B2bSpecialOrder = () => {
   const state = useContext(InitDataContext);
   const history = useHistory();
   const today = new Date();
   const { user, simpleLists, products, dhlShippingFee, exchangeRate, orders } =
     state;
   const { z } = dhlShippingFee;
+
   // order number를 위한 0 포함된 숫자 만드는 함수
   const addZeros = (n, digits) => {
     let zero = "";
@@ -24,7 +26,7 @@ const B2bOrder = () => {
 
   // order number를 위한 마지막 3자리 숫자 만들기
   const forOrderNumber = orders
-    .filter(order => order.data.customer === user.email)
+    .filter(order => order?.data?.customer === user?.email)
     .filter(
       order =>
         new Date(order.data.createdAt.seconds * 1000)
@@ -32,7 +34,7 @@ const B2bOrder = () => {
           .substring(0, 10) === new Date(today).toISOString().substring(0, 10)
     )
     ? orders
-        .filter(order => order.data.customer === user.email)
+        .filter(order => order?.data?.customer === user?.email)
         .filter(
           order =>
             new Date(order.data.createdAt.seconds * 1000)
@@ -41,6 +43,66 @@ const B2bOrder = () => {
             new Date(today).toISOString().substring(0, 10)
         ).length
     : 0;
+
+  // specialorderlist 만들기
+  const [specialList, setSpecialList] = useState([]);
+
+  const [inputs, setInputs] = useState({
+    shopName: "",
+    title: "",
+    titleUrl: "",
+    thumbNailUrl: "",
+    price: "",
+    qty: "",
+    amount: "",
+  });
+
+  const { shopName, title, titleUrl, thumbNailUrl, price, qty } = inputs; // 비구조화 할당을 통해 값 추출
+
+  const onChange2 = e => {
+    const { value, name } = e.target; // 우선 e.target 에서 name 과 value 를 추출
+    setInputs({
+      ...inputs, // 기존의 input 객체를 복사한 뒤
+      [name]: value, // name 키를 가진 값을 value 로 설정
+    });
+  };
+
+  const onReset = () => {
+    setInputs({
+      shopName: "",
+      title: "",
+      titleUrl: "",
+      thumbNailUrl: "",
+      price: "",
+      qty: "",
+      amount: "",
+    });
+  };
+
+  const addSpecialList = e => {
+    e.preventDefault();
+    setSpecialList([
+      ...specialList,
+      {
+        childSpecialOrderNumber: `${user.alias}-${new Date(today)
+          .toISOString()
+          .substring(2, 10)
+          .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)}SS-${
+          specialList.length + 1
+        }`,
+        shopName,
+        title,
+        titleUrl,
+        thumbNailUrl,
+        price,
+        qty,
+        amount: price * qty,
+      },
+    ]);
+
+    onReset();
+  };
+  console.log(specialList);
 
   // 배송국가 전체 for select option
   const countries = [].concat(
@@ -166,7 +228,7 @@ const B2bOrder = () => {
       .doc("b2b")
       .collection("b2borders")
       .add({
-        orderState: included ? "Pre-Order" : "Order",
+        orderState: "Special-Order",
         paymentMethod,
         recipient,
         shippingType,
@@ -181,7 +243,7 @@ const B2bOrder = () => {
         orderNumber: `${user.alias}-${new Date(today)
           .toISOString()
           .substring(2, 10)
-          .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)} `,
+          .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)}SS`,
         createdAt: new Date(),
         customer: orderEmail,
         list: simpleLists,
@@ -189,8 +251,8 @@ const B2bOrder = () => {
         dcAmount: user.dcAmount,
         shippingRate: user.shippingRate,
         currency: user.currency,
-        shippingFee: Number(fee.toFixed(2)),
-        amountPrice: Number(amountPrice.toFixed(2)),
+        shippingFee: 0,
+        amountPrice: Number(totalPrice.toFixed(2)),
         totalPrice: Number(totalPrice.toFixed(2)),
         memo: "",
       });
@@ -207,27 +269,7 @@ const B2bOrder = () => {
     });
 
     // totalsold 계산
-    for (let i = 0; i < simpleLists.length; i++) {
-      db.collection("products")
-        .doc(simpleLists[i].productId)
-        .update({
-          stock:
-            products.find(product => product.id === simpleLists[i].productId)
-              .data.stock - simpleLists[i].quan,
-          totalSold:
-            products.find(product => product.id === simpleLists[i].productId)
-              .data.totalSold + simpleLists[i].quan,
-          totalStock:
-            products.find(product => product.id === simpleLists[i].productId)
-              .data.totalStock - simpleLists[i].quan,
-          stockHistory: firebase.firestore.FieldValue.arrayUnion({
-            type: "sell on B2B",
-            writer: user.email,
-            amount: simpleLists[i].quan,
-            date: new Date(),
-          }),
-        });
-    }
+
     await reset();
     await alert("주문 완료");
     if (user.type === "admin") {
@@ -249,7 +291,7 @@ const B2bOrder = () => {
           className="text-center text-xl bg-gray-800 py-1 
         rounded-sm font-bold text-gray-100 mb-5 w-full"
         >
-          Order Details
+          Special Order Details
         </div>
         {/* dep-3-2 주문자 / 수령인*/}
         <div className="w-full flex flex-row justify-evenly">
@@ -261,7 +303,7 @@ const B2bOrder = () => {
                 `${user.alias}-${new Date(today)
                   .toISOString()
                   .substring(2, 10)
-                  .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)} `}
+                  .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)}SS`}
             </div>
             {user && (
               <>
@@ -369,19 +411,128 @@ const B2bOrder = () => {
         {/* dep-3-3 */}
         <div className="flex-col mb-10 w-full">
           {/* 번호/앨범명/판매가/할인가/금액 */}
+
           <div
-            className="grid grid-cols-12 text-center bg-gray-800 rounded-sm 
-         text-sm font-semibold text-gray-100"
+            className="grid grid-cols-28 text-center bg-gray-800 rounded-sm 
+         text-base font-semibold text-gray-100"
           >
-            <div className="col-span-2">No.</div>
-            <div className="col-span-2">SKU</div>
-            <div className="col-span-4">TITLE</div>
-            <div className="col-span-1">RELEASE</div>
-            <div>PRICE</div>
-            <div>EA</div>
-            <div>AMOUNT</div>
+            <div className="col-span-4">No.</div>
+            <div className="col-span-3">Shop Name</div>
+            <div className="col-span-6">Title</div>
+            <div className="col-span-5">Url</div>
+            <div className="col-span-4">Thumb Nail</div>
+            <div className="col-span-2">Price</div>
+            <div className="col-span-2">Qty</div>
+            <div className="col-span-2">Amount</div>
           </div>
-          {simpleLists && (
+          {specialList &&
+            specialList.map(li => (
+              <div className="grid grid-cols-28 text-sm">
+                <div className="col-span-4 text-center p-1">
+                  {li.childSpecialOrderNumber}
+                </div>
+                <div className="col-span-3 text-center p-1">{li.shopName}</div>
+                <div className="col-span-6 p-1">{li.title}</div>
+                <div className="col-span-5 p-1">{li.titleUrl}</div>
+                <div className="col-span-4 p-1">{li.thumbNailUrl}</div>
+                <div className="col-span-2 text-center p-1">{li.price} krw</div>
+                <div className="col-span-2 text-center p-1">{li.qty} ea</div>
+                <div className="col-span-2 text-center p-1">
+                  {li.amount} krw
+                </div>
+              </div>
+            ))}
+          <div
+            className="grid grid-cols-28 rounded-sm 
+         text-base  text-gray-800 items-center"
+          >
+            <div className="col-span-3 flex justify-center items-center">
+              <button onClick={addSpecialList}>
+                <AddCircleIcon style={{ color: "grey" }} />
+              </button>
+            </div>
+            <div className="col-span-2">
+              <select
+                name=""
+                id=""
+                className="border h-8 w-full pl-2 outline-none"
+                name="shopName"
+                onChange={onChange2}
+                value={shopName}
+              >
+                <option value="SM">SM</option>
+                <option value="YG">YG</option>
+              </select>
+            </div>
+            <div className="col-span-6">
+              <input
+                type="text"
+                placeholder="Copy and paste item title"
+                className="border h-8 w-full pl-2 outline-none"
+                name="title"
+                onChange={onChange2}
+                value={title}
+              />
+            </div>
+            <div className="col-span-5">
+              <input
+                type="text"
+                placeholder="Copy and paste item url"
+                className="border h-8 w-full pl-2 outline-none"
+                name="titleUrl"
+                onChange={onChange2}
+                value={titleUrl}
+              />
+            </div>
+            <div className="col-span-4">
+              <input
+                type="text"
+                placeholder="Copy and paste the thumbnail URL."
+                className="border h-8 w-full pl-2 outline-none"
+                name="thumbNailUrl"
+                onChange={onChange2}
+                value={thumbNailUrl}
+              />
+            </div>
+            <div className="col-span-2">
+              <input
+                type="number"
+                placeholder="Price"
+                className="border h-8 w-full  text-center outline-none"
+                name="price"
+                onChange={onChange2}
+                value={price}
+              />
+            </div>
+            <div className="col-span-2">
+              <input
+                type="number"
+                placeholder="Qty"
+                className="border h-8 w-full text-center outline-none"
+                name="qty"
+                onChange={onChange2}
+                value={qty}
+              />
+            </div>
+            <div className="col-span-2 text-center font-semibold">
+              {price && qty && price * qty}
+            </div>
+          </div>
+          <div className="w-full text-right text-sm text-gray-600 p-2">
+            Copy and paste the
+            <span className="text-base font-semibold text-gray-800">
+              {" "}
+              Thumb Nail
+            </span>{" "}
+            url address and press Enter. Please wait until the address changes.
+          </div>
+          {/* <div
+            className="flex flex-col rounded-sm 
+         text-base  text-gray-800 items-center bg-gray-400"
+          > */}
+
+          {/* </div> */}
+          {/* {simpleLists && (
             <>
               {simpleLists.map((doc, index) => (
                 <div
@@ -414,7 +565,7 @@ const B2bOrder = () => {
                 </div>
               ))}
             </>
-          )}
+          )} */}
         </div>
 
         {/* dep-3-4 */}
@@ -429,7 +580,7 @@ const B2bOrder = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2  text-right  w-2/3">
+          {/* <div className="grid grid-cols-2  text-right  w-2/3">
             <div>SHIPPING FEE</div>
             <div className="w-full">
               {fee && user?.currency === "KRW"
@@ -438,8 +589,8 @@ const B2bOrder = () => {
                 ? `${fee.toFixed(2).toLocaleString("ko-KR")} ${user?.currency}`
                 : "Please select country and shipping type"}
             </div>
-          </div>
-          <div className="grid grid-cols-2  text-right  w-2/3">
+          </div> */}
+          {/* <div className="grid grid-cols-2  text-right  w-2/3">
             <div>AMOUNT</div>
             <div className="w-full">
               {amountPrice && user?.currency === "KRW"
@@ -450,7 +601,7 @@ const B2bOrder = () => {
                   }`
                 : "Please select country and shipping type"}
             </div>
-          </div>
+          </div> */}
         </div>
 
         <div className="grid grid-cols-6 items-center mb-96 w-full place-items-center">
@@ -478,4 +629,4 @@ const B2bOrder = () => {
   );
 };
 
-export default B2bOrder;
+export default B2bSpecialOrder;
