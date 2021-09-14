@@ -268,7 +268,7 @@ const B2bShop = () => {
           orderNumber: `${user.alias}-${new Date(today)
             .toISOString()
             .substring(2, 10)
-            .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)} `,
+            .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)}`,
           currency: user.currency,
           nickName: user.nickName,
           productId: key,

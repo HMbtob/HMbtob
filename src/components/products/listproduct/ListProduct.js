@@ -155,13 +155,15 @@ const ListProduct = () => {
               key={index}
               className={
                 header === "TITLE"
-                  ? "col-span-12"
+                  ? "col-span-9"
                   : header === "BARCODE" || header === "SKU"
                   ? "col-span-3"
                   : header === "BTN"
                   ? "col-span-4"
                   : header === "SOLD" || header === "UNSHIP"
                   ? "col-span-1"
+                  : header === "PRICE"
+                  ? "col-span-3"
                   : "col-span-2"
               }
             >
@@ -169,7 +171,7 @@ const ListProduct = () => {
             </div>
           ))}
           <div
-            className="col-span-2 cursor-pointer"
+            className="col-span-4 cursor-pointer"
             onClick={sortProductByDate}
           >
             RELEASE

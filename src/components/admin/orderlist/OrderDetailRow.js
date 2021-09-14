@@ -2,6 +2,8 @@ import React from "react";
 import CancelIcon from "@material-ui/icons/Cancel";
 import UndoIcon from "@material-ui/icons/Undo";
 import LocalAirportIcon from "@material-ui/icons/LocalAirport";
+import ImageIcon from "@material-ui/icons/Image";
+import LinkIcon from "@material-ui/icons/Link";
 import { useState } from "react";
 import { db } from "../../../firebase";
 const OrderDetailRow = ({
@@ -67,23 +69,41 @@ const OrderDetailRow = ({
       <div className="col-span-2">{createdAt}</div>
 
       <div className="col-span-2">{relDate.toDate().toLocaleDateString()} </div>
-      <div className="col-span-12 text-left w-full flex flex-row">
-        {aList?.moved && (
-          <>
-            <div className="no-underline"> {aList?.moveTo}</div>
-            <UndoIcon style={{ color: "#1F2937", fontSize: "medium" }} />
-          </>
-        )}
-        {aList?.canceled && (
-          <CancelIcon style={{ color: "#1F2937", fontSize: "medium" }} />
-        )}
-        {aList?.shipped && (
-          <LocalAirportIcon style={{ color: "#1F2937", fontSize: "medium" }} />
-        )}
-        <div
-          className={`${(aList?.moved || aList?.canceled) && "line-through"}`}
-        >
-          {title}
+      <div className="col-span-12 text-left w-full flex flex-col">
+        <div className="flex flex-row">
+          {aList?.moved && (
+            <>
+              <div className="no-underline"> {aList?.moveTo}</div>
+              <UndoIcon style={{ color: "#1F2937", fontSize: "medium" }} />
+            </>
+          )}
+          {aList?.canceled && (
+            <CancelIcon style={{ color: "#1F2937", fontSize: "medium" }} />
+          )}
+          {aList?.shipped && (
+            <LocalAirportIcon
+              style={{ color: "#1F2937", fontSize: "medium" }}
+            />
+          )}
+          <div
+            className={`${(aList?.moved || aList?.canceled) && "line-through"}`}
+          >
+            {title}
+          </div>
+        </div>
+        <div>
+          {aList.titleUrl && (
+            <button onClick={() => window.open(`${aList.titleUrl}`, "_blank")}>
+              <LinkIcon fontSize="small" />
+            </button>
+          )}{" "}
+          {aList.thumbNailUrl && (
+            <button
+              onClick={() => window.open(`${aList.thumbNailUrl}`, "_blank")}
+            >
+              <ImageIcon fontSize="small" />
+            </button>
+          )}{" "}
         </div>
       </div>
       <div className="col-span-2 flex flex-row bg-white p-1 border">

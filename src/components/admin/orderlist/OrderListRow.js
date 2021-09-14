@@ -81,7 +81,6 @@ const OrderListRow = ({
   // useEffect(() => {
   //   handleHidden(forHidden, hiddenAll);
   // }, [hiddenAll]);
-
   if (order) {
     return (
       <div className="border-b border-l border-r w-full border-black">

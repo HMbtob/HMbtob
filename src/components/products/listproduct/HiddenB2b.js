@@ -2,7 +2,15 @@ import React from "react";
 import { db } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
 
-const HiddenB2b = ({ id, price, stock, relDate, orders, shippings }) => {
+const HiddenB2b = ({
+  id,
+  price,
+  stock,
+  relDate,
+  orders,
+  shippings,
+  currency,
+}) => {
   // 총판매
   // // 총 미발송
   const totalUnshipped = [].concat
@@ -51,14 +59,19 @@ place-items-center text-xs bg-transparent"
       <div className="col-span-5 flex flex-row justify-start w-full"></div>
       <div className="col-span-3"></div>
       <div className="col-span-2"></div>
-      <div className="col-span-12"></div>
-      <input
-        type="number"
-        className="col-span-2 border w-3/4 p-1 text-center"
-        name="handlePrice"
-        value={handlePrice}
-        onChange={onChange}
-      />
+      <div className="col-span-9"></div>
+      <div className="col-span-3 flex flex-row items-center justify-center">
+        <div>{currency}</div>
+
+        <input
+          type="number"
+          className="col-span-2 border w-3/4 p-1 text-center"
+          name="handlePrice"
+          value={handlePrice}
+          onChange={onChange}
+        />
+      </div>
+
       <div className="col-span-2"></div>
       <input
         type="number"
@@ -70,7 +83,7 @@ place-items-center text-xs bg-transparent"
       <div className="col-span-1">{totalUnshipped + totalshipped}</div>
       <div className="col-span-1">{totalUnshipped}</div>
       <div className="col-span-2"></div>
-      <div className="col-span-2 text-xs">
+      <div className="col-span-4 text-xs">
         {relDate &&
           new Date(relDate.seconds * 1000).toISOString().substring(0, 10)}
       </div>

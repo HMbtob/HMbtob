@@ -54,7 +54,6 @@ const B2bSpecialOrder = () => {
     thumbNailUrl: "",
     price: "",
     qty: "",
-    amount: "",
   });
 
   const { shopName, title, titleUrl, thumbNailUrl, price, qty } = inputs; // 비구조화 할당을 통해 값 추출
@@ -75,34 +74,66 @@ const B2bSpecialOrder = () => {
       thumbNailUrl: "",
       price: "",
       qty: "",
-      amount: "",
     });
   };
 
   const addSpecialList = e => {
     e.preventDefault();
-    setSpecialList([
-      ...specialList,
-      {
-        childSpecialOrderNumber: `${user.alias}-${new Date(today)
-          .toISOString()
-          .substring(2, 10)
-          .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)}SS-${
-          specialList.length + 1
-        }`,
-        shopName,
-        title,
-        titleUrl,
-        thumbNailUrl,
-        price,
-        qty,
-        amount: price * qty,
-      },
-    ]);
+    if (
+      shopName.length > 0 &&
+      title.length > 0 &&
+      titleUrl.length > 0 &&
+      price.length > 0 &&
+      qty.length > 0
+    ) {
+      setSpecialList([
+        ...specialList,
+        {
+          childOrderNumber: `${user.alias}-${new Date(today)
+            .toISOString()
+            .substring(2, 10)
+            .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)}-${
+            specialList.length + 1
+          }`,
+          shopName,
+          title,
+          titleUrl,
+          thumbNailUrl,
+          price: Number(Number(price).toFixed(0)),
+          qty: Number(Number(qty).toFixed(0)),
+          amount: price * qty,
+          //
+          exchangeRate,
+          orderNumber: `${user.alias}-${new Date(today)
+            .toISOString()
+            .substring(2, 10)
+            .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)}`,
+          currency: user.currency,
+          nickName: user.nickName,
+          productId: 0,
+          quan: Number(Number(qty).toFixed(0)),
+          price: Number(Number(price).toFixed(0)) || 0,
+          totalPrice: Number((price * qty).toFixed(2)),
+          weight: 0,
+          totalWeight: 0,
+          dcRate: Number(state.user.dcRates["goods"]) || 0,
+          relDate: today,
+          preOrderDeadline: today,
+          moved: false,
+          moveTo: "",
+          canceled: false,
+          shipped: false,
+          createdAt: today,
+          barcode: 0,
+          sku: 0,
+        },
+      ]);
 
-    onReset();
+      onReset();
+    } else {
+      alert("Type");
+    }
   };
-  console.log(specialList);
 
   // 배송국가 전체 for select option
   const countries = [].concat(
@@ -209,8 +240,8 @@ const B2bSpecialOrder = () => {
       : (totalWeight * user.shippingRate["dhl"]) / exchangeRate[user.currency];
 
   // total price
-  const totalPrice = simpleLists.reduce((i, c) => {
-    return i + c.price * c.quan;
+  const totalPrice = specialList.reduce((i, c) => {
+    return i + c.amount;
   }, 0);
   // amount price
   const amountPrice = totalPrice + fee;
@@ -243,10 +274,10 @@ const B2bSpecialOrder = () => {
         orderNumber: `${user.alias}-${new Date(today)
           .toISOString()
           .substring(2, 10)
-          .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)}SS`,
+          .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)}`,
         createdAt: new Date(),
         customer: orderEmail,
-        list: simpleLists,
+        list: specialList,
         dcRates: user.dcRates,
         dcAmount: user.dcAmount,
         shippingRate: user.shippingRate,
@@ -303,7 +334,7 @@ const B2bSpecialOrder = () => {
                 `${user.alias}-${new Date(today)
                   .toISOString()
                   .substring(2, 10)
-                  .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)}SS`}
+                  .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)}`}
             </div>
             {user && (
               <>
@@ -414,7 +445,7 @@ const B2bSpecialOrder = () => {
 
           <div
             className="grid grid-cols-28 text-center bg-gray-800 rounded-sm 
-         text-base font-semibold text-gray-100"
+         text-sm font-semibold text-gray-100"
           >
             <div className="col-span-4">No.</div>
             <div className="col-span-3">Shop Name</div>
@@ -426,10 +457,10 @@ const B2bSpecialOrder = () => {
             <div className="col-span-2">Amount</div>
           </div>
           {specialList &&
-            specialList.map(li => (
-              <div className="grid grid-cols-28 text-sm">
+            specialList.map((li, i) => (
+              <div key={i} className="grid grid-cols-28 text-xs">
                 <div className="col-span-4 text-center p-1">
-                  {li.childSpecialOrderNumber}
+                  {li.childOrderNumber}
                 </div>
                 <div className="col-span-3 text-center p-1">{li.shopName}</div>
                 <div className="col-span-6 p-1">{li.title}</div>
@@ -444,14 +475,14 @@ const B2bSpecialOrder = () => {
             ))}
           <div
             className="grid grid-cols-28 rounded-sm 
-         text-base  text-gray-800 items-center"
+         text-sm  text-gray-800 items-center"
           >
-            <div className="col-span-3 flex justify-center items-center">
+            <div className="col-span-4 flex justify-center items-center">
               <button onClick={addSpecialList}>
                 <AddCircleIcon style={{ color: "grey" }} />
               </button>
             </div>
-            <div className="col-span-2">
+            <div className="col-span-3">
               <select
                 name=""
                 id=""
@@ -460,11 +491,13 @@ const B2bSpecialOrder = () => {
                 onChange={onChange2}
                 value={shopName}
               >
+                <option>select</option>
+                <option value="OTHER">OTHER</option>
                 <option value="SM">SM</option>
                 <option value="YG">YG</option>
               </select>
             </div>
-            <div className="col-span-6">
+            <div className="col-span-6 flex ">
               <input
                 type="text"
                 placeholder="Copy and paste item title"
@@ -573,10 +606,11 @@ const B2bSpecialOrder = () => {
           <div className="grid grid-cols-2 w-2/3 text-right ">
             <div>TOTAL PRICE</div>
             <div>
-              {simpleLists && simpleLists[0]?.currency === "KRW"
+              {totalPrice && totalPrice.toLocaleString("ko-KR")} KRW
+              {/* {simpleLists && simpleLists[0]?.currency === "KRW"
                 ? totalPrice.toLocaleString("ko-KR")
                 : totalPrice.toFixed(2).toLocaleString("ko-KR")}{" "}
-              {user?.currency}
+              {user?.currency} */}
             </div>
           </div>
 

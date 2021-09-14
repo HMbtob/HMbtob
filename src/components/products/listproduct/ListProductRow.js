@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router";
 import Modal from "../../modal/Modal";
 import HiddenB2b from "./HiddenB2b";
@@ -20,6 +20,7 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import LockIcon from "@material-ui/icons/Lock";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 const ListProductRow = ({
   id,
   sku,
@@ -85,9 +86,37 @@ const ListProductRow = ({
     barcode2: barcode,
     sku2: sku,
     weight2: weight,
+    title2: title,
   });
 
-  const { barcode2, sku2, weight2 } = form;
+  const { barcode2, sku2, weight2, title2 } = form;
+
+  // 가격이랑 출시일은 따로
+  const [price2, setPrice2] = useState(
+    exchangeRate[user?.currency] === 1
+      ? price / exchangeRate[user?.currency]
+      : price / exchangeRate[user?.currency]
+  );
+
+  const handlePrice2 = e => {
+    setPrice2(
+      exchangeRate[user?.currency] === 1
+        ? e.target.value / exchangeRate[user?.currency]
+        : e.target.value / exchangeRate[user?.currency]
+    );
+  };
+
+  const [relDate2, setRelDate2] = useState(
+    new Date(product.data.relDate.seconds * 1000).toISOString().substring(0, 10)
+  );
+
+  const handleRelDate2 = e => {
+    setRelDate2(e.target.value);
+
+    db.collection("products")
+      .doc(id)
+      .update({ relDate: new Date(e.target.value) });
+  };
 
   const [category, setCategory] = useState(product.data.category);
   const handleCat = e => {
@@ -103,6 +132,14 @@ const ListProductRow = ({
       return;
     }
   };
+
+  useEffect(() => {
+    setPrice2(
+      exchangeRate[user?.currency] === 1
+        ? price / exchangeRate[user?.currency]
+        : (price / exchangeRate[user?.currency]).toFixed(2)
+    );
+  }, [price, user]);
   return (
     <div
       className={`border-b  border-gray-500 w-full py-1 ${
@@ -154,6 +191,12 @@ const ListProductRow = ({
               totalStock={totalStock}
             />
           </Modal>
+          <button
+            onClick={() => handleHidden(forHidden)}
+            className="cursor-pointer"
+          >
+            <AddCircleOutlineIcon fontSize="small" style={{ color: "gray" }} />
+          </button>
         </div>
 
         <div className="col-span-3">
@@ -188,7 +231,7 @@ const ListProductRow = ({
         </div>
         <img className="col-span-2 h-8 rounded-sm " src={thumbNail} alt="" />
         <div
-          className="col-span-12 text-left 
+          className="col-span-9 text-left 
           w-full flex flex-col items-start"
         >
           <div className=" bg-transparent text-gray-600 text-xs w-auto items-center flex">
@@ -243,21 +286,35 @@ const ListProductRow = ({
               </option>
             </select>
           </div>
-          <div
-            onClick={() => handleHidden(forHidden)}
-            className="cursor-pointer"
-          >
-            {" "}
-            {title}
-          </div>
+          <input
+            type="text"
+            value={title2}
+            onChange={onChange}
+            name="title2"
+            className="p-1 outline-none bg-transparent w-full"
+            onKeyPress={e => {
+              if (e.key === "Enter") {
+                db.collection("products").doc(id).update({ title: title2 });
+                return false;
+              }
+            }}
+          />
         </div>
-        <div className="col-span-2">
-          {exchangeRate[user?.currency] === 1
-            ? (price / exchangeRate[user?.currency])?.toLocaleString("ko-KR")
-            : (price / exchangeRate[user?.currency])
-                ?.toFixed(2)
-                ?.toLocaleString("ko-KR")}{" "}
-          {user?.currency}
+        <div className="col-span-3 flex flex-row items-center">
+          <div>{user?.currency}</div>
+          <input
+            type="number"
+            value={price2}
+            onChange={handlePrice2}
+            name="price2"
+            className="p-1 outline-none bg-transparent w-full text-center"
+            onKeyPress={e => {
+              if (e.key === "Enter") {
+                db.collection("products").doc(id).update({ price: price2 });
+                return false;
+              }
+            }}
+          />
         </div>
         <div className="col-span-2 flex flex-row items-center">
           <StoreProduct
@@ -352,9 +409,25 @@ const ListProductRow = ({
             }}
           />{" "}
         </div>
-        <div className="col-span-2 text-xs">
-          {relDate &&
-            new Date(relDate.seconds * 1000).toISOString().substring(0, 10)}
+        <div className="col-span-4 text-xs">
+          {relDate && (
+            // new Date(relDate.seconds * 1000).toISOString().substring(0, 10)
+            <input
+              type="date"
+              value={relDate2}
+              onChange={handleRelDate2}
+              name="relDate2"
+              className="p-1 outline-none bg-transparent w-full"
+              onKeyPress={e => {
+                if (e.key === "Enter") {
+                  db.collection("products")
+                    .doc(id)
+                    .update({ relDate: relDate2 });
+                  return false;
+                }
+              }}
+            />
+          )}
         </div>
       </div>
       {forHidden ? (
@@ -375,6 +448,7 @@ const ListProductRow = ({
             orders={orders}
             shippings={shippings}
             product={product}
+            currency={user.currency}
           />
           <HiddenBigc
             id={id}

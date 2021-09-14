@@ -58,7 +58,6 @@ const ShippingListRow = ({ shipping, from, hiddenAll }) => {
             )}{" "}
             EA
           </div>
-          {console.log(shipping)}
           {from !== "myorder" && (
             <div className="col-span-1">
               {shipping.data.inputWeight && shipping.data.inputWeight > 0

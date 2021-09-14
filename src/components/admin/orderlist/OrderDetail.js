@@ -863,9 +863,12 @@ const OrderDetail = ({ match }) => {
                     .filter(
                       doc =>
                         doc.data.customer === order.data.customer &&
-                        doc.data.orderState === "confirmOrder"
+                        doc.data.orderNumber !== order.data.orderNumber
+                      // &&
+                      // (doc.data.orderState === "Order" ||
+                      //   doc.data.orderState === "Pre-Order" ||
+                      //   doc.data.orderState === "Special-Order")
                     )
-                    .slice(1)
                     .map((doc, index) => (
                       <option key={index} value={doc.data.orderNumber}>
                         {doc.data.orderNumber}

@@ -23,15 +23,15 @@ const CommonPart = ({ product, id }) => {
   };
   // 디스크립션-이미지
 
-  const [discripUrl, setDiscripUrl] = useState(product.data.discripUrl);
+  const [discripUrl, setDiscripUrl] = useState(product.data.discripUrl || "");
   const handleDiscrip = e => {
     setDiscripUrl(e.target.value);
   };
   // 디스크립션 텍스트
-  const [descr, setDescr] = useState(product.data.descr);
-  const handleDesc = e => {
-    setDescr(e.target.value);
-  };
+  // const [descr, setDescr] = useState(product.data.descr || "");
+  // const handleDesc = e => {
+  //   setDescr(e.target.value);
+  // };
   // 체크박스
   const [checkedInputs, setCheckedInputs] = useState([]);
 
@@ -298,7 +298,7 @@ const CommonPart = ({ product, id }) => {
         //     date: new Date(),
         //   },
         // ],
-        descr,
+        // descr,
       });
     // 파이어 베이스 저장 후
     // 빅커머스 상품등록
@@ -306,7 +306,6 @@ const CommonPart = ({ product, id }) => {
     // type : physical
     // inventory_tracking : product
 
-    await reset();
     await alert("수정완료");
     // FIXME: 저장버튼 어디다 둘지, 따로둘지, 저장후 어디로 갈지?
     // history.push("/listproduct");

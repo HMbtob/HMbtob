@@ -190,6 +190,7 @@ const OrderList = () => {
           <div>EA</div>
           <div>WEIGHT</div>
         </div>
+
         <div>
           {order &&
             order.map(order => (
