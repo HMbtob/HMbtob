@@ -541,7 +541,7 @@ const OrderDetail = ({ match }) => {
             <div className="flex flex-row justify-evenly">
               {/* 주문내용 확인 */}
               <div
-                className="flex-col mb-10 flex space-y-2 text-sm w-5/12
+                className="flex-col mb-10 flex space-y-2 text-sm w-7/12
                 "
               >
                 <div className="grid grid-cols-2 items-center h-8">
@@ -615,24 +615,32 @@ const OrderDetail = ({ match }) => {
                 <div className="grid grid-cols-1 ">
                   <div className="text-center my-1 font-semibold">DC Rates</div>
                   <div
-                    className="grid grid-cols-6 bg-gray-600 text-center 
+                    className="grid grid-cols-7 bg-gray-600 text-center 
                   text-xs text-gray-100 rounded-sm px-1"
                   >
-                    {Object.keys(order?.data.dcRates).map((doc, index) => (
-                      <div key={index}>{doc.toUpperCase()}</div>
-                    ))}
+                    {Object.keys(order?.data.dcRates)
+                      .sort()
+                      .map((doc, index) => (
+                        <div key={index}>{doc.toUpperCase()}</div>
+                      ))}
                   </div>
-                  <div className="grid grid-cols-6 text-center border-b px-1 border-l border-r text-xs">
-                    {Object.values(order?.data.dcRates).map((doc, index) => (
-                      <div key={index}>{doc * 100} %</div>
-                    ))}
+                  <div className="grid grid-cols-7 text-center border-b px-1 border-l border-r text-xs">
+                    {Object.keys(order?.data.dcRates)
+                      .sort()
+                      .map((doc, index) => (
+                        <div key={index}>
+                          {order?.data.dcRates[doc] * 100} %
+                        </div>
+                      ))}
                   </div>
-                  <div className="grid grid-cols-6 text-center border-b px-1 border-l border-r text-xs">
-                    {Object.values(order?.data.dcAmount).map((doc, index) => (
-                      <div key={index}>
-                        {doc} {order?.data.currency}{" "}
-                      </div>
-                    ))}
+                  <div className="grid grid-cols-7 text-center border-b px-1 border-l border-r text-xs">
+                    {Object.keys(order?.data.dcAmount)
+                      .sort()
+                      .map((doc, index) => (
+                        <div key={index}>
+                          {order?.data.dcAmount[doc]} {order?.data.currency}{" "}
+                        </div>
+                      ))}
                   </div>
                   <div className="text-center my-1 font-semibold mt-3">
                     Shipping Fee

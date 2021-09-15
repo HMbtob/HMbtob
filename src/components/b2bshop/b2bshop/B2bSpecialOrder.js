@@ -5,6 +5,8 @@ import { InitDataContext } from "../../../App";
 import { db } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
+import ImageIcon from "@material-ui/icons/Image";
+import LinkIcon from "@material-ui/icons/Link";
 
 const B2bSpecialOrder = () => {
   const state = useContext(InitDataContext);
@@ -99,9 +101,15 @@ const B2bSpecialOrder = () => {
           title,
           titleUrl,
           thumbNailUrl,
-          price: Number(Number(price).toFixed(0)),
           qty: Number(Number(qty).toFixed(0)),
-          amount: price * qty,
+          amount: Number(
+            (
+              Number(
+                price * (1 - user.dcRates["specialOrder"]) +
+                  Number(user.dcAmount["specialOrderA"].toFixed(0))
+              ) * qty
+            ).toFixed(2)
+          ),
           //
           exchangeRate,
           orderNumber: `${user.alias}-${new Date(today)
@@ -112,11 +120,23 @@ const B2bSpecialOrder = () => {
           nickName: user.nickName,
           productId: 0,
           quan: Number(Number(qty).toFixed(0)),
-          price: Number(Number(price).toFixed(0)) || 0,
-          totalPrice: Number((price * qty).toFixed(2)),
+          price:
+            Number(
+              price * (1 - user.dcRates["specialOrder"]) +
+                Number(user.dcAmount["specialOrderA"].toFixed(0))
+            ) || 0,
+          totalPrice: Number(
+            (
+              Number(
+                price * (1 - user.dcRates["specialOrder"]) +
+                  user.dcAmount["specialOrderA"].toFixed(0)
+              ) * qty
+            ).toFixed(2)
+          ),
           weight: 0,
           totalWeight: 0,
-          dcRate: Number(state.user.dcRates["goods"]) || 0,
+          dcRate: Number(state.user.dcRates["specialOrder"]) || 0,
+          dcAmount: Number(state.user.dcAmount["specialOrderA"]) || 0,
           relDate: today,
           preOrderDeadline: today,
           moved: false,
@@ -449,10 +469,11 @@ const B2bSpecialOrder = () => {
           >
             <div className="col-span-4">No.</div>
             <div className="col-span-3">Shop Name</div>
-            <div className="col-span-6">Title</div>
-            <div className="col-span-5">Url</div>
-            <div className="col-span-4">Thumb Nail</div>
-            <div className="col-span-2">Price</div>
+            <div className="col-span-7">Title</div>
+            <div className="col-span-2">Url</div>
+            <div className="col-span-2">Thumb Nail</div>
+            <div className="col-span-3">Price</div>
+            <div className="col-span-3">Fee</div>
             <div className="col-span-2">Qty</div>
             <div className="col-span-2">Amount</div>
           </div>
@@ -463,10 +484,33 @@ const B2bSpecialOrder = () => {
                   {li.childOrderNumber}
                 </div>
                 <div className="col-span-3 text-center p-1">{li.shopName}</div>
-                <div className="col-span-6 p-1">{li.title}</div>
-                <div className="col-span-5 p-1">{li.titleUrl}</div>
-                <div className="col-span-4 p-1">{li.thumbNailUrl}</div>
-                <div className="col-span-2 text-center p-1">{li.price} krw</div>
+                <div className="col-span-7 p-1">{li.title}</div>
+                <div className="col-span-2 p-1 text-center">
+                  {li.titleUrl && (
+                    <button
+                      onClick={() => window.open(`${li.titleUrl}`, "_blank")}
+                    >
+                      <LinkIcon style={{ color: "gray" }} />
+                    </button>
+                  )}
+                </div>
+                <div className="col-span-2 p-1 text-center">
+                  {li.thumbNailUrl && (
+                    <button
+                      onClick={() =>
+                        window.open(`${li.thumbNailUrl}`, "_blank")
+                      }
+                    >
+                      <ImageIcon style={{ color: "gray" }} />
+                    </button>
+                  )}
+                </div>
+                <div className="col-span-3 text-center p-1">
+                  {li.price - li.dcAmount} krw
+                </div>
+                <div className="col-span-3 text-center p-1">
+                  {li.dcAmount} krw
+                </div>
                 <div className="col-span-2 text-center p-1">{li.qty} ea</div>
                 <div className="col-span-2 text-center p-1">
                   {li.amount} krw
@@ -497,7 +541,7 @@ const B2bSpecialOrder = () => {
                 <option value="YG">YG</option>
               </select>
             </div>
-            <div className="col-span-6 flex ">
+            <div className="col-span-7 flex ">
               <input
                 type="text"
                 placeholder="Copy and paste item title"
@@ -507,7 +551,7 @@ const B2bSpecialOrder = () => {
                 value={title}
               />
             </div>
-            <div className="col-span-5">
+            <div className="col-span-2">
               <input
                 type="text"
                 placeholder="Copy and paste item url"
@@ -517,7 +561,7 @@ const B2bSpecialOrder = () => {
                 value={titleUrl}
               />
             </div>
-            <div className="col-span-4">
+            <div className="col-span-2">
               <input
                 type="text"
                 placeholder="Copy and paste the thumbnail URL."
@@ -527,21 +571,22 @@ const B2bSpecialOrder = () => {
                 value={thumbNailUrl}
               />
             </div>
-            <div className="col-span-2">
+            <div className="col-span-3">
               <input
                 type="number"
-                placeholder="Price"
-                className="border h-8 w-full  text-center outline-none"
+                placeholder="Price(KRW)"
+                className="border h-8 w-full  text-left pl-2 outline-none"
                 name="price"
                 onChange={onChange2}
                 value={price}
               />
             </div>
+            <div className="col-span-3"></div>
             <div className="col-span-2">
               <input
                 type="number"
                 placeholder="Qty"
-                className="border h-8 w-full text-center outline-none"
+                className="border h-8 w-full text-left pl-2 outline-none"
                 name="qty"
                 onChange={onChange2}
                 value={qty}
@@ -551,14 +596,14 @@ const B2bSpecialOrder = () => {
               {price && qty && price * qty}
             </div>
           </div>
-          <div className="w-full text-right text-sm text-gray-600 p-2">
+          {/* <div className="w-full text-right text-sm text-gray-600 p-2">
             Copy and paste the
             <span className="text-base font-semibold text-gray-800">
               {" "}
               Thumb Nail
             </span>{" "}
             url address and press Enter. Please wait until the address changes.
-          </div>
+          </div> */}
           {/* <div
             className="flex flex-col rounded-sm 
          text-base  text-gray-800 items-center bg-gray-400"

@@ -62,16 +62,52 @@ const ListProduct = () => {
 
     setPreProduct(
       products
-        .filter(
-          doc =>
-            doc.data.title.includes(query.split(" ")[0]) ||
-            doc.data.title.includes(query.split(" ")[1]) ||
-            doc.data.title.toLowerCase().includes(query.split(" ")[0]) ||
-            doc.data.title.toLowerCase().includes(query.split(" ")[1]) ||
-            doc.data.sku.includes(query.split(" ")[0]) ||
-            doc.data.sku.includes(query.split(" ")[1]) ||
-            doc.data.barcode.toLowerCase().includes(query.split(" ")[0]) ||
-            doc.data.barcode.toLowerCase().includes(query.split(" ")[1])
+        .filter(doc =>
+          query.split(" ").length === 1
+            ? doc.data.title.toLowerCase().includes(query.toLowerCase()) ||
+              doc.data.title.toUpperCase().includes(query.toUpperCase()) ||
+              doc.data.sku.toLowerCase().includes(query.toLowerCase()) ||
+              doc.data.sku.toUpperCase().includes(query.toUpperCase()) ||
+              doc.data.barcode.toLowerCase().includes(query.toLowerCase()) ||
+              doc.data.barcode.toUpperCase().includes(query.toUpperCase())
+            : query.split(" ").length === 2
+            ? ((doc.data.title
+                .toLowerCase()
+                .includes(query.split(" ")[0].toLowerCase()) ||
+                doc.data.title
+                  .toUpperCase()
+                  .includes(query.split(" ")[0].toUpperCase())) &&
+                (doc.data.title
+                  .toLowerCase()
+                  .includes(query.split(" ")[1].toLowerCase()) ||
+                  doc.data.title
+                    .toUpperCase()
+                    .includes(query.split(" ")[1].toUpperCase()))) ||
+              ((doc.data.sku
+                .toLowerCase()
+                .includes(query.split(" ")[0].toLowerCase()) ||
+                doc.data.sku
+                  .toUpperCase()
+                  .includes(query.split(" ")[0].toUpperCase())) &&
+                (doc.data.sku
+                  .toLowerCase()
+                  .includes(query.split(" ")[1].toLowerCase()) ||
+                  doc.data.sku
+                    .toUpperCase()
+                    .includes(query.split(" ")[1].toUpperCase()))) ||
+              ((doc.data.barcode
+                .toLowerCase()
+                .includes(query.split(" ")[0].toLowerCase()) ||
+                doc.data.barcode
+                  .toUpperCase()
+                  .includes(query.split(" ")[0].toUpperCase())) &&
+                (doc.data.barcode
+                  .toLowerCase()
+                  .includes(query.split(" ")[1].toLowerCase()) ||
+                  doc.data.barcode
+                    .toUpperCase()
+                    .includes(query.split(" ")[1].toUpperCase())))
+            : ""
         )
         .sort((a, b) => {
           return (
@@ -95,9 +131,9 @@ const ListProduct = () => {
       handleSortDefault(true);
     } else if (sortDefault === true) {
       setPreProduct(
-        products.sort((a, b) => {
+        products.sort((b, a) => {
           return (
-            new Date(b.data.relDate.seconds) - new Date(a.data.relDate.seconds)
+            new Date(a.data.relDate.seconds) - new Date(b.data.relDate.seconds)
           );
         })
       );
@@ -108,11 +144,12 @@ const ListProduct = () => {
   const handleClear = e => {
     e.preventDefault();
     setPreProduct(products);
+    setQuery("");
   };
 
   useEffect(() => {
     setPreProduct(products);
-  }, [dispatch, products]);
+  }, [dispatch, products, sortDefault]);
 
   return (
     <div className="flex flex-col w-full">

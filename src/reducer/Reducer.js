@@ -21,6 +21,8 @@ export const initState = {
   exchangeRate: [],
   // 재입고요청
   reStockRequests: [],
+  // 채팅방
+  rooms: [],
 };
 
 export function dataReducer(state, action) {
@@ -67,6 +69,11 @@ export function dataReducer(state, action) {
       return {
         ...state,
         reStockRequests: action.reStockRequest,
+      };
+    case "ROOMS":
+      return {
+        ...state,
+        rooms: action.room,
       };
 
     default:

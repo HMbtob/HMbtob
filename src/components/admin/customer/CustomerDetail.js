@@ -49,6 +49,7 @@ const CustomerDetail = ({ match }) => {
     photoBook: user?.data.dcRates.photoBook * 100,
     officialStore: user?.data.dcRates.officialStore * 100,
     beauty: user?.data.dcRates.beauty * 100,
+    specialOrder: 0,
     // 정액법
     cdA: user?.data?.dcAmount?.cdA,
     dvdBlueRayA: user?.data?.dcAmount?.dvdBlueRayA,
@@ -56,6 +57,7 @@ const CustomerDetail = ({ match }) => {
     photoBookA: user?.data?.dcAmount?.photoBookA,
     officialStoreA: user?.data?.dcAmount?.officialStoreA,
     beautyA: user?.data?.dcAmount?.beautyA,
+    specialOrderA: 0,
     // 추후 기입
     dhl: user?.data.shippingRate.dhl,
     nickName: user?.data.nickName,
@@ -93,6 +95,8 @@ const CustomerDetail = ({ match }) => {
     photoBookA,
     officialStoreA,
     beautyA,
+    specialOrder,
+    specialOrderA,
     dhl,
     nickName,
     memo,
@@ -102,7 +106,15 @@ const CustomerDetail = ({ match }) => {
     alias,
   } = form;
 
-  const dcValues = { cd, dvdBlueRay, goods, photoBook, officialStore, beauty };
+  const dcValues = {
+    cd,
+    dvdBlueRay,
+    goods,
+    photoBook,
+    officialStore,
+    beauty,
+    specialOrder,
+  };
   const dcAValues = {
     beautyA,
     cdA,
@@ -110,6 +122,7 @@ const CustomerDetail = ({ match }) => {
     goodsA,
     officialStoreA,
     photoBookA,
+    specialOrderA,
   };
   const shippingRate = { dhl };
 
@@ -133,6 +146,7 @@ const CustomerDetail = ({ match }) => {
           goods: Number(photoBook) / 100,
           officialStore: Number(officialStore) / 100,
           beauty: Number(beauty) / 100,
+          specialOrder: Number(specialOrder) / 100,
         },
         dcAmount: {
           cdA: Number(cdA),
@@ -141,6 +155,7 @@ const CustomerDetail = ({ match }) => {
           photoBookA: Number(photoBookA),
           officialStoreA: Number(officialStoreA),
           beautyA: Number(beautyA),
+          specialOrderA: Number(specialOrderA),
         },
         shippingRate: { dhl },
         nickName,

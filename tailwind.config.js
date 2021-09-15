@@ -5,6 +5,7 @@ module.exports = {
     extend: {
       height: {
         lg: "40rem",
+        xlg: "90vh",
       },
       gridTemplateColumns: {
         20: "repeat(20, minmax(0, 1fr))",

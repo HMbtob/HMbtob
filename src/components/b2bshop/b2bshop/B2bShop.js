@@ -19,7 +19,7 @@ const B2bShop = () => {
   const history = useHistory();
   const state = useContext(InitDataContext);
   const dispatch = useContext(InitDispatchContext);
-  const { notices, products, user, exchangeRate, orders } = state;
+  const { notices, products, user, exchangeRate, orders, rooms } = state;
   const today = new Date();
   const [query, setQuery] = useState();
   const queryOnChange = e => {
@@ -174,16 +174,52 @@ const B2bShop = () => {
             new Date(product?.data?.preOrderDeadline?.seconds * 1000) > today
         )
         .filter(doc => doc.data.exposeToB2b === "노출")
-        .filter(
-          doc =>
-            doc.data.title.toLowerCase().includes(query.split(" ")[0]) ||
-            doc.data.title.toLowerCase().includes(query.split(" ")[1]) ||
-            doc.data.title.toUpperCase().includes(query.split(" ")[0]) ||
-            doc.data.title.toUpperCase().includes(query.split(" ")[1]) ||
-            doc.data.sku.includes(query.split(" ")[0]) ||
-            doc.data.sku.includes(query.split(" ")[1]) ||
-            doc.data.barcode.toLowerCase().includes(query.split(" ")[0]) ||
-            doc.data.barcode.toLowerCase().includes(query.split(" ")[1])
+        .filter(doc =>
+          query.split(" ").length === 1
+            ? doc.data.title.toLowerCase().includes(query.toLowerCase()) ||
+              doc.data.title.toUpperCase().includes(query.toUpperCase()) ||
+              doc.data.sku.toLowerCase().includes(query.toLowerCase()) ||
+              doc.data.sku.toUpperCase().includes(query.toUpperCase()) ||
+              doc.data.barcode.toLowerCase().includes(query.toLowerCase()) ||
+              doc.data.barcode.toUpperCase().includes(query.toUpperCase())
+            : query.split(" ").length === 2
+            ? ((doc.data.title
+                .toLowerCase()
+                .includes(query.split(" ")[0].toLowerCase()) ||
+                doc.data.title
+                  .toUpperCase()
+                  .includes(query.split(" ")[0].toUpperCase())) &&
+                (doc.data.title
+                  .toLowerCase()
+                  .includes(query.split(" ")[1].toLowerCase()) ||
+                  doc.data.title
+                    .toUpperCase()
+                    .includes(query.split(" ")[1].toUpperCase()))) ||
+              ((doc.data.sku
+                .toLowerCase()
+                .includes(query.split(" ")[0].toLowerCase()) ||
+                doc.data.sku
+                  .toUpperCase()
+                  .includes(query.split(" ")[0].toUpperCase())) &&
+                (doc.data.sku
+                  .toLowerCase()
+                  .includes(query.split(" ")[1].toLowerCase()) ||
+                  doc.data.sku
+                    .toUpperCase()
+                    .includes(query.split(" ")[1].toUpperCase()))) ||
+              ((doc.data.barcode
+                .toLowerCase()
+                .includes(query.split(" ")[0].toLowerCase()) ||
+                doc.data.barcode
+                  .toUpperCase()
+                  .includes(query.split(" ")[0].toUpperCase())) &&
+                (doc.data.barcode
+                  .toLowerCase()
+                  .includes(query.split(" ")[1].toLowerCase()) ||
+                  doc.data.barcode
+                    .toUpperCase()
+                    .includes(query.split(" ")[1].toUpperCase())))
+            : ""
         )
         .sort((a, b) => {
           return (
@@ -200,16 +236,52 @@ const B2bShop = () => {
             new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
         )
         .filter(doc => doc.data.exposeToB2b === "노출")
-        .filter(
-          doc =>
-            doc.data.title.toLowerCase().includes(query.split(" ")[0]) ||
-            doc.data.title.toLowerCase().includes(query.split(" ")[1]) ||
-            doc.data.title.toUpperCase().includes(query.split(" ")[0]) ||
-            doc.data.title.toUpperCase().includes(query.split(" ")[1]) ||
-            doc.data.sku.includes(query.split(" ")[0]) ||
-            doc.data.sku.includes(query.split(" ")[1]) ||
-            doc.data.barcode.toLowerCase().includes(query.split(" ")[0]) ||
-            doc.data.barcode.toLowerCase().includes(query.split(" ")[1])
+        .filter(doc =>
+          query.split(" ").length === 1
+            ? doc.data.title.toLowerCase().includes(query.toLowerCase()) ||
+              doc.data.title.toUpperCase().includes(query.toUpperCase()) ||
+              doc.data.sku.toLowerCase().includes(query.toLowerCase()) ||
+              doc.data.sku.toUpperCase().includes(query.toUpperCase()) ||
+              doc.data.barcode.toLowerCase().includes(query.toLowerCase()) ||
+              doc.data.barcode.toUpperCase().includes(query.toUpperCase())
+            : query.split(" ").length === 2
+            ? ((doc.data.title
+                .toLowerCase()
+                .includes(query.split(" ")[0].toLowerCase()) ||
+                doc.data.title
+                  .toUpperCase()
+                  .includes(query.split(" ")[0].toUpperCase())) &&
+                (doc.data.title
+                  .toLowerCase()
+                  .includes(query.split(" ")[1].toLowerCase()) ||
+                  doc.data.title
+                    .toUpperCase()
+                    .includes(query.split(" ")[1].toUpperCase()))) ||
+              ((doc.data.sku
+                .toLowerCase()
+                .includes(query.split(" ")[0].toLowerCase()) ||
+                doc.data.sku
+                  .toUpperCase()
+                  .includes(query.split(" ")[0].toUpperCase())) &&
+                (doc.data.sku
+                  .toLowerCase()
+                  .includes(query.split(" ")[1].toLowerCase()) ||
+                  doc.data.sku
+                    .toUpperCase()
+                    .includes(query.split(" ")[1].toUpperCase()))) ||
+              ((doc.data.barcode
+                .toLowerCase()
+                .includes(query.split(" ")[0].toLowerCase()) ||
+                doc.data.barcode
+                  .toUpperCase()
+                  .includes(query.split(" ")[0].toUpperCase())) &&
+                (doc.data.barcode
+                  .toLowerCase()
+                  .includes(query.split(" ")[1].toLowerCase()) ||
+                  doc.data.barcode
+                    .toUpperCase()
+                    .includes(query.split(" ")[1].toUpperCase())))
+            : ""
         )
         .sort((a, b) => {
           return (
@@ -225,16 +297,52 @@ const B2bShop = () => {
             new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
         )
         .filter(doc => doc.data.exposeToB2b === "DEAL")
-        .filter(
-          doc =>
-            doc.data.title.toLowerCase().includes(query.split(" ")[0]) ||
-            doc.data.title.toLowerCase().includes(query.split(" ")[1]) ||
-            doc.data.title.toUpperCase().includes(query.split(" ")[0]) ||
-            doc.data.title.toUpperCase().includes(query.split(" ")[1]) ||
-            doc.data.sku.includes(query.split(" ")[0]) ||
-            doc.data.sku.includes(query.split(" ")[1]) ||
-            doc.data.barcode.toLowerCase().includes(query.split(" ")[0]) ||
-            doc.data.barcode.toLowerCase().includes(query.split(" ")[1])
+        .filter(doc =>
+          query.split(" ").length === 1
+            ? doc.data.title.toLowerCase().includes(query.toLowerCase()) ||
+              doc.data.title.toUpperCase().includes(query.toUpperCase()) ||
+              doc.data.sku.toLowerCase().includes(query.toLowerCase()) ||
+              doc.data.sku.toUpperCase().includes(query.toUpperCase()) ||
+              doc.data.barcode.toLowerCase().includes(query.toLowerCase()) ||
+              doc.data.barcode.toUpperCase().includes(query.toUpperCase())
+            : query.split(" ").length === 2
+            ? ((doc.data.title
+                .toLowerCase()
+                .includes(query.split(" ")[0].toLowerCase()) ||
+                doc.data.title
+                  .toUpperCase()
+                  .includes(query.split(" ")[0].toUpperCase())) &&
+                (doc.data.title
+                  .toLowerCase()
+                  .includes(query.split(" ")[1].toLowerCase()) ||
+                  doc.data.title
+                    .toUpperCase()
+                    .includes(query.split(" ")[1].toUpperCase()))) ||
+              ((doc.data.sku
+                .toLowerCase()
+                .includes(query.split(" ")[0].toLowerCase()) ||
+                doc.data.sku
+                  .toUpperCase()
+                  .includes(query.split(" ")[0].toUpperCase())) &&
+                (doc.data.sku
+                  .toLowerCase()
+                  .includes(query.split(" ")[1].toLowerCase()) ||
+                  doc.data.sku
+                    .toUpperCase()
+                    .includes(query.split(" ")[1].toUpperCase()))) ||
+              ((doc.data.barcode
+                .toLowerCase()
+                .includes(query.split(" ")[0].toLowerCase()) ||
+                doc.data.barcode
+                  .toUpperCase()
+                  .includes(query.split(" ")[0].toUpperCase())) &&
+                (doc.data.barcode
+                  .toLowerCase()
+                  .includes(query.split(" ")[1].toLowerCase()) ||
+                  doc.data.barcode
+                    .toUpperCase()
+                    .includes(query.split(" ")[1].toUpperCase())))
+            : ""
         )
         .sort((a, b) => {
           return (
@@ -313,6 +421,12 @@ const B2bShop = () => {
           dcRate:
             Number(
               state.user.dcRates[
+                products.find(product => product.id === key).data.category
+              ]
+            ) || 0,
+          dcAmount:
+            Number(
+              state.user.dcAmount[
                 products.find(product => product.id === key).data.category
               ]
             ) || 0,
@@ -414,15 +528,15 @@ const B2bShop = () => {
             >
               MyInfo
             </div>
-            <div
+            {/* <div
               onClick={openModal}
               className="text-sm font-mono font-bold text-center 
           text-gray-200 bg-blue-900 mr-5 cursor-pointer"
             >
               Message
-            </div>
+            </div> */}
             <Modal open={modalOpen} close={closeModal} header={"문의하기"}>
-              <InSimpleList />
+              <InSimpleList user={user} rooms={rooms} />
             </Modal>
             <div
               // onClick={openModal}

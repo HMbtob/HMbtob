@@ -29,6 +29,7 @@ import Dev from "./dev/Dev";
 import Header from "./components/header/Header";
 import PickUpList from "./components/invoice/PickUpList";
 import Invoice from "./components/invoice/Invoice";
+import InAdminChat from "./components/chat/InAdminChat";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -83,6 +84,15 @@ function App() {
       dispatch({
         type: "PRODUCTS",
         product: snapshot.docs.map(doc => ({ id: doc?.id, data: doc?.data() })),
+      })
+    );
+  }, [dispatch]);
+
+  useEffect(() => {
+    db.collection("rooms").onSnapshot(snapshot =>
+      dispatch({
+        type: "ROOMS",
+        room: snapshot.docs.map(doc => ({ id: doc?.id, data: doc?.data() })),
       })
     );
   }, [dispatch]);
@@ -234,7 +244,6 @@ function App() {
                     ""
                   )}
 
-                  {}
                   {/* 석팀장님 */}
                   <Route
                     path="/orderproductslist"
@@ -265,6 +274,7 @@ function App() {
                   <Route path="/customerlist" component={CustomerList} />
 
                   {/* b2b */}
+
                   <Route path="/myorderlist/:id" component={MyOrderDetail} />
                   <Route path="/myorderlist" component={MyOrderList} />
                   <Route path="/myinfo/:uid" component={MyInfo} />
@@ -273,6 +283,7 @@ function App() {
                   <Route path="/b2bshop" component={B2bShop} />
                   <Route path="/pickuplist" component={PickUpList} />
                   <Route path="/invoice" component={Invoice} />
+                  <Route path="/chat" component={InAdminChat} />
                   <Route path="/" component={B2bShop} />
                 </Switch>
               </div>

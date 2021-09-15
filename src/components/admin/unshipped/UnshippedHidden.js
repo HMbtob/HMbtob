@@ -12,8 +12,8 @@ const UnshippedHidden = ({ title, unshipped, orders }) => {
       {unshippedLists &&
         unshippedLists.length > 0 &&
         orders &&
-        unshippedLists.map(li => (
-          <div className="grid grid-cols-10 py-1">
+        unshippedLists.map((li, i) => (
+          <div key={i} className="grid grid-cols-10 py-1">
             <div className="col-span-7 pl-14">
               {
                 orders.find(
