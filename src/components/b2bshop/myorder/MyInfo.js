@@ -35,6 +35,8 @@ const MyInfo = ({ match }) => {
     zipcode: user?.data.zipcode,
     recipient: user?.data.recipient,
     shippingMessage: user?.data.shippingMessage,
+    taxId: user?.data.taxId,
+    companyName: user?.data.companyName,
   });
 
   const {
@@ -47,6 +49,8 @@ const MyInfo = ({ match }) => {
     zipcode,
     recipient,
     shippingMessage,
+    taxId,
+    companyName,
   } = form;
 
   const saveDetails = () => {
@@ -60,6 +64,8 @@ const MyInfo = ({ match }) => {
       zipcode,
       recipient,
       shippingMessage,
+      taxId,
+      companyName,
     });
     alert("수정 완료");
   };
@@ -82,13 +88,21 @@ const MyInfo = ({ match }) => {
             </div>
 
             <div className="grid grid-cols-2">
-              <div className="text-right pr-2">NAME :</div>
+              <div className="text-right pr-2">Name :</div>
               <div>{user?.data.displayName}</div>
             </div>
 
             <div className="grid grid-cols-2">
-              <div className="text-right pr-2">NUMBER :</div>
+              <div className="text-right pr-2">Phone Number :</div>
               {user?.data.phoneNumber}
+            </div>
+            <div className="grid grid-cols-2">
+              <div className="text-right pr-2">Tax Id :</div>
+              {user?.data.taxId}
+            </div>
+            <div className="grid grid-cols-2">
+              <div className="text-right pr-2">Company Name :</div>
+              {user?.data.companyName}
             </div>
 
             <div className="grid grid-cols-2">
@@ -118,7 +132,7 @@ const MyInfo = ({ match }) => {
 
           <div className="flex-col mb-10 flex space-y-2 items-center">
             <div className="grid grid-cols-2 items-center  w-full">
-              <div className="text-right pr-2">Email</div>
+              <div className="text-right pr-2">Recipient Email</div>
               <input
                 name="recipientEmail"
                 value={recipientEmail}
@@ -127,7 +141,7 @@ const MyInfo = ({ match }) => {
               />{" "}
             </div>
             <div className="grid grid-cols-2 items-center  w-full">
-              <div className="text-right pr-2">PhoneNumber</div>
+              <div className="text-right pr-2">Recipient PhoneNumber</div>
               <input
                 name="recipientPhoneNumber"
                 value={recipientPhoneNumber}

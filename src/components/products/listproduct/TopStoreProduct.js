@@ -78,7 +78,7 @@ const TopStoreProduct = ({ products, user, exchangeRate }) => {
   return (
     <div
       className="grid grid-cols-36 text-center border-b p-1 items-center
-      bg-gray-100 sticky top-0 text-sm"
+      bg-gray-100 top-0 text-sm"
     >
       <div className="col-span-3 text-gray-500 text-md">재고조사</div>
       <form onSubmit={handleSubmit} className="col-span-4">

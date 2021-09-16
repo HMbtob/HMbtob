@@ -205,21 +205,22 @@ function App() {
   if (user && userType === "customer") {
     return (
       <Router>
-        <div className="flex bg-gray-50 h-auto min-h-screen">
+        <div className="flex flex-col bg-gray-50 h-auto min-h-screen w-screen">
           {" "}
           <InitDispatchContext.Provider value={dispatch}>
             <InitDataContext.Provider value={state}>
               {" "}
-              <div className="flex flex-col">
-                <Header />
-                <Switch>
-                  <Route path="/myorderlist/:id" component={MyOrderDetail} />
-                  <Route path="/myorderlist" component={MyOrderList} />
-                  <Route path="/myinfo/:uid" component={MyInfo} />
-                  <Route path="/b2border" component={B2bOrder} />
-                  <Route path="/" component={B2bShop} />
-                </Switch>{" "}
-              </div>
+              {/* <div className="flex flex-col"> */}
+              <Header />
+              <Switch>
+                <Route path="/myorderlist/:id" component={MyOrderDetail} />
+                <Route path="/myorderlist" component={MyOrderList} />
+                <Route path="/myinfo/:uid" component={MyInfo} />
+                <Route path="/b2bspecialorder" component={B2bSpecialOrder} />
+                <Route path="/b2border" component={B2bOrder} />
+                <Route path="/" component={B2bShop} />
+              </Switch>{" "}
+              {/* </div> */}
             </InitDataContext.Provider>{" "}
           </InitDispatchContext.Provider>
         </div>

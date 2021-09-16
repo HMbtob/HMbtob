@@ -16,7 +16,7 @@ const Modal = props => {
               &times;{" "}
             </button>
           </header>
-          <main className=" overflow-y-auto	scrollbar-hide">
+          <main className=" max-h-28 overflow-y-auto	scrollbar-hide">
             {props.children}
           </main>
           {/* <footer>

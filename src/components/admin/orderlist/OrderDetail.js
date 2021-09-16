@@ -37,6 +37,8 @@ const OrderDetail = ({ match }) => {
     shippingMessage: order?.data.shippingMessage,
     orderNumberSelect: "",
     memo: order?.data.memo,
+    taxId: order?.data.taxId,
+    companyName: order?.data.companyName,
   });
 
   const {
@@ -53,7 +55,9 @@ const OrderDetail = ({ match }) => {
     recipient,
     shippingMessage,
     orderNumberSelect,
+    taxId,
     memo,
+    companyName,
   } = form;
 
   const saveDetails = () => {
@@ -70,7 +74,9 @@ const OrderDetail = ({ match }) => {
       zipcode,
       recipient,
       shippingMessage,
+      taxId,
       memo,
+      companyName,
     });
     alert("저장 완료");
   };
@@ -415,6 +421,8 @@ const OrderDetail = ({ match }) => {
           checkItemAmountPrice,
           trackingNumber,
           inputWeight,
+          taxId,
+          companyName,
         });
       await db
         .collection("accounts")
@@ -667,10 +675,29 @@ const OrderDetail = ({ match }) => {
 
               <div
                 className="flex-col mb-10 flex space-y-2 text-sm 
-               w-6/12 items-center"
+               w-7/12 items-center"
               >
-                <div className="grid grid-cols-2 w-3/4 items-center">
-                  <div className="text-right pr-5">Email</div>
+                <div className="grid grid-cols-2 w-5/6 items-center">
+                  <div className="text-right pr-5">Company Name</div>
+                  <input
+                    name="companyName"
+                    value={companyName}
+                    onChange={onChange}
+                    className="border p-1 pl-2"
+                  />{" "}
+                </div>
+                <div className="grid grid-cols-2 w-5/6 items-center">
+                  <div className="text-right pr-5">Tax Id</div>
+                  <input
+                    name="taxId"
+                    value={taxId}
+                    onChange={onChange}
+                    className="border p-1 pl-2"
+                    placeholder="Optional"
+                  />{" "}
+                </div>
+                <div className="grid grid-cols-2 w-5/6 items-center">
+                  <div className="text-right pr-5">Recipient Email</div>
                   <input
                     name="recipientEmail"
                     value={recipientEmail}
@@ -678,8 +705,8 @@ const OrderDetail = ({ match }) => {
                     className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2 w-3/4 items-center">
-                  <div className="text-right pr-5">PhoneNumber</div>
+                <div className="grid grid-cols-2 w-5/6 items-center">
+                  <div className="text-right pr-5">Recipient PhoneNumber</div>
                   <input
                     name="recipientPhoneNumber"
                     value={recipientPhoneNumber}
@@ -687,7 +714,7 @@ const OrderDetail = ({ match }) => {
                     className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2 w-3/4 items-center">
+                <div className="grid grid-cols-2 w-5/6 items-center">
                   <div className="text-right pr-5">Street</div>
                   <input
                     name="street"
@@ -696,7 +723,7 @@ const OrderDetail = ({ match }) => {
                     className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2 w-3/4 items-center">
+                <div className="grid grid-cols-2 w-5/6 items-center">
                   <div className="text-right pr-5">City</div>
                   <input
                     name="city"
@@ -705,7 +732,7 @@ const OrderDetail = ({ match }) => {
                     className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2 w-3/4 items-center">
+                <div className="grid grid-cols-2 w-5/6 items-center">
                   <div className="text-right pr-5">State</div>
                   <input
                     name="states"
@@ -714,7 +741,7 @@ const OrderDetail = ({ match }) => {
                     className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2 w-3/4 items-center">
+                <div className="grid grid-cols-2 w-5/6 items-center">
                   <div className="text-right pr-5">Country</div>
                   <select
                     name="country"
@@ -729,7 +756,7 @@ const OrderDetail = ({ match }) => {
                     ))}
                   </select>
                 </div>
-                <div className="grid grid-cols-2 w-3/4 items-center">
+                <div className="grid grid-cols-2 w-5/6 items-center">
                   <div className="text-right pr-5">Zipcode</div>
                   <input
                     name="zipcode"
@@ -738,7 +765,7 @@ const OrderDetail = ({ match }) => {
                     className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2 w-3/4 items-center">
+                <div className="grid grid-cols-2 w-5/6 items-center">
                   <div className="text-right pr-5">Recipient</div>
                   <input
                     name="recipient"
@@ -747,7 +774,7 @@ const OrderDetail = ({ match }) => {
                     className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2 w-3/4 items-center">
+                <div className="grid grid-cols-2 w-5/6 items-center">
                   <div className="text-right pr-5">Shipping Message</div>
                   <textarea
                     rows="5"

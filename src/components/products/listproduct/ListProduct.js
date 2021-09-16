@@ -155,7 +155,7 @@ const ListProduct = () => {
     <div className="flex flex-col w-full">
       <form
         onSubmit={searchProducts}
-        className="top-2 left-40 fixed z-50 flex flex-row
+        className="top-2 left-40 absolute z-50 flex flex-row
         "
       >
         <div className="bg-gray-200 p-1 rounded-lg w-96 flex flex-row">
@@ -185,7 +185,7 @@ const ListProduct = () => {
         />
         <div
           className="grid grid-cols-36 text-center border-b border-gray-500 p-1 
-        bg-gray-100 sticky top-0 text-sm"
+        bg-gray-100  top-0 text-sm"
         >
           {headers.map((header, index) => (
             <div

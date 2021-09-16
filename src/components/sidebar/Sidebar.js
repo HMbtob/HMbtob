@@ -15,14 +15,14 @@ const Sidebar = () => {
     { 배송관리: "/shippinglist" },
     { 미발송건: "/unshipped" },
     { 고객관리: "/customerlist" },
-    // { 고객문의: "/chat" },
+    { 고객문의: "/chat" },
     { 상품판매량: "/orderproductslist" },
   ];
   return (
     //   d-1
     <div className="flex-col items-center w-auto text-gray-300 bg-gray-600">
       {/* d-2 */}
-      <div className="bg-gray-600 p-8 text-lg text-gray-300 leading-10 text-center">
+      <div className="bg-gray-600 pt-16 p-8 text-lg text-gray-300 leading-10 text-center">
         {user?.email === "interasiadev@gmail.com" && (
           <div
             onClick={() => history.push(`/fordev`)}

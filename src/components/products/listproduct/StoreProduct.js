@@ -23,7 +23,7 @@ const StoreProduct = ({ product, user }) => {
               "거래처를 입력해주세요(미입력시 재고조정)",
               "재고조정"
             ),
-            writer: user.email,
+            writer: user.nickName || user.email,
             amount: inputStock,
             date: new Date(),
           }),

@@ -187,6 +187,8 @@ const B2bSpecialOrder = () => {
     paymentMethod: "",
     shippingType: "",
     orderEmail: user?.email,
+    taxId: user?.taxId,
+    companyName: user?.companyName,
   });
 
   const {
@@ -201,17 +203,19 @@ const B2bSpecialOrder = () => {
     shippingMessage,
     paymentMethod,
     shippingType,
+    taxId,
+    companyName,
   } = form;
   const { orderEmail } = form;
   const inputsName = [
-    "recipient",
-    "street",
-    "city",
-    "state",
-    "country",
-    "zipcode",
-    "PhoneNumber",
-    "Email",
+    "Recipient",
+    "Street",
+    "City",
+    "State",
+    "Country",
+    "Zipcode",
+    "Recipient PhoneNumber",
+    "Recipient Email",
     "Memo",
     "Payment Method",
     "Shipping Type",
@@ -306,6 +310,8 @@ const B2bSpecialOrder = () => {
         amountPrice: Number(totalPrice.toFixed(2)),
         totalPrice: Number(totalPrice.toFixed(2)),
         memo: "",
+        taxId,
+        companyName,
       });
     await db.collection("accounts").doc(user.email).update({
       recipient,
@@ -317,6 +323,8 @@ const B2bSpecialOrder = () => {
       recipientPhoneNumber,
       recipientEmail,
       shippingMessage,
+      taxId,
+      companyName,
     });
 
     // totalsold 계산
@@ -381,6 +389,28 @@ const B2bSpecialOrder = () => {
                     <div>{user.email}</div>
                   )}
                 </div>
+                <div className="grid grid-cols-2">
+                  <div>Company Name</div>
+                  <input
+                    required
+                    type="text"
+                    name="companyName"
+                    className="border h-8 pl-2"
+                    value={companyName}
+                    onChange={onChange}
+                  />
+                </div>
+                <div className="grid grid-cols-2">
+                  <div>Tax Id</div>
+                  <input
+                    required
+                    type="text"
+                    name="taxId"
+                    className="border h-8 pl-2"
+                    value={taxId}
+                    onChange={onChange}
+                  />
+                </div>
               </>
             )}
           </div>
@@ -389,7 +419,7 @@ const B2bSpecialOrder = () => {
           {/*   dep-3-2-2 수령인 */}
           <div className="flex-col mb-10 flex space-y-2 w-2/5">
             {Object.keys(form)
-              .slice(0, -1)
+              .slice(0, 11)
               .map((doc, index) => (
                 <div key={index} className="grid grid-cols-2">
                   <div className="p-1">{inputsName[index]}</div>

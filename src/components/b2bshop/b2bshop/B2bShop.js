@@ -47,7 +47,7 @@ const B2bShop = () => {
   };
   // order number를 위한 마지막 3자리 숫자 만들기
   const forOrderNumber = orders
-    .filter(order => order.data.customer === user?.email)
+    ?.filter(order => order.data.customer === user?.email)
     .filter(
       order =>
         new Date(order.data.createdAt.seconds * 1000)
@@ -480,9 +480,39 @@ const B2bShop = () => {
     });
     alert("요청되었습니다");
   };
+
+  // message
+  const [selectedRoom, setSelectedRoom] = useState([]);
+  const [selectedMessages, setSelectedMessages] = useState([]);
+  const refresh = async () => {
+    await db
+      .collection("rooms")
+      .doc(selectedRoom?.id)
+      .collection("messages")
+      .orderBy("createdAt", "desc")
+      .onSnapshot(snapshot =>
+        setSelectedMessages({
+          messages: snapshot.docs.map(doc => ({
+            id: doc.id,
+            data: doc.data(),
+          })),
+        })
+      );
+  };
+
   useEffect(() => {
     handleCheck();
   }, [simpleList]);
+
+  useEffect(() => {
+    setSelectedRoom(
+      user?.email ? rooms?.find(room => room.data.userName === user?.email) : []
+    );
+  }, [user, rooms]);
+
+  useEffect(() => {
+    refresh();
+  }, [selectedRoom]);
 
   return (
     <div className="w-full h-auto flex ">
@@ -493,7 +523,7 @@ const B2bShop = () => {
       >
         <form
           onSubmit={searchedProducts}
-          className="top-2 left-40 fixed z-50 flex flex-row
+          className="top-2 left-40 absolute z-50 flex flex-row
         "
         >
           <div className="bg-gray-200 p-1 rounded-lg w-96 flex flex-row">
@@ -528,16 +558,26 @@ const B2bShop = () => {
             >
               MyInfo
             </div>
-            {/* <div
-              onClick={openModal}
-              className="text-sm font-mono font-bold text-center 
-          text-gray-200 bg-blue-900 mr-5 cursor-pointer"
-            >
-              Message
-            </div> */}
-            <Modal open={modalOpen} close={closeModal} header={"문의하기"}>
-              <InSimpleList user={user} rooms={rooms} />
-            </Modal>
+            {user?.type === "customer" && (
+              <>
+                <div
+                  onClick={openModal}
+                  className="text-sm font-mono font-bold text-center 
+                          text-gray-200 bg-blue-900 mr-5 cursor-pointer"
+                >
+                  Message
+                </div>
+                <Modal open={modalOpen} close={closeModal} header={"문의하기"}>
+                  <InSimpleList
+                    user={user}
+                    selectedMessages={selectedMessages}
+                    selectedRoom={selectedRoom}
+                    refresh={refresh}
+                  />
+                </Modal>
+              </>
+            )}
+
             <div
               // onClick={openModal}
               onClick={B2bMakeSpecialOrder}

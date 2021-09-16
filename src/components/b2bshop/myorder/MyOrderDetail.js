@@ -31,32 +31,40 @@ const MyOrderDetail = ({ match }) => {
           {/* 주문내용 확인 */}
           <div className="flex-col mb-10 flex space-y-2 w-1/3">
             <div className="grid grid-cols-2">
-              <div>ORDER NUMBER</div>
+              <div>Order Number</div>
               <div>{order.data.orderNumber}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>STATUS</div>
+              <div>Order Status</div>
               <div>{order.data.orderState}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>EMAIL</div>
+              <div>E-MAIL</div>
               <div>{account.id}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>DATE</div>
+              <div>Order Date</div>
               {new Date(order?.data.createdAt.toDate()).toLocaleString()}
             </div>
             <div className="grid grid-cols-2">
-              <div>PAYMENTMETHOD</div>
+              <div>Payment Method</div>
               <div>{order?.data.paymentMethod}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>SHIPPING</div>
+              <div>Shipping Type</div>
               <div>{order?.data.shippingType}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>PHONE</div>
+              <div>Phone Number</div>
               <div>{account?.data.phoneNumber}</div>
+            </div>
+            <div className="grid grid-cols-2">
+              <div>Company Name</div>
+              <div>{account?.data.companyName}</div>
+            </div>
+            <div className="grid grid-cols-2">
+              <div>Tax Id</div>
+              <div>{account?.data.taxId}</div>
             </div>
           </div>
           {/* 수령인 파트 */}

@@ -40,6 +40,8 @@ const CustomerDetail = ({ match }) => {
     zipcode: user?.data.zipcode,
     recipient: user?.data.recipient,
     shippingMessage: user?.data.shippingMessage,
+    taxId: user.data.taxId || "",
+    companyName: user.data.companyName || "",
     // 담당자
     inCharge: user?.data.inCharge,
     // 정률법
@@ -104,6 +106,8 @@ const CustomerDetail = ({ match }) => {
     creditType,
     currency,
     alias,
+    taxId,
+    companyName,
   } = form;
 
   const dcValues = {
@@ -164,6 +168,8 @@ const CustomerDetail = ({ match }) => {
         type,
         currency,
         alias,
+        taxId,
+        companyName,
       });
     alert("수정 완료");
   };
@@ -380,6 +386,25 @@ const CustomerDetail = ({ match }) => {
           {/* 수령인 파트 */}
 
           <div className="flex-col flex space-y-2">
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Company Name</div>
+              <input
+                name="companyName"
+                value={companyName}
+                onChange={onChange}
+                className="border p-1"
+              />{" "}
+            </div>
+            <div className="grid grid-cols-2 items-center">
+              <div className="text-right pr-5">Tax Id</div>
+              <input
+                name="taxId"
+                value={taxId}
+                onChange={onChange}
+                className="border p-1"
+                placeholder="Optional"
+              />{" "}
+            </div>
             <div className="grid grid-cols-2 items-center">
               <div className="text-right pr-5">Recipient Email</div>
               <input

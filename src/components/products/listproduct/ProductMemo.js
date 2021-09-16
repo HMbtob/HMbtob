@@ -14,7 +14,7 @@ const ProductMemo = ({ productMemo, id, user }) => {
       .doc(id)
       .update({
         productMemo: firebase.firestore.FieldValue.arrayUnion({
-          writer: user.email,
+          writer: user.nickName || user.email,
           memo: memo.replace(/(?:\r\n|\r|\n)/g, "<br/>"),
           date: new Date(),
         }),
