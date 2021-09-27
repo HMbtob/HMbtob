@@ -4,10 +4,18 @@ import { InitDataContext, InitDispatchContext } from "../../App";
 const InAdminChatMessages = ({ selectedMessages, user }) => {
   const chatRef = useRef(null);
 
+  const scrollToBottom = () => {
+    if (
+      selectedMessages.messages &&
+      selectedMessages.messages[0]?.data.user === user.email
+    ) {
+      chatRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  };
   useEffect(() => {
-    chatRef.current.scrollIntoView({
-      behavior: "smooth",
-    });
+    scrollToBottom();
   }, [selectedMessages]);
 
   return (

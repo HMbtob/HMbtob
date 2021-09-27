@@ -14,6 +14,8 @@ const InSimpleList = ({ user, selectedMessages, selectedRoom, refresh }) => {
       createdAt: new Date(),
       message: message,
       user: user.email,
+      readed: false,
+      to: user.inCharge,
     });
     setMessage("");
   };

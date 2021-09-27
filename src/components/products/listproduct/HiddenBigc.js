@@ -55,7 +55,7 @@ const HiddenBigc = ({ relDate, bigcProductId, handleBigTotalSold }) => {
   useEffect(() => {
     sdadasdasd();
     handleBigTotalSold(total_sold);
-  }, [total_sold, sdadasdasd, bigcProductId]);
+  }, [total_sold, bigcProductId]);
   return (
     <div
       className="grid grid-cols-36 items-center 

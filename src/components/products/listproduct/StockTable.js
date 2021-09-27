@@ -4,8 +4,8 @@ const StockTable = ({ stockHistory, bigTotalSold, totalStock }) => {
   return (
     <div className="overflow-y-auto">
       <div className="grid grid-cols-8 text-gray-200 bg-gray-800 text-center">
-        <div className="col-span-2">Type</div>
         <div className="col-span-2">Date</div>
+        <div className="col-span-2">Type</div>
         <div className="col-span-3">Writer</div>
         <div className="col-span-1">Qty</div>
       </div>
@@ -34,8 +34,8 @@ const StockTable = ({ stockHistory, bigTotalSold, totalStock }) => {
         className="grid grid-cols-8 text-center 
       border-b  py-1 place-items-center"
       >
-        <div className="col-span-2">sell on BigC</div>
         <div className="col-span-2">all the time</div>
+        <div className="col-span-2">sell on BigC</div>
         <div className="col-span-3 text-sm"> Total</div>
 
         <div> - {bigTotalSold} </div>

@@ -13,23 +13,30 @@ const StoreProduct = ({ product, user }) => {
 
     // 수량 인풋받았을때 로직
     if (inputStock.toString().length < 10) {
-      await db
-        .collection("products")
-        .doc(product.id)
-        .update({
-          totalStock: product.data.totalStock + inputStock,
-          stockHistory: firebase.firestore.FieldValue.arrayUnion({
-            type: prompt(
-              "거래처를 입력해주세요(미입력시 재고조정)",
-              "재고조정"
-            ),
-            writer: user.nickName || user.email,
-            amount: inputStock,
-            date: new Date(),
-          }),
-        });
-      setInputStock("");
-      alert("수정 완료");
+      const type = prompt(
+        "거래처를 입력해주세요(미입력시 재고조정)",
+        "재고조정"
+      );
+
+      if (type != null) {
+        await db
+          .collection("products")
+          .doc(product.id)
+          .update({
+            totalStock: product.data.totalStock + inputStock,
+            stockHistory: firebase.firestore.FieldValue.arrayUnion({
+              type: type,
+              writer: user.nickName || user.email,
+              amount: inputStock,
+              date: new Date(),
+            }),
+          });
+        setInputStock("");
+        alert("수정 완료");
+      } else {
+        alert("취소되었습니다.");
+      }
+
       // 바코드 입력받았을때 로직
     } else if (inputStock.toString().length >= 8) {
       alert("올바른 수량을 입력해 주세요");

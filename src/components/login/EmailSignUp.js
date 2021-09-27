@@ -96,7 +96,7 @@ const EmailSignUp = () => {
           alert(e.message);
         });
     } else {
-      alert("필수항목을 입력해주세요.");
+      alert("Please fill in the required fields.");
     }
   };
 

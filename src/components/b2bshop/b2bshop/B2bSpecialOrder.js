@@ -151,7 +151,7 @@ const B2bSpecialOrder = () => {
 
       onReset();
     } else {
-      alert("Type");
+      alert("Please fill in all fields.");
     }
   };
 
@@ -330,7 +330,7 @@ const B2bSpecialOrder = () => {
     // totalsold 계산
 
     await reset();
-    await alert("주문 완료");
+    await alert("order completed");
     if (user.type === "admin") {
       history.replace("/orderlist");
     }

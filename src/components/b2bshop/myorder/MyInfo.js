@@ -67,7 +67,7 @@ const MyInfo = ({ match }) => {
       taxId,
       companyName,
     });
-    alert("수정 완료");
+    alert("Modifications completed");
   };
 
   return (

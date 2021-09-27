@@ -39,12 +39,13 @@ const OrderDetailRow = ({
     );
     order.data.list[childIndex].price = fixedPrice;
     order.data.list[childIndex].quan = fixedQuan;
-    order.data.list[childIndex].totalPrice = fixedPrice * fixedPrice;
+    order.data.list[childIndex].totalPrice = fixedPrice * fixedQuan;
     db.collection("orders")
       .doc("b2b")
       .collection("b2borders")
       .doc(order.id)
       .update({ list: order.data.list });
+    alert("수정되었습니다.");
   };
   return (
     <form
@@ -123,7 +124,7 @@ const OrderDetailRow = ({
           type="number"
           value={fixedQuan}
           onChange={handleFixedQuan}
-          step="0.01"
+          // step="0.01"
           className="w-12 text-center outline-none"
         />
         {/* {quan && quan}  */}

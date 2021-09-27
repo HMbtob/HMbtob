@@ -118,28 +118,53 @@ const ListProduct = () => {
     );
   };
 
-  const sortProductByDate = e => {
-    e.preventDefault();
-    if (sortDefault === false) {
-      setPreProduct(
-        products.sort((a, b) => {
-          return (
-            new Date(a.data.relDate.seconds) - new Date(b.data.relDate.seconds)
-          );
-        })
-      );
-      handleSortDefault(true);
-    } else if (sortDefault === true) {
-      setPreProduct(
-        products.sort((b, a) => {
-          return (
-            new Date(a.data.relDate.seconds) - new Date(b.data.relDate.seconds)
-          );
-        })
-      );
-      handleSortDefault(false);
-    }
-  };
+  // const sortProductByDate = () => {
+  //   // e.preventDefault();
+  //   if (sortDefault === false) {
+  //     setPreProduct(
+  //       products.sort((b, a) => {
+  //         return (
+  //           new Date(b.data.relDate.seconds) - new Date(a.data.relDate.seconds)
+  //         );
+  //       })
+  //     );
+  //     handleSortDefault(true);
+  //   } else if (sortDefault === true) {
+  //     setPreProduct(
+  //       products.sort((b, a) => {
+  //         return (
+  //           new Date(a.data.relDate.seconds) - new Date(b.data.relDate.seconds)
+  //         );
+  //       })
+  //     );
+  //     handleSortDefault(false);
+  //   }
+  // };
+
+  // const sortProductByPrice = () => {
+  //   // e.preventDefault();
+
+  //   console.log(sortDefault);
+  //   if (sortDefault === false) {
+  //     console.log("1");
+  //     setPreProduct(
+  //       products.sort((b, a) => {
+  //         return b.data.price - a.data.price;
+  //       })
+  //     );
+  //     console.log(preProduct);
+
+  //     handleSortDefault(true);
+  //   } else if (sortDefault === true) {
+  //     console.log("2");
+  //     setPreProduct(
+  //       products.sort((b, a) => {
+  //         return a.data.price - b.data.price;
+  //       })
+  //     );
+  //     handleSortDefault(false);
+  //   }
+  // };
   // 초기화
   const handleClear = e => {
     e.preventDefault();
@@ -149,7 +174,7 @@ const ListProduct = () => {
 
   useEffect(() => {
     setPreProduct(products);
-  }, [dispatch, products, sortDefault]);
+  }, [dispatch, products]);
 
   return (
     <div className="flex flex-col w-full">
@@ -208,8 +233,8 @@ const ListProduct = () => {
             </div>
           ))}
           <div
-            className="col-span-4 cursor-pointer"
-            onClick={sortProductByDate}
+            className="col-span-4"
+            // onClick={sortProductByDate}
           >
             RELEASE
           </div>

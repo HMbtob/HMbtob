@@ -92,7 +92,7 @@ const B2bShop = () => {
           new Date(b.data.relDate.seconds) - new Date(a.data.relDate.seconds)
         );
       })
-      .slice(0, 500)
+    // .slice(0, 500)
   );
   const [deal, setDeal] = useState(
     products
@@ -478,7 +478,7 @@ const B2bShop = () => {
       qty: qty,
       confirmed: false,
     });
-    alert("요청되었습니다");
+    alert("Requested");
   };
 
   // message

@@ -28,7 +28,7 @@ function useSimpleList(initialForm, f, p, simpleList) {
       if (value <= 0) {
         dispatch({ type: "CHANGE", name, value: 0 });
         f(false);
-        alert("숫자 혹은 1개 이상의 수량을 입력해주세요");
+        alert("Please enter a number or more than one quantity");
       } else if (
         p.find(pro => pro.id === e.target.id).data.limitedStock === true &&
         Number(p.find(pro => pro.id === e.target.id).data.stock) < value

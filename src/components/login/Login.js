@@ -40,6 +40,26 @@ function Login() {
     setModal2Open(false);
     // }
   };
+  console.log(auth);
+  const forgotPassword = e => {
+    e.preventDefault();
+    const inputEmail = prompt("Please enter your email address.");
+    if (inputEmail != null) {
+      // const auth = getAuth();
+      auth
+        .sendPasswordResetEmail(inputEmail)
+        .then(() => {
+          // Password reset email sent!
+          // ..
+          console.log("성공");
+        })
+        .catch(error => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log("e", errorCode, errorMessage);
+        });
+    }
+  };
   return (
     <div className="h-screen grid place-items-center bg-gray-100">
       <div className=" p-24 text-center rounded bg-white flex flex-col items-center">
@@ -70,6 +90,12 @@ function Login() {
         >
           Sign In
         </button>
+        <div
+          onClick={forgotPassword}
+          className="text-right text-gray-800 w-80 text-xs mt-1 cursor-pointer"
+        >
+          forgot password?
+        </div>
         <div className="flex flex-row mt-5 w-80 justify-start">
           <div className="text-gray-700">{"New to INTERASIA ?  "}</div>
           <button

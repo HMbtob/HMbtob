@@ -39,6 +39,8 @@ const OrderDetail = ({ match }) => {
     memo: order?.data.memo,
     taxId: order?.data.taxId,
     companyName: order?.data.companyName,
+    address: order?.data.address,
+    detailAddress: order?.data.detailAddress,
   });
 
   const {
@@ -58,6 +60,8 @@ const OrderDetail = ({ match }) => {
     taxId,
     memo,
     companyName,
+    address,
+    detailAddress,
   } = form;
 
   const saveDetails = () => {
@@ -77,6 +81,8 @@ const OrderDetail = ({ match }) => {
       taxId,
       memo,
       companyName,
+      address,
+      detailAddress,
     });
     alert("저장 완료");
   };
@@ -154,6 +160,7 @@ const OrderDetail = ({ match }) => {
   const zone =
     z &&
     country.length > 0 &&
+    country !== "korea" &&
     Object.keys(
       z.find(doc =>
         Object.values(doc).find(asd => asd.country.includes(country))
@@ -168,7 +175,11 @@ const OrderDetail = ({ match }) => {
 
   // 재계산 배송비
   const fee =
-    z && country.length > 0 && totalWeight < 30 && totalWeight > 0
+    z &&
+    country.length > 0 &&
+    totalWeight < 30 &&
+    totalWeight > 0 &&
+    country !== "korea"
       ? Number(
           Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
             .fee[num - 1].split(",")
@@ -176,6 +187,8 @@ const OrderDetail = ({ match }) => {
         ) / exchangeRate[order.data.currency]
       : totalWeight === 0
       ? 0
+      : country === "korea"
+      ? (totalWeight * 5000) / exchangeRate[order.data.currency]
       : (totalWeight * order.data.shippingRate[shippingType]) /
         exchangeRate[order.data.currency];
 
@@ -714,77 +727,113 @@ const OrderDetail = ({ match }) => {
                     className="border p-1 pl-2"
                   />{" "}
                 </div>
-                <div className="grid grid-cols-2 w-5/6 items-center">
-                  <div className="text-right pr-5">Street</div>
-                  <input
-                    name="street"
-                    value={street}
-                    onChange={onChange}
-                    className="border p-1 pl-2"
-                  />{" "}
-                </div>
-                <div className="grid grid-cols-2 w-5/6 items-center">
-                  <div className="text-right pr-5">City</div>
-                  <input
-                    name="city"
-                    value={city}
-                    onChange={onChange}
-                    className="border p-1 pl-2"
-                  />{" "}
-                </div>
-                <div className="grid grid-cols-2 w-5/6 items-center">
-                  <div className="text-right pr-5">State</div>
-                  <input
-                    name="states"
-                    value={states}
-                    onChange={onChange}
-                    className="border p-1 pl-2"
-                  />{" "}
-                </div>
-                <div className="grid grid-cols-2 w-5/6 items-center">
-                  <div className="text-right pr-5">Country</div>
-                  <select
-                    name="country"
-                    value={country}
-                    onChange={onChange}
-                    className="border p-1 pl-2"
-                  >
-                    {countries.sort().map((co, i) => (
-                      <option key={i} value={co}>
-                        {co}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="grid grid-cols-2 w-5/6 items-center">
-                  <div className="text-right pr-5">Zipcode</div>
-                  <input
-                    name="zipcode"
-                    value={zipcode}
-                    onChange={onChange}
-                    className="border p-1 pl-2"
-                  />{" "}
-                </div>
-                <div className="grid grid-cols-2 w-5/6 items-center">
-                  <div className="text-right pr-5">Recipient</div>
-                  <input
-                    name="recipient"
-                    value={recipient}
-                    onChange={onChange}
-                    className="border p-1 pl-2"
-                  />{" "}
-                </div>
-                <div className="grid grid-cols-2 w-5/6 items-center">
-                  <div className="text-right pr-5">Shipping Message</div>
-                  <textarea
-                    rows="5"
-                    cols="19"
-                    name="shippingMessage"
-                    value={shippingMessage}
-                    onChange={onChange}
-                    className="border p-1 pl-2"
-                  />{" "}
-                </div>
+                {country === "korea" && (
+                  <>
+                    <div className="grid grid-cols-2 w-5/6 items-center">
+                      <div className="text-right pr-5">Address</div>
+                      <input
+                        name="address"
+                        value={address}
+                        onChange={onChange}
+                        className="border p-1 pl-2"
+                      />{" "}
+                    </div>
+                    <div className="grid grid-cols-2 w-5/6 items-center">
+                      <div className="text-right pr-5">Detail Address</div>
+                      <input
+                        name="detailAddress"
+                        value={detailAddress}
+                        onChange={onChange}
+                        className="border p-1 pl-2"
+                      />{" "}
+                    </div>
+                    <div className="grid grid-cols-2 w-5/6 items-center">
+                      <div className="text-right pr-5">Zip code</div>
+                      <input
+                        name="zipcode"
+                        value={zipcode}
+                        onChange={onChange}
+                        className="border p-1 pl-2"
+                      />{" "}
+                    </div>
+                  </>
+                )}
+                {country !== "korea" && (
+                  <>
+                    <div className="grid grid-cols-2 w-5/6 items-center">
+                      <div className="text-right pr-5">Street</div>
+                      <input
+                        name="street"
+                        value={street}
+                        onChange={onChange}
+                        className="border p-1 pl-2"
+                      />{" "}
+                    </div>
+                    <div className="grid grid-cols-2 w-5/6 items-center">
+                      <div className="text-right pr-5">City</div>
+                      <input
+                        name="city"
+                        value={city}
+                        onChange={onChange}
+                        className="border p-1 pl-2"
+                      />{" "}
+                    </div>
+                    <div className="grid grid-cols-2 w-5/6 items-center">
+                      <div className="text-right pr-5">State</div>
+                      <input
+                        name="states"
+                        value={states}
+                        onChange={onChange}
+                        className="border p-1 pl-2"
+                      />{" "}
+                    </div>
+                    <div className="grid grid-cols-2 w-5/6 items-center">
+                      <div className="text-right pr-5">Country</div>
+                      <select
+                        name="country"
+                        value={country}
+                        onChange={onChange}
+                        className="border p-1 pl-2"
+                      >
+                        {countries.sort().map((co, i) => (
+                          <option key={i} value={co}>
+                            {co}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="grid grid-cols-2 w-5/6 items-center">
+                      <div className="text-right pr-5">Zipcode</div>
+                      <input
+                        name="zipcode"
+                        value={zipcode}
+                        onChange={onChange}
+                        className="border p-1 pl-2"
+                      />{" "}
+                    </div>
+                    <div className="grid grid-cols-2 w-5/6 items-center">
+                      <div className="text-right pr-5">Recipient</div>
+                      <input
+                        name="recipient"
+                        value={recipient}
+                        onChange={onChange}
+                        className="border p-1 pl-2"
+                      />{" "}
+                    </div>
+                    <div className="grid grid-cols-2 w-5/6 items-center">
+                      <div className="text-right pr-5">Shipping Message</div>
+                      <textarea
+                        rows="5"
+                        cols="19"
+                        name="shippingMessage"
+                        value={shippingMessage}
+                        onChange={onChange}
+                        className="border p-1 pl-2"
+                      />{" "}
+                    </div>
+                  </>
+                )}
+
                 <button
                   onClick={saveDetails}
                   className="bg-gray-800 rounded text-gray-200 w-1/3 items-center py-2"

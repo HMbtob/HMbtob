@@ -29,7 +29,7 @@ const SaveProducts = () => {
     const rows = await sheet.getRows();
 
     console.log("반복문 시작");
-    for (let i = 3036; i < 3066; i++) {
+    for (let i = 3042; i < 3101; i++) {
       console.log(i, "번째");
 
       const productId = allOrderProductsList?.data[i]?.id;
@@ -297,7 +297,7 @@ const SaveProducts = () => {
         test{" "}
       </button>
       <button
-        onClick={() => console.log(allOrderProductsList.data[3036])}
+        onClick={() => console.log(allOrderProductsList.data[2879])}
         className="text-left text-2xl  
          mb-1 ml-2 bg-gray-500 text-gray-200 p-1 rounded m-1"
       >

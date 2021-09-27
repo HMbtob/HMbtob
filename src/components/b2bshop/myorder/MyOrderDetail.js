@@ -29,82 +29,98 @@ const MyOrderDetail = ({ match }) => {
 
         <div className="flex flex-row justify-evenly">
           {/* 주문내용 확인 */}
-          <div className="flex-col mb-10 flex space-y-2 w-1/3">
+          <div className="flex-col mb-10 flex space-y-3 w-1/3">
             <div className="grid grid-cols-2">
-              <div>Order Number</div>
+              <div className="text-right pr-5">Order Number</div>
               <div>{order.data.orderNumber}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>Order Status</div>
+              <div className="text-right pr-5">Order Status</div>
               <div>{order.data.orderState}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>E-MAIL</div>
+              <div className="text-right pr-5">E-MAIL</div>
               <div>{account.id}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>Order Date</div>
+              <div className="text-right pr-5">Order Date</div>
               {new Date(order?.data.createdAt.toDate()).toLocaleString()}
             </div>
             <div className="grid grid-cols-2">
-              <div>Payment Method</div>
+              <div className="text-right pr-5">Payment Method</div>
               <div>{order?.data.paymentMethod}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>Shipping Type</div>
+              <div className="text-right pr-5">Shipping Type</div>
               <div>{order?.data.shippingType}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>Phone Number</div>
+              <div className="text-right pr-5">Phone Number</div>
               <div>{account?.data.phoneNumber}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>Company Name</div>
+              <div className="text-right pr-5">Company Name</div>
               <div>{account?.data.companyName}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>Tax Id</div>
+              <div className="text-right pr-5">Tax Id</div>
               <div>{account?.data.taxId}</div>
             </div>
           </div>
           {/* 수령인 파트 */}
 
-          <div className="flex-col mb-10 flex space-y-2 w-1/3">
+          <div className="flex-col mb-10 flex space-y-3 w-1/3">
             <div className="grid grid-cols-2">
-              <div>Recipient</div>
+              <div className="text-right pr-5">Recipient</div>
               <div>{order?.data.recipient}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>Email</div>
+              <div className="text-right pr-5">Email</div>
               <div>{order?.data.recipientEmail}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>Number</div>
+              <div className="text-right pr-5">Number</div>
               <div>{order?.data.recipientPhoneNumber}</div>
             </div>
+            {order?.data.country !== "korea" ? (
+              <>
+                <div className="grid grid-cols-2">
+                  <div className="text-right pr-5">Street</div>
+                  <div>{order?.data.street}</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="text-right pr-5">City</div>
+                  <div>{order?.data.city}</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="text-right pr-5">State</div>
+                  <div>{order?.data.states}</div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="grid grid-cols-2">
+                  <div className="text-right pr-5">Address</div>
+                  <div>{order?.data.address}</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="text-right pr-5">Detail Address</div>
+                  <div>{order?.data.detailAddress}</div>
+                </div>
+              </>
+            )}
+
             <div className="grid grid-cols-2">
-              <div>Street</div>
-              <div>{order?.data.street}</div>
-            </div>
-            <div className="grid grid-cols-2">
-              <div>City</div>
-              <div>{order?.data.city}</div>
-            </div>
-            <div className="grid grid-cols-2">
-              <div>State</div>
-              <div>{order?.data.states}</div>
-            </div>
-            <div className="grid grid-cols-2">
-              <div>Country</div>
+              <div className="text-right pr-5">Country</div>
               <div>{order?.data.country}</div>
             </div>
             <div className="grid grid-cols-2">
-              <div>Zipcode</div>
+              <div className="text-right pr-5">Zipcode</div>
               <div>{order?.data.zipcode}</div>
             </div>
 
             <div className="grid grid-cols-2">
-              <div>Memo</div>
+              <div className="text-right pr-5">Shipping Message</div>
               <div>{order?.data.shippingMessage}</div>
             </div>
           </div>
@@ -146,7 +162,9 @@ const MyOrderDetail = ({ match }) => {
               key={doc.childOrderNumber}
               id={doc.childOrderNumber}
               order={doc}
+              orderr={order}
               currency={order.data.currency}
+              list={order.data.list}
             />
           ))}
         <div className="text-right flex flex-col items-end mt-6 text-lg">

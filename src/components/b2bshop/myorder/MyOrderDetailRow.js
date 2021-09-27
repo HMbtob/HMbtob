@@ -1,13 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import CancelIcon from "@material-ui/icons/Cancel";
 import UndoIcon from "@material-ui/icons/Undo";
 import LocalAirportIcon from "@material-ui/icons/LocalAirport";
+import { db } from "../../../firebase";
 
-const MyOrderDetailRow = ({ order, id, currency }) => {
+const MyOrderDetailRow = ({ order, id, currency, list, orderr }) => {
   const today = new Date();
   const preOrder = order.relDate.toDate() < today;
+  const [qty, setQty] = useState(order.quan);
+  const handleQty = e => {
+    setQty(e.target.value);
+  };
+
+  const saveQty = e => {
+    e.preventDefault();
+    const childIndex = orderr.data.list.findIndex(
+      li => li.childOrderNumber === id
+    );
+
+    orderr.data.list[childIndex].quan = Number(qty);
+    orderr.data.list[childIndex].totalPrice =
+      orderr.data.list[childIndex].price * qty;
+    const fixedTotalPrice = orderr.data.list.reduce((i, c) => {
+      return i + c.totalPrice;
+    }, 0);
+    db.collection("orders")
+      .doc("b2b")
+      .collection("b2borders")
+      .doc(orderr.id)
+      .update({ list: orderr.data.list, totalPrice: fixedTotalPrice });
+    alert("It has been modified");
+  };
   return (
-    <div
+    <form
+      onSubmit={saveQty}
       className={`${order.shipped && " bg-blue-100"} ${
         order?.canceled && "bg-gray-100"
       } ${
@@ -52,13 +78,31 @@ const MyOrderDetailRow = ({ order, id, currency }) => {
           : order.price.toFixed(2).toLocaleString("ko-KR")}{" "}
         {currency}
       </div>
-      <div className="col-span-2">{order.quan} EA</div>
+      <div className="col-span-2 flex flex-row items-center">
+        {orderr &&
+        (orderr.data.orderState === "Order" ||
+          orderr.data.orderState === "Pre-Order" ||
+          orderr.data.orderState === "Special-Order") ? (
+          <>
+            <input
+              type="number"
+              value={qty}
+              onChange={handleQty}
+              className="w-2/3 text-center outline-none py-1"
+            />{" "}
+            <button type="submit"></button>
+          </>
+        ) : (
+          qty
+        )}{" "}
+        EA
+      </div>
 
       <div className="col-span-2">
-        {(order.price.toFixed(2) * order.quan).toLocaleString("ko-KR")}{" "}
+        {qty && (order.price.toFixed(2) * qty).toLocaleString("ko-KR")}{" "}
         {currency}
       </div>
-    </div>
+    </form>
   );
 };
 

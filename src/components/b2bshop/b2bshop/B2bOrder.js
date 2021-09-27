@@ -4,6 +4,7 @@ import { useHistory } from "react-router";
 import { InitDataContext } from "../../../App";
 import { db } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
+import DaumPostcode from "react-daum-postcode";
 
 const B2bOrder = () => {
   const state = useContext(InitDataContext);
@@ -12,6 +13,9 @@ const B2bOrder = () => {
   const { user, simpleLists, products, dhlShippingFee, exchangeRate, orders } =
     state;
   const { z } = dhlShippingFee;
+
+  // daum 주소 api
+
   // order number를 위한 0 포함된 숫자 만드는 함수
   const addZeros = (n, digits) => {
     let zero = "";
@@ -60,6 +64,17 @@ const B2bOrder = () => {
       setConfirmCheck(false);
     }
   };
+  // 한국배송 체크
+  const [shipToKoreaChecked, setShipToKoreaCheck] = useState(false);
+
+  const shipToKoreaHandler = e => {
+    const { checked } = e.target;
+    if (checked) {
+      setShipToKoreaCheck(true);
+    } else {
+      setShipToKoreaCheck(false);
+    }
+  };
   //  인풋
   const [form, onChange, reset] = useInputs({
     recipient: user?.recipient,
@@ -67,7 +82,6 @@ const B2bOrder = () => {
     city: user?.city,
     states: user?.states,
     country: user?.country,
-    zipcode: user?.zipcode,
     recipientPhoneNumber: user?.recipientPhoneNumber,
     recipientEmail: user?.recipientEmail,
     shippingMessage: user?.shippingMessage,
@@ -84,7 +98,6 @@ const B2bOrder = () => {
     city,
     states,
     country,
-    zipcode,
     recipientPhoneNumber,
     recipientEmail,
     shippingMessage,
@@ -94,16 +107,20 @@ const B2bOrder = () => {
     companyName,
   } = form;
   const { orderEmail } = form;
+
+  const [address, setaddress] = useState(user?.address);
+  const [detailAddress, setdetailAddress] = useState(user?.detailAddress);
+  const [zipcode, setZipcode] = useState(user?.zipcode);
+
   const inputsName = [
     "Recipient",
     "Street",
     "City",
     "State",
     "Country",
-    "Zipcode",
     "Recipient PhoneNumber",
     "Recipient Email",
-    "Memo",
+    "Shipping Message",
     "Payment Method",
     "Shipping Type",
   ];
@@ -134,6 +151,7 @@ const B2bOrder = () => {
   const zone =
     z &&
     country.length > 0 &&
+    country !== "korea" &&
     Object.keys(
       z.find(doc =>
         Object.values(doc).find(asd => asd.country.includes(country))
@@ -142,12 +160,19 @@ const B2bOrder = () => {
 
   // 가격
   const fee =
-    z && country.length > 0 && shippingType.length > 0 && totalWeight < 30
+    z &&
+    country.length > 0 &&
+    shippingType.length > 0 &&
+    totalWeight < 30 &&
+    country !== "korea" &&
+    shipToKoreaChecked === false
       ? Number(
           Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
             .fee[num - 1].split(",")
             .join("")
         ) / exchangeRate[user.currency]
+      : shipToKoreaChecked === true
+      ? (totalWeight * 5000) / exchangeRate[user.currency]
       : (totalWeight * user.shippingRate["dhl"]) / exchangeRate[user.currency];
 
   // total price
@@ -177,7 +202,7 @@ const B2bOrder = () => {
         street,
         city,
         states,
-        country,
+        country: shipToKoreaChecked ? "korea" : country,
         zipcode,
         recipientPhoneNumber,
         recipientEmail,
@@ -199,6 +224,9 @@ const B2bOrder = () => {
         memo: "",
         taxId,
         companyName,
+        address,
+        detailAddress,
+        shipToKoreaChecked,
       });
     await db.collection("accounts").doc(user.email).update({
       recipient,
@@ -212,6 +240,8 @@ const B2bOrder = () => {
       shippingMessage,
       taxId,
       companyName,
+      address,
+      detailAddress,
     });
 
     // totalsold 계산
@@ -237,11 +267,54 @@ const B2bOrder = () => {
         });
     }
     await reset();
-    await alert("주문 완료");
+    await alert("order completed");
     if (user.type === "admin") {
       history.replace("/orderlist");
     }
     history.replace("/myorderlist");
+  };
+  // 팝업창 상태 관리
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  // 팝업창 열기
+  const openPostCode = () => {
+    setIsPopupOpen(true);
+  };
+
+  // 팝업창 닫기
+  const closePostCode = () => {
+    setIsPopupOpen(false);
+  };
+
+  const handlePostCode = data => {
+    let fullAddress = data.address;
+    let extraAddress = "";
+
+    if (data.addressType === "R") {
+      if (data.bname !== "") {
+        extraAddress += data.bname;
+      }
+      if (data.buildingName !== "") {
+        extraAddress +=
+          extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
+      }
+      fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
+    }
+    // console.log(data);
+    // console.log(fullAddress);
+    // console.log(data.zonecode);
+    setaddress(fullAddress);
+    setZipcode(data.zonecode);
+  };
+
+  const postCodeStyle = {
+    display: "block",
+    position: "absolute",
+    top: "20%",
+    right: "20%",
+    width: "600px",
+    height: "600px",
+    padding: "7px",
   };
 
   return (
@@ -263,8 +336,8 @@ const B2bOrder = () => {
         <div className="w-full flex flex-row justify-evenly">
           {/*   dep-3-2-1 주문자 */}
           <div className="flex-col mb-10 flex space-y-2  w-2/5">
-            <div className="grid grid-cols-2">
-              <div>Order Number</div>
+            <div className="grid grid-cols-2  items-center">
+              <div className="text-right pr-3">Order Number</div>
               {user &&
                 `${user.alias}-${new Date(today)
                   .toISOString()
@@ -273,16 +346,16 @@ const B2bOrder = () => {
             </div>
             {user && (
               <>
-                <div className="grid grid-cols-2">
-                  <div>Name</div>
+                <div className="grid grid-cols-2  items-center">
+                  <div className="text-right pr-3">Name</div>
                   <div>{user.displayName}</div>
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>Number</div>
+                <div className="grid grid-cols-2  items-center">
+                  <div className="text-right pr-3">Number</div>
                   <div>{user.phoneNumber}</div>
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>Email</div>
+                <div className="grid grid-cols-2  items-center">
+                  <div className="text-right pr-3">Email</div>
                   {user.type === "admin" ? (
                     <input
                       required
@@ -296,8 +369,8 @@ const B2bOrder = () => {
                     <div>{user.email}</div>
                   )}
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>Company Name</div>
+                <div className="grid grid-cols-2  items-center">
+                  <div className="text-right pr-3">Company Name</div>
                   <input
                     required
                     type="text"
@@ -307,8 +380,8 @@ const B2bOrder = () => {
                     onChange={onChange}
                   />
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>Tax Id</div>
+                <div className="grid grid-cols-2  items-center">
+                  <div className="text-right pr-3">Tax Id</div>
                   <input
                     required
                     type="text"
@@ -319,82 +392,251 @@ const B2bOrder = () => {
                     onChange={onChange}
                   />
                 </div>
+                <div className="grid grid-cols-2  items-center">
+                  <div className="text-right pr-3">Ship To Korea</div>
+                  <input
+                    required
+                    type="checkbox"
+                    className="border h-8 pl-2"
+                    checked={shipToKoreaChecked ? true : false}
+                    onChange={shipToKoreaHandler}
+                  />
+                </div>
               </>
             )}
           </div>
           {/* 세로선 */}
           <div className="border mb-10"></div>
           {/*   dep-3-2-2 수령인 */}
-          <div className="flex-col mb-10 flex space-y-2 w-2/5">
-            {Object.keys(form)
-              .slice(0, 11)
-              .map((doc, index) => (
-                <div key={index} className="grid grid-cols-2">
-                  <div className="p-1">{inputsName[index]}</div>
-                  {doc !== "paymentMethod" &&
-                  doc !== "shippingType" &&
-                  doc !== "shippingMessage" &&
-                  doc !== "country" ? (
-                    <input
-                      required
-                      className="border h-8  pl-2"
-                      type="text"
-                      name={doc}
-                      value={form[doc]}
-                      onChange={onChange}
-                    />
-                  ) : doc === "shippingMessage" ? (
-                    <textarea
-                      rows="5"
-                      cols="19"
-                      name="shippingMessage"
-                      value={shippingMessage}
-                      onChange={onChange}
-                      className="border p-1"
-                    />
-                  ) : (
-                    <select
-                      required
-                      name={doc}
-                      value={form[doc]}
-                      onChange={onChange}
-                      className="border"
-                    >
-                      {doc === "paymentMethod" ? (
-                        <>
-                          <option value="">required</option>
-                          {options[0].map((option, index) => (
-                            <option key={index} value={Object.keys(option)}>
-                              {Object.values(option)}
-                            </option>
-                          ))}
-                        </>
-                      ) : doc === "shippingType" ? (
-                        <>
-                          <option value="">required</option>
-                          {options[1].map((option, index) => (
-                            <option key={index} value={Object.keys(option)}>
-                              {Object.values(option)}
-                            </option>
-                          ))}
-                        </>
-                      ) : doc === "country" ? (
-                        <>
-                          <option value="">required</option>
-                          {countries.sort().map((co, i) => (
-                            <option key={i} value={co}>
-                              {co}
-                            </option>
-                          ))}
-                        </>
+          {!shipToKoreaChecked ? (
+            <div className="flex-col mb-10 flex space-y-2 w-2/5">
+              {Object.keys(form)
+                .slice(0, 10)
+                .map((doc, index) => (
+                  <>
+                    {index === 5 && (
+                      <div className="grid grid-cols-2 items-center">
+                        <div className="p-1 pr-3 text-right">Zip Code</div>
+                        <input
+                          required
+                          className="border h-8  pl-2"
+                          type="text"
+                          name="zipcode"
+                          value={zipcode}
+                          onChange={e => setZipcode(e.target.value)}
+                        />
+                      </div>
+                    )}
+                    <div key={index} className="grid grid-cols-2 items-center">
+                      <div className="p-1 pr-3 text-right">
+                        {inputsName[index]}
+                      </div>
+                      {doc !== "paymentMethod" &&
+                      doc !== "shippingType" &&
+                      doc !== "shippingMessage" &&
+                      doc !== "country" ? (
+                        <input
+                          required
+                          className="border h-8  pl-2"
+                          type="text"
+                          name={doc}
+                          value={form[doc]}
+                          onChange={onChange}
+                        />
+                      ) : doc === "shippingMessage" ? (
+                        <textarea
+                          rows="5"
+                          cols="19"
+                          name="shippingMessage"
+                          value={shippingMessage}
+                          onChange={onChange}
+                          className="border p-1"
+                        />
                       ) : (
-                        ""
+                        <select
+                          required
+                          name={doc}
+                          value={form[doc]}
+                          onChange={onChange}
+                          className="border p-1"
+                        >
+                          {doc === "paymentMethod" ? (
+                            <>
+                              <option value="">required</option>
+                              {options[0].map((option, index) => (
+                                <option key={index} value={Object.keys(option)}>
+                                  {Object.values(option)}
+                                </option>
+                              ))}
+                            </>
+                          ) : doc === "shippingType" ? (
+                            <>
+                              <option value="">required</option>
+                              {options[1].map((option, index) => (
+                                <option key={index} value={Object.keys(option)}>
+                                  {Object.values(option)}
+                                </option>
+                              ))}
+                            </>
+                          ) : doc === "country" ? (
+                            <>
+                              <option value="">required</option>
+                              {countries.sort().map((co, i) => (
+                                <option key={i} value={co}>
+                                  {co}
+                                </option>
+                              ))}
+                            </>
+                          ) : (
+                            ""
+                          )}
+                        </select>
                       )}
-                    </select>
-                  )}
+                    </div>
+                  </>
+                ))}
+            </div>
+          ) : (
+            <div className="flex-col mb-10 flex space-y-2 w-2/5">
+              <div className="grid grid-cols-2 items-center">
+                <div className="p-1 pr-3 text-right">Recipient</div>
+                <input
+                  required
+                  className="border h-8  pl-2"
+                  type="text"
+                  name="recipient"
+                  value={recipient}
+                  onChange={onChange}
+                />
+              </div>
+              <div className="grid grid-cols-2 items-center">
+                <div className="p-1 pr-3 text-right">Address</div>
+                <input
+                  required
+                  disabled
+                  className="border h-8  pl-2"
+                  type="text"
+                  name="address"
+                  value={address}
+                />
+              </div>
+              <div className="grid grid-cols-2 items-center">
+                <div className="p-1 pr-3 text-right">Detail Address</div>
+                <div className="grid grid-cols-2 items-center">
+                  <input
+                    required
+                    className="border h-8 pl-2"
+                    type="text"
+                    name="detailAddress"
+                    value={detailAddress}
+                    onChange={e => setdetailAddress(e.target.value)}
+                  />
+                  <div className="">
+                    {/* // 버튼 클릭 시 팝업 생성 */}
+                    {!isPopupOpen ? (
+                      <button
+                        type="button"
+                        onClick={openPostCode}
+                        className=" bg-gray-400 rounded-md p-1 px-2 ml-3 text-gray-100"
+                      >
+                        Search{" "}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={closePostCode}
+                        className=" bg-gray-400 rounded-md p-1 px-2 ml-3 text-gray-100"
+                      >
+                        Close
+                      </button>
+                    )}
+                    {/* // 팝업 생성 기준 div */}
+                    <div id="popupDom">
+                      {isPopupOpen && (
+                        <DaumPostcode
+                          style={postCodeStyle}
+                          onComplete={handlePostCode}
+                          autoClose
+                        />
+                      )}
+                    </div>
+                  </div>
                 </div>
-              ))}
-          </div>
+              </div>
+              <div className="grid grid-cols-2 items-center">
+                <div className="p-1 pr-3 text-right">Zip Code</div>
+                <input
+                  required
+                  disabled
+                  className="border h-8  pl-2"
+                  type="text"
+                  name="zipcode"
+                  value={zipcode}
+                />
+              </div>
+              <div className="grid grid-cols-2 items-center">
+                <div className="p-1 pr-3 text-right">Recipient PhoneNumber</div>
+                <input
+                  required
+                  className="border h-8  pl-2"
+                  type="text"
+                  name="recipientPhoneNumber"
+                  value={recipientPhoneNumber}
+                  onChange={onChange}
+                />
+              </div>
+              <div className="grid grid-cols-2 items-center">
+                <div className="p-1 pr-3 text-right">Recipient Email</div>
+                <input
+                  required
+                  className="border h-8  pl-2"
+                  type="text"
+                  name="recipientEmail"
+                  value={recipientEmail}
+                  onChange={onChange}
+                />
+              </div>
+              <div className="grid grid-cols-2 items-center">
+                <div className="p-1 pr-3 text-right">Shipping Message</div>
+                <textarea
+                  rows="5"
+                  cols="19"
+                  name="shippingMessage"
+                  value={shippingMessage}
+                  onChange={onChange}
+                  className="border p-1"
+                />
+              </div>
+              <div className="grid grid-cols-2 items-center">
+                <div className="p-1 pr-3 text-right">Payment Method</div>
+                <select
+                  required
+                  name="paymentMethod"
+                  value={paymentMethod}
+                  className="border p-1"
+                  onChange={onChange}
+                >
+                  <option>required</option>
+                  <option value="credit">Bank Transfer(Credit)</option>
+                </select>
+              </div>
+              <div className="grid grid-cols-2 items-center">
+                <div className="p-1 pr-3 text-right">Shipping Type</div>
+                <select
+                  required
+                  name="shippingType"
+                  value={shippingType}
+                  className="border p-1"
+                  onChange={onChange}
+                >
+                  {" "}
+                  <option>required</option>
+                  <option value="dhl">DHL</option>
+                  <option value="EMS">EMS</option>
+                </select>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* dep-3-3 */}
@@ -485,14 +727,33 @@ const B2bOrder = () => {
         </div>
 
         <div className="grid grid-cols-6 items-center mb-96 w-full place-items-center">
-          <div className="col-span-3">기본 약관/안내 체크하면 버튼 활성화</div>
-          <input
-            required
-            className="col-span-1"
-            type="checkbox"
-            checked={confirmChecked ? true : false}
-            onChange={checkHandler}
-          />
+          <div className="col-span-3">
+            <div className="text-sm">
+              1. Actual shipping cost may be adjusted.
+            </div>
+            <div className="text-sm">
+              2. The exchange rate at time of order rates will apply.
+            </div>
+            <div className="text-sm">
+              3. Delivery time may be adjusted depending on pre-ordered
+              products.
+            </div>
+            <div className="text-sm">
+              4. Quantity regulation by the buyer is only possible prior to
+              shipment processing.
+            </div>
+            <div className="text-md font-semibold text-center mt-3">
+              If you agree with all the details, please check the right.
+              <input
+                required
+                className="ml-3"
+                type="checkbox"
+                checked={confirmChecked ? true : false}
+                onChange={checkHandler}
+              />
+            </div>
+          </div>
+
           <button
             className={`${
               confirmChecked

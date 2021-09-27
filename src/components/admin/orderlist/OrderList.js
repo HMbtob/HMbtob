@@ -125,7 +125,7 @@ const OrderList = () => {
       <div className=" w-11/12 flex-col mt-20">
         <form
           onSubmit={searchProduct}
-          className="top-2 left-40 fixed z-50 flex flex-row
+          className="top-2 left-40 absolute z-50 flex flex-row
         "
         >
           <div className="bg-gray-200 p-1 rounded-lg w-96 flex flex-row">

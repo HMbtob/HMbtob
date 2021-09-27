@@ -1,5 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CommonRow from "./CommonRow";
+import FirstPageIcon from "@material-ui/icons/FirstPage";
+import LastPageIcon from "@material-ui/icons/LastPage";
+import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
+import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 
 export const Common = ({
   commonProducts,
@@ -16,6 +20,9 @@ export const Common = ({
     dispatch({ type: "CATEGORY", category: id });
   };
 
+  const [page, setPage] = useState(0);
+  const [pages] = useState([-4, -3, -2, -1, 0, 1, 2, 3, 4]);
+
   // 카테고리 추가는 여기서
   const categories = [
     { cd: "cd" },
@@ -25,6 +32,9 @@ export const Common = ({
     { officialStore: "official store" },
     { beauty: "beauty" },
   ];
+  useEffect(() => {
+    setPage(0);
+  }, [category]);
 
   return (
     <div className="flex flex-col h-lg w-11/12 mb-20 ">
@@ -66,6 +76,7 @@ export const Common = ({
         {commonProducts &&
           commonProducts
             .filter(a => a.data.category === category)
+            .slice(0 + page * 50, 50 + page * 50)
             .map(product => (
               <CommonRow
                 key={product.id}
@@ -83,6 +94,62 @@ export const Common = ({
                 reStockRequest={reStockRequest}
               />
             ))}
+      </div>
+      <div className="flex flex-row w-full items-center justify-center">
+        <FirstPageIcon onClick={() => setPage(0)} className="cursor-pointer" />
+        <ArrowLeftIcon
+          className="cursor-pointer"
+          onClick={() => (page === 0 ? setPage(0) : setPage(page - 1))}
+        />
+        {pages.map(
+          (pag, i) =>
+            pag + page > 0 &&
+            pag + page <
+              parseInt(
+                commonProducts?.filter(a => a.data.category === category)
+                  .length / 50
+              ) +
+                1 && (
+              <div
+                key={i}
+                className={`cursor-pointer text-lg px-2 py-1 text-gray-600 ${
+                  i === 5 && "font-bold"
+                }`}
+                onClick={() => setPage(page + pag - 1)}
+              >
+                {pag + page}{" "}
+              </div>
+            )
+        )}
+        <ArrowRightIcon
+          className="cursor-pointer"
+          onClick={() =>
+            page ===
+            parseInt(
+              commonProducts?.filter(a => a.data.category === category).length /
+                50
+            ) -
+              1
+              ? setPage(
+                  parseInt(
+                    commonProducts?.filter(a => a.data.category === category)
+                      .length / 50
+                  ) - 1
+                )
+              : setPage(page + 1)
+          }
+        />
+        <LastPageIcon
+          className="cursor-pointer"
+          onClick={() =>
+            setPage(
+              parseInt(
+                commonProducts?.filter(a => a.data.category === category)
+                  .length / 50
+              ) - 1
+            )
+          }
+        />
       </div>
     </div>
   );
