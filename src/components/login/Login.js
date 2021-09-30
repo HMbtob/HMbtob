@@ -23,34 +23,19 @@ function Login() {
   };
 
   const [modal1Open, setModal1Open] = useState(false);
-  const [modal2Open, setModal2Open] = useState(false);
-  const openModal = e => {
-    const { name } = e.target;
-    if (name === "modal1") {
-      setModal1Open(true);
-    } else if (name === "modal2") {
-      setModal2Open(true);
-    }
+  const openModal = () => {
+    setModal1Open(true);
   };
-  const closeModal = e => {
-    // const { name } = e.target;
-    // if (name === "modal1") {
+  const closeModal = () => {
     setModal1Open(false);
-    // } else if (name === "modal2") {
-    setModal2Open(false);
-    // }
   };
-  console.log(auth);
   const forgotPassword = e => {
     e.preventDefault();
     const inputEmail = prompt("Please enter your email address.");
     if (inputEmail != null) {
-      // const auth = getAuth();
       auth
         .sendPasswordResetEmail(inputEmail)
         .then(() => {
-          // Password reset email sent!
-          // ..
           console.log("성공");
         })
         .catch(error => {
@@ -61,14 +46,17 @@ function Login() {
     }
   };
   return (
-    <div className="h-screen grid place-items-center bg-gray-100">
-      <div className=" p-24 text-center rounded bg-white flex flex-col items-center">
+    <div className="flex flex-col bg-gray-100 h-auto min-h-screen w-scree">
+      <div
+        className="p-10 lg:p-24 text-center rounded bg-white flex flex-col items-center 
+       m-auto w-11/12 lg:w-auto"
+      >
         <img
           src="https://firebasestorage.googleapis.com/v0/b/interasiastock.appspot.com/o/assets%2Finterlogo-500.jpeg?alt=media&token=af2ec17d-dc0b-4147-9c7a-650ab2db870a"
           alt="logo"
-          className="bg-contain h-96"
+          className="h-40 lg:h-96"
         />
-        <div className="flex flex-col w-80">
+        <div className="flex flex-col w-11/12 lg:w-80">
           <input
             ref={emailRef}
             type="email"
@@ -85,18 +73,18 @@ function Login() {
         <button
           type="submit"
           onClick={signInWithEmail}
-          className="text-lg font-semibold bg-gray-400 w-80 p-2
+          className="text-lg font-semibold bg-gray-400 w-11/12 lg:w-80 p-2
            rounded mt-3 text-white"
         >
           Sign In
         </button>
         <div
           onClick={forgotPassword}
-          className="text-right text-gray-800 w-80 text-xs mt-1 cursor-pointer"
+          className="text-right text-gray-800 w-11/12 mt-3 lg:w-80 text-xs cursor-pointer"
         >
           forgot password?
         </div>
-        <div className="flex flex-row mt-5 w-80 justify-start">
+        <div className="flex flex-col lg:flex-row mt-5 w-80 justify-start">
           <div className="text-gray-700">{"New to INTERASIA ?  "}</div>
           <button
             className=" font-bold cursor-pointer text-gray-800"
@@ -108,7 +96,8 @@ function Login() {
         </div>
         <div className="mt-5 text-2xl font-semibold text-gray-600">or</div>
         <button
-          className="mt-5 bg-gray-800 text-lg text-gray-50 px-8 p-2 rounded"
+          className="mt-5 bg-gray-800 text-lg text-gray-50 px-2 lg:px-8 p-2 rounded
+          w-11/12 lg:w-80"
           onClick={signInWithGoogle}
         >
           Sign in with Google

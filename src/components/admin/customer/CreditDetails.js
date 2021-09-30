@@ -3,7 +3,10 @@ import React from "react";
 const CreditDetails = ({ creditDetails }) => {
   return (
     <div className="overflow-y-auto">
-      <div className="grid grid-cols-5 text-gray-200 bg-gray-800 text-center">
+      <div
+        className="grid grid-cols-5 text-gray-200 bg-gray-800 text-center 
+      text-xs lg:text-base"
+      >
         <div className="col-span-2">DATE</div>
         <div>TYPE</div>
         <div>PRICE</div>
@@ -11,7 +14,11 @@ const CreditDetails = ({ creditDetails }) => {
       </div>
       {creditDetails &&
         creditDetails.map((de, i) => (
-          <div key={i} className="grid grid-cols-5 text-center border-b py-1">
+          <div
+            key={i}
+            className="grid grid-cols-5 text-center border-b py-1
+          text-xs"
+          >
             <div className="col-span-2">
               {de.date.toDate().toLocaleString()}
             </div>

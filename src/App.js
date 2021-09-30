@@ -2,11 +2,14 @@ import React, { useEffect, useReducer } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Spinner from "react-spinkit";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { useMediaQuery } from "react-responsive";
 
 import { auth, db } from "./firebase";
 import { initState, dataReducer } from "./reducer/Reducer";
 
 import B2bShop from "./components/b2bshop/b2bshop/B2bShop";
+import B2bShopMobile from "./components/b2bshop/b2bshop/mobile/B2bShopMobile";
+
 import B2bOrder from "./components/b2bshop/b2bshop/B2bOrder";
 import B2bSpecialOrder from "./components/b2bshop/b2bshop/B2bSpecialOrder";
 import OrderList from "./components/admin/orderlist/OrderList";
@@ -30,6 +33,8 @@ import Header from "./components/header/Header";
 import PickUpList from "./components/invoice/PickUpList";
 import Invoice from "./components/invoice/Invoice";
 import InAdminChat from "./components/chat/InAdminChat";
+import MobileLogin from "./components/login/MobileLogin";
+import MobileHeader from "./components/header/MobileHeader";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -39,6 +44,16 @@ function App() {
   const [state, dispatch] = useReducer(dataReducer, initState);
   const { userType } = state;
   // TODO: 유저타입을 -> user.userType 으로 대체가능한가?
+
+  // 반응형
+  const isPc = useMediaQuery({
+    query: "(min-width:768px)",
+  });
+
+  const isMobile = useMediaQuery({
+    query: "(max-width:767px)",
+  });
+
   useEffect(() => {
     db.collection("accounts")
       .doc(user?.email)
@@ -211,15 +226,31 @@ function App() {
             <InitDataContext.Provider value={state}>
               {" "}
               {/* <div className="flex flex-col"> */}
-              <Header />
-              <Switch>
-                <Route path="/myorderlist/:id" component={MyOrderDetail} />
-                <Route path="/myorderlist" component={MyOrderList} />
-                <Route path="/myinfo/:uid" component={MyInfo} />
-                <Route path="/b2bspecialorder" component={B2bSpecialOrder} />
-                <Route path="/b2border" component={B2bOrder} />
-                <Route path="/" component={B2bShop} />
-              </Switch>{" "}
+              {isPc && (
+                <>
+                  <Header />
+                  <Switch>
+                    <Route path="/myorderlist/:id" component={MyOrderDetail} />
+                    <Route path="/myorderlist" component={MyOrderList} />
+                    <Route path="/myinfo/:uid" component={MyInfo} />
+                    <Route
+                      path="/b2bspecialorder"
+                      component={B2bSpecialOrder}
+                    />
+                    <Route path="/b2border" component={B2bOrder} />
+                    <Route path="/" component={B2bShop} />
+                  </Switch>{" "}
+                </>
+              )}
+              {isMobile && (
+                <>
+                  <MobileHeader />
+                  <Switch>
+                    <Route path="/myinfo/:uid" component={MyInfo} />
+                    <Route path="/" component={B2bShopMobile} />
+                  </Switch>
+                </>
+              )}
               {/* </div> */}
             </InitDataContext.Provider>{" "}
           </InitDispatchContext.Provider>
@@ -299,6 +330,8 @@ function App() {
     return (
       <InitDataContext.Provider value={state}>
         <Login />
+        {/* {isPc && <Login />}
+        {isMobile && <MobileLogin />} */}
       </InitDataContext.Provider>
     );
   }

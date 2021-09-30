@@ -94,13 +94,17 @@ const OrderDetailRow = ({
         </div>
         <div>
           {aList.titleUrl && (
-            <button onClick={() => window.open(`${aList.titleUrl}`, "_blank")}>
+            <button
+              onClick={() => window.open(`${aList.titleUrl}`, "_blank")}
+              type="button"
+            >
               <LinkIcon fontSize="small" />
             </button>
           )}{" "}
           {aList.thumbNailUrl && (
             <button
               onClick={() => window.open(`${aList.thumbNailUrl}`, "_blank")}
+              type="button"
             >
               <ImageIcon fontSize="small" />
             </button>

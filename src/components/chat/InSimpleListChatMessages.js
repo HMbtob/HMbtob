@@ -12,16 +12,16 @@ const InAdminChatMessages = ({ selectedMessages, user }) => {
             key={i}
             className={`${
               user.email === doc.data.user
-                ? "self-end pr-10"
-                : "self-start pl-10"
-            } p-3`}
+                ? "self-end pr-2 lg:pr-10"
+                : "self-start pl-2 lg:pl-10"
+            } p-2 lg:p-3`}
           >
             <div
               className={`${
                 user.email === doc.data.user
                   ? "bg-white text-gray-800"
                   : "bg-gray-600 text-white"
-              } rounded-md p-2`}
+              } rounded-md pl-2 p-1 lg:p-2`}
             >
               {doc.data.message}
             </div>

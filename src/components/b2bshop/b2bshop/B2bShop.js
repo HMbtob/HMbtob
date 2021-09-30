@@ -567,7 +567,7 @@ const B2bShop = () => {
                 >
                   Message
                 </div>
-                <Modal open={modalOpen} close={closeModal} header={"문의하기"}>
+                <Modal open={modalOpen} close={closeModal} header={"Message"}>
                   <InSimpleList
                     user={user}
                     selectedMessages={selectedMessages}

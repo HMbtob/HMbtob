@@ -79,9 +79,9 @@ const MyInfo = ({ match }) => {
         >
           MY INFOMATION
         </div>
-        <div className="flex flex-row justify-evenly">
+        <div className="flex flex-col lg:flex-row justify-evenly">
           {/* 주문내용 확인 */}
-          <div className="flex-col mb-10 flex space-y-2 w-1/2 items-center">
+          <div className="flex-col mb-20 lg:mb-10 flex space-y-2  items-center">
             <div className="grid grid-cols-2">
               <div className="text-right pr-2">E-MAIL :</div>
               <div>{user?.id}</div>

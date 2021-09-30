@@ -28,15 +28,15 @@ const InSimpleList = ({ user, selectedMessages, selectedRoom, refresh }) => {
   }
   return (
     <>
-      <div className="top-0 h-12 w-3/4 ml-32 mb-5 sticky">
+      <div className="top-0 h-12 w-11/12 lg:w-3/4 m-auto  mb-5 sticky">
         {/* <div className="flex flex-row"> */}
         <div
-          className="flex flex-row items-center justify-between w-full h-full
-            border bg-white ml-8"
+          className="flex flex-row items-center justify-between 
+          w-full h-full border bg-white"
         >
           <input
             type="text"
-            className="p-1 w-5/6 pl-3 outline-none"
+            className="p-1 w-9/12 lg:w-11/12 pl-3 outline-none"
             placeholder="Send a Message"
             onChange={handleMessage}
             value={message}
@@ -45,7 +45,7 @@ const InSimpleList = ({ user, selectedMessages, selectedRoom, refresh }) => {
           <button onClick={sendMessage}>
             <SendIcon style={{ color: "gray" }} />
           </button>
-          <button onClick={refresh} className=" mr-3">
+          <button onClick={refresh} className="mr-1 lg:mr-3">
             <RestoreIcon style={{ color: "gray" }} />
           </button>
         </div>
