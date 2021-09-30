@@ -27,9 +27,9 @@ const MyOrderDetail = ({ match }) => {
           My Order
         </div>
 
-        <div className="flex flex-row justify-evenly">
+        <div className="flex flex-col lg:flex-row justify-evenly">
           {/* 주문내용 확인 */}
-          <div className="flex-col mb-10 flex space-y-3 w-1/3">
+          <div className="flex-col mb-10 flex space-y-3">
             <div className="grid grid-cols-2">
               <div className="text-right pr-5">Order Number</div>
               <div>{order.data.orderNumber}</div>
@@ -68,8 +68,9 @@ const MyOrderDetail = ({ match }) => {
             </div>
           </div>
           {/* 수령인 파트 */}
+          <div className="border mb-10"></div>
 
-          <div className="flex-col mb-10 flex space-y-3 w-1/3">
+          <div className="flex-col mb-10 flex space-y-3">
             <div className="grid grid-cols-2">
               <div className="text-right pr-5">Recipient</div>
               <div>{order?.data.recipient}</div>
@@ -144,17 +145,16 @@ const MyOrderDetail = ({ match }) => {
         </div>
         {/* dep-3-3 */}
         <div
-          className="grid grid-cols-28 text-center bg-gray-800
+          className="grid grid-cols-6 lg:grid-cols-28 text-center bg-gray-800
             text-xs py-1 rounded-sm text-gray-100 font-semibold"
         >
-          <div className="col-span-3">No.</div>
-          <div className="col-span-3">DATE</div>
-          <div className="col-span-3">RELEASE</div>
-          <div className="col-span-13">TITLE</div>
-          <div className="col-span-2">PRICE</div>
-          <div className="col-span-2">EA</div>
-
-          <div className="col-span-2">AMOUNT</div>
+          <div className="hidden lg:grid lg:col-span-3">No.</div>
+          <div className="hidden lg:grid lg:col-span-3">DATE</div>
+          <div className="hidden lg:grid lg:col-span-3">RELEASE</div>
+          <div className="col-span-4 lg:gird lg:col-span-13">TITLE</div>
+          <div className="col-span-1 lg:gird lg:col-span-2">PRICE</div>
+          <div className="col-span-1 lg:gird lg:col-span-2">EA</div>
+          <div className="hidden lg:grid lg:col-span-2">AMOUNT</div>
         </div>
         {order &&
           order.data.list.map(doc => (

@@ -223,6 +223,7 @@ const EmailSignUp = () => {
           <option>What transport method do you prefer?</option>
           <option value="DHL">DHL</option>
           <option value="EMS">EMS</option>
+          <option value="UMAC(PH)">UMAC(PH)</option>
           <option value="Other">Other</option>
         </select>
         <select

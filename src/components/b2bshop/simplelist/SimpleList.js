@@ -11,18 +11,22 @@ const SimpleList = ({
 }) => {
   const { user } = state;
   return (
-    <div className="m-auto h-3/4 w-11/12 mt-9 flex flex-col text-center text-sm font-bold text-gray-800">
+    <div
+      className="m-auto h-auto lg:h-full w-full lg:w-11/12 mt-12 flex flex-col 
+    text-center text-sm font-bold text-gray-800 
+    absolute lg:static bg-white lg:bg-transparent"
+    >
       CART LIST
       <div
-        className="grid grid-cols-7 place-items-center text-center text-xs bg-gray-800 py-1 
-        text-gray-200"
+        className="grid grid-cols-7 place-items-center text-center 
+        text-xs bg-blue-900 lg:bg-gray-800 py-1 text-gray-200"
       >
         <div className="col-span-3">TITLE</div>
         <div className="col-span-2">QUAN</div>
         <div className="col-span-1">PRICE</div>
         <div className="col-span-1">TOTAL</div>
       </div>
-      <div className="h-2/3 mb-10 overflow-y-auto">
+      <div className="h-2/3 lg:mb-10 overflow-y-auto">
         {simpleList &&
           simpleList.map(doc => (
             <SimpleListRow
@@ -38,7 +42,7 @@ const SimpleList = ({
             />
           ))}
         {/* 버튼들 */}
-        <div className="w-full flex flex-col justify-evenly mt-10">
+        <div className="w-full lg:flex flex-col justify-evenly mt-10 hidden">
           <div className="w- full flex flex-row justify-evenly">
             {user && (
               <>

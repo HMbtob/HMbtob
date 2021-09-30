@@ -82,7 +82,6 @@ const B2bSpecialOrder = () => {
   const addSpecialList = e => {
     e.preventDefault();
     if (
-      shopName.length > 0 &&
       title.length > 0 &&
       titleUrl.length > 0 &&
       price.length > 0 &&
@@ -105,7 +104,7 @@ const B2bSpecialOrder = () => {
           amount: Number(
             (
               Number(
-                price * (1 - user.dcRates["specialOrder"]) +
+                price * (1 - user.dcRates["specialOrder"]) -
                   Number(user.dcAmount["specialOrderA"].toFixed(0))
               ) * qty
             ).toFixed(2)
@@ -223,7 +222,7 @@ const B2bSpecialOrder = () => {
 
   const options = [
     [{ credit: "Bank Transfer(Credit)" }],
-    [{ dhl: "DHL" }, { EMS: "EMS" }],
+    [{ dhl: "DHL" }, { EMS: "EMS" }, { "UMAC(PH)": "UMAC(PH)" }],
   ];
 
   // 운임, 총무게
@@ -353,11 +352,11 @@ const B2bSpecialOrder = () => {
           Special Order Details
         </div>
         {/* dep-3-2 주문자 / 수령인*/}
-        <div className="w-full flex flex-row justify-evenly">
+        <div className="w-full flex flex-col lg:flex-row justify-evenly">
           {/*   dep-3-2-1 주문자 */}
-          <div className="flex-col mb-10 flex space-y-2  w-2/5">
+          <div className="flex-col mb-10 flex space-y-2 ">
             <div className="grid grid-cols-2">
-              <div>Order Number</div>
+              <div className="text-right pr-3">Order Number</div>
               {user &&
                 `${user.alias}-${new Date(today)
                   .toISOString()
@@ -366,16 +365,16 @@ const B2bSpecialOrder = () => {
             </div>
             {user && (
               <>
-                <div className="grid grid-cols-2">
-                  <div>Name</div>
+                <div className="grid grid-cols-2 items-center">
+                  <div className="text-right pr-3">Name</div>
                   <div>{user.displayName}</div>
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>Number</div>
+                <div className="grid grid-cols-2 items-center">
+                  <div className="text-right pr-3">Number</div>
                   <div>{user.phoneNumber}</div>
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>Email</div>
+                <div className="grid grid-cols-2 items-center">
+                  <div className="text-right pr-3">Email</div>
                   {user.type === "admin" ? (
                     <input
                       required
@@ -389,8 +388,8 @@ const B2bSpecialOrder = () => {
                     <div>{user.email}</div>
                   )}
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>Company Name</div>
+                <div className="grid grid-cols-2 items-center">
+                  <div className="text-right pr-3">Company Name</div>
                   <input
                     required
                     type="text"
@@ -400,8 +399,8 @@ const B2bSpecialOrder = () => {
                     onChange={onChange}
                   />
                 </div>
-                <div className="grid grid-cols-2">
-                  <div>Tax Id</div>
+                <div className="grid grid-cols-2 items-center">
+                  <div className="text-right pr-3">Tax Id</div>
                   <input
                     required
                     type="text"
@@ -417,12 +416,12 @@ const B2bSpecialOrder = () => {
           {/* 세로선 */}
           <div className="border mb-10"></div>
           {/*   dep-3-2-2 수령인 */}
-          <div className="flex-col mb-10 flex space-y-2 w-2/5">
+          <div className="flex-col mb-10 flex space-y-2">
             {Object.keys(form)
               .slice(0, 11)
               .map((doc, index) => (
-                <div key={index} className="grid grid-cols-2">
-                  <div className="p-1">{inputsName[index]}</div>
+                <div key={index} className="grid grid-cols-2 items-center">
+                  <div className="text-right pr-3">{inputsName[index]}</div>
                   {doc !== "paymentMethod" &&
                   doc !== "shippingType" &&
                   doc !== "shippingMessage" &&
@@ -450,7 +449,7 @@ const B2bSpecialOrder = () => {
                       name={doc}
                       value={form[doc]}
                       onChange={onChange}
-                      className="border"
+                      className="border p-1"
                     >
                       {doc === "paymentMethod" ? (
                         <>
@@ -494,28 +493,32 @@ const B2bSpecialOrder = () => {
           {/* 번호/앨범명/판매가/할인가/금액 */}
 
           <div
-            className="grid grid-cols-28 text-center bg-gray-800 rounded-sm 
+            className="grid grid-cols-9 lg:grid-cols-28 text-center bg-gray-800 rounded-sm 
          text-sm font-semibold text-gray-100"
           >
-            <div className="col-span-4">No.</div>
-            <div className="col-span-3">Shop Name</div>
-            <div className="col-span-7">Title</div>
-            <div className="col-span-2">Url</div>
-            <div className="col-span-2">Thumb Nail</div>
-            <div className="col-span-3">Price</div>
-            <div className="col-span-3">Fee</div>
-            <div className="col-span-2">Qty</div>
-            <div className="col-span-2">Amount</div>
+            <div className="hidden lg:grid lg:col-span-4">No.</div>
+            <div className="hidden lg:grid lg:col-span-3">Shop Name</div>
+            <div className="col-span-6 lg:col-span-7">Title</div>
+            <div className="col-span-1 lg:col-span-2">Url</div>
+            <div className="hidden lg:grid lg:col-span-2">Thumb Nail</div>
+            <div className="col-span-1 lg:col-span-3">Price</div>
+            <div className="hidden lg:grid lg:col-span-3">Fee</div>
+            <div className="col-span-1 lg:col-span-2">Qty</div>
+            <div className="hidden lg:grid lg:col-span-2">Amount</div>
           </div>
           {specialList &&
             specialList.map((li, i) => (
-              <div key={i} className="grid grid-cols-28 text-xs">
-                <div className="col-span-4 text-center p-1">
+              <div key={i} className="grid grid-cols-9 lg:grid-cols-28 text-xs">
+                <div className="hidden lg:col-span-4 lg:text-center lg:p-1">
                   {li.childOrderNumber}
                 </div>
-                <div className="col-span-3 text-center p-1">{li.shopName}</div>
-                <div className="col-span-7 p-1">{li.title}</div>
-                <div className="col-span-2 p-1 text-center">
+                <div className="hidden lg:grid lg:col-span-3 text-center p-1">
+                  {li.shopName}
+                </div>
+                <div className="col-span-6 lg:col-span-7 p-1 pl-2">
+                  {li.title}
+                </div>
+                <div className="col-span-1 lg:col-span-2 p-1 text-center">
                   {li.titleUrl && (
                     <button
                       onClick={() => window.open(`${li.titleUrl}`, "_blank")}
@@ -524,7 +527,7 @@ const B2bSpecialOrder = () => {
                     </button>
                   )}
                 </div>
-                <div className="col-span-2 p-1 text-center">
+                <div className="hidden lg:grid lg:col-span-2 p-1 text-center">
                   {li.thumbNailUrl && (
                     <button
                       onClick={() =>
@@ -535,28 +538,30 @@ const B2bSpecialOrder = () => {
                     </button>
                   )}
                 </div>
-                <div className="col-span-3 text-center p-1">
+                <div className="col-span-1 lg:col-span-3 text-center p-1">
                   {li.price - li.dcAmount} krw
                 </div>
-                <div className="col-span-3 text-center p-1">
+                <div className="hidden lg:grid lg:col-span-3 text-center p-1">
                   {li.dcAmount} krw
                 </div>
-                <div className="col-span-2 text-center p-1">{li.qty} ea</div>
-                <div className="col-span-2 text-center p-1">
+                <div className="col-span-1 lg:col-span-2 text-center p-1">
+                  {li.qty} ea
+                </div>
+                <div className="hidden lg:grid lg:col-span-2 text-center p-1">
                   {li.amount} krw
                 </div>
               </div>
             ))}
           <div
-            className="grid grid-cols-28 rounded-sm 
+            className="grid grid-cols-9 lg:grid-cols-28 rounded-sm 
          text-sm  text-gray-800 items-center"
           >
-            <div className="col-span-4 flex justify-center items-center">
+            <div className="col-span-1 lg:grid lg:col-span-4 flex justify-center items-center">
               <button onClick={addSpecialList}>
                 <AddCircleIcon style={{ color: "grey" }} />
               </button>
             </div>
-            <div className="col-span-3">
+            <div className="hidden lg:grid lg:col-span-3">
               <select
                 name=""
                 id=""
@@ -571,27 +576,27 @@ const B2bSpecialOrder = () => {
                 <option value="YG">YG</option>
               </select>
             </div>
-            <div className="col-span-7 flex ">
+            <div className="col-span-4 lg:col-span-7 flex ">
               <input
                 type="text"
-                placeholder="Copy and paste item title"
+                placeholder="Paste item title"
                 className="border h-8 w-full pl-2 outline-none"
                 name="title"
                 onChange={onChange2}
                 value={title}
               />
             </div>
-            <div className="col-span-2">
+            <div className="col-span-2 lg:col-span-2">
               <input
                 type="text"
-                placeholder="Copy and paste item url"
+                placeholder="Type url"
                 className="border h-8 w-full pl-2 outline-none"
                 name="titleUrl"
                 onChange={onChange2}
                 value={titleUrl}
               />
             </div>
-            <div className="col-span-2">
+            <div className="hidden lg:grid lg:col-span-2">
               <input
                 type="text"
                 placeholder="Copy and paste the thumbnail URL."
@@ -601,7 +606,7 @@ const B2bSpecialOrder = () => {
                 value={thumbNailUrl}
               />
             </div>
-            <div className="col-span-3">
+            <div className="col-span-1 lg:col-span-3">
               <input
                 type="number"
                 placeholder="Price(KRW)"
@@ -611,8 +616,8 @@ const B2bSpecialOrder = () => {
                 value={price}
               />
             </div>
-            <div className="col-span-3"></div>
-            <div className="col-span-2">
+            <div className="hidden lg:grid lg:col-span-3"></div>
+            <div className="col-span-1 lg:col-span-2">
               <input
                 type="number"
                 placeholder="Qty"
@@ -622,111 +627,56 @@ const B2bSpecialOrder = () => {
                 value={qty}
               />
             </div>
-            <div className="col-span-2 text-center font-semibold">
+            <div className="hidden lg:grid lg:col-span-2 text-center font-semibold">
               {price && qty && price * qty}
             </div>
           </div>
-          {/* <div className="w-full text-right text-sm text-gray-600 p-2">
-            Copy and paste the
-            <span className="text-base font-semibold text-gray-800">
-              {" "}
-              Thumb Nail
-            </span>{" "}
-            url address and press Enter. Please wait until the address changes.
-          </div> */}
-          {/* <div
-            className="flex flex-col rounded-sm 
-         text-base  text-gray-800 items-center bg-gray-400"
-          > */}
-
-          {/* </div> */}
-          {/* {simpleLists && (
-            <>
-              {simpleLists.map((doc, index) => (
-                <div
-                  className="grid grid-cols-12 text-center text-sm bg-white
-                  border-b border-r border-l py-1"
-                  key={index}
-                >
-                  <div className="col-span-2">{doc.childOrderNumber}</div>
-                  <div className="col-span-2">
-                    {
-                      products?.find(product => product.id === doc.productId)
-                        .data.sku
-                    }
-                  </div>
-                  <div className="col-span-4 text-left">{doc.title}</div>
-                  <div className="col-span-1">
-                    {new Date(doc.relDate.toDate()).toLocaleDateString()}
-                  </div>
-
-                  <div>
-                    {doc.price?.toLocaleString("ko-KR")} {user?.currency}
-                  </div>
-
-                  <div>{doc.quan} EA</div>
-
-                  <div>
-                    {(doc.price * doc.quan)?.toLocaleString("ko-KR")}{" "}
-                    {user?.currency}
-                  </div>
-                </div>
-              ))}
-            </>
-          )} */}
         </div>
 
         {/* dep-3-4 */}
         <div className="flex-col mb-10 w-full flex items-end">
           <div className="grid grid-cols-2 w-2/3 text-right ">
             <div>TOTAL PRICE</div>
-            <div>
-              {totalPrice && totalPrice.toLocaleString("ko-KR")} KRW
-              {/* {simpleLists && simpleLists[0]?.currency === "KRW"
-                ? totalPrice.toLocaleString("ko-KR")
-                : totalPrice.toFixed(2).toLocaleString("ko-KR")}{" "}
-              {user?.currency} */}
+            <div>{totalPrice && totalPrice.toLocaleString("ko-KR")} KRW</div>
+          </div>
+        </div>
+
+        <div
+          className="grid grid-cols-1 lg:grid-cols-6 items-center mb-96 
+        w-full place-items-center"
+        >
+          <div className="col-span-3">
+            <div className="text-sm">
+              1. Actual shipping cost may be adjusted.
+            </div>
+            <div className="text-sm">
+              2. The exchange rate at time of order rates will apply.
+            </div>
+            <div className="text-sm">
+              3. Delivery time may be adjusted depending on pre-ordered
+              products.
+            </div>
+            <div className="text-sm">
+              4. Quantity regulation by the buyer is only possible prior to
+              shipment processing.
+            </div>
+            <div className="text-md font-semibold text-center mt-3">
+              If you agree with all the details, please check the right.
+              <input
+                required
+                className="ml-3"
+                type="checkbox"
+                checked={confirmChecked ? true : false}
+                onChange={checkHandler}
+              />
             </div>
           </div>
 
-          {/* <div className="grid grid-cols-2  text-right  w-2/3">
-            <div>SHIPPING FEE</div>
-            <div className="w-full">
-              {fee && user?.currency === "KRW"
-                ? `${fee.toLocaleString("ko-KR")} ${user?.currency}`
-                : fee && user?.currency !== "KRW"
-                ? `${fee.toFixed(2).toLocaleString("ko-KR")} ${user?.currency}`
-                : "Please select country and shipping type"}
-            </div>
-          </div> */}
-          {/* <div className="grid grid-cols-2  text-right  w-2/3">
-            <div>AMOUNT</div>
-            <div className="w-full">
-              {amountPrice && user?.currency === "KRW"
-                ? `${amountPrice.toLocaleString("ko-KR")} ${user?.currency}`
-                : amountPrice && user?.currency !== "KRW"
-                ? `${amountPrice.toFixed(2).toLocaleString("ko-KR")} ${
-                    user?.currency
-                  }`
-                : "Please select country and shipping type"}
-            </div>
-          </div> */}
-        </div>
-
-        <div className="grid grid-cols-6 items-center mb-96 w-full place-items-center">
-          <div className="col-span-3">기본 약관/안내 체크하면 버튼 활성화</div>
-          <input
-            required
-            className="col-span-1"
-            type="checkbox"
-            checked={confirmChecked ? true : false}
-            onChange={checkHandler}
-          />
           <button
             className={`${
               confirmChecked
-                ? "col-span-2 bg-gray-800 py-2 px-8 rounded-sm text-gray-100"
-                : "col-span-2 bg-gray-100 py-2 px-8 rounded-sm text-gray-100"
+                ? "mt-5 lg:mt-1 col-span-2 bg-gray-800 py-2 px-8 rounded-sm text-gray-100"
+                : "mt-5 lg:mt-1 col-span-2 bg-gray-100 py-2 px-8 rounded-sm text-gray-100"
             }`}
             type="submit"
           >

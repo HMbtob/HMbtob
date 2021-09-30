@@ -12,6 +12,8 @@ const MobileTable = ({
   selectCat,
   categories,
   category,
+  simpleList,
+  onChange,
 }) => {
   const [toggleBottom, setToggleBottom] = useState(false);
   const onBottomClick = () => {
@@ -26,7 +28,7 @@ const MobileTable = ({
 
   return (
     <div
-      className={`flex flex-col ${header === "Products" && "mb-12"}
+      className={`flex flex-col ${header === "Products" && "mb-14"}
     items-center bg-white border-b border-gray-500`}
     >
       <div
@@ -58,17 +60,33 @@ const MobileTable = ({
             </div>
           )}
           {filteredProducts &&
-            filteredProducts.length > 0 &&
-            filteredProducts
-              .slice(page * 10 - 10, page * 10)
-              .map((product, i) => (
-                <MobileRow
-                  key={i}
-                  product={product}
-                  user={user}
-                  exchangeRate={exchangeRate}
-                />
-              ))}
+          filteredProducts.length > 0 &&
+          header === "Products"
+            ? filteredProducts
+                .filter(a => a.data.category === category)
+                .slice(page * 10 - 10, page * 10)
+                .map((product, i) => (
+                  <MobileRow
+                    key={i}
+                    product={product}
+                    user={user}
+                    exchangeRate={exchangeRate}
+                    simpleList={simpleList}
+                    onChange={onChange}
+                  />
+                ))
+            : filteredProducts
+                .slice(page * 10 - 10, page * 10)
+                .map((product, i) => (
+                  <MobileRow
+                    key={i}
+                    product={product}
+                    user={user}
+                    exchangeRate={exchangeRate}
+                    simpleList={simpleList}
+                    onChange={onChange}
+                  />
+                ))}
           <Paging
             page={page}
             count={count}

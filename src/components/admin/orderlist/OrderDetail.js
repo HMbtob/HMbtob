@@ -615,6 +615,7 @@ const OrderDetail = ({ match }) => {
                   >
                     <option value="dhl">DHL</option>
                     <option value="EMS">EMS</option>
+                    <option value="UMAC(PH)">UMAC(PH)</option>
                   </select>
                 </div>
                 <div className="grid grid-cols-2 h-8 items-center">

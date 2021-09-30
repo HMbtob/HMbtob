@@ -246,7 +246,14 @@ function App() {
                 <>
                   <MobileHeader />
                   <Switch>
+                    <Route path="/myorderlist/:id" component={MyOrderDetail} />
+                    <Route path="/myorderlist" component={MyOrderList} />
                     <Route path="/myinfo/:uid" component={MyInfo} />
+                    <Route
+                      path="/b2bspecialorder"
+                      component={B2bSpecialOrder}
+                    />
+                    <Route path="/b2border" component={B2bOrder} />
                     <Route path="/" component={B2bShopMobile} />
                   </Switch>
                 </>

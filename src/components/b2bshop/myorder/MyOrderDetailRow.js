@@ -38,21 +38,21 @@ const MyOrderDetailRow = ({ order, id, currency, list, orderr }) => {
         order?.canceled && "bg-gray-100"
       } ${
         order?.moved && "bg-green-100"
-      } text-xs place-items-center grid grid-cols-28 grid-flow-col 
+      } text-xs place-items-center grid grid-cols-6 lg:grid-cols-28 grid-flow-col 
       text-center border-b border-l border-r py-1 ${
         !preOrder && !order?.moved && !order?.canceled ? "bg-red-100" : ""
       }`}
     >
-      <div className="col-span-3">{id}</div>
-      <div className="col-span-3">
+      <div className="hidden lg:grid lg:col-span-3">{id}</div>
+      <div className="hidden lg:grid lg:col-span-3">
         {order.createdAt.toDate().toLocaleDateString()}
       </div>
 
-      <div className="col-span-3">
+      <div className="hidden lg:grid lg:col-span-3">
         {order.relDate.toDate().toLocaleDateString()}{" "}
       </div>
 
-      <div className="col-span-13 text-left w-full flex flex-row">
+      <div className="col-span-4 lg:gird lg:col-span-13 pl-1 text-left w-full flex flex-row">
         {order?.moved && (
           <>
             <div className="no-underline"> {order?.moveTo}</div>
@@ -66,19 +66,19 @@ const MyOrderDetailRow = ({ order, id, currency, list, orderr }) => {
           <LocalAirportIcon style={{ color: "#1F2937", fontSize: "medium" }} />
         )}
         <div
-          className={`${(order?.moved || order?.canceled) && "line-through"}`}
+          className={`${(order?.moved || order?.canceled) && "line-through"} `}
         >
           {order.title}
         </div>
       </div>
 
-      <div className="col-span-2">
+      <div className="col-span-1 lg:gird lg:col-span-2">
         {currency === "KRW"
           ? order.price.toLocaleString("ko-KR")
           : order.price.toFixed(2).toLocaleString("ko-KR")}{" "}
         {currency}
       </div>
-      <div className="col-span-2 flex flex-row items-center">
+      <div className="col-span-1 lg:gird lg:col-span-2 flex flex-row items-center">
         {orderr &&
         (orderr.data.orderState === "Order" ||
           orderr.data.orderState === "Pre-Order" ||
@@ -98,7 +98,7 @@ const MyOrderDetailRow = ({ order, id, currency, list, orderr }) => {
         EA
       </div>
 
-      <div className="col-span-2">
+      <div className="hidden lg:grid lg:col-span-2">
         {qty && (order.price.toFixed(2) * qty).toLocaleString("ko-KR")}{" "}
         {currency}
       </div>

@@ -1,8 +1,9 @@
 import React from "react";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-const MobileOrderButton = () => {
+const MobileOrderButton = ({ B2bMakeOrder, simpleListLength }) => {
   return (
     <button
+      onClick={B2bMakeOrder}
       className="bottom-1 fixed p-2 px-5 bg-blue-900 
       text-white rounded-full font-semibold flex flex-row
       items-center"
@@ -14,7 +15,7 @@ const MobileOrderButton = () => {
           className="bg-red-600 text-xs
            rounded-full text-center px-1 -ml-2"
         >
-          1
+          {simpleListLength > 0 && simpleListLength}
         </div>
       </div>
     </button>

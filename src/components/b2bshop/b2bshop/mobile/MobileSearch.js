@@ -8,6 +8,8 @@ const MobileSearch = ({
   searchedProducts,
   queryOnChange,
   handleClear,
+  onSimpleListClick,
+  simpleListLength,
 }) => {
   return (
     <div
@@ -16,21 +18,21 @@ const MobileSearch = ({
     >
       <input
         type="text"
-        className="h-10 rounded-sm outline-none pl-3 w-9/12"
+        className="h-10 rounded-sm outline-none pl-3 w-8/12"
         placeholder="search"
         onChange={queryOnChange}
         value={query}
       />{" "}
-      <div className="flex flex-row justify-evenly w-3/12">
-        <SearchIcon type="button" onClick={searchedProducts} />
-        <RestoreIcon onClick={handleClear} className="cursor-pointer" />
-        <div className="flex flex-row items-end">
+      <div className="flex flex-row justify-evenly w-4/12">
+        <SearchIcon onClick={searchedProducts} />
+        <RestoreIcon onClick={handleClear} />
+        <div className="flex flex-row items-end" onClick={onSimpleListClick}>
           <ShoppingCartIcon />
           <div
             className="bg-red-600 text-xs text-white
            rounded-full text-center px-1 -ml-2"
           >
-            1
+            {simpleListLength > 0 && simpleListLength}
           </div>
         </div>
       </div>

@@ -108,9 +108,9 @@ const B2bOrder = () => {
   } = form;
   const { orderEmail } = form;
 
-  const [address, setaddress] = useState(user?.address);
-  const [detailAddress, setdetailAddress] = useState(user?.detailAddress);
-  const [zipcode, setZipcode] = useState(user?.zipcode);
+  const [address, setaddress] = useState(user?.address || "");
+  const [detailAddress, setdetailAddress] = useState(user?.detailAddress || "");
+  const [zipcode, setZipcode] = useState(user?.zipcode || "");
 
   const inputsName = [
     "Recipient",
@@ -127,7 +127,7 @@ const B2bOrder = () => {
 
   const options = [
     [{ credit: "Bank Transfer(Credit)" }],
-    [{ dhl: "DHL" }, { EMS: "EMS" }],
+    [{ dhl: "DHL" }, { EMS: "EMS" }, { "UMAC(PH)": "UMAC(PH)" }],
   ];
 
   // 운임, 총무게
@@ -333,9 +333,9 @@ const B2bOrder = () => {
           Order Details
         </div>
         {/* dep-3-2 주문자 / 수령인*/}
-        <div className="w-full flex flex-row justify-evenly">
+        <div className="w-full flex flex-col lg:flex-row justify-evenly">
           {/*   dep-3-2-1 주문자 */}
-          <div className="flex-col mb-10 flex space-y-2  w-2/5">
+          <div className="flex-col mb-10 flex space-y-2  ">
             <div className="grid grid-cols-2  items-center">
               <div className="text-right pr-3">Order Number</div>
               {user &&
@@ -372,7 +372,6 @@ const B2bOrder = () => {
                 <div className="grid grid-cols-2  items-center">
                   <div className="text-right pr-3">Company Name</div>
                   <input
-                    required
                     type="text"
                     name="companyName"
                     className="border h-8 pl-2"
@@ -383,7 +382,6 @@ const B2bOrder = () => {
                 <div className="grid grid-cols-2  items-center">
                   <div className="text-right pr-3">Tax Id</div>
                   <input
-                    required
                     type="text"
                     name="taxId"
                     className="border h-8 pl-2"
@@ -395,7 +393,6 @@ const B2bOrder = () => {
                 <div className="grid grid-cols-2  items-center">
                   <div className="text-right pr-3">Ship To Korea</div>
                   <input
-                    required
                     type="checkbox"
                     className="border h-8 pl-2"
                     checked={shipToKoreaChecked ? true : false}
@@ -409,7 +406,7 @@ const B2bOrder = () => {
           <div className="border mb-10"></div>
           {/*   dep-3-2-2 수령인 */}
           {!shipToKoreaChecked ? (
-            <div className="flex-col mb-10 flex space-y-2 w-2/5">
+            <div className="flex-col mb-10 flex space-y-2 ">
               {Object.keys(form)
                 .slice(0, 10)
                 .map((doc, index) => (
@@ -497,7 +494,7 @@ const B2bOrder = () => {
                 ))}
             </div>
           ) : (
-            <div className="flex-col mb-10 flex space-y-2 w-2/5">
+            <div className="flex-col mb-10 flex space-y-2 ">
               <div className="grid grid-cols-2 items-center">
                 <div className="p-1 pr-3 text-right">Recipient</div>
                 <input
@@ -626,13 +623,14 @@ const B2bOrder = () => {
                   required
                   name="shippingType"
                   value={shippingType}
-                  className="border p-1"
+                  className="border p-1 outline-none"
                   onChange={onChange}
                 >
                   {" "}
                   <option>required</option>
                   <option value="dhl">DHL</option>
                   <option value="EMS">EMS</option>
+                  <option value="UMAC(PH)">UMAC(PH)</option>
                 </select>
               </div>
             </div>
@@ -643,34 +641,36 @@ const B2bOrder = () => {
         <div className="flex-col mb-10 w-full">
           {/* 번호/앨범명/판매가/할인가/금액 */}
           <div
-            className="grid grid-cols-12 text-center bg-gray-800 rounded-sm 
+            className="grid grid-cols-6 lg:grid-cols-12 text-center bg-gray-800 rounded-sm 
          text-sm font-semibold text-gray-100"
           >
-            <div className="col-span-2">No.</div>
-            <div className="col-span-2">SKU</div>
+            <div className="hidden lg:grid col-span-2">No.</div>
+            <div className="hidden lg:grid col-span-2">SKU</div>
             <div className="col-span-4">TITLE</div>
-            <div className="col-span-1">RELEASE</div>
+            <div className="hidden lg:grid col-span-1">RELEASE</div>
             <div>PRICE</div>
             <div>EA</div>
-            <div>AMOUNT</div>
+            <div className="hidden lg:grid col-span-1">AMOUNT</div>
           </div>
           {simpleLists && (
             <>
               {simpleLists.map((doc, index) => (
                 <div
-                  className="grid grid-cols-12 text-center text-sm bg-white
-                  border-b border-r border-l py-1"
+                  className="grid grid-cols-6 lg:grid-cols-12 text-center 
+                  text-xs lg:text-sm bg-white border-b border-r border-l py-1"
                   key={index}
                 >
-                  <div className="col-span-2">{doc.childOrderNumber}</div>
-                  <div className="col-span-2">
+                  <div className="hidden lg:grid lg:col-span-2">
+                    {doc.childOrderNumber}
+                  </div>
+                  <div className="hidden lg:grid lg:col-span-2">
                     {
                       products?.find(product => product.id === doc.productId)
                         .data.sku
                     }
                   </div>
-                  <div className="col-span-4 text-left">{doc.title}</div>
-                  <div className="col-span-1">
+                  <div className="col-span-4 text-left pl-2">{doc.title}</div>
+                  <div className="hidden lg:grid lg:col-span-1">
                     {new Date(doc.relDate.toDate()).toLocaleDateString()}
                   </div>
 
@@ -680,7 +680,7 @@ const B2bOrder = () => {
 
                   <div>{doc.quan} EA</div>
 
-                  <div>
+                  <div className="hidden lg:grid lg:col-span-1">
                     {(doc.price * doc.quan)?.toLocaleString("ko-KR")}{" "}
                     {user?.currency}
                   </div>
@@ -726,7 +726,10 @@ const B2bOrder = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-6 items-center mb-96 w-full place-items-center">
+        <div
+          className="grid grid-cols-1 lg:grid-cols-6 items-center mb-96 
+        w-full place-items-center"
+        >
           <div className="col-span-3">
             <div className="text-sm">
               1. Actual shipping cost may be adjusted.
@@ -757,8 +760,8 @@ const B2bOrder = () => {
           <button
             className={`${
               confirmChecked
-                ? "col-span-2 bg-gray-800 py-2 px-8 rounded-sm text-gray-100"
-                : "col-span-2 bg-gray-100 py-2 px-8 rounded-sm text-gray-100"
+                ? "mt-5 lg:mt-1 col-span-2 bg-gray-800 py-2 px-8 rounded-sm text-gray-100"
+                : "mt-5 lg:mt-1 col-span-2 bg-gray-100 py-2 px-8 rounded-sm text-gray-100"
             }`}
             type="submit"
           >

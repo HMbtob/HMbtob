@@ -39,9 +39,8 @@ const MobileHeader = () => {
 
   const navMenues = [
     { "My Info": `/myinfo/${user?.uid}` },
-    { "My Orders": "" },
-    { "Special Order": "" },
-    { "Log Out": "" },
+    { "My Orders": `/myorderlist` },
+    { "Special Order": `/b2bspecialorder` },
   ];
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -80,11 +79,11 @@ const MobileHeader = () => {
           </div>
         </div>
         <div className="flex flex-row items-center">
-          <NotificationsIcon
+          {/* <NotificationsIcon
             style={{ color: "white" }}
             className="mr-3"
             // onClick={openModal}
-          />
+          /> */}
           <ChatIcon
             style={{ color: "white" }}
             className="mr-3"
@@ -112,6 +111,16 @@ const MobileHeader = () => {
               {Object.keys(menu)}
             </div>
           ))}
+          <div
+            className="border-b bg-blue-600 text-gray-200
+           p-2 text-lg font-semibold"
+            onClick={async () => {
+              await auth.signOut();
+              await history.replace("/");
+            }}
+          >
+            Log Out
+          </div>
         </div>
       )}
     </div>
