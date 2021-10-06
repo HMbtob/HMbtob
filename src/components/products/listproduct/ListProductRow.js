@@ -176,7 +176,12 @@ const ListProductRow = ({
             <BuildIcon fontSize="small" style={{ color: "gray" }} />
           </button>
           <button
-          // onClick={() => history.push(`/detailproduct/${id}`)}
+            onClick={() =>
+              history.push({
+                pathname: `/addproduct`,
+                state: { product },
+              })
+            }
           >
             <FileCopyIcon fontSize="small" style={{ color: "gray" }} />
           </button>

@@ -14,6 +14,11 @@ const B2bOrder = () => {
     state;
   const { z } = dhlShippingFee;
 
+  const [toggleConfirmOrder, setToggleConfirmOrder] = useState(false);
+
+  const onConfirmOrderClick = () => {
+    setToggleConfirmOrder(!toggleConfirmOrder);
+  };
   // daum 주소 api
 
   // order number를 위한 0 포함된 숫자 만드는 함수
@@ -190,6 +195,7 @@ const B2bOrder = () => {
   }, false);
   const confirmOrder = async e => {
     e.preventDefault();
+    onConfirmOrderClick();
     await db
       .collection("orders")
       .doc("b2b")
@@ -213,6 +219,7 @@ const B2bOrder = () => {
           .replaceAll("-", "")}-${addZeros(forOrderNumber, 3)} `,
         createdAt: new Date(),
         customer: orderEmail,
+        nickName: user.nickName,
         list: simpleLists,
         dcRates: user.dcRates,
         dcAmount: user.dcAmount,
@@ -758,6 +765,7 @@ const B2bOrder = () => {
           </div>
 
           <button
+            disabled={toggleConfirmOrder}
             className={`${
               confirmChecked
                 ? "mt-5 lg:mt-1 col-span-2 bg-gray-800 py-2 px-8 rounded-sm text-gray-100"

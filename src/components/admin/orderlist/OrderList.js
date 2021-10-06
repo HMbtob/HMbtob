@@ -200,6 +200,7 @@ const OrderList = () => {
                 orderNumber={order.data.orderNumber}
                 createdAt={order.data.createdAt}
                 customer={order.data.customer}
+                nickName={order?.data?.nickName}
                 orderState={order.data.orderState}
                 order={order}
                 orders={orders}

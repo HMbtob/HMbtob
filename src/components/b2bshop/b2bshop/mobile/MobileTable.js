@@ -64,7 +64,7 @@ const MobileTable = ({
           header === "Products"
             ? filteredProducts
                 .filter(a => a.data.category === category)
-                .slice(page * 10 - 10, page * 10)
+                .slice(page * 20 - 20, page * 20)
                 .map((product, i) => (
                   <MobileRow
                     key={i}
@@ -76,7 +76,7 @@ const MobileTable = ({
                   />
                 ))
             : filteredProducts
-                .slice(page * 10 - 10, page * 10)
+                .slice(page * 20 - 20, page * 20)
                 .map((product, i) => (
                   <MobileRow
                     key={i}

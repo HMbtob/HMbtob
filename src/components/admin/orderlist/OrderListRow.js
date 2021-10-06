@@ -5,7 +5,9 @@ import HiddenLists from "./HiddenLists";
 import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined";
 import LocalShippingOutlinedIcon from "@material-ui/icons/LocalShippingOutlined";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import DeleteIcon from "@material-ui/icons/Delete";
 import { useEffect } from "react";
+import { db } from "../../../firebase";
 
 const OrderListRow = ({
   id,
@@ -19,9 +21,25 @@ const OrderListRow = ({
   orders,
   hiddenAll,
   handelHiddenAll,
+  nickName,
 }) => {
   const history = useHistory();
   const today = new Date();
+
+  // 상품삭제
+  const handleDelete = () => {
+    let con = window.confirm("정말로 삭제하시겠습니까?");
+    if (con === true) {
+      db.collection("orders")
+        .doc("b2b")
+        .collection("b2borders")
+        .doc(id)
+        .delete();
+      window.location.replace("/orderlist");
+    } else if (con === false) {
+      return;
+    }
+  };
 
   // 아래에 숨겨진 목록 숨기고 열기 기능
   const [forHidden, setForHidden] = useState(true);
@@ -111,6 +129,7 @@ const OrderListRow = ({
               <AssignmentOutlinedIcon />
             </Link>
             <LocalShippingOutlinedIcon />
+            <DeleteIcon onClick={handleDelete} className="cursor-pointer" />
             <input
               type="checkbox"
               className=" ml-2"
@@ -139,7 +158,7 @@ const OrderListRow = ({
             className="col-span-2 cursor-pointer"
             onClick={() => history.push(`/orderdetail/${id}`)}
           >
-            {customer}
+            {nickName && nickName.length > 0 ? nickName : customer}
           </div>
           <div>{orderState} </div>
           <div>

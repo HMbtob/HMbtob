@@ -187,6 +187,7 @@ const CommonPart = ({ product, id }) => {
       .then(res => setThumbnailUrl(res.data))
       .catch(e => console.log(e));
   };
+  console.log(thumbnailUrl);
   // 디스크립션
   const getDisc = async () => {
     await axios

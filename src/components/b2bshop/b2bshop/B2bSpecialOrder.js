@@ -302,6 +302,7 @@ const B2bSpecialOrder = () => {
         customer: orderEmail,
         list: specialList,
         dcRates: user.dcRates,
+        nickName: user.nickName,
         dcAmount: user.dcAmount,
         shippingRate: user.shippingRate,
         currency: user.currency,

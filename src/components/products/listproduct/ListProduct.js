@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { InitDataContext, InitDispatchContext } from "../../../App";
 import ListProductRow from "./ListProductRow";
+import Paging from "../../b2bshop/b2bshop/mobile/Paging";
 import FirstPageIcon from "@material-ui/icons/FirstPage";
 import LastPageIcon from "@material-ui/icons/LastPage";
 import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
@@ -15,8 +16,9 @@ const ListProduct = () => {
   const dispatch = useContext(InitDispatchContext);
   const { products, orders, shippings, user, exchangeRate, reStockRequests } =
     state;
-  const [page, setPage] = useState(0);
-  const [pages] = useState([-4, -3, -2, -1, 0, 1, 2, 3, 4]);
+  // const [page, setPage] = useState(0);
+  // const [pages] = useState([-4, -3, -2, -1, 0, 1, 2, 3, 4]);
+
   // 헤더 항목
   const headers = [
     "BTN",
@@ -49,6 +51,12 @@ const ListProduct = () => {
       );
     })
   );
+  // 페이징
+  const [page, setPage] = useState(1);
+  const count = preProduct.length;
+  const handlePageChange = page => {
+    setPage(page);
+  };
   // 검색어
   const [query, setQuery] = useState();
   const queryOnChange = e => {
@@ -241,7 +249,7 @@ const ListProduct = () => {
         </div>
         <div className="w-full flex flex-col items-center">
           <div className="w-full">
-            {preProduct?.slice(0 + page * 50, 50 + page * 50).map(product => (
+            {preProduct?.slice(page * 20 - 20, page * 20).map(product => (
               <ListProductRow
                 key={product.id}
                 id={product.id}
@@ -270,7 +278,12 @@ const ListProduct = () => {
           </div>
         </div>
         <div className="flex flex-row w-full items-center justify-center">
-          <FirstPageIcon
+          <Paging
+            page={page}
+            count={count}
+            handlePageChange={handlePageChange}
+          />
+          {/* <FirstPageIcon
             onClick={() => setPage(0)}
             className="cursor-pointer"
           />
@@ -304,7 +317,7 @@ const ListProduct = () => {
           <LastPageIcon
             className="cursor-pointer"
             onClick={() => setPage(parseInt(preProduct?.length / 50) - 1)}
-          />
+          /> */}
         </div>
       </div>
       <RestockRequests reStockRequests={reStockRequests} />

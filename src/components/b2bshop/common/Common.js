@@ -4,6 +4,7 @@ import FirstPageIcon from "@material-ui/icons/FirstPage";
 import LastPageIcon from "@material-ui/icons/LastPage";
 import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
+import Paging from "../b2bshop/mobile/Paging";
 
 export const Common = ({
   commonProducts,
@@ -20,9 +21,15 @@ export const Common = ({
     dispatch({ type: "CATEGORY", category: id });
   };
 
-  const [page, setPage] = useState(0);
-  const [pages] = useState([-4, -3, -2, -1, 0, 1, 2, 3, 4]);
+  // const [page, setPage] = useState(0);
+  // const [pages] = useState([-4, -3, -2, -1, 0, 1, 2, 3, 4]);
 
+  // 페이징
+  const [page, setPage] = useState(1);
+  const count = commonProducts.filter(a => a.data.category === category).length;
+  const handlePageChange = page => {
+    setPage(page);
+  };
   // 카테고리 추가는 여기서
   const categories = [
     { cd: "cd" },
@@ -33,7 +40,7 @@ export const Common = ({
     { beauty: "beauty" },
   ];
   useEffect(() => {
-    setPage(0);
+    setPage(1);
   }, [category]);
 
   return (
@@ -76,7 +83,7 @@ export const Common = ({
         {commonProducts &&
           commonProducts
             .filter(a => a.data.category === category)
-            .slice(0 + page * 50, 50 + page * 50)
+            .slice(page * 20 - 20, page * 20)
             .map(product => (
               <CommonRow
                 key={product.id}
@@ -96,7 +103,8 @@ export const Common = ({
             ))}
       </div>
       <div className="flex flex-row w-full items-center justify-center">
-        <FirstPageIcon onClick={() => setPage(0)} className="cursor-pointer" />
+        <Paging page={page} count={count} handlePageChange={handlePageChange} />{" "}
+        {/* <FirstPageIcon onClick={() => setPage(0)} className="cursor-pointer" />
         <ArrowLeftIcon
           className="cursor-pointer"
           onClick={() => (page === 0 ? setPage(0) : setPage(page - 1))}
@@ -149,7 +157,7 @@ export const Common = ({
               ) - 1
             )
           }
-        />
+        /> */}
       </div>
     </div>
   );

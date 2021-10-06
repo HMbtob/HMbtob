@@ -22,6 +22,7 @@ const AddBigc = ({
   discripUrl,
   handleDiscrip,
   setDescr,
+  addBig,
 }) => {
   return (
     <>
@@ -66,6 +67,7 @@ text-gray-800 mb-1 ml-2 mt-10 "
                 <div key={i} className=" flex-col flex w-full">
                   <div className="flex-row flex items-center justify-start mt-2">
                     <input
+                      required
                       type="checkbox"
                       id={cat.id}
                       className="mr-1"
@@ -84,6 +86,7 @@ text-gray-800 mb-1 ml-2 mt-10 "
                         className="ml-5 flex flex-row items-center text-xs"
                       >
                         <input
+                          required
                           type="checkbox"
                           id={doc.id}
                           className="mr-1"
@@ -115,13 +118,14 @@ text-gray-800 mb-1 ml-2 mt-10 "
         </div>
         {/* weight */}
         <div className="grid grid-cols-4 p-2 items-center">
-          <div className="text-gray-600 text-right mr-3">weight</div>
+          <div className="text-gray-600 text-right mr-3">weight(KG)</div>
           <input
+            disabled
             className="col-span-3 border h-9 pl-2"
             type="number"
             onChange={onChange}
             name="weight"
-            value={weight}
+            value={weight * 0.001}
           />
         </div>
         {/* inventory_level */}
@@ -212,6 +216,15 @@ text-gray-800 mb-1 ml-2 mt-10 "
             name="disc"
           />
         </div>
+        <button
+          // type="submit"
+          onClick={addBig}
+          className="bg-gray-600 py-2 px-10 rounded 
+            text-gray-200 text-lg font-light
+             "
+        >
+          SAVE
+        </button>
       </div>
     </>
   );

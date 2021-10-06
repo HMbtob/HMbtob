@@ -1,11 +1,17 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
+import { useHistory } from "react-router";
+
 import { InitDataContext } from "../../../App";
 import { db, storage } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
 import AddBigc from "./AddBigc";
 
-const AddProduct = () => {
+const AddProduct = ({ location }) => {
+  console.log(location?.state?.product);
+
+  const history = useHistory();
+
   const state = useContext(InitDataContext);
   const { user } = state;
   const [cats, setCats] = useState([]);
@@ -14,15 +20,25 @@ const AddProduct = () => {
   const [lastId, setLastId] = useState("");
   const [bigC, setBigC] = useState("");
 
+  const [toggleSaveButton, setToggleSaveButton] = useState(false);
+
+  const onSaveButtonClick = () => {
+    setToggleSaveButton(!toggleSaveButton);
+  };
+
   // 썸넬
 
-  const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [thumbnailUrl, setThumbnailUrl] = useState(
+    location?.state?.product?.data?.thumbNail || ""
+  );
   const handleThumbnail = e => {
     setThumbnailUrl(e.target.value);
   };
   // 디스크립션-이미지
 
-  const [discripUrl, setDiscripUrl] = useState("");
+  const [discripUrl, setDiscripUrl] = useState(
+    location?.state?.product?.data?.discripUrl || ""
+  );
   const handleDiscrip = e => {
     setDiscripUrl(e.target.value);
   };
@@ -42,31 +58,43 @@ const AddProduct = () => {
   };
 
   const [form, onChange, reset] = useInputs({
-    sku: "",
-    title: "",
-    purchasePrice: 0,
-    price: 0,
-    artist: "",
-    ent: "",
-    weight: 0,
-    x: 0,
-    y: 0,
-    z: 0,
-    category: "",
-    relDate: new Date(),
-    preOrderDeadline: new Date(),
+    sku: location?.state?.product?.data?.sku || "",
+    title: location?.state?.product?.data?.title || "",
+    purchasePrice: location?.state?.product?.data?.purchasePrice || 0,
+    price: location?.state?.product?.data?.price || 0,
+    artist: location?.state?.product?.data?.artist || "",
+    ent: location?.state?.product?.data?.ent || "",
+    weight: location?.state?.product?.data?.weight || "",
+    x: location?.state?.product?.data?.x || 0,
+    y: location?.state?.product?.data?.y || 0,
+    z: location?.state?.product?.data?.z || 0,
+    category: location?.state?.product?.data?.category || "",
+    relDate:
+      location?.state?.product?.data?.title.length > 0
+        ? new Date(location?.state?.product?.data?.relDate?.seconds * 1000)
+            .toISOString()
+            .substring(0, 10)
+        : new Date().toISOString().substring(0, 10),
+    preOrderDeadline:
+      location?.state?.product?.data?.title.length > 0
+        ? new Date(
+            location?.state?.product?.data?.preOrderDeadline?.seconds * 1000
+          )
+            ?.toISOString()
+            ?.substring(0, 16)
+        : new Date().toISOString().substring(0, 16),
     pob: false,
     poster: false,
     photocard: false,
     weverseGift: false,
     interAsiaPhotocard: false,
-    barcode: "",
-    reStockable: "",
-    exposeToB2b: "",
-    stock: 0,
-    inventoryLevel: 0,
-    brandId: "",
-    brandName: "",
+    barcode: location?.state?.product?.data?.barcode || "",
+    reStockable: location?.state?.product?.data?.reStockable || "",
+    exposeToB2b: location?.state?.product?.data?.exposeToB2b || "",
+    stock: location?.state?.product?.data?.stock || 0,
+    inventoryLevel: location?.state?.product?.data?.inventoryLevel || 0,
+    brandId: location?.state?.product?.data?.bigC?.brand_id || "",
+    brandName: location?.state?.product?.data?.artist || "",
     customFieldName: "RELEASE DATE",
   });
 
@@ -78,7 +106,7 @@ const AddProduct = () => {
     { purchasePrice: "매입가" },
     { artist: "그룹명" },
     { ent: "소속사" },
-    { weight: "무게" },
+    { weight: "무게(g)" },
     { x: "가로" },
     { y: "세로" },
     { z: "높이" },
@@ -164,7 +192,8 @@ const AddProduct = () => {
         }
       )
       .then(ids => setLastId(ids.data.data))
-      .catch(error => console.log(error));
+      .catch(error => console.log("id", error));
+    // console.log(lastId);
   };
   // 섬넬
   const getImages = async () => {
@@ -198,120 +227,118 @@ const AddProduct = () => {
       .catch(e => console.log(e));
   };
 
+  const addBig = async () => {
+    try {
+      const res = await axios.post(
+        "https://us-central1-interasiastock.cloudfunctions.net/app/big/addproduct",
+        {
+          name: title,
+          price: Number((price / 1100).toFixed(2)),
+          weight: Number(weight / 1000),
+          type: "physical",
+          custom_fields: [{ name: customFieldName, value: relDate }],
+          images: [{ is_thumbnail: true, image_url: thumbnailUrl }],
+          sku: sku,
+          upc: barcode,
+          inventory_tracking: "product",
+          inventory_level: inventoryLevel,
+          brand_name: brandName,
+          categories: checkedInputs,
+          description: `${descr} + <img src=${discripUrl} alt="" />`,
+        }
+      );
+      // console.log("post res", res);
+      await onSaveButtonClick();
+      await alert("빅커머스 추가완료. 5초 후에 등록해주세요.");
+    } catch (e) {
+      if (e) console.log("post err", e);
+      await alert(
+        "빅커머스 실패. 잠시 후에 시도하거나 sku, barcode, title을 수정해 주세요"
+      );
+    }
+  };
+
   const Appp = async e => {
     e.preventDefault();
-    // 빅커머스 가장 최근 아이디 가져와서
-    //  + 1 해서 id 로 저장
-    if (lastId) {
-      const headers = {
-        "x-auth-token": "23t2vx6zwiq32xa8b0uspfo7mb7181x",
-        accept: "application/json",
-        "content-type": "application/json",
-      };
 
-      await axios
-        .post(
-          `/stores/7uw7zc08qw/v3/catalog/products`,
-          {
-            name: title,
-            price: Number(price),
-            weight: Number(weight),
-            type: "physical",
-            custom_fields: [{ name: customFieldName, value: relDate }],
-            images: [{ is_thumbnail: true, image_url: thumbnailUrl }],
-            sku: sku,
-            upc: barcode,
-            inventory_tracking: "product",
-            inventory_level: inventoryLevel,
-            brand_name: brandName,
-            categories: checkedInputs,
-            description: `${descr} + <img src=${discripUrl} alt="" />`,
-          },
-          { headers }
-        )
-        .then()
-        .catch(error => console.log(error));
+    await callLastId();
+    setTimeout(async () => {
+      if (lastId) {
+        try {
+          await db
+            .collection("products")
+            .doc(`${lastId[0]?.id}`)
+            .set({
+              sku,
+              purchasePrice: Number(purchasePrice),
+              price: Number(price),
+              artist,
+              ent,
+              x: Number(x),
+              stock: stock,
+              y: Number(y),
+              z: Number(z),
+              title,
+              thumbNail: thumbnailUrl,
+              weight: Number(weight),
+              category,
+              relDate: new Date(relDate),
+              preOrderDeadline: new Date(preOrderDeadline),
+              options: {
+                poster,
+                pob,
+                photocard,
+                weverseGift,
+                interAsiaPhotocard,
+              },
+              barcode,
+              reStockable: reStockable,
+              exposeToB2b: exposeToB2b,
+              bigC: lastId[0],
+              productMemo: [
+                {
+                  memo: "add product",
+                  date: new Date(),
+                  writer: "server",
+                },
+              ],
+              limitedStock: false,
+              totalStock: stock,
+              totalSold: 0,
+              stockHistory: [
+                {
+                  type: "add product on list",
+                  writer: user.email,
+                  amount: 0,
+                  date: new Date(),
+                },
+              ],
+              descr,
+              discripUrl,
+            });
+        } catch (e) {
+          if (e) console.log("get added product err", e);
+        }
 
-      await axios
-        .get(`/stores/7uw7zc08qw/v3/catalog/products/${lastId[0]?.id + 1}`, {
-          headers: {
-            "x-auth-token": "23t2vx6zwiq32xa8b0uspfo7mb7181x",
-            accept: "application/json",
-            "content-type": "application/json",
-          },
-        })
-        .then(pro => setBigC(pro.data.data))
-        .catch(error => console.log(error));
+        // 파이어 베이스 저장 후
+        // 빅커머스 상품등록
+        // 디폴트
+        // type : physical
+        // inventory_tracking : product
 
-      await db
-        .collection("products")
-        .doc(`${lastId[0]?.id + 1}`)
-        .set({
-          sku,
-          purchasePrice: Number(purchasePrice),
-          price: Number(price),
-          artist,
-          ent,
-          x: Number(x),
-          stock: stock,
-          y: Number(y),
-          z: Number(z),
-          title,
-          thumbNail: thumbnailUrl,
-          weight: Number(weight),
-          category,
-          relDate: new Date(relDate),
-          preOrderDeadline: new Date(preOrderDeadline),
-          options: {
-            poster,
-            pob,
-            photocard,
-            weverseGift,
-            interAsiaPhotocard,
-          },
-          barcode,
-          reStockable: reStockable,
-          exposeToB2b: exposeToB2b,
-          bigC: bigC,
-          productMemo: [
-            {
-              memo: "add product",
-              date: new Date(),
-              writer: "server",
-            },
-          ],
-          limitedStock: false,
-          totalStock: stock,
-          totalSold: 0,
-          stockHistory: [
-            {
-              type: "add product on list",
-              writer: user.email,
-              amount: 0,
-              date: new Date(),
-            },
-          ],
-          descr,
-          discripUrl,
-        });
-      // 파이어 베이스 저장 후
-      // 빅커머스 상품등록
-      // 디폴트
-      // type : physical
-      // inventory_tracking : product
-
-      await reset();
-      await alert("추가완료");
-      // FIXME: 저장버튼 어디다 둘지, 따로둘지, 저장후 어디로 갈지?
-      // history.push("/listproduct");
-    } else {
-      alert("실패");
-    }
+        await reset();
+        await alert("추가완료");
+        // FIXME: 저장버튼 어디다 둘지, 따로둘지, 저장후 어디로 갈지?
+        history.push("/listproduct");
+      } else {
+        alert("잠시 후 다시 시도해주세요.");
+      }
+    }, 2000);
   };
 
   useEffect(() => {
     callCats();
-    callLastId();
+    // callLastId();
   }, []);
   useEffect(() => {
     setParentCat(
@@ -334,6 +361,7 @@ const AddProduct = () => {
     <>
       <div className="w-3/5 m-auto my-20">
         <div
+          onClick={callLastId}
           className="text-left text-2xl  
         text-gray-800 mb-1 ml-2 "
         >
@@ -347,6 +375,7 @@ const AddProduct = () => {
                 {Object.values(doc)}
               </div>
               <input
+                required
                 className="col-span-3 border h-9 pl-2"
                 type="text"
                 onChange={onChange}
@@ -359,6 +388,7 @@ const AddProduct = () => {
           <div className="grid grid-cols-4 p-2 items-center">
             <div className="text-gray-600 text-right  mr-3">출시일</div>
             <input
+              required
               className="col-span-3 border h-9 pl-3"
               type="date"
               onChange={onChange}
@@ -371,6 +401,7 @@ const AddProduct = () => {
               주문마감일
             </div>
             <input
+              required
               className="col-span-3 border h-9 pl-3"
               type="datetime-local"
               onChange={onChange}
@@ -388,13 +419,12 @@ const AddProduct = () => {
               <select
                 required
                 key={index}
+                value={category}
                 name={Object.keys(select)}
                 onChange={onChange}
                 className="col-span-3 border h-9 pl-3"
               >
-                <option value="" defaultValue>
-                  필수선택
-                </option>
+                <option>필수선택</option>
                 {Object.values(select)[0].map((option, index) => (
                   <option key={index} value={Object.values(option)}>
                     {Object.keys(option)}
@@ -410,13 +440,12 @@ const AddProduct = () => {
               required
               name="reStockable"
               onChange={onChange}
+              value={reStockable}
               className="col-span-3 border h-9 pl-3"
             >
-              <option value="" defaultValue>
-                필수선택
-              </option>
-              <option value={true}>가능</option>
-              <option value={false}>불가능</option>
+              <option>필수선택</option>
+              <option value="가능">가능</option>
+              <option value="불가능">불가능</option>
             </select>
           </div>
           <div className="grid grid-cols-4 p-2 items-center">
@@ -424,12 +453,11 @@ const AddProduct = () => {
             <select
               required
               name="exposeToB2b"
+              value={exposeToB2b}
               onChange={onChange}
               className="col-span-3 border h-9 pl-3"
             >
-              <option value="" defaultValue>
-                필수선택
-              </option>
+              <option>필수선택</option>
               <option value="노출">노출</option>
               <option value="숨김">숨김</option>
               <option value="DEAL">DEAL</option>
@@ -490,11 +518,13 @@ const AddProduct = () => {
           </div>
           <div className="flex justify-end">
             <button
+              disabled={!toggleSaveButton}
               // type="submit"
               onClick={Appp}
-              className="bg-gray-600 py-2 px-10 rounded 
-            text-gray-200 text-lg font-light
-             "
+              className={`${
+                !toggleSaveButton ? "bg-gray-300" : "bg-gray-600"
+              } py-2 px-10 rounded 
+            text-gray-200 text-lg font-light`}
             >
               SAVE
             </button>
@@ -522,6 +552,7 @@ const AddProduct = () => {
           discripUrl={discripUrl}
           handleDiscrip={handleDiscrip}
           setDescr={setDescr}
+          addBig={addBig}
         />
       </div>
     </>

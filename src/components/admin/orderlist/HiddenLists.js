@@ -12,7 +12,7 @@ const HiddenLists = ({ order, checkedInputs, changeHandler }) => {
           <div
             key={i}
             className={`grid grid-cols-12 text-gray-700 
-            items-center  ${
+            items-center border-b border-dashed  ${
               li.relDate.toDate() > today &&
               li.moved === false &&
               li.canceled === false
@@ -38,7 +38,10 @@ const HiddenLists = ({ order, checkedInputs, changeHandler }) => {
               }
               disabled={li.moved || li.canceled || li.shipped}
             />
-            <div className="col-span-5 text-left">{li.title}</div>
+            <div className="col-span-4 text-left">{li.title}</div>
+            <div className="col-span-1">
+              {li.price.toLocaleString("ko-KR")} {li.currency}
+            </div>
             <div className="col-span-1">{li.quan} ea</div>
             <div className="col-span-1">{li.barcode}</div>
             <div className="col-span-2">{li.sku}</div>
