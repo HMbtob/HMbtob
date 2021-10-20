@@ -1,18 +1,11 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-} from "react";
-import { InitDataContext, InitDispatchContext } from "../../App";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { InitDataContext } from "../../App";
 import { db } from "../../firebase";
 import SendIcon from "@material-ui/icons/Send";
 import InAdminChatMessages from "./InAdminChatMessages";
 
 const InAdminChat = () => {
   const state = useContext(InitDataContext);
-  const dispatch = useContext(InitDispatchContext);
   const { rooms, user, accounts } = state;
   const [filteredAccounts, setFilteredAccounts] = useState([]);
   const [filteredRooms, setFilteredRooms] = useState([]);
@@ -27,16 +20,19 @@ const InAdminChat = () => {
   const handleMessage = e => {
     setMessage(e.target.value);
   };
-  const sendMessage = e => {
-    e.preventDefault();
-    db.collection("rooms").doc(selectedRoom.id).collection("messages").add({
-      createdAt: new Date(),
-      message: message,
-      user: user.email,
-      readed: false,
-    });
-    setMessage("");
-  };
+  const sendMessage = useCallback(
+    e => {
+      e.preventDefault();
+      db.collection("rooms").doc(selectedRoom.id).collection("messages").add({
+        createdAt: new Date(),
+        message: message,
+        user: user.email,
+        readed: false,
+      });
+      setMessage("");
+    },
+    [selectedRoom.id, message, user.email]
+  );
 
   useEffect(() => {
     db.collectionGroup("messages")
@@ -53,7 +49,7 @@ const InAdminChat = () => {
 
   useEffect(() => {
     setFilteredAccounts(accounts.filter(us => us.data.inCharge === user.email));
-  }, [accounts]);
+  }, [accounts, user.email]);
 
   useEffect(() => {
     setFilteredRooms(
@@ -69,22 +65,9 @@ const InAdminChat = () => {
         ? rooms.find(room => room.data.userName === selectedUser)
         : []
     );
-  }, [selectedUser]);
+  }, [selectedUser, rooms]);
 
-  const selectMessage = async () => {
-    // await db
-    //   .collection("rooms")
-    //   .doc(selectedRoom.id)
-    //   .collection("messages")
-    //   .orderBy("createdAt", "asc")
-    //   .get(snapshot =>
-    //     setSelectedMessages({
-    //       messages: snapshot.docs.map(doc => ({
-    //         id: doc.id,
-    //         data: doc.data(),
-    //       })),
-    //     })
-    //   );
+  const selectMessage = useCallback(async () => {
     const mesRef = db
       .collection("rooms")
       .doc(selectedRoom.id)
@@ -113,10 +96,10 @@ const InAdminChat = () => {
             })
         );
     }
-  };
+  }, [selectedRoom.id, selectedUser, unReaded.messages]);
   useEffect(() => {
     selectMessage();
-  }, [selectedRoom]);
+  }, [selectedRoom, selectMessage, sendMessage]);
 
   return (
     <div className="flex flex-row w-full h-xlg pt-12">

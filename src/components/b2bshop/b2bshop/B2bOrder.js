@@ -1,13 +1,14 @@
 import React, { useContext, useState } from "react";
 import firebase from "firebase";
 import { useHistory } from "react-router";
-import { InitDataContext } from "../../../App";
+import { InitDataContext, InitDispatchContext } from "../../../App";
 import { db } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
 import DaumPostcode from "react-daum-postcode";
 
 const B2bOrder = () => {
   const state = useContext(InitDataContext);
+  const dispatch = useContext(InitDispatchContext);
   const history = useHistory();
   const today = new Date();
   const { user, simpleLists, products, dhlShippingFee, exchangeRate, orders } =
@@ -20,6 +21,19 @@ const B2bOrder = () => {
     setToggleConfirmOrder(!toggleConfirmOrder);
   };
   // daum 주소 api
+
+  // 리스트 메모추가 기능
+  // console.log(simpleLists);
+  const [memoInList, setMemoInList] = useState("");
+  const handleMemoInList = e => {
+    const { name, value } = e.target;
+    setMemoInList(value);
+    const aa = simpleLists.find(list => list.childOrderNumber === name);
+    const bb = simpleLists.filter(list => list.childOrderNumber !== name);
+    aa.memoInList = value;
+    const simpleList = [aa, ...bb];
+    dispatch({ type: "SIMPLELIST", simpleList });
+  };
 
   // order number를 위한 0 포함된 숫자 만드는 함수
   const addZeros = (n, digits) => {
@@ -177,7 +191,7 @@ const B2bOrder = () => {
             .join("")
         ) / exchangeRate[user.currency]
       : shipToKoreaChecked === true
-      ? (totalWeight * 5000) / exchangeRate[user.currency]
+      ? ((parseInt(totalWeight / 15) + 1) * 4500) / exchangeRate[user.currency]
       : (totalWeight * user.shippingRate["dhl"]) / exchangeRate[user.currency];
 
   // total price
@@ -267,7 +281,7 @@ const B2bOrder = () => {
               .data.totalStock - simpleLists[i].quan,
           stockHistory: firebase.firestore.FieldValue.arrayUnion({
             type: "sell on B2B",
-            writer: user.email,
+            writer: user.nickName || user.email,
             amount: simpleLists[i].quan,
             date: new Date(),
           }),
@@ -652,12 +666,13 @@ const B2bOrder = () => {
          text-sm font-semibold text-gray-100"
           >
             <div className="hidden lg:grid col-span-2">No.</div>
-            <div className="hidden lg:grid col-span-2">SKU</div>
-            <div className="col-span-4">TITLE</div>
+            <div className="hidden lg:grid col-span-1">SKU</div>
+            <div className="col-span-3">TITLE</div>
             <div className="hidden lg:grid col-span-1">RELEASE</div>
             <div>PRICE</div>
             <div>EA</div>
             <div className="hidden lg:grid col-span-1">AMOUNT</div>
+            <div className="lg:grid col-span-2">MEMO</div>
           </div>
           {simpleLists && (
             <>
@@ -670,13 +685,13 @@ const B2bOrder = () => {
                   <div className="hidden lg:grid lg:col-span-2">
                     {doc.childOrderNumber}
                   </div>
-                  <div className="hidden lg:grid lg:col-span-2">
+                  <div className="hidden lg:grid lg:col-span-1">
                     {
                       products?.find(product => product.id === doc.productId)
                         .data.sku
                     }
                   </div>
-                  <div className="col-span-4 text-left pl-2">{doc.title}</div>
+                  <div className="col-span-3 text-left pl-2">{doc.title}</div>
                   <div className="hidden lg:grid lg:col-span-1">
                     {new Date(doc.relDate.toDate()).toLocaleDateString()}
                   </div>
@@ -690,6 +705,15 @@ const B2bOrder = () => {
                   <div className="hidden lg:grid lg:col-span-1">
                     {(doc.price * doc.quan)?.toLocaleString("ko-KR")}{" "}
                     {user?.currency}
+                  </div>
+                  <div className="col-span-2">
+                    <input
+                      className="border w-11/12 outline-none pl-2"
+                      type="text"
+                      name={doc.childOrderNumber}
+                      value={memoInList}
+                      onChange={handleMemoInList}
+                    />
                   </div>
                 </div>
               ))}

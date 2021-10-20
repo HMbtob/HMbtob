@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import axios from "axios";
 import { InitDataContext } from "../../../App";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
@@ -36,7 +36,7 @@ const HiddenBigc = ({ relDate, bigcProductId, handleBigTotalSold }) => {
       .catch(e => console.log(e));
   };
 
-  const sdadasdasd = async () => {
+  const sdadasdasd = useCallback(async () => {
     await axios
       .get(
         `https://us-central1-interasiastock.cloudfunctions.net/app/big/getproductinfo/${bigcProductId}`
@@ -51,11 +51,11 @@ const HiddenBigc = ({ relDate, bigcProductId, handleBigTotalSold }) => {
         })
       )
       .catch(e => console.log(e));
-  };
+  }, [bigcProductId]);
   useEffect(() => {
     sdadasdasd();
     handleBigTotalSold(total_sold);
-  }, [total_sold, bigcProductId]);
+  }, [total_sold, bigcProductId, handleBigTotalSold, sdadasdasd]);
   return (
     <div
       className="grid grid-cols-36 items-center 

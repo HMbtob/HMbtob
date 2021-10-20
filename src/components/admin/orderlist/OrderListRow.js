@@ -22,20 +22,23 @@ const OrderListRow = ({
   hiddenAll,
   handelHiddenAll,
   nickName,
+  shippings,
+  accounts,
 }) => {
   const history = useHistory();
   const today = new Date();
 
   // 상품삭제
-  const handleDelete = () => {
+  const handleDelete = async () => {
     let con = window.confirm("정말로 삭제하시겠습니까?");
     if (con === true) {
-      db.collection("orders")
+      await db
+        .collection("orders")
         .doc("b2b")
         .collection("b2borders")
         .doc(id)
         .delete();
-      window.location.replace("/orderlist");
+      await window.location.replace("/orderlist");
     } else if (con === false) {
       return;
     }
@@ -92,7 +95,7 @@ const OrderListRow = ({
   };
   const included = order.data.list.reduce((i, c) => {
     if (c.moved === false && c.canceled === false && c.shipped === false) {
-      return i || c.relDate.toDate() > today;
+      return i || new Date(c.relDate.seconds * 1000) > today;
     }
     return i || false;
   }, false);
@@ -152,11 +155,11 @@ const OrderListRow = ({
             className="col-span-2 cursor-pointer"
             onClick={() => history.push(`/orderdetail/${id}`)}
           >
-            {new Date(createdAt.toDate()).toLocaleString()}
+            {new Date(createdAt.seconds * 1000).toLocaleString()}
           </div>
           <div
-            className="col-span-2 cursor-pointer"
-            onClick={() => history.push(`/orderdetail/${id}`)}
+            className="col-span-2"
+            // onClick={() => history.push(`/orderdetail/${id}`)}
           >
             {nickName && nickName.length > 0 ? nickName : customer}
           </div>
@@ -180,13 +183,22 @@ const OrderListRow = ({
             }, 0)}{" "}
             EA
           </div>
-          <div>
+          {/* <div>
             {(
               order.data.list.reduce((i, c) => {
                 return i + c.weight * c.quan;
               }, 0) / 1000
             ).toFixed(2)}{" "}
             KG
+          </div> */}
+          <div>
+            {accounts.find(
+              account =>
+                account.data.email ===
+                accounts.find(
+                  account => account.data.email === order.data.customer
+                ).data.inCharge
+            ).data.nickName || ""}
           </div>
         </div>
         {forHidden && hiddenAll ? (

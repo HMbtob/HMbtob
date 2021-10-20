@@ -9,7 +9,6 @@ import StoreProduct from "./StoreProduct";
 import BuildIcon from "@material-ui/icons/Build";
 import SyncAltIcon from "@material-ui/icons/SyncAlt";
 import CommentIcon from "@material-ui/icons/Comment";
-import MouseIcon from "@material-ui/icons/Mouse";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import SyncIcon from "@material-ui/icons/Sync";
 import SyncDisabledIcon from "@material-ui/icons/SyncDisabled";
@@ -20,6 +19,8 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import LockIcon from "@material-ui/icons/Lock";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
+import ManageSearchIcon from "@mui/icons-material/ManageSearch";
+
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 const ListProductRow = ({
   id,
@@ -133,13 +134,39 @@ const ListProductRow = ({
     }
   };
 
+  // 해당상품 포함한 주문 검색
+  // const [includedProducts, setIncludedProducts] = useState([]);
+  const includedProduct = () => {
+    // await setIncludedProducts(() =>
+    //   orders.filter(order => order.data.list.some(li => li.productId === id))
+    // );
+    if (
+      orders.filter(order => order.data.list.some(li => li.productId === id))
+        .length > 0
+    ) {
+      history.push({
+        pathname: `/orderlist`,
+        state: {
+          includedProducts: orders.filter(order =>
+            order.data.list.some(li => li.productId === id)
+          ),
+        },
+      });
+    } else if (
+      orders.filter(order => order.data.list.some(li => li.productId === id))
+        .length === 0
+    ) {
+      alert("주문이 없습니다.");
+    }
+  };
+
   useEffect(() => {
     setPrice2(
       exchangeRate[user?.currency] === 1
         ? price / exchangeRate[user?.currency]
         : (price / exchangeRate[user?.currency]).toFixed(2)
     );
-  }, [price, user]);
+  }, [price, user, exchangeRate]);
   return (
     <div
       className={`border-b  border-gray-500 w-full py-1 ${
@@ -196,6 +223,9 @@ const ListProductRow = ({
               totalStock={totalStock}
             />
           </Modal>
+          <button onClick={includedProduct} className="cursor-pointer">
+            <ManageSearchIcon fontSize="small" style={{ color: "gray" }} />
+          </button>
           <button
             onClick={() => handleHidden(forHidden)}
             className="cursor-pointer"
@@ -416,7 +446,6 @@ const ListProductRow = ({
         </div>
         <div className="col-span-4 text-xs">
           {relDate && (
-            // new Date(relDate.seconds * 1000).toISOString().substring(0, 10)
             <input
               type="date"
               value={relDate2}

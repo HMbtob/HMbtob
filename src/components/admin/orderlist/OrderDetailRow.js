@@ -21,7 +21,6 @@ const OrderDetailRow = ({
 }) => {
   const today = new Date();
   const preOrder = relDate.toDate() < today;
-
   const [fixedPrice, setFixedPrice] = useState(price);
   const handleFixedPrice = e => {
     setFixedPrice(Number(e.target.value));
@@ -62,7 +61,7 @@ const OrderDetailRow = ({
         type="checkbox"
         className=" w-full"
         id={id}
-        onChange={e => changeHandler(e.currentTarget.checked, id)}
+        onChange={e => changeHandler(e.target.checked, id)}
         checked={checkedInputs.includes(id) ? true : false}
         disabled={aList?.moved || aList?.canceled || aList?.shipped}
       />
@@ -70,7 +69,7 @@ const OrderDetailRow = ({
       <div className="col-span-2">{createdAt}</div>
 
       <div className="col-span-2">{relDate.toDate().toLocaleDateString()} </div>
-      <div className="col-span-12 text-left w-full flex flex-col">
+      <div className="col-span-10 text-left w-full flex flex-col">
         <div className="flex flex-row">
           {aList?.moved && (
             <>
@@ -142,6 +141,7 @@ const OrderDetailRow = ({
         {price && quan && (price.toFixed(2) * quan).toLocaleString("ko-KR")}{" "}
         {order && order.data.currency}
       </div>
+      <div className="col-span-2 text-left w-11/12">{aList?.memoInList}</div>
     </form>
   );
 };

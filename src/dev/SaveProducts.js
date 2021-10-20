@@ -271,7 +271,7 @@ const SaveProducts = () => {
         stockHistory: [
           {
             type: "add product on list",
-            writer: user.email,
+            writer: user.nickName || user.email,
             amount: 0,
             date: new Date(),
           },

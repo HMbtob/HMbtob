@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { InitDataContext } from "../../../App";
 import OrderListRow from "./OrderListRow";
@@ -6,11 +6,11 @@ import SearchIcon from "@material-ui/icons/Search";
 import RestoreIcon from "@material-ui/icons/Restore";
 import AddCircleOutlinedIcon from "@material-ui/icons/AddCircleOutlined";
 import AssignmentIcon from "@material-ui/icons/Assignment";
+import Paging from "../../b2bshop/b2bshop/mobile/Paging";
 
-const OrderList = () => {
+const OrderList = ({ location }) => {
   const state = useContext(InitDataContext);
-  const { orders } = state;
-
+  const { orders, shippings, accounts } = state;
   // 체크된 상품 전체
   const [checkedAllItems, setCheckedAllItems] = useState([]);
 
@@ -25,7 +25,7 @@ const OrderList = () => {
   };
 
   // 주문들
-  const [order, setOrder] = useState(orders);
+  const [order, setOrder] = useState([]);
 
   // sort default
   const [sortDefault, setSortDefault] = useState(true);
@@ -37,13 +37,52 @@ const OrderList = () => {
     }
   };
 
+  // 주문상태별 sort
+  const [orderState, setOrderSate] = useState("");
+  const handleOrderState = e => {
+    const { value } = e.target;
+    setOrderSate(value);
+    setOrder(
+      orders
+        .filter(doc => doc?.data?.orderState === value)
+        .sort((a, b) => {
+          return (
+            new Date(a.data.createdAt.seconds) -
+            new Date(b.data.createdAt.seconds)
+          );
+        })
+    );
+  };
+  // 담당자별 sort
+  const [inChargeState, setInChargeSate] = useState("");
+  const handleInChargeState = e => {
+    const { value } = e.target; // 담당자 메일
+    // account 에서 선택된 담당자 메일로 필터
+    // 필터된 메일들이
+    setInChargeSate(value);
+    setOrder(
+      orders
+        .filter(doc =>
+          accounts
+            .filter(account => account.data.inCharge === value)
+            .map(account => account.data.email)
+            .includes(doc.data.customer)
+        )
+        .sort((a, b) => {
+          return (
+            new Date(a.data.createdAt.seconds) -
+            new Date(b.data.createdAt.seconds)
+          );
+        })
+    );
+  };
+
   // 검색어
   const [query, setQuery] = useState();
   const queryOnChange = e => {
     const { value } = e.target;
     setQuery(value);
   };
-
   // 검색하기 orderNumber, customer
   const searchProduct = e => {
     e.preventDefault();
@@ -55,7 +94,11 @@ const OrderList = () => {
             doc.data.orderNumber.toLowerCase().includes(query.split(" ")[0]) ||
             doc.data.orderNumber.toLowerCase().includes(query.split(" ")[1]) ||
             doc.data.customer.toLowerCase().includes(query.split(" ")[0]) ||
-            doc.data.customer.toLowerCase().includes(query.split(" ")[1])
+            doc.data.customer.toLowerCase().includes(query.split(" ")[1]) ||
+            doc.data.customer.toLowerCase().includes(query.split(" ")[0]) ||
+            doc.data.customer.toLowerCase().includes(query.split(" ")[1]) ||
+            doc?.data?.nickName?.includes(query.split(" ")[0]) ||
+            doc?.data?.nickName?.includes(query.split(" ")[1])
         )
         .sort((a, b) => {
           return (
@@ -120,6 +163,17 @@ const OrderList = () => {
     e.preventDefault();
     setOrder(orders);
   };
+
+  // 페이징
+  const [page, setPage] = useState(1);
+  const count = order?.length;
+  const handlePageChange = page => {
+    setPage(page);
+  };
+
+  useEffect(() => {
+    setOrder(location.state ? location?.state?.includedProducts : orders);
+  }, [location]);
   return (
     <div className="w-full h-full flex justify-center">
       <div className=" w-11/12 flex-col mt-20">
@@ -152,7 +206,7 @@ const OrderList = () => {
         {/* <button>주문확인</button> */}
         <div
           className="grid grid-cols-12  grid-flow-col text-center 
-           bg-gray-800 text-gray-100 py-1 rounded-sm text-sm"
+           bg-gray-800 text-gray-100 py-1 rounded-sm text-sm items-center"
         >
           <div className="flex flex-row justify-around">
             <AddCircleOutlinedIcon
@@ -183,34 +237,64 @@ const OrderList = () => {
           >
             CUSTOMER
           </div>
-          <div>STATUS</div>
+          {/* <div>STATUS</div> */}
+          <select
+            value={orderState}
+            onChange={handleOrderState}
+            className="bg-transparent text-center outline-none"
+          >
+            <option>STATUS</option>
+            <option value="Order">Order</option>
+            <option value="Pre-Order">Pre Order</option>
+            <option value="Special-Order">Special Order</option>
+            <option value="Ready-to-ship">Ready to ship</option>
+            <option value="Patially-shipped">Patially shipped</option>
+            <option value="Shipped">Shipped</option>
+          </select>
           <div>PRICE</div>
           <div>AMOUNT</div>
           <div>SORTS</div>
           <div>EA</div>
-          <div>WEIGHT</div>
+          <select
+            value={inChargeState}
+            onChange={handleInChargeState}
+            className="bg-transparent text-center outline-none"
+          >
+            <option>In Charge</option>
+            {accounts
+              .filter(account => account.data.type === "admin")
+              .map((acc, i) => (
+                <option key={i} value={acc.data.email}>
+                  {acc.data.nickName}
+                </option>
+              ))}
+          </select>
         </div>
-
         <div>
           {order &&
-            order.map(order => (
-              <OrderListRow
-                key={order.id}
-                id={order.id}
-                orderNumber={order.data.orderNumber}
-                createdAt={order.data.createdAt}
-                customer={order.data.customer}
-                nickName={order?.data?.nickName}
-                orderState={order.data.orderState}
-                order={order}
-                orders={orders}
-                setCheckedAllItems={setCheckedAllItems}
-                checkedAllItems={checkedAllItems}
-                hiddenAll={hiddenAll}
-                handelHiddenAll={handelHiddenAll}
-              />
-            ))}
+            order
+              .slice(page * 20 - 20, page * 20)
+              .map(order => (
+                <OrderListRow
+                  key={order.id}
+                  id={order.id}
+                  orderNumber={order.data.orderNumber}
+                  createdAt={order.data.createdAt}
+                  customer={order.data.customer}
+                  nickName={order?.data?.nickName}
+                  orderState={order.data.orderState}
+                  order={order}
+                  orders={orders}
+                  setCheckedAllItems={setCheckedAllItems}
+                  checkedAllItems={checkedAllItems}
+                  hiddenAll={hiddenAll}
+                  handelHiddenAll={handelHiddenAll}
+                  shippings={shippings}
+                  accounts={accounts}
+                />
+              ))}
         </div>
+        <Paging page={page} count={count} handlePageChange={handlePageChange} />{" "}
       </div>
     </div>
   );

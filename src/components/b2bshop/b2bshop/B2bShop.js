@@ -13,7 +13,6 @@ import InSimpleList from "../../chat/InSimpleList";
 import SearchIcon from "@material-ui/icons/Search";
 import RestoreIcon from "@material-ui/icons/Restore";
 import { useEffect } from "react";
-import SpecialOrder from "./SpecialOrder";
 
 const B2bShop = () => {
   const history = useHistory();
@@ -358,6 +357,10 @@ const B2bShop = () => {
     setConfirmCheck,
     products
   );
+
+  // list 별 메모 정의
+  // const [memoInList, setMemoInList] = useState("")
+
   // list 만들기
   let simpleList = [];
   const handleCheck = () => {
@@ -447,6 +450,7 @@ const B2bShop = () => {
           barcode:
             products.find(product => product.id === key).data.barcode || "",
           sku: products.find(product => product.id === key).data.sku || "",
+          // memoInList
         });
         i++;
       }
@@ -512,7 +516,7 @@ const B2bShop = () => {
 
   useEffect(() => {
     refresh();
-  }, [selectedRoom]);
+  }, [selectedRoom, selectedRoom?.id]);
 
   return (
     <div className="w-full h-auto flex ">

@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
-import { InitDataContext, InitDispatchContext } from "../../App";
+import React, { useState, useEffect, useContext, useCallback } from "react";
+import { InitDataContext } from "../../App";
 import { useHistory } from "react-router";
 import { auth, db } from "../../firebase";
 import DehazeIcon from "@material-ui/icons/Dehaze";
 import ChatIcon from "@material-ui/icons/Chat";
-import NotificationsIcon from "@material-ui/icons/Notifications";
 import InSimpleList from "../chat/InSimpleList";
 import Modal from "../modal/Modal";
 
@@ -15,7 +14,7 @@ const MobileHeader = () => {
   // message
   const [selectedRoom, setSelectedRoom] = useState([]);
   const [selectedMessages, setSelectedMessages] = useState([]);
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     await db
       .collection("rooms")
       .doc(selectedRoom?.id)
@@ -29,7 +28,7 @@ const MobileHeader = () => {
           })),
         })
       );
-  };
+  }, [selectedRoom]);
 
   const [toggleMenu, setToggleMenu] = useState(false);
 
@@ -60,7 +59,7 @@ const MobileHeader = () => {
 
   useEffect(() => {
     refresh();
-  }, [selectedRoom]);
+  }, [refresh, selectedRoom]);
 
   return (
     <div className="flex flex-col">

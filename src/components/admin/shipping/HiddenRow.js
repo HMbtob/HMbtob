@@ -35,12 +35,13 @@ const HiddenRow = ({ shipping }) => {
             key={i}
             className="grid grid-cols-20 text-gray-800 items-center pt-1"
           >
-            <div className="col-span-4"></div>
+            {/* <div className="col-span-2"></div> */}
             <div className="col-span-3">{li.childOrderNumber}</div>
             <div className="col-span-9 text-left">{li.title}</div>
             <div className="col-span-2">
               {li.price} {li.currency}
             </div>
+            <div className="col-span-2">{li.barcode} </div>
             <div className="col-span-2">{li.quan} ea</div>
           </div>
         ))}

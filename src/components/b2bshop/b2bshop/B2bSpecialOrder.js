@@ -143,8 +143,8 @@ const B2bSpecialOrder = () => {
           canceled: false,
           shipped: false,
           createdAt: today,
-          barcode: 0,
-          sku: 0,
+          barcode: "specialOrder",
+          sku: "specialOrder",
         },
       ]);
 

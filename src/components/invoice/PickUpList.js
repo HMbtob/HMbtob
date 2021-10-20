@@ -8,11 +8,16 @@ const PickUpList = ({ location }) => {
     [].concat.apply(
       [],
       orders.map(order =>
-        order.data.list.filter(list => state.includes(list.childOrderNumber))
+        order.data.list.filter(
+          list =>
+            state.includes(list.childOrderNumber) &&
+            list.canceled === false &&
+            list.moved === false &&
+            list.shipped === false
+        )
       )
     )
   );
-
   const history = useHistory();
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
@@ -35,8 +40,9 @@ const PickUpList = ({ location }) => {
              bg-gray-700 text-white"
             >
               <div className="col-span-1">no.</div>
+              <div className="col-span-2">Order Num</div>
               <div className="col-span-4">bar</div>
-              <div className="col-span-10">title</div>
+              <div className="col-span-8">title</div>
               <div className="col-span-4">ver</div>
               <div className="col-span-1">qty</div>
             </div>
@@ -53,8 +59,11 @@ const PickUpList = ({ location }) => {
                border-r border-l text-sm p-1"
                   >
                     <div className="col-span-1 text-center">{i + 1}</div>
+                    <div className="col-span-2 text-center">
+                      {list.orderNumber}
+                    </div>
                     <div className="col-span-4 text-center">{list.sku}</div>
-                    <div className="col-span-10">{list.title}</div>
+                    <div className="col-span-8 text-left">{list.title}</div>
                     <div className="col-span-4"></div>
                     <div className="col-span-1 text-center">{list.quan}</div>
                   </div>

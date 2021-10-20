@@ -1,6 +1,6 @@
 import React from "react";
 
-const UnshippedDetailRow = ({ list }) => {
+const UnshippedDetailRow = ({ list, checkedInputs, changeHandler }) => {
   const today = new Date();
   const preOrder = list.relDate.toDate() < today;
   return (
@@ -9,16 +9,25 @@ const UnshippedDetailRow = ({ list }) => {
         !preOrder ? "bg-red-100" : ""
       }`}
     >
-      <div className="col-span-3">{list.childOrderNumber}</div>
-
+      <div className="col-span-1">
+        <input
+          type="checkbox"
+          id={list.childOrderNumber}
+          onChange={e => changeHandler(e.target.checked, list.childOrderNumber)}
+          checked={checkedInputs.includes(list.childOrderNumber) ? true : false}
+        />
+      </div>
+      <div className="col-span-2">{list.childOrderNumber}</div>
       <div className="col-span-2">
         {list.createdAt.toDate().toLocaleDateString()}{" "}
       </div>
       <div className="col-span-2">
         {list.relDate.toDate().toLocaleDateString()}{" "}
       </div>
-      <div className="col-span-10 text-left w-full pl-2">{list.title}</div>
-      <div className="col-span-4">
+      <div className="col-span-2">{list.barcode} </div>
+      <div className="col-span-2">{list.sku} </div>
+      <div className="col-span-7 text-left w-full pl-2">{list.title}</div>
+      <div className="col-span-3">
         {(list.price - list.price * list.dcRate)?.toFixed(2)} {list.currency}
       </div>
       <div className="col-span-2">{list.quan} 개</div>

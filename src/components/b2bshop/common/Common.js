@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
 import CommonRow from "./CommonRow";
-import FirstPageIcon from "@material-ui/icons/FirstPage";
-import LastPageIcon from "@material-ui/icons/LastPage";
-import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
-import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import Paging from "../b2bshop/mobile/Paging";
 
 export const Common = ({
@@ -20,9 +16,6 @@ export const Common = ({
     const { id } = e.target;
     dispatch({ type: "CATEGORY", category: id });
   };
-
-  // const [page, setPage] = useState(0);
-  // const [pages] = useState([-4, -3, -2, -1, 0, 1, 2, 3, 4]);
 
   // 페이징
   const [page, setPage] = useState(1);
@@ -104,60 +97,6 @@ export const Common = ({
       </div>
       <div className="flex flex-row w-full items-center justify-center">
         <Paging page={page} count={count} handlePageChange={handlePageChange} />{" "}
-        {/* <FirstPageIcon onClick={() => setPage(0)} className="cursor-pointer" />
-        <ArrowLeftIcon
-          className="cursor-pointer"
-          onClick={() => (page === 0 ? setPage(0) : setPage(page - 1))}
-        />
-        {pages.map(
-          (pag, i) =>
-            pag + page > 0 &&
-            pag + page <
-              parseInt(
-                commonProducts?.filter(a => a.data.category === category)
-                  .length / 50
-              ) +
-                1 && (
-              <div
-                key={i}
-                className={`cursor-pointer text-lg px-2 py-1 text-gray-600 ${
-                  i === 5 && "font-bold"
-                }`}
-                onClick={() => setPage(page + pag - 1)}
-              >
-                {pag + page}{" "}
-              </div>
-            )
-        )}
-        <ArrowRightIcon
-          className="cursor-pointer"
-          onClick={() =>
-            page ===
-            parseInt(
-              commonProducts?.filter(a => a.data.category === category).length /
-                50
-            ) -
-              1
-              ? setPage(
-                  parseInt(
-                    commonProducts?.filter(a => a.data.category === category)
-                      .length / 50
-                  ) - 1
-                )
-              : setPage(page + 1)
-          }
-        />
-        <LastPageIcon
-          className="cursor-pointer"
-          onClick={() =>
-            setPage(
-              parseInt(
-                commonProducts?.filter(a => a.data.category === category)
-                  .length / 50
-              ) - 1
-            )
-          }
-        /> */}
       </div>
     </div>
   );

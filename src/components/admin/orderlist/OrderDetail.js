@@ -21,7 +21,6 @@ const OrderDetail = ({ match }) => {
   const order = orders.find(order => order.id === id);
   const shipping = shippings.filter(arr => arr.data.orderId === id);
   const history = useHistory();
-
   const [form, onChange] = useInputs({
     orderState: order?.data.orderState,
     paymentMethod: order?.data.paymentMethod,
@@ -158,15 +157,13 @@ const OrderDetail = ({ match }) => {
 
   // 어느나라에 걸리는지
   const zone =
-    z &&
-    country.length > 0 &&
-    country !== "korea" &&
-    Object.keys(
-      z.find(doc =>
-        Object.values(doc).find(asd => asd.country.includes(country))
-      )
-    );
-
+    z && country.length > 0 && country !== "korea"
+      ? Object.keys(
+          z.find(doc =>
+            Object.values(doc).find(asd => asd.country.includes(country))
+          )
+        )
+      : ["zone1"];
   // 배송비 가격
   const [preFee, setPreFee] = useState(order?.data.shippingFee);
   const handleFee = e => {
@@ -188,13 +185,14 @@ const OrderDetail = ({ match }) => {
       : totalWeight === 0
       ? 0
       : country === "korea"
-      ? (totalWeight * 5000) / exchangeRate[order.data.currency]
+      ? ((parseInt(totalWeight / 15) + 1) * 4500) /
+        exchangeRate[order.data.currency]
       : (totalWeight * order.data.shippingRate[shippingType]) /
         exchangeRate[order.data.currency];
 
   // 입력 배송비
   const [calFee, setCalFee] = useState("");
-  const [inputWeight, setInputWeight] = useState("");
+  const [inputWeight, setInputWeight] = useState(0);
   let num3 = 1;
   for (let i = 1; i < 31; i++) {
     let j = i * 0.5;
@@ -210,7 +208,7 @@ const OrderDetail = ({ match }) => {
   // 체크된 상품 배송비
   const [checkedItemsFee, setCheckedItemsFee] = useState("");
   const handleCheckedItemFee = e => {
-    setCheckedItemsFee(Number(Number(e.target.value)));
+    setCheckedItemsFee(Number(e.target.value));
   };
 
   // 상품 total price
@@ -394,7 +392,6 @@ const OrderDetail = ({ match }) => {
         ).length
     : 0;
 
-  // TODO:  쉬핑 넘버 없이 카운츠로 넘버만들어서 저장-> 되면 오더에도 적용
   const makeShipping = async e => {
     e.preventDefault();
     if (trackingNumber.length < 1) {
@@ -439,7 +436,7 @@ const OrderDetail = ({ match }) => {
         });
       await db
         .collection("accounts")
-        .doc(user.email)
+        .doc(order.data.customer)
         .update({
           credit: user.credit - checkItemAmountPrice,
           creditDetails: firebase.firestore.FieldValue.arrayUnion({
@@ -498,22 +495,40 @@ const OrderDetail = ({ match }) => {
   useEffect(() => {
     ItemPrice();
 
-    setCheckedItemsFee(() =>
-      z && country.length > 0 && checkedWeight < 30 && checkedWeight > 0
-        ? (
-            Number(
+    setCheckedItemsFee(
+      () =>
+        z &&
+        country.length > 0 &&
+        checkedWeight < 30 &&
+        checkedWeight > 0 &&
+        country !== "korea"
+          ? Number(
               Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
-                .fee[num2 - 1].split(",")
+                .fee[num - 1].split(",")
                 .join("")
             ) / exchangeRate[order.data.currency]
-          ).toFixed(2)
-        : checkedWeight === 0
-        ? 0
-        : (
-            (checkedWeight * order.data.shippingRate[shippingType]) /
+          : totalWeight === 0
+          ? 0
+          : country === "korea"
+          ? ((parseInt(checkedWeight / 15) + 1) * 4500) /
             exchangeRate[order.data.currency]
-          ).toFixed(2)
+          : (checkedWeight * order.data.shippingRate[shippingType]) /
+            exchangeRate[order.data.currency]
+      // ? (
+      //     Number(
+      //       Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
+      //         .fee[num2 - 1].split(",")
+      //         .join("")
+      //     ) / exchangeRate[order.data.currency]
+      //   ).toFixed(2)
+      // : checkedWeight === 0
+      // ? 0
+      // : (
+      //     (checkedWeight * order.data.shippingRate[shippingType]) /
+      //     exchangeRate[order.data.currency]
+      //   ).toFixed(2)
     );
+
     setCalFee(
       z && country.length > 0 && inputWeight < 30 && inputWeight > 0
         ? (
@@ -651,7 +666,8 @@ const OrderDetail = ({ match }) => {
                       .sort()
                       .map((doc, index) => (
                         <div key={index}>
-                          {order?.data.dcRates[doc] * 100} %
+                          {Number((order?.data.dcRates[doc] * 100).toFixed(2))}{" "}
+                          %
                         </div>
                       ))}
                   </div>
@@ -660,7 +676,8 @@ const OrderDetail = ({ match }) => {
                       .sort()
                       .map((doc, index) => (
                         <div key={index}>
-                          {order?.data.dcAmount[doc]} {order?.data.currency}{" "}
+                          {Number((order?.data.dcAmount[doc]).toFixed(2))}{" "}
+                          {order?.data.currency}
                         </div>
                       ))}
                   </div>
@@ -757,6 +774,17 @@ const OrderDetail = ({ match }) => {
                         className="border p-1 pl-2"
                       />{" "}
                     </div>
+                    <div className="grid grid-cols-2 w-5/6 items-center">
+                      <div className="text-right pr-5">Shipping Message</div>
+                      <textarea
+                        rows="7"
+                        cols="19"
+                        name="shippingMessage"
+                        value={shippingMessage}
+                        onChange={onChange}
+                        className="border p-1 pl-2"
+                      />{" "}
+                    </div>
                   </>
                 )}
                 {country !== "korea" && (
@@ -824,7 +852,7 @@ const OrderDetail = ({ match }) => {
                     <div className="grid grid-cols-2 w-5/6 items-center">
                       <div className="text-right pr-5">Shipping Message</div>
                       <textarea
-                        rows="5"
+                        rows="7"
                         cols="19"
                         name="shippingMessage"
                         value={shippingMessage}
@@ -870,12 +898,13 @@ const OrderDetail = ({ match }) => {
               <div className="col-span-3">No.</div>
               <div className="col-span-2">DATE</div>
               <div className="col-span-2">RELEASE</div>
-              <div className="col-span-12">TITLE</div>
+              <div className="col-span-10">TITLE</div>
               <div className="col-span-2">PRICE</div>
               <div className="col-span-2">EA</div>
               <div className="col-span-2">WEIGHT</div>
 
               <div className="col-span-2">AMOUNT</div>
+              <div className="col-span-2">MEMO</div>
             </div>
             {/* dep-3-4 */}
             {order.data.list

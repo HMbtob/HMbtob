@@ -2,10 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { InitDataContext, InitDispatchContext } from "../../../App";
 import ListProductRow from "./ListProductRow";
 import Paging from "../../b2bshop/b2bshop/mobile/Paging";
-import FirstPageIcon from "@material-ui/icons/FirstPage";
-import LastPageIcon from "@material-ui/icons/LastPage";
-import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
-import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import RestockRequests from "./restockrequests/RestockRequests";
 import SearchIcon from "@material-ui/icons/Search";
 import RestoreIcon from "@material-ui/icons/Restore";
@@ -16,8 +12,6 @@ const ListProduct = () => {
   const dispatch = useContext(InitDispatchContext);
   const { products, orders, shippings, user, exchangeRate, reStockRequests } =
     state;
-  // const [page, setPage] = useState(0);
-  // const [pages] = useState([-4, -3, -2, -1, 0, 1, 2, 3, 4]);
 
   // 헤더 항목
   const headers = [
@@ -33,15 +27,7 @@ const ListProduct = () => {
     "UNSHIP",
     "WEIGHT",
   ];
-  // sort default
-  const [sortDefault, setSortDefault] = useState(true);
-  const handleSortDefault = () => {
-    if (sortDefault === true) {
-      setSortDefault(false);
-    } else if (sortDefault === false) {
-      setSortDefault(true);
-    }
-  };
+
   // 검색기능구현
   // 상품들
   const [preProduct, setPreProduct] = useState(
@@ -124,55 +110,9 @@ const ListProduct = () => {
           );
         })
     );
+    setPage(1);
   };
 
-  // const sortProductByDate = () => {
-  //   // e.preventDefault();
-  //   if (sortDefault === false) {
-  //     setPreProduct(
-  //       products.sort((b, a) => {
-  //         return (
-  //           new Date(b.data.relDate.seconds) - new Date(a.data.relDate.seconds)
-  //         );
-  //       })
-  //     );
-  //     handleSortDefault(true);
-  //   } else if (sortDefault === true) {
-  //     setPreProduct(
-  //       products.sort((b, a) => {
-  //         return (
-  //           new Date(a.data.relDate.seconds) - new Date(b.data.relDate.seconds)
-  //         );
-  //       })
-  //     );
-  //     handleSortDefault(false);
-  //   }
-  // };
-
-  // const sortProductByPrice = () => {
-  //   // e.preventDefault();
-
-  //   console.log(sortDefault);
-  //   if (sortDefault === false) {
-  //     console.log("1");
-  //     setPreProduct(
-  //       products.sort((b, a) => {
-  //         return b.data.price - a.data.price;
-  //       })
-  //     );
-  //     console.log(preProduct);
-
-  //     handleSortDefault(true);
-  //   } else if (sortDefault === true) {
-  //     console.log("2");
-  //     setPreProduct(
-  //       products.sort((b, a) => {
-  //         return a.data.price - b.data.price;
-  //       })
-  //     );
-  //     handleSortDefault(false);
-  //   }
-  // };
   // 초기화
   const handleClear = e => {
     e.preventDefault();
@@ -283,41 +223,6 @@ const ListProduct = () => {
             count={count}
             handlePageChange={handlePageChange}
           />
-          {/* <FirstPageIcon
-            onClick={() => setPage(0)}
-            className="cursor-pointer"
-          />
-          <ArrowLeftIcon
-            className="cursor-pointer"
-            onClick={() => (page === 0 ? setPage(0) : setPage(page - 1))}
-          />
-          {pages.map(
-            (pag, i) =>
-              pag + page > 0 &&
-              pag + page < parseInt(preProduct?.length / 50) + 1 && (
-                <div
-                  key={i}
-                  className={`cursor-pointer text-lg px-2 py-1 text-gray-600 ${
-                    i === 5 && "font-bold"
-                  }`}
-                  onClick={() => setPage(page + pag - 1)}
-                >
-                  {pag + page}{" "}
-                </div>
-              )
-          )}
-          <ArrowRightIcon
-            className="cursor-pointer"
-            onClick={() =>
-              page === parseInt(preProduct?.length / 50) - 1
-                ? setPage(parseInt(preProduct?.length / 50) - 1)
-                : setPage(page + 1)
-            }
-          />
-          <LastPageIcon
-            className="cursor-pointer"
-            onClick={() => setPage(parseInt(preProduct?.length / 50) - 1)}
-          /> */}
         </div>
       </div>
       <RestockRequests reStockRequests={reStockRequests} />

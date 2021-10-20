@@ -19,7 +19,12 @@ const UnshippedRow = ({ customer, orders }) => {
             .filter(arr1 => arr1.data.customer === customer.id)
             .map(arr2 => arr2.data.list)
         )
-        .filter(arr3 => arr3.shipped === false)
+        .filter(
+          arr3 =>
+            arr3.shipped === false &&
+            arr3.moved === false &&
+            arr3.canceled === false
+        )
     );
   }, [orders]);
 
@@ -38,7 +43,7 @@ const UnshippedRow = ({ customer, orders }) => {
       onClick={() => history.push(`/Unshipped/${customer.data.uid}`)}
       className={`grid grid-cols-8 text-center cursor-pointer ${
         included ? "bg-red-100" : "bg-white"
-      }  border py-1 text-sm`}
+      }  border py-1 text-sm ${unshipped && unshipped.length < 1 && "hidden"}`}
     >
       {" "}
       <div className="col-span-2">{customer && customer.data.email}</div>

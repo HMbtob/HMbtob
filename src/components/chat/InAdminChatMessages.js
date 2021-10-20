@@ -1,22 +1,22 @@
-import React, { useEffect, useRef } from "react";
-import { InitDataContext, InitDispatchContext } from "../../App";
+import React, { useCallback, useEffect, useRef } from "react";
 
 const InAdminChatMessages = ({ selectedMessages, user }) => {
   const chatRef = useRef(null);
 
-  const scrollToBottom = () => {
-    if (
-      selectedMessages.messages &&
-      selectedMessages.messages[0]?.data.user === user.email
-    ) {
-      chatRef.current.scrollIntoView({
-        behavior: "smooth",
-      });
-    }
-  };
+  const scrollToBottom = useCallback(() => {
+    // if (
+    //   selectedMessages.messages &&
+    //   selectedMessages.messages[0]?.data.user === user.email
+    // ) {
+    chatRef.current.scrollIntoView({
+      behavior: "smooth",
+    });
+    // }
+  }, [selectedMessages, selectedMessages.messages, user.email]);
+
   useEffect(() => {
     scrollToBottom();
-  }, [selectedMessages]);
+  }, [selectedMessages, selectedMessages.messages]);
 
   return (
     <div

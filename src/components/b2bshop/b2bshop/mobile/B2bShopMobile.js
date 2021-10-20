@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { InitDataContext, InitDispatchContext } from "../../../../App";
 import { useHistory } from "react-router";
 
@@ -10,13 +16,12 @@ import MobileSearch from "./MobileSearch";
 import MobileTable from "./MobileTable";
 
 const B2bShopMobile = () => {
-  const today = new Date();
+  const today = useMemo(() => new Date(), []);
   const history = useHistory();
 
   const state = useContext(InitDataContext);
   const dispatch = useContext(InitDispatchContext);
-  const { category, notices, products, user, exchangeRate, orders, rooms } =
-    state;
+  const { category, products, user, exchangeRate, orders } = state;
 
   // list toggle
   const [toggleSimpleList, setToggleSimpleList] = useState(false);
@@ -269,56 +274,62 @@ const B2bShopMobile = () => {
   };
 
   // 초기화
-  const handleClear = e => {
-    if (e) {
-      e.preventDefault();
-    }
-    // 프리오더
-    setInitProducts([
-      {
-        "Pre Order": products
-          .filter(
-            product =>
-              new Date(product?.data?.preOrderDeadline?.seconds * 1000) > today
-          )
-          .filter(doc => doc.data.exposeToB2b === "노출")
-          .sort((a, b) => {
-            return (
-              new Date(a.data.preOrderDeadline.seconds) -
-              new Date(b.data.preOrderDeadline.seconds)
-            );
-          }),
-      },
-      {
-        "Hot Deal": products
-          .filter(
-            product =>
-              new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
-          )
-          .filter(doc => doc.data.exposeToB2b === "DEAL")
-          .sort((a, b) => {
-            return (
-              new Date(b.data.relDate.seconds) -
-              new Date(a.data.relDate.seconds)
-            );
-          }),
-      },
-      {
-        Products: products
-          .filter(
-            product =>
-              new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
-          )
-          .filter(doc => doc.data.exposeToB2b === "노출")
-          .sort((a, b) => {
-            return (
-              new Date(b.data.relDate.seconds) -
-              new Date(a.data.relDate.seconds)
-            );
-          }),
-      },
-    ]);
-  };
+  const handleClear = useCallback(
+    e => {
+      if (e) {
+        e.preventDefault();
+      }
+      // 프리오더
+      setInitProducts([
+        {
+          "Pre Order": products
+            .filter(
+              product =>
+                new Date(product?.data?.preOrderDeadline?.seconds * 1000) >
+                today
+            )
+            .filter(doc => doc.data.exposeToB2b === "노출")
+            .sort((a, b) => {
+              return (
+                new Date(a.data.preOrderDeadline.seconds) -
+                new Date(b.data.preOrderDeadline.seconds)
+              );
+            }),
+        },
+        {
+          "Hot Deal": products
+            .filter(
+              product =>
+                new Date(product?.data?.preOrderDeadline?.seconds * 1000) <=
+                today
+            )
+            .filter(doc => doc.data.exposeToB2b === "DEAL")
+            .sort((a, b) => {
+              return (
+                new Date(b.data.relDate.seconds) -
+                new Date(a.data.relDate.seconds)
+              );
+            }),
+        },
+        {
+          Products: products
+            .filter(
+              product =>
+                new Date(product?.data?.preOrderDeadline?.seconds * 1000) <=
+                today
+            )
+            .filter(doc => doc.data.exposeToB2b === "노출")
+            .sort((a, b) => {
+              return (
+                new Date(b.data.relDate.seconds) -
+                new Date(a.data.relDate.seconds)
+              );
+            }),
+        },
+      ]);
+    },
+    [products, today]
+  );
   // {title(id):quan} 형태로 가져오기
   const [confirmChecked, setConfirmCheck] = useState(false);
   const [form, onChange, reset, deleteList] = useSimpleList(
@@ -327,14 +338,14 @@ const B2bShopMobile = () => {
     products
   );
   // list 만들기
-  let simpleList = [];
-  const handleCheck = () => {
+  let simpleList = useMemo(() => []);
+  const handleCheck = useCallback(() => {
     if (simpleList.length > 0) {
       setConfirmCheck(true);
     } else if (simpleList.length === 0) {
       setConfirmCheck(false);
     }
-  };
+  }, [simpleList]);
   if (form && products) {
     let i = 0;
     for (let key in form) {
@@ -431,10 +442,11 @@ const B2bShopMobile = () => {
 
   useEffect(() => {
     handleCheck();
-  }, [simpleList]);
+  }, [simpleList, handleCheck]);
+
   useEffect(() => {
     handleClear();
-  }, []);
+  }, [handleClear]);
   return (
     <div className="mt-10 bg-gray-100 h-auto min-h-screen flex-col flex items-center">
       {/* 검색창 */}

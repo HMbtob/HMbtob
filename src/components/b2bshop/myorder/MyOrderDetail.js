@@ -151,10 +151,11 @@ const MyOrderDetail = ({ match }) => {
           <div className="hidden lg:grid lg:col-span-3">No.</div>
           <div className="hidden lg:grid lg:col-span-3">DATE</div>
           <div className="hidden lg:grid lg:col-span-3">RELEASE</div>
-          <div className="col-span-4 lg:gird lg:col-span-13">TITLE</div>
+          <div className="col-span-4 lg:gird lg:col-span-11">TITLE</div>
           <div className="col-span-1 lg:gird lg:col-span-2">PRICE</div>
           <div className="col-span-1 lg:gird lg:col-span-2">EA</div>
           <div className="hidden lg:grid lg:col-span-2">AMOUNT</div>
+          <div className="hidden lg:grid lg:col-span-2">MEMO</div>
         </div>
         {order &&
           order.data.list.map(doc => (

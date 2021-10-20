@@ -3,7 +3,7 @@ import axios from "axios";
 import { useHistory } from "react-router";
 
 import { InitDataContext } from "../../../App";
-import { db, storage } from "../../../firebase";
+import { db } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
 import AddBigc from "./AddBigc";
 
@@ -18,7 +18,6 @@ const AddProduct = ({ location }) => {
   const [parentCat, setParentCat] = useState([]);
   const [childCat, setChildCat] = useState([]);
   const [lastId, setLastId] = useState("");
-  const [bigC, setBigC] = useState("");
 
   const [toggleSaveButton, setToggleSaveButton] = useState(false);
 
@@ -193,11 +192,9 @@ const AddProduct = ({ location }) => {
       )
       .then(ids => setLastId(ids.data.data))
       .catch(error => console.log("id", error));
-    // console.log(lastId);
   };
   // 섬넬
   const getImages = async () => {
-    // await setImgUrl(thumbnailUrl.substring(25));
     await axios
       .get(
         `https://us-central1-interasiastock.cloudfunctions.net/app/big/getThumbnail`,
@@ -244,10 +241,9 @@ const AddProduct = ({ location }) => {
           inventory_level: inventoryLevel,
           brand_name: brandName,
           categories: checkedInputs,
-          description: `${descr} + <img src=${discripUrl} alt="" />`,
+          description: `${descr} <img src=${discripUrl} alt="" />`,
         }
       );
-      // console.log("post res", res);
       await onSaveButtonClick();
       await alert("빅커머스 추가완료. 5초 후에 등록해주세요.");
     } catch (e) {
@@ -308,7 +304,7 @@ const AddProduct = ({ location }) => {
               stockHistory: [
                 {
                   type: "add product on list",
-                  writer: user.email,
+                  writer: user.nickName || user.email,
                   amount: 0,
                   date: new Date(),
                 },
@@ -320,15 +316,8 @@ const AddProduct = ({ location }) => {
           if (e) console.log("get added product err", e);
         }
 
-        // 파이어 베이스 저장 후
-        // 빅커머스 상품등록
-        // 디폴트
-        // type : physical
-        // inventory_tracking : product
-
         await reset();
         await alert("추가완료");
-        // FIXME: 저장버튼 어디다 둘지, 따로둘지, 저장후 어디로 갈지?
         history.push("/listproduct");
       } else {
         alert("잠시 후 다시 시도해주세요.");
@@ -338,7 +327,6 @@ const AddProduct = ({ location }) => {
 
   useEffect(() => {
     callCats();
-    // callLastId();
   }, []);
   useEffect(() => {
     setParentCat(

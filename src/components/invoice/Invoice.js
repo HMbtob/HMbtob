@@ -6,12 +6,18 @@ import InvoiceRow from "./InvoiceRow";
 
 const PickUpList = ({ location }) => {
   const { state, orders, order } = location;
-
+  console.log(state);
   const [invoiceLists] = useState(
     [].concat.apply(
       [],
       orders.map(order =>
-        order.data.list.filter(list => state.includes(list.childOrderNumber))
+        order.data.list.filter(
+          list =>
+            state.includes(list.childOrderNumber) &&
+            list.canceled === false &&
+            list.moved === false &&
+            list.shipped === false
+        )
       )
     )
   );
@@ -66,8 +72,10 @@ const PickUpList = ({ location }) => {
                 <div className="text-sm">Fax: +82 2 3281 0125</div>
               </div>
               <div className="w-1/3 flex flex-col justify-center text-sm">
-                <div>invoice No.:</div>
-                <div>invoice Date:</div>
+                <div>invoice No.: {order && order.data.orderNumber}</div>
+                <div>
+                  invoice Date: {new Date().toLocaleString().substring(0, 14)}
+                </div>
               </div>
             </div>
             <div className="flex-row flex w-full mb-5">
@@ -134,8 +142,8 @@ const PickUpList = ({ location }) => {
                 )}
               </div>
               <div className="bw-1/3  flex flex-col justify-center text-sm">
-                <div>Shipping :</div>
-                <div>Tracking No.:</div>
+                {/* <div>Shipping :</div>
+                <div>Tracking No.:</div> */}
               </div>
             </div>
             <div

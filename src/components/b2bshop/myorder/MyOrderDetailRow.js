@@ -52,7 +52,7 @@ const MyOrderDetailRow = ({ order, id, currency, list, orderr }) => {
         {order.relDate.toDate().toLocaleDateString()}{" "}
       </div>
 
-      <div className="col-span-4 lg:gird lg:col-span-13 pl-1 text-left w-full flex flex-row">
+      <div className="col-span-4 lg:gird lg:col-span-11 pl-1 text-left w-full flex flex-row">
         {order?.moved && (
           <>
             <div className="no-underline"> {order?.moveTo}</div>
@@ -102,6 +102,7 @@ const MyOrderDetailRow = ({ order, id, currency, list, orderr }) => {
         {qty && (order.price.toFixed(2) * qty).toLocaleString("ko-KR")}{" "}
         {currency}
       </div>
+      <div className="hidden lg:grid lg:col-span-2">{order?.memoInList}</div>
     </form>
   );
 };

@@ -56,7 +56,7 @@ const TopStoreProduct = ({ products, user, exchangeRate }) => {
         totalStock: Number(inputStock) + Number(bigcTotalSold.total_sold),
         stockHistory: firebase.firestore.FieldValue.arrayUnion({
           type: "재고조사",
-          writer: user.email,
+          writer: user.nickName || user.email,
           amount:
             (Number(inputProduct.data.totalStock) -
               Number(inputStock) -
