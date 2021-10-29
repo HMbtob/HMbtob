@@ -1,15 +1,66 @@
-import React from "react";
+import React, { useState } from "react";
 import useInputs from "../../hooks/useInput";
 
 const InvoiceRow = ({ list, index }) => {
   const [form, onchange] = useInputs({
     quan: list.quan,
-    price: list.price,
-    totalPrice: list.totalPrice,
     option: "",
   });
 
-  const { quan, price, totalPrice, option } = form;
+  const { quan, option } = form;
+
+  const [price, setPrice] = useState(
+    list.currency === "KRW"
+      ? Number(list.price)
+          .toFixed(0)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      : Number(list.price)
+          .toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  );
+
+  const handlePrice = e => {
+    setPrice(
+      list.currency === "KRW"
+        ? Number(e.target.value.replaceAll(",", ""))
+            .toFixed(0)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        : Number(e.target.value.replaceAll(",", ""))
+            .toFixed(2)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    );
+  };
+
+  const [totalPrice, setTotalPrice] = useState(
+    list.currency === "KRW"
+      ? Number(list.totalPrice)
+          .toFixed(0)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      : Number(list.totalPrice)
+          .toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  );
+
+  const handleTotalPrice = e => {
+    setTotalPrice(
+      list.currency === "KRW"
+        ? Number(e.target.value.replaceAll(",", ""))
+            .toFixed(0)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        : Number(e.target.value.replaceAll(",", ""))
+            .toFixed(2)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    );
+  };
+
   return (
     <div
       className="grid grid-cols-28 border-b border-black
@@ -35,7 +86,7 @@ const InvoiceRow = ({ list, index }) => {
       border-black p-1 flex flex-row items-center w-full"
       >
         <input
-          type="text"
+          type="number"
           onChange={onchange}
           value={quan}
           name="quan"
@@ -45,12 +96,12 @@ const InvoiceRow = ({ list, index }) => {
       </div>
       <div
         className="col-span-3 text-center  border-r border-black p-1 
-      flex flex-row items-center w-full"
+      flex flex-row items-center w-full "
       >
         <input
           type="text"
-          onChange={onchange}
-          value={price.toFixed(2)}
+          onChange={handlePrice}
+          value={price}
           name="price"
           className="w-full text-center py-1 outline-none"
         />{" "}
@@ -58,14 +109,14 @@ const InvoiceRow = ({ list, index }) => {
       </div>
       <div
         className="col-span-3 text-center p-1 flex 
-      flex-row items-center justify-center"
+      flex-row items-center justify-center w-full"
       >
         <input
           type="text"
-          onChange={onchange}
-          value={totalPrice.toFixed(2)}
+          onChange={handleTotalPrice}
+          value={totalPrice}
           name="totalPrice"
-          className="w-12 text-center py-1 outline-none"
+          className="w-full text-center py-1 outline-none"
         />{" "}
         {list.currency}
       </div>

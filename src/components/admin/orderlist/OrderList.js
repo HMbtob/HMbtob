@@ -8,9 +8,12 @@ import AddCircleOutlinedIcon from "@material-ui/icons/AddCircleOutlined";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import Paging from "../../b2bshop/b2bshop/mobile/Paging";
 
-const OrderList = ({ location }) => {
+const OrderList = ({ location, match }) => {
   const state = useContext(InitDataContext);
   const { orders, shippings, accounts } = state;
+
+  // 뒤로가기시 페이지 유지
+
   // 체크된 상품 전체
   const [checkedAllItems, setCheckedAllItems] = useState([]);
 
@@ -43,7 +46,7 @@ const OrderList = ({ location }) => {
     const { value } = e.target;
     setOrderSate(value);
     setOrder(
-      orders
+      order
         .filter(doc => doc?.data?.orderState === value)
         .sort((a, b) => {
           return (
@@ -61,7 +64,7 @@ const OrderList = ({ location }) => {
     // 필터된 메일들이
     setInChargeSate(value);
     setOrder(
-      orders
+      order
         .filter(doc =>
           accounts
             .filter(account => account.data.inCharge === value)
@@ -95,15 +98,17 @@ const OrderList = ({ location }) => {
             doc.data.orderNumber.toLowerCase().includes(query.split(" ")[1]) ||
             doc.data.customer.toLowerCase().includes(query.split(" ")[0]) ||
             doc.data.customer.toLowerCase().includes(query.split(" ")[1]) ||
-            doc.data.customer.toLowerCase().includes(query.split(" ")[0]) ||
-            doc.data.customer.toLowerCase().includes(query.split(" ")[1]) ||
-            doc?.data?.nickName?.includes(query.split(" ")[0]) ||
-            doc?.data?.nickName?.includes(query.split(" ")[1])
+            doc.data.customer.toUpperCase().includes(query.split(" ")[0]) ||
+            doc.data.customer.toUpperCase().includes(query.split(" ")[1]) ||
+            doc?.data?.nickName?.toLowerCase().includes(query.split(" ")[0]) ||
+            doc?.data?.nickName?.toLowerCase().includes(query.split(" ")[1]) ||
+            doc?.data?.nickName?.toUpperCase().includes(query.split(" ")[0]) ||
+            doc?.data?.nickName?.toUpperCase().includes(query.split(" ")[1])
         )
         .sort((a, b) => {
           return (
-            new Date(a.data.createdAt.seconds) -
-            new Date(b.data.createdAt.seconds)
+            new Date(b.data.createdAt.seconds) -
+            new Date(a.data.createdAt.seconds)
           );
         })
     );
@@ -161,6 +166,8 @@ const OrderList = ({ location }) => {
   // 초기화 ;버튼
   const handleClear = e => {
     e.preventDefault();
+    setOrderSate("");
+    setInChargeSate("");
     setOrder(orders);
   };
 
@@ -169,6 +176,13 @@ const OrderList = ({ location }) => {
   const count = order?.length;
   const handlePageChange = page => {
     setPage(page);
+  };
+
+  // 페이지당 항목수
+  const [itemsPerPage, setItemsPerPage] = useState(50);
+  const handleItemsPerPage = e => {
+    const { value } = e.target;
+    setItemsPerPage(Number(value));
   };
 
   useEffect(() => {
@@ -202,6 +216,18 @@ const OrderList = ({ location }) => {
         </form>
         <div className="w-full text-center my-4 text-gray-800 text-lg">
           ORDERS
+        </div>
+        <div className="w-full flex justify-end text-sm">
+          <select
+            className="bg-transparent"
+            value={itemsPerPage}
+            onChange={handleItemsPerPage}
+          >
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+          개씩 보기
         </div>
         {/* <button>주문확인</button> */}
         <div
@@ -247,6 +273,7 @@ const OrderList = ({ location }) => {
             <option value="Order">Order</option>
             <option value="Pre-Order">Pre Order</option>
             <option value="Special-Order">Special Order</option>
+            <option value="Confirmed-Order">Confirmed Order</option>
             <option value="Ready-to-ship">Ready to ship</option>
             <option value="Patially-shipped">Patially shipped</option>
             <option value="Shipped">Shipped</option>
@@ -273,7 +300,7 @@ const OrderList = ({ location }) => {
         <div>
           {order &&
             order
-              .slice(page * 20 - 20, page * 20)
+              .slice(page * itemsPerPage - itemsPerPage, page * itemsPerPage)
               .map(order => (
                 <OrderListRow
                   key={order.id}
@@ -294,9 +321,15 @@ const OrderList = ({ location }) => {
                 />
               ))}
         </div>
-        <Paging page={page} count={count} handlePageChange={handlePageChange} />{" "}
+        <Paging
+          page={page}
+          count={count}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+        />{" "}
       </div>
     </div>
   );
 };
+
 export default OrderList;

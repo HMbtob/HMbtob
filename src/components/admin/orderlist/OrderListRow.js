@@ -6,7 +6,7 @@ import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined";
 import LocalShippingOutlinedIcon from "@material-ui/icons/LocalShippingOutlined";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { useEffect } from "react";
+import PersonIcon from "@mui/icons-material/Person";
 import { db } from "../../../firebase";
 
 const OrderListRow = ({
@@ -27,6 +27,9 @@ const OrderListRow = ({
 }) => {
   const history = useHistory();
   const today = new Date();
+
+  // 주문상태 변경
+  const [orderStateForRow, setOrderStateForRow] = useState(orderState);
 
   // 상품삭제
   const handleDelete = async () => {
@@ -57,7 +60,6 @@ const OrderListRow = ({
   };
   // 체크박스
   const [checkedInputs, setCheckedInputs] = useState([]);
-
   const changeHandler = (checked, id) => {
     if (checked) {
       setCheckedInputs([...checkedInputs, id]);
@@ -161,9 +163,52 @@ const OrderListRow = ({
             className="col-span-2"
             // onClick={() => history.push(`/orderdetail/${id}`)}
           >
-            {nickName && nickName.length > 0 ? nickName : customer}
+            {nickName && nickName.length > 0 ? nickName : customer}{" "}
+            {accounts.find(acc => acc.id === customer).data.currency === "KRW"
+              ? Number(
+                  accounts
+                    .find(acc => acc.id === customer)
+                    .data.credit.toFixed(2)
+                ).toLocaleString("ko-KR")
+              : Number(
+                  accounts
+                    .find(acc => acc.id === customer)
+                    .data.credit.toFixed(0)
+                ).toLocaleString("ko-KR")}
+            <PersonIcon
+              className="cursor-pointer"
+              onClick={() =>
+                history.push(
+                  `/customerdetail/${
+                    accounts.find(acc => acc.id === customer).data.uid
+                  }`
+                )
+              }
+            />
           </div>
-          <div>{orderState} </div>
+          <div>
+            <select
+              name="orderState"
+              value={orderStateForRow}
+              onChange={e => {
+                setOrderStateForRow(e.target.value);
+                db.collection("orders")
+                  .doc("b2b")
+                  .collection("b2borders")
+                  .doc(id)
+                  .update({ orderState: e.target.value });
+              }}
+              className="border p-1"
+            >
+              <option value="Order">Order</option>
+              <option value="Pre-Order">Pre Order</option>
+              <option value="Special-Order">Special Order</option>
+              <option value="Confirmed-Order">Confirmed Order</option>
+              <option value="Ready-to-ship">Ready to ship</option>
+              <option value="Patially-shipped">Patially shipped</option>
+              <option value="Shipped">Shipped</option>
+            </select>
+          </div>
           <div>
             {order.data.currency === "KRW"
               ? order.data.totalPrice.toLocaleString("ko-KR")
@@ -183,14 +228,6 @@ const OrderListRow = ({
             }, 0)}{" "}
             EA
           </div>
-          {/* <div>
-            {(
-              order.data.list.reduce((i, c) => {
-                return i + c.weight * c.quan;
-              }, 0) / 1000
-            ).toFixed(2)}{" "}
-            KG
-          </div> */}
           <div>
             {accounts.find(
               account =>

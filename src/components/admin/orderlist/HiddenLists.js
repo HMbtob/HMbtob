@@ -1,4 +1,5 @@
 import React from "react";
+import UndoIcon from "@material-ui/icons/Undo";
 
 const HiddenLists = ({ order, checkedInputs, changeHandler }) => {
   const today = new Date();
@@ -46,7 +47,21 @@ const HiddenLists = ({ order, checkedInputs, changeHandler }) => {
                 }
                 disabled={li.moved || li.canceled || li.shipped}
               />
-              <div className="col-span-4 text-left">{li.title}</div>
+              <div className="col-span-4 text-left flex flex-row">
+                {li?.moved && (
+                  <>
+                    <div className="no-underline"> {li?.moveTo}</div>
+                    <UndoIcon
+                      style={{ color: "#1F2937", fontSize: "medium" }}
+                    />
+                  </>
+                )}
+                <div
+                  className={`${(li?.moved || li?.canceled) && "line-through"}`}
+                >
+                  {li.title}
+                </div>
+              </div>
               <div className="col-span-1">
                 {li.price.toLocaleString("ko-KR")} {li.currency}
               </div>
@@ -60,6 +75,19 @@ const HiddenLists = ({ order, checkedInputs, changeHandler }) => {
               </div>
             </div>
           ))}
+      <div className="flex flex-row w-full text-lg justify-evenly py-1">
+        {" "}
+        <div>Shipping Type : {order.data.shippingType}</div>
+        <div>
+          Shipping Fee :{" "}
+          {order.data.currency === "KRW"
+            ? Number(order.data.shippingFee.toFixed(0)).toLocaleString("ko-KR")
+            : Number(order.data.shippingFee.toFixed(2)).toLocaleString(
+                "ko-KR"
+              )}{" "}
+          {order.data.currency}
+        </div>{" "}
+      </div>
     </div>
   );
 };

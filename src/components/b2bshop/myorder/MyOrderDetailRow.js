@@ -4,7 +4,14 @@ import UndoIcon from "@material-ui/icons/Undo";
 import LocalAirportIcon from "@material-ui/icons/LocalAirport";
 import { db } from "../../../firebase";
 
-const MyOrderDetailRow = ({ order, id, currency, list, orderr }) => {
+const MyOrderDetailRow = ({
+  order,
+  id,
+  currency,
+  list,
+  orderr,
+  orderState,
+}) => {
   const today = new Date();
   const preOrder = order.relDate.toDate() < today;
   const [qty, setQty] = useState(order.quan);

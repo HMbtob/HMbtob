@@ -9,8 +9,8 @@ const CreditDetails = ({ creditDetails }) => {
       >
         <div className="col-span-2">DATE</div>
         <div>TYPE</div>
-        <div>PRICE</div>
         <div>AMOUNT</div>
+        <div>BALANCE</div>
       </div>
       {creditDetails &&
         creditDetails.map((de, i) => (

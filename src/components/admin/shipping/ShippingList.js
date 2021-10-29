@@ -49,9 +49,11 @@ const ShippingList = ({ shipping, from }) => {
           <div className="col-span-2">Country</div>
           <div className="col-span-1">Sorts</div>
           <div className="col-span-1">EA</div>
-          {from !== "myorder" && <div className="col-span-1">Weight</div>}
+
+          <div className="col-span-1">Item Price</div>
+
           <div className="col-span-2">Shipping Fee</div>
-          <div className="col-span-2">Amount</div>
+          <div className="col-span-2">Total Amount</div>
         </div>
         <div>
           {from === "detail" && shipping

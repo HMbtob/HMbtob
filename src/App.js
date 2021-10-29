@@ -1,10 +1,11 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState, useRef } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Spinner from "react-spinkit";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useMediaQuery } from "react-responsive";
-
+import { useHistory } from "react-router";
 import { auth, db } from "./firebase";
+
 import { initState, dataReducer } from "./reducer/Reducer";
 
 import B2bShop from "./components/b2bshop/b2bshop/B2bShop";
@@ -33,7 +34,6 @@ import Header from "./components/header/Header";
 import PickUpList from "./components/invoice/PickUpList";
 import Invoice from "./components/invoice/Invoice";
 import InAdminChat from "./components/chat/InAdminChat";
-import MobileLogin from "./components/login/MobileLogin";
 import MobileHeader from "./components/header/MobileHeader";
 
 export const InitDataContext = React.createContext(null);
@@ -41,9 +41,13 @@ export const InitDispatchContext = React.createContext(null);
 
 function App() {
   const [user, loading] = useAuthState(auth);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+
   const [state, dispatch] = useReducer(dataReducer, initState);
   const { userType } = state;
   // TODO: 유저타입을 -> user.userType 으로 대체가능한가?
+  const history = useHistory();
 
   // 반응형
   const isPc = useMediaQuery({
@@ -211,8 +215,18 @@ function App() {
   if (user && userType === "none") {
     return (
       <div className="grid place-items-center h-screen w-full">
-        <div className="flex  h-auto">
+        <div className="flex h-auto text-lg">
           We are checking the contents of the survey.
+        </div>
+        <div
+          onClick={async () => {
+            await auth.signOut();
+            await history.replace("/");
+          }}
+          className="font-mono font-bold text-center rounded-sm text-lg
+                    text-gray-100 bg-blue-900 py-3 px-5 cursor-pointer"
+        >
+          Logout
         </div>
       </div>
     );
@@ -277,7 +291,7 @@ function App() {
                 <Sidebar />
                 <Switch>
                   {/* 개발 */}
-                  {user.email === "interasiadev@gmail.com" ? (
+                  {auth.currentUser.email === "interasiadev@gmail.com" ? (
                     <Route path="/fordev" component={Dev} />
                   ) : (
                     ""

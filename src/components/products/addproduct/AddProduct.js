@@ -258,71 +258,72 @@ const AddProduct = ({ location }) => {
     e.preventDefault();
 
     await callLastId();
-    setTimeout(async () => {
-      if (lastId) {
-        try {
-          await db
-            .collection("products")
-            .doc(`${lastId[0]?.id}`)
-            .set({
-              sku,
-              purchasePrice: Number(purchasePrice),
-              price: Number(price),
-              artist,
-              ent,
-              x: Number(x),
-              stock: stock,
-              y: Number(y),
-              z: Number(z),
-              title,
-              thumbNail: thumbnailUrl,
-              weight: Number(weight),
-              category,
-              relDate: new Date(relDate),
-              preOrderDeadline: new Date(preOrderDeadline),
-              options: {
-                poster,
-                pob,
-                photocard,
-                weverseGift,
-                interAsiaPhotocard,
+    // setInterval(async () => {
+    if (lastId) {
+      try {
+        await db
+          .collection("products")
+          .doc(`${lastId[0]?.id}`)
+          .set({
+            sku,
+            purchasePrice: Number(purchasePrice),
+            price: Number(price),
+            createdAt: new Date(),
+            artist,
+            ent,
+            x: Number(x),
+            stock: stock,
+            y: Number(y),
+            z: Number(z),
+            title,
+            thumbNail: thumbnailUrl,
+            weight: Number(weight),
+            category,
+            relDate: new Date(relDate),
+            preOrderDeadline: new Date(preOrderDeadline),
+            options: {
+              poster,
+              pob,
+              photocard,
+              weverseGift,
+              interAsiaPhotocard,
+            },
+            barcode,
+            reStockable: reStockable,
+            exposeToB2b: exposeToB2b,
+            bigC: lastId[0],
+            productMemo: [
+              {
+                memo: "add product",
+                date: new Date(),
+                writer: "server",
               },
-              barcode,
-              reStockable: reStockable,
-              exposeToB2b: exposeToB2b,
-              bigC: lastId[0],
-              productMemo: [
-                {
-                  memo: "add product",
-                  date: new Date(),
-                  writer: "server",
-                },
-              ],
-              limitedStock: false,
-              totalStock: stock,
-              totalSold: 0,
-              stockHistory: [
-                {
-                  type: "add product on list",
-                  writer: user.nickName || user.email,
-                  amount: 0,
-                  date: new Date(),
-                },
-              ],
-              descr,
-              discripUrl,
-            });
-        } catch (e) {
-          if (e) console.log("get added product err", e);
-        }
-
-        await reset();
-        await alert("추가완료");
-        history.push("/listproduct");
-      } else {
-        alert("잠시 후 다시 시도해주세요.");
+            ],
+            limitedStock: false,
+            totalStock: stock,
+            totalSold: 0,
+            stockHistory: [
+              {
+                type: "add product on list",
+                writer: user.nickName || user.email,
+                amount: 0,
+                date: new Date(),
+              },
+            ],
+            descr,
+            discripUrl,
+          });
+      } catch (e) {
+        if (e) console.log("get added product err", e);
       }
-    }, 2000);
+
+      await reset();
+      await alert("추가완료");
+      history.push("/listproduct");
+    } else {
+      alert("잠시 후 다시 시도해주세요.");
+    }
+    // }, 2000);
   };
 
   useEffect(() => {

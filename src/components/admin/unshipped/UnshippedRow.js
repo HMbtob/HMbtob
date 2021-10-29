@@ -14,9 +14,12 @@ const UnshippedRow = ({ customer, orders }) => {
       [].concat
         .apply(
           [],
-
           orders
-            .filter(arr1 => arr1.data.customer === customer.id)
+            .filter(
+              arr1 =>
+                arr1.data.customer === customer.id &&
+                arr1.data.orderState !== "Shipped"
+            )
             .map(arr2 => arr2.data.list)
         )
         .filter(
@@ -52,23 +55,29 @@ const UnshippedRow = ({ customer, orders }) => {
       <div>{unshipped && unshipped.length} 종</div>
       <div>
         {unshipped &&
-          unshipped.reduce((i, c) => {
-            return i + c.quan;
-          }, 0)}{" "}
+          unshipped
+            .reduce((i, c) => {
+              return i + c.quan;
+            }, 0)
+            .toLocaleString("ko-KR")}{" "}
         개
       </div>
       <div>
         {unshipped &&
-          unshipped.reduce((i, c) => {
-            return i + c.totalWeight;
-          }, 0) / 1000}{" "}
+          (
+            unshipped.reduce((i, c) => {
+              return i + c.totalWeight;
+            }, 0) / 1000
+          ).toLocaleString("ko-KR")}{" "}
         KG
       </div>
       <div>
         {unshipped &&
-          unshipped.reduce((i, c) => {
-            return i + c.totalPrice;
-          }, 0)}{" "}
+          unshipped
+            .reduce((i, c) => {
+              return i + c.totalPrice;
+            }, 0)
+            .toLocaleString("ko-KR")}{" "}
         {unshipped && unshipped.length > 0 && unshipped[0].currency}
       </div>
     </div>

@@ -1,7 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { InitDataContext } from "../../../App";
+import { Link } from "react-router-dom";
+import { CSVLink } from "react-csv";
+
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined";
+import CalendarViewMonthIcon from "@mui/icons-material/CalendarViewMonth";
 import HiddenRow from "./HiddenRow";
+
 const ShippingListRow = ({ shipping, from, hiddenAll }) => {
+  const state = useContext(InitDataContext);
+  const { orders } = state;
+
   const [forHidden, setForHidden] = useState(true);
   const handleHidden = forHidden => {
     if (forHidden === true) {
@@ -10,6 +20,41 @@ const ShippingListRow = ({ shipping, from, hiddenAll }) => {
       setForHidden(true);
     }
   };
+  const [checkedInputs, setCheckedInputs] = useState(
+    shipping.data.list.map(li => li.childOrderNumber)
+  );
+  const order = orders.find(order => order.id === shipping.data.orderId);
+
+  const csvData = order.data.list.map(li => [
+    li.sku,
+    li.sku,
+    li.title,
+    li.barcode,
+    "interasia01",
+    li.quan,
+  ]);
+
+  const today = new Date();
+  const date = `${today
+    .toLocaleDateString()
+    .replaceAll(".", "-")
+    .replaceAll(" ", "")}han.csv`;
+
+  const krwComma = (num, cur) => {
+    let calNum;
+    cur === "KRW"
+      ? (calNum = Number(num.toString().replaceAll(",", ""))
+          .toFixed(0)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ","))
+      : (calNum = Number(num.toString().replaceAll(",", ""))
+          .toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+
+    return calNum;
+  };
+
   if (shipping) {
     return (
       <div className="border-b border-r border-l w-full border-gray-500">
@@ -22,7 +67,31 @@ const ShippingListRow = ({ shipping, from, hiddenAll }) => {
           <div className="col-span-3">
             {new Date(shipping?.data?.shippedDate.toDate()).toLocaleString()}
           </div>
-          <div className="col-span-3">{shipping?.data?.orderNumber}</div>
+          <div className="col-span-3">
+            {shipping?.data?.orderNumber}
+            {from !== "myorder" && (
+              <>
+                <Link
+                  to={{
+                    pathname: "/invoice",
+                    state: checkedInputs,
+                    orders,
+                    order,
+                  }}
+                >
+                  <AssignmentOutlinedIcon />
+                </Link>
+                <CSVLink
+                  data={csvData}
+                  filename={date}
+                  target="_blank"
+                  className="ml-2"
+                >
+                  <CalendarViewMonthIcon />
+                </CSVLink>
+              </>
+            )}
+          </div>
           <div className="col-span-3">
             {new Date(shipping?.data?.orderCreatedAt.toDate()).toLocaleString()}
           </div>
@@ -46,7 +115,11 @@ const ShippingListRow = ({ shipping, from, hiddenAll }) => {
             className="cursor-pointer mr-3"
             onClick={() => handleHidden(forHidden)}
           />
-          <div className="col-span-3">{shipping?.data?.customer}</div>
+          <div className="col-span-3">
+            {shipping.data.nickName
+              ? shipping.data.nickName
+              : shipping?.data?.customer}
+          </div>
           <div>{shipping?.data?.shippingType}</div>
           <div className="col-span-2">{shipping?.data?.country}</div>
           <div className="col-span-1">{shipping?.data?.list.length} type</div>
@@ -58,25 +131,30 @@ const ShippingListRow = ({ shipping, from, hiddenAll }) => {
             )}{" "}
             EA
           </div>
-          {from !== "myorder" && (
-            <div className="col-span-1">
-              {shipping.data.inputWeight && shipping.data.inputWeight > 0
+          {/* {from !== "myorder" && ( */}
+          <div className="col-span-1">
+            {/* {shipping.data.inputWeight && shipping.data.inputWeight > 0
                 ? shipping.data.inputWeight
                 : Number(
                     shipping?.data?.list.reduce((i, c) => {
                       return i + c.weight * c.quan;
                     }, 0)
                   ) / 1000}{" "}
-              KG
-            </div>
-          )}
+              KG */}
+            {krwComma(shipping.data.checkedItemPrice, shipping.data.currency)}{" "}
+            {shipping.data.currency}
+          </div>
+          {/* )} */}
           <div className="col-span-2">
-            {Number(shipping.data.checkedItemsFee).toLocaleString("ko-KR")}{" "}
+            {krwComma(shipping.data.checkedItemsFee, shipping.data.currency)}{" "}
             {shipping.data.currency}
           </div>
 
           <div className="col-span-2">
-            {Number(shipping.data.checkItemAmountPrice).toLocaleString("ko-KR")}{" "}
+            {krwComma(
+              shipping.data.checkItemAmountPrice,
+              shipping.data.currency
+            )}{" "}
             {shipping.data.currency}
           </div>
         </div>

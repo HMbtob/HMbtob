@@ -29,21 +29,20 @@ const MyOrderListRow = ({ id, orderNumber, createdAt, orderState, order }) => {
         <div className="col-span-2  lg:grid lg:col-span-1">{orderState} </div>
         <div className="hidden lg:grid">
           {order.data.currency === "KRW"
-            ? order.data.list
-                .reduce((i, c) => {
-                  return (
-                    i + (c.price - (c.dcRate * c.price).toFixed(2)) * c.quan
-                  );
-                }, 0)
-                .toLocaleString("ko-KR")
-            : order.data.list
-                .reduce((i, c) => {
-                  return (
-                    i + (c.price - (c.dcRate * c.price).toFixed(2)) * c.quan
-                  );
-                }, 0)
-                .toFixed(2)
-                .toLocaleString("ko-KR")}{" "}
+            ? // order.data.list
+              //     .reduce((i, c) => {
+              //       return (
+              //         i + (c.price - (c.dcRate * c.price).toFixed(2)) * c.quan
+              //       );
+              //     }, 0)
+              order.data.totalPrice.toLocaleString("ko-KR")
+            : // order.data.list
+              //     .reduce((i, c) => {
+              //       return (
+              //         i + (c.price - (c.dcRate * c.price).toFixed(2)) * c.quan
+              //       );
+              //     }, 0)
+              order.data.totalPrice.toFixed(2).toLocaleString("ko-KR")}{" "}
           {order.data.currency}
         </div>
         <div>{order.data.list.length} </div>

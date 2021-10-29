@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import firebase from "firebase";
 import { useHistory } from "react-router";
 import { InitDataContext, InitDispatchContext } from "../../../App";
@@ -23,14 +23,16 @@ const B2bOrder = () => {
   // daum 주소 api
 
   // 리스트 메모추가 기능
-  // console.log(simpleLists);
-  const [memoInList, setMemoInList] = useState("");
+  const [memoInList, setMemoInList] = useState({});
   const handleMemoInList = e => {
     const { name, value } = e.target;
-    setMemoInList(value);
     const aa = simpleLists.find(list => list.childOrderNumber === name);
     const bb = simpleLists.filter(list => list.childOrderNumber !== name);
-    aa.memoInList = value;
+    setMemoInList({
+      ...memoInList,
+      [name]: value,
+    });
+    aa.memoInList = memoInList[`${name}`] || "";
     const simpleList = [aa, ...bb];
     dispatch({ type: "SIMPLELIST", simpleList });
   };
@@ -267,7 +269,8 @@ const B2bOrder = () => {
 
     // totalsold 계산
     for (let i = 0; i < simpleLists.length; i++) {
-      db.collection("products")
+      await db
+        .collection("products")
         .doc(simpleLists[i].productId)
         .update({
           stock:
@@ -369,11 +372,11 @@ const B2bOrder = () => {
               <>
                 <div className="grid grid-cols-2  items-center">
                   <div className="text-right pr-3">Name</div>
-                  <div>{user.displayName}</div>
+                  <div>{user?.displayName}</div>
                 </div>
                 <div className="grid grid-cols-2  items-center">
                   <div className="text-right pr-3">Number</div>
-                  <div>{user.phoneNumber}</div>
+                  <div>{user?.phoneNumber}</div>
                 </div>
                 <div className="grid grid-cols-2  items-center">
                   <div className="text-right pr-3">Email</div>
@@ -433,7 +436,10 @@ const B2bOrder = () => {
                 .map((doc, index) => (
                   <>
                     {index === 5 && (
-                      <div className="grid grid-cols-2 items-center">
+                      <div
+                        key={`${index}-a`}
+                        className="grid grid-cols-2 items-center"
+                      >
                         <div className="p-1 pr-3 text-right">Zip Code</div>
                         <input
                           required
@@ -676,47 +682,54 @@ const B2bOrder = () => {
           </div>
           {simpleLists && (
             <>
-              {simpleLists.map((doc, index) => (
-                <div
-                  className="grid grid-cols-6 lg:grid-cols-12 text-center 
+              {simpleLists
+                .sort((a, b) => {
+                  return (
+                    Number(a.childOrderNumber.slice(-1)) -
+                    Number(b.childOrderNumber.slice(-1))
+                  );
+                })
+                .map((doc, index) => (
+                  <div
+                    className="grid grid-cols-6 lg:grid-cols-12 text-center 
                   text-xs lg:text-sm bg-white border-b border-r border-l py-1"
-                  key={index}
-                >
-                  <div className="hidden lg:grid lg:col-span-2">
-                    {doc.childOrderNumber}
-                  </div>
-                  <div className="hidden lg:grid lg:col-span-1">
-                    {
-                      products?.find(product => product.id === doc.productId)
-                        .data.sku
-                    }
-                  </div>
-                  <div className="col-span-3 text-left pl-2">{doc.title}</div>
-                  <div className="hidden lg:grid lg:col-span-1">
-                    {new Date(doc.relDate.toDate()).toLocaleDateString()}
-                  </div>
+                    key={index}
+                  >
+                    <div className="hidden lg:grid lg:col-span-2">
+                      {doc.childOrderNumber}
+                    </div>
+                    <div className="hidden lg:grid lg:col-span-1">
+                      {
+                        products?.find(product => product.id === doc.productId)
+                          .data.sku
+                      }
+                    </div>
+                    <div className="col-span-3 text-left pl-2">{doc.title}</div>
+                    <div className="hidden lg:grid lg:col-span-1">
+                      {new Date(doc.relDate.toDate()).toLocaleDateString()}
+                    </div>
 
-                  <div>
-                    {doc.price?.toLocaleString("ko-KR")} {user?.currency}
-                  </div>
+                    <div>
+                      {doc.price?.toLocaleString("ko-KR")} {user?.currency}
+                    </div>
 
-                  <div>{doc.quan} EA</div>
+                    <div>{doc.quan} EA</div>
 
-                  <div className="hidden lg:grid lg:col-span-1">
-                    {(doc.price * doc.quan)?.toLocaleString("ko-KR")}{" "}
-                    {user?.currency}
+                    <div className="hidden lg:grid lg:col-span-1">
+                      {(doc.price * doc.quan)?.toLocaleString("ko-KR")}{" "}
+                      {user?.currency}
+                    </div>
+                    <div className="col-span-2">
+                      <input
+                        className="border w-11/12 outline-none pl-2"
+                        type="text"
+                        name={doc.childOrderNumber}
+                        value={memoInList[doc.childOrderNumber]}
+                        onChange={handleMemoInList}
+                      />
+                    </div>
                   </div>
-                  <div className="col-span-2">
-                    <input
-                      className="border w-11/12 outline-none pl-2"
-                      type="text"
-                      name={doc.childOrderNumber}
-                      value={memoInList}
-                      onChange={handleMemoInList}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))}
             </>
           )}
         </div>

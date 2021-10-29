@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { InitDataContext, InitDispatchContext } from "../../../App";
+import { InitDataContext } from "../../../App";
 import ListProductRow from "./ListProductRow";
 import Paging from "../../b2bshop/b2bshop/mobile/Paging";
 import RestockRequests from "./restockrequests/RestockRequests";
@@ -9,9 +9,15 @@ import TopStoreProduct from "./TopStoreProduct";
 
 const ListProduct = () => {
   const state = useContext(InitDataContext);
-  const dispatch = useContext(InitDispatchContext);
   const { products, orders, shippings, user, exchangeRate, reStockRequests } =
     state;
+
+  // 페이지당 항목수
+  const [itemsPerPage, setItemsPerPage] = useState(50);
+  const handleItemsPerPage = e => {
+    const { value } = e.target;
+    setItemsPerPage(Number(value));
+  };
 
   // 헤더 항목
   const headers = [
@@ -52,7 +58,9 @@ const ListProduct = () => {
   // 검색하기
 
   const searchProducts = e => {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
 
     setPreProduct(
       products
@@ -105,8 +113,8 @@ const ListProduct = () => {
         )
         .sort((a, b) => {
           return (
-            new Date(a.data.preOrderDeadline.seconds) -
-            new Date(b.data.preOrderDeadline.seconds)
+            new Date(b.data.preOrderDeadline.seconds) -
+            new Date(a.data.preOrderDeadline.seconds)
           );
         })
     );
@@ -121,8 +129,12 @@ const ListProduct = () => {
   };
 
   useEffect(() => {
-    setPreProduct(products);
-  }, [dispatch, products]);
+    if (query) {
+      searchProducts();
+    } else {
+      setPreProduct(products);
+    }
+  }, [products]);
 
   return (
     <div className="flex flex-col w-full">
@@ -156,6 +168,14 @@ const ListProduct = () => {
           user={user}
           exchangeRate={exchangeRate}
         />
+        <div className="w-full bg-gray-100 flex justify-end">
+          <select value={itemsPerPage} onChange={handleItemsPerPage}>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+          개씩 보기
+        </div>
         <div
           className="grid grid-cols-36 text-center border-b border-gray-500 p-1 
         bg-gray-100  top-0 text-sm"
@@ -189,32 +209,34 @@ const ListProduct = () => {
         </div>
         <div className="w-full flex flex-col items-center">
           <div className="w-full">
-            {preProduct?.slice(page * 20 - 20, page * 20).map(product => (
-              <ListProductRow
-                key={product.id}
-                id={product.id}
-                sku={product.data.sku}
-                thumbNail={product.data.thumbNail}
-                title={product.data.title}
-                price={product.data.price}
-                barcode={product.data.barcode}
-                stock={product.data.stock}
-                totalStock={product.data.totalStock}
-                totalSell={product.data.totalSell}
-                unShipped={product.data.unShipped}
-                relDate={product.data.relDate}
-                weight={product.data.weight}
-                isVisible={product.data.isVisible}
-                preOrderDeadline={product.data.preOrderDeadline}
-                bigcProductId={product?.data?.bigC?.id}
-                product={product}
-                orders={orders}
-                shippings={shippings}
-                user={user}
-                exchangeRate={exchangeRate}
-                products={products}
-              />
-            ))}
+            {preProduct
+              ?.slice(page * itemsPerPage - itemsPerPage, page * itemsPerPage)
+              .map(product => (
+                <ListProductRow
+                  key={product.id}
+                  id={product.id}
+                  sku={product.data.sku}
+                  thumbNail={product.data.thumbNail}
+                  title={product.data.title}
+                  price={product.data.price}
+                  barcode={product.data.barcode}
+                  stock={product.data.stock}
+                  totalStock={product.data.totalStock}
+                  totalSell={product.data.totalSell}
+                  unShipped={product.data.unShipped}
+                  relDate={product.data.relDate}
+                  weight={product.data.weight}
+                  isVisible={product.data.isVisible}
+                  preOrderDeadline={product.data.preOrderDeadline}
+                  bigcProductId={product?.data?.bigC?.id}
+                  product={product}
+                  orders={orders}
+                  shippings={shippings}
+                  user={user}
+                  exchangeRate={exchangeRate}
+                  products={products}
+                />
+              ))}
           </div>
         </div>
         <div className="flex flex-row w-full items-center justify-center">
@@ -222,6 +244,7 @@ const ListProduct = () => {
             page={page}
             count={count}
             handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
           />
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { auth, provider } from "../../firebase";
+import firebase from "firebase";
 import Modal from "../modal/Modal";
 import EmailSignUp from "./EmailSignUp";
 
@@ -9,14 +10,24 @@ function Login() {
   const signInWithGoogle = async () => {
     await auth.signInWithRedirect(provider).catch(e => alert(e.message));
   };
+
   const signInWithEmail = e => {
     e.preventDefault();
     auth
-      .signInWithEmailAndPassword(
-        emailRef.current.value,
-        passwordRef.current.value
-      )
-      .then(authUser => console.log(authUser))
+      .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => {
+        return auth
+          .signInWithEmailAndPassword(
+            emailRef.current.value,
+            passwordRef.current.value
+          )
+          .then(userC => {
+            const user = userC.user;
+            console.log(user);
+          })
+          .catch(e => console.log(e));
+      })
+      // .then(authUser => console.log(authUser))
       .catch(e => {
         alert(e.message);
       });

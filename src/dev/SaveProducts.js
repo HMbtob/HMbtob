@@ -29,7 +29,7 @@ const SaveProducts = () => {
     const rows = await sheet.getRows();
 
     console.log("반복문 시작");
-    for (let i = 3042; i < 3101; i++) {
+    for (let i = 0; i < 4; i++) {
       console.log(i, "번째");
 
       const productId = allOrderProductsList?.data[i]?.id;

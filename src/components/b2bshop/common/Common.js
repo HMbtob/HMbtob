@@ -23,6 +23,12 @@ export const Common = ({
   const handlePageChange = page => {
     setPage(page);
   };
+  // 페이지당 항목수
+  const [itemsPerPage, setItemsPerPage] = useState(50);
+  const handleItemsPerPage = e => {
+    const { value } = e.target;
+    setItemsPerPage(Number(value));
+  };
   // 카테고리 추가는 여기서
   const categories = [
     { cd: "cd" },
@@ -38,6 +44,18 @@ export const Common = ({
 
   return (
     <div className="flex flex-col h-lg w-11/12 mb-20 ">
+      <div className="w-full flex justify-end text-xs">
+        <select
+          className="bg-transparent"
+          value={itemsPerPage}
+          onChange={handleItemsPerPage}
+        >
+          <option value={20}>20</option>
+          <option value={50}>50</option>
+          <option value={100}>100</option>
+        </select>
+        개씩 보기
+      </div>
       <div
         className="grid grid-cols-6 grid-flow-col 
         text-center  bg-gray-200  
@@ -76,7 +94,7 @@ export const Common = ({
         {commonProducts &&
           commonProducts
             .filter(a => a.data.category === category)
-            .slice(page * 20 - 20, page * 20)
+            .slice(page * itemsPerPage - itemsPerPage, page * itemsPerPage)
             .map(product => (
               <CommonRow
                 key={product.id}
@@ -96,7 +114,12 @@ export const Common = ({
             ))}
       </div>
       <div className="flex flex-row w-full items-center justify-center">
-        <Paging page={page} count={count} handlePageChange={handlePageChange} />{" "}
+        <Paging
+          page={page}
+          count={count}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+        />{" "}
       </div>
     </div>
   );

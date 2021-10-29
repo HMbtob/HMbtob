@@ -10,18 +10,22 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import UndoIcon from "@material-ui/icons/Undo";
 import LocalAirportIcon from "@material-ui/icons/LocalAirport";
 import { useCallback } from "react";
+import Modal from "../../modal/Modal";
+import CreditDetails from "../customer/CreditDetails";
 
 const OrderDetail = ({ match }) => {
   const today = new Date();
   const { id } = match.params;
   const state = useContext(InitDataContext);
-  const { orders, user, shippings, exchangeRate, dhlShippingFee } = state;
+  const { orders, shippings, exchangeRate, dhlShippingFee, accounts } = state;
   const { z } = dhlShippingFee;
-
   const order = orders.find(order => order.id === id);
+  const user = accounts.find(account => account.id === order.data.customer);
+  const { creditDetails } = user.data;
+
   const shipping = shippings.filter(arr => arr.data.orderId === id);
   const history = useHistory();
-  const [form, onChange] = useInputs({
+  const [form, onChange, reset, credit_reset] = useInputs({
     orderState: order?.data.orderState,
     paymentMethod: order?.data.paymentMethod,
     shippingType: order?.data.shippingType,
@@ -40,6 +44,9 @@ const OrderDetail = ({ match }) => {
     companyName: order?.data.companyName,
     address: order?.data.address,
     detailAddress: order?.data.detailAddress,
+    // 크레딧
+    handleCredit: 0,
+    creditType: "Store-Credit",
   });
 
   const {
@@ -61,8 +68,33 @@ const OrderDetail = ({ match }) => {
     companyName,
     address,
     detailAddress,
+    handleCredit,
+    creditType,
   } = form;
 
+  const krwComma = (num, cur) => {
+    let calNum;
+    cur === "KRW"
+      ? (calNum = Number(num.toString().replaceAll(",", ""))
+          .toFixed(0)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ","))
+      : (calNum = Number(num.toString().replaceAll(",", ""))
+          .toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+
+    return calNum;
+  };
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+  const closeModal = () => {
+    setModalOpen(false);
+  };
   const saveDetails = () => {
     db.collection("orders").doc("b2b").collection("b2borders").doc(id).update({
       orderState,
@@ -85,11 +117,13 @@ const OrderDetail = ({ match }) => {
     });
     alert("저장 완료");
   };
+
   // 트래킹넘버 / textarea
   const [trackingNumber, setTrackingNumber] = useState([]);
   const handleTrackingNumber = e => {
     setTrackingNumber(e.target.value);
   };
+
   const [checkedInputs, setCheckedInputs] = useState([]);
 
   const changeHandler = (checked, id) => {
@@ -101,6 +135,37 @@ const OrderDetail = ({ match }) => {
     }
   };
 
+  const idArray = [];
+  const handleAllCheck = checked => {
+    if (
+      checkedInputs.length !==
+      order?.data?.list.filter(
+        li =>
+          li.moved === false && li.canceled === false && li.shipped === false
+      ).length
+    ) {
+      // 전체 체크 박스가 체크 되면 id를 가진 모든 elements를 배열에 넣어주어서,
+      // 전체 체크 박스 체크
+
+      order?.data?.list
+        .filter(
+          li =>
+            li.moved === false && li.canceled === false && li.shipped === false
+        )
+        .forEach(el => idArray.push(el.childOrderNumber));
+      setCheckedInputs(idArray);
+    }
+    // 반대의 경우 전체 체크 박스 체크 삭제
+    else if (
+      checkedInputs.length ===
+      order?.data?.list.filter(
+        li =>
+          li.moved === false && li.canceled === false && li.shipped === false
+      ).length
+    ) {
+      setCheckedInputs([]);
+    }
+  };
   // 배송국가 전체 for select option
   const countries = [].concat(
     ...z
@@ -191,6 +256,9 @@ const OrderDetail = ({ match }) => {
         exchangeRate[order.data.currency];
 
   // 입력 배송비
+  const [inputedFee, setInputedFee] = useState("");
+  const [checkedRadio, setCheckedRadio] = useState("cal");
+
   const [calFee, setCalFee] = useState("");
   const [inputWeight, setInputWeight] = useState(0);
   let num3 = 1;
@@ -243,11 +311,23 @@ const OrderDetail = ({ match }) => {
 
   // 재계산 amount
   const amountPrice = totalPrice + fee;
+  // 체크된 아이템 더하기
+  const plusCheckedItem = price => {
+    return krwComma(
+      Number(checkedItemPrice.replaceAll(",", "")) +
+        Number(price.toString().replaceAll(",", "")),
+      order.data.currency
+    );
+  };
+
   // 체크된 아이템 총액
   const checkItemAmountPrice =
-    inputWeight > 0
-      ? Number(checkedItemPrice) + Number(calFee)
-      : Number(checkedItemPrice) + Number(checkedItemsFee);
+    checkedRadio === "cal"
+      ? inputWeight > 0
+        ? plusCheckedItem(calFee)
+        : plusCheckedItem(checkedItemsFee)
+      : plusCheckedItem(inputedFee);
+
   // 재계산 버튼
   const saveRecal = () => {
     setPreTotalPrice(totalPrice);
@@ -374,7 +454,7 @@ const OrderDetail = ({ match }) => {
   };
 
   const forShippingNumber = shippings
-    .filter(ship => ship.data.customer === user.email)
+    .filter(ship => ship.data.customer === order.data.customer)
     .filter(
       ship =>
         new Date(ship.data.shippedDate.seconds * 1000)
@@ -382,7 +462,7 @@ const OrderDetail = ({ match }) => {
           .substring(0, 10) === new Date(today).toISOString().substring(0, 10)
     )
     ? shippings
-        .filter(ship => ship.data.customer === user.email)
+        .filter(ship => ship.data.customer === order.data.customer)
         .filter(
           ship =>
             new Date(ship.data.shippedDate.seconds * 1000)
@@ -408,7 +488,7 @@ const OrderDetail = ({ match }) => {
           currency: order.data.currency,
           shippingNumber: `${order.data.orderNumber
             .replaceAll("-", "")
-            .replaceAll(" ", "")}-${addZeros(forShippingNumber, 2)}`,
+            .replaceAll(" ", "")}-${addZeros(forShippingNumber, 3)}`,
           shippedDate: new Date(),
           shippingType,
           customer: order.data.customer,
@@ -426,25 +506,34 @@ const OrderDetail = ({ match }) => {
           list: order.data.list.filter(item =>
             checkedInputs.includes(item.childOrderNumber)
           ),
-          checkedItemsFee: inputWeight > 0 ? calFee : checkedItemsFee,
+          checkedItemsFee:
+            checkedRadio === "cal"
+              ? inputWeight > 0
+                ? calFee
+                : checkedItemsFee
+              : inputedFee,
           checkedItemPrice,
           checkItemAmountPrice,
           trackingNumber,
           inputWeight,
           taxId,
           companyName,
+          nickName: order.data.nickName || "",
         });
       await db
         .collection("accounts")
         .doc(order.data.customer)
         .update({
-          credit: user.credit - checkItemAmountPrice,
+          credit:
+            user.data.credit - Number(checkItemAmountPrice.replaceAll(",", "")),
           creditDetails: firebase.firestore.FieldValue.arrayUnion({
             type: "Shipped Amount",
-            currency: user.currency,
-            amount: Number(checkItemAmountPrice),
+            currency: user.data.currency,
+            amount: Number(checkItemAmountPrice.replaceAll(",", "")),
             date: new Date(),
-            totalAmount: Number(user.credit) - Number(checkItemAmountPrice),
+            totalAmount:
+              Number(user.data.credit) -
+              Number(checkItemAmountPrice.replaceAll(",", "")),
           }),
         });
       await db
@@ -476,74 +565,103 @@ const OrderDetail = ({ match }) => {
 
   const ItemPrice = useCallback(async () => {
     setCheckedItemPrice(() =>
-      Number(
-        order.data.list
-          .filter(item => checkedInputs.includes(item.childOrderNumber))
-          .filter(
-            list =>
-              list.canceled === false &&
-              list.moved === false &&
-              list.shipped === false
-          )
-          .reduce((i, c) => {
-            return i + c.price * c.quan;
-          }, 0)
-      ).toFixed(2)
+      krwComma(
+        Number(
+          order.data.list
+            .filter(item => checkedInputs.includes(item.childOrderNumber))
+            .filter(
+              list =>
+                list.canceled === false &&
+                list.moved === false &&
+                list.shipped === false
+            )
+            .reduce((i, c) => {
+              return i + c.price * c.quan;
+            }, 0)
+        ),
+        order.data.currency
+      )
     );
   }, [checkedInputs, order.data.list]);
+
+  const saveCredit = () => {
+    if (handleCredit === 0) {
+      alert("올바른 숫자를 입력해 주세요");
+    }
+    db.collection("accounts")
+      .doc(user.id)
+      .update({
+        credit: Number(user.data.credit) + Number(handleCredit),
+        creditDetails: firebase.firestore.FieldValue.arrayUnion({
+          type: creditType,
+          amount: Number(handleCredit),
+          currency: user.data.currency,
+          date: new Date(),
+          totalAmount: Number(user.data.credit) + Number(handleCredit),
+        }),
+      });
+    credit_reset();
+  };
 
   useEffect(() => {
     ItemPrice();
 
-    setCheckedItemsFee(
-      () =>
-        z &&
-        country.length > 0 &&
-        checkedWeight < 30 &&
-        checkedWeight > 0 &&
-        country !== "korea"
-          ? Number(
+    setCheckedItemsFee(() =>
+      z &&
+      country.length > 0 &&
+      checkedWeight < 30 &&
+      checkedWeight > 0 &&
+      country !== "korea"
+        ? krwComma(
+            Number(
               Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
                 .fee[num - 1].split(",")
                 .join("")
-            ) / exchangeRate[order.data.currency]
-          : totalWeight === 0
-          ? 0
-          : country === "korea"
-          ? ((parseInt(checkedWeight / 15) + 1) * 4500) /
-            exchangeRate[order.data.currency]
-          : (checkedWeight * order.data.shippingRate[shippingType]) /
-            exchangeRate[order.data.currency]
-      // ? (
-      //     Number(
-      //       Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
-      //         .fee[num2 - 1].split(",")
-      //         .join("")
-      //     ) / exchangeRate[order.data.currency]
-      //   ).toFixed(2)
-      // : checkedWeight === 0
-      // ? 0
-      // : (
-      //     (checkedWeight * order.data.shippingRate[shippingType]) /
-      //     exchangeRate[order.data.currency]
-      //   ).toFixed(2)
+            ) / exchangeRate[order.data.currency],
+            order.data.currency
+          )
+        : totalWeight === 0
+        ? 0
+        : country === "korea"
+        ? krwComma(
+            ((parseInt(checkedWeight / 15) + 1) * 4500) /
+              exchangeRate[order.data.currency],
+            order.data.currency
+          )
+        : krwComma(
+            (checkedWeight * order.data.shippingRate[shippingType]) /
+              exchangeRate[order.data.currency],
+            order.data.currency
+          )
     );
 
     setCalFee(
-      z && country.length > 0 && inputWeight < 30 && inputWeight > 0
-        ? (
+      z &&
+        country.length > 0 &&
+        inputWeight < 30 &&
+        inputWeight > 0 &&
+        country !== "korea"
+        ? krwComma(
             Number(
               Object.values(z.find(doc => Object.keys(doc)[0] === zone[0]))[0]
                 .fee[num3 - 1].split(",")
                 .join("")
-            ) / exchangeRate[order.data.currency]
-          ).toFixed(2)
+            ) / exchangeRate[order.data.currency],
+            order.data.currency
+          )
         : inputWeight === 0
         ? 0
-        : (
+        : country === "korea"
+        ? krwComma(
+            ((parseInt(inputWeight / 15) + 1) * 4500) /
+              exchangeRate[order.data.currency],
+            order.data.currency
+          )
+        : krwComma(
             (inputWeight * order.data.shippingRate[shippingType]) /
-            exchangeRate[order.data.currency]
-          ).toFixed(2)
+              exchangeRate[order.data.currency],
+            order.data.currency
+          )
     );
   }, [
     inputWeight,
@@ -595,6 +713,7 @@ const OrderDetail = ({ match }) => {
                     <option value="Order">Order</option>
                     <option value="Pre-Order">Pre Order</option>
                     <option value="Special-Order">Special Order</option>
+                    <option value="Confirmed-Order">Confirmed Order</option>
                     <option value="Ready-to-ship">Ready to ship</option>
                     <option value="Patially-shipped">Patially shipped</option>
                     <option value="Shipped">Shipped</option>
@@ -635,7 +754,7 @@ const OrderDetail = ({ match }) => {
                 </div>
                 <div className="grid grid-cols-2 h-8 items-center">
                   <div className="text-right pr-5">Phone Number</div>
-                  {user?.phoneNumber}
+                  {user?.data?.phoneNumber}
                 </div>
                 <div className="grid grid-cols-2 h-30">
                   <div className="text-right pr-5">Staff Memo</div>
@@ -867,9 +986,66 @@ const OrderDetail = ({ match }) => {
                   onClick={saveDetails}
                   className="bg-gray-800 rounded text-gray-200 w-1/3 items-center py-2"
                 >
-                  FIX
+                  SAVE
                 </button>
               </div>
+            </div>
+            <div className="w-full mb-12 flex flex-col items-center">
+              <div
+                className="text-center text-md bg-gray-800 
+          rounded text-gray-100 mb-5 mt-5 w-1/3 py-1"
+              >
+                CREDIT
+              </div>
+              <div className="grid grid-cols-2 text-center mb-3">
+                <div>CREDIT :</div>
+                <div>
+                  {Math.round(user.data.credit).toLocaleString("ko-KR")}{" "}
+                  {user.data.currency}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 mb-6">
+                <Modal
+                  open={modalOpen}
+                  close={closeModal}
+                  header={"CREDIT DETAILS"}
+                >
+                  <CreditDetails creditDetails={creditDetails} reset={reset} />
+                </Modal>
+
+                <select
+                  name="creditType"
+                  className="border p-1 m-1"
+                  value={creditType}
+                  onChange={onChange}
+                >
+                  <option value="Store-Credit">Store-Credit</option>
+                  <option value="Shipped-Amount">Shipped-Amount</option>
+                  <option value="Refund">Refund</option>
+                  <option value="Compensate">Compensate</option>
+                  <option value="Adjustment">Adjustment</option>
+                </select>
+                <input
+                  type="number"
+                  name="handleCredit"
+                  value={handleCredit}
+                  onChange={onChange}
+                  placeholder="Amount"
+                  className="border p-1 m-1 outline-none"
+                  onKeyPress={e => {
+                    if (e.key === "Enter") {
+                      saveCredit();
+                      return false;
+                    }
+                  }}
+                />
+              </div>
+              <button
+                className="bg-gray-600 p-1 rounded text-gray-200 m-2 w-52"
+                onClick={openModal}
+              >
+                Credit Details
+              </button>
             </div>
             {/* // dep-3-2 */}
             <div className="w-full text-center mb-1 font-semibold">
@@ -894,7 +1070,24 @@ const OrderDetail = ({ match }) => {
               className="grid grid-cols-28 text-center bg-gray-800
             text-sm font-semibold rounded-sm text-gray-100"
             >
-              <div></div>
+              <div>
+                <input
+                  type="checkbox"
+                  className=" ml-2"
+                  onChange={e => handleAllCheck(e.currentTarget.checked)}
+                  checked={
+                    checkedInputs.length ===
+                    order?.data?.list.filter(
+                      li =>
+                        li.moved === false &&
+                        li.canceled === false &&
+                        li.shipped === false
+                    ).length
+                      ? true
+                      : false
+                  }
+                />
+              </div>
               <div className="col-span-3">No.</div>
               <div className="col-span-2">DATE</div>
               <div className="col-span-2">RELEASE</div>
@@ -1002,13 +1195,13 @@ const OrderDetail = ({ match }) => {
 
             <div className="flex flex-row justify-between ">
               {/* ship 하는(체크됨) 상품들 가격들 */}
-              <div className="text-right flex flex-col items-center mt-6 text-lg w-1/2 ">
-                <div className="grid grid-cols-2 mb-3 w-2/3">
-                  <div className="w-1/2">PRICE</div>
-                  <div className="flex flex-row w-1/2">
-                    <div className="border flex flex-row bg-white text-sm p-1">
+              <div className="text-right flex flex-col items-center mt-6 text-lg w-1/2">
+                <div className="grid grid-cols-2 mb-3 w-full">
+                  <div className="w-full pr-2">PRICE</div>
+                  <div className="flex flex-row w-full">
+                    <div className="border flex flex-row bg-white text-sm p-1 w-2/3">
                       <input
-                        type="number"
+                        type="text"
                         value={checkedItemPrice}
                         onChange={handleCheckedItemPrice}
                         className="w-full text-center outline-none text-sm"
@@ -1017,20 +1210,38 @@ const OrderDetail = ({ match }) => {
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 mb-3 items-center w-2/3 ">
-                  <div className="w-1/2">SHIPPING FEE</div>
-                  <div className="flex flex-row w-3/4">
-                    {/* 무게입력시 배송비 계산 */}
+                <div className="grid grid-cols-2 mb-3 items-center w-full">
+                  <div className="w-full pr-2">
+                    <input
+                      className="mr-2"
+                      type="radio"
+                      value="cal"
+                      name="fee"
+                      defaultChecked
+                      onChange={e => setCheckedRadio(e.target.value)}
+                    />
+                    계산된 SHIPPING FEE
+                  </div>
+                  <div className="flex flex-row w-full ">
                     <div
                       className="border flex flex-row bg-white w-2/3
                    items-center justify-end text-sm p-1"
                     >
-                      <input
-                        type="number"
-                        value={inputWeight > 0 ? calFee : checkedItemsFee}
-                        onChange={handleCheckedItemFee}
-                        className="w-full text-center outline-none text-sm"
-                      />
+                      {inputWeight > 0 ? (
+                        <input
+                          type="text"
+                          value={calFee}
+                          onChange={handleCalFee}
+                          className="w-full text-center outline-none text-sm"
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={checkedItemsFee}
+                          onChange={handleCheckedItemFee}
+                          className="w-full text-center outline-none text-sm"
+                        />
+                      )}
                       {order?.data.currency}
                     </div>
                     <div
@@ -1047,17 +1258,51 @@ const OrderDetail = ({ match }) => {
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 w-2/3 items-center">
-                  <div className="w-1/2">AMOUNT</div>
-                  <div className="flex flex-row">
-                    <div className="pl-10">
-                      {checkItemAmountPrice?.toLocaleString("ko-KR")}{" "}
+                <div className="grid grid-cols-2 mb-3 items-center w-full">
+                  <div className="w-full pr-2">
+                    <input
+                      className="mr-2"
+                      type="radio"
+                      value="inputed"
+                      name="fee"
+                      onChange={e => setCheckedRadio(e.target.value)}
+                    />
+                    입력한 SHIPPING FEE
+                  </div>
+                  <div className="flex flex-row w-full ">
+                    {/* 무게입력시 배송비 계산 */}
+                    <div
+                      className="border flex flex-row bg-white w-2/3
+                   items-center justify-end text-sm p-1"
+                    >
+                      <input
+                        type="text"
+                        value={inputedFee}
+                        onChange={e =>
+                          setInputedFee(
+                            krwComma(
+                              e.target.value.replaceAll(",", ""),
+                              order.data.currency
+                            )
+                          )
+                        }
+                        className="w-full text-center outline-none text-sm"
+                      />
+
                       {order?.data.currency}
                     </div>
                   </div>
                 </div>
+                <div className="grid grid-cols-2 w-full items-center">
+                  <div className="w-full">AMOUNT</div>
+                  <div className="flex flex-row w-full">
+                    <div className="pl-10 w-full text-center">
+                      {checkItemAmountPrice} {order?.data.currency}
+                    </div>
+                  </div>
+                </div>
                 <form
-                  className="grid grid-cols-3 w-full mt-3"
+                  className="grid grid-cols-4 w-full mt-3"
                   onSubmit={makeShipping}
                 >
                   <textarea
@@ -1066,7 +1311,7 @@ const OrderDetail = ({ match }) => {
                     rows="5"
                     value={trackingNumber}
                     onChange={handleTrackingNumber}
-                    className="col-span-2 ml-20 outline-none border pl-2 text-sm"
+                    className="col-span-3 ml-20 outline-none border pl-2 text-sm"
                     placeholder="tracking number / 2개 이상은 엔터로 구분 "
                   ></textarea>
                   <button
@@ -1080,13 +1325,13 @@ const OrderDetail = ({ match }) => {
                 </form>
                 {/* 남아있는 상품 가격 */}
               </div>
-              <div className="text-right flex flex-col items-end mt-6 text-lg w/1/2 ">
-                <div className="grid grid-cols-2 mb-3 items-center">
-                  <div>PRICE</div>
-                  <div className="flex flex-row items-center justify-end w-64">
+              <div className="text-right flex flex-col items-end mt-6 text-lg w-1/2">
+                <div className="grid grid-cols-2 mb-3 items-center w-full">
+                  <div className="pr-2 w-full text-right">PRICE</div>
+                  <div className="flex flex-row items-center justify-end w-full">
                     <div
                       className="border flex flex-row bg-white
-                   items-center justify-end text-sm p-1 w-2/3"
+                   items-center justify-end text-sm p-1 w-1/2"
                     >
                       <input
                         type="number"
@@ -1096,18 +1341,18 @@ const OrderDetail = ({ match }) => {
                       />
                       {order?.data.currency}
                     </div>
-                    <div className="text-xs">
+                    <div className="text-xs w-1/2 text-left">
                       ({totalPrice.toLocaleString("ko-KR")}{" "}
                       {order?.data.currency})
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 mb-3 items-center">
-                  <div>SHIPPING FEE</div>
-                  <div className="flex flex-row items-center justify-end w-64">
+                <div className="grid grid-cols-2 mb-3 items-center w-full">
+                  <div className="pr-2 w-full text-right">SHIPPING FEE</div>
+                  <div className="flex flex-row items-center justify-end w-full">
                     <div
                       className="border flex flex-row bg-white
-                   items-center justify-end text-sm p-1 w-2/3"
+                   items-center justify-end text-sm p-1 w-1/2 "
                     >
                       <input
                         type="number"
@@ -1117,17 +1362,17 @@ const OrderDetail = ({ match }) => {
                       />
                       {order?.data.currency}
                     </div>
-                    <div className="text-xs">
+                    <div className="text-xs w-1/2 text-left">
                       ({fee.toLocaleString("ko-KR")} {order?.data.currency})
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 mb-3 items-center">
-                  <div>AMOUNT</div>
-                  <div className="flex flex-row items-center justify-end w-64">
+                <div className="grid grid-cols-2 mb-3 items-center w-full">
+                  <div className="pr-2 w-full text-right">AMOUNT</div>
+                  <div className="flex flex-row items-center justify-end w-full">
                     <div
                       className="border flex flex-row bg-white
-                   items-center justify-end text-sm p-1 w-2/3"
+                   items-center justify-end text-sm p-1 w-1/2 "
                     >
                       <input
                         type="number"
@@ -1137,13 +1382,13 @@ const OrderDetail = ({ match }) => {
                       />
                       {order?.data.currency}
                     </div>
-                    <div className="text-xs">
+                    <div className="text-xs  w-1/2 text-left">
                       ({amountPrice.toLocaleString("ko-KR")}{" "}
                       {order?.data.currency})
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-row">
+                <div className="flex flex-row w-full justify-end pr-60">
                   <button
                     onClick={savePre}
                     className="cursor-pointer bg-gray-800 p-1 px-2 rounded-sm

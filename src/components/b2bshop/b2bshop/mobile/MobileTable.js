@@ -21,10 +21,19 @@ const MobileTable = ({
   };
   // 페이징
   const [page, setPage] = useState(1);
-  const count = filteredProducts.length;
+  const count = filteredProducts.filter(
+    a => a.data.category === category
+  ).length;
   const handlePageChange = page => {
     setPage(page);
   };
+
+  // 페이지당 항목수
+  const [itemsPerPage, setItemsPerPage] = useState(50);
+  // const handleItemsPerPage = e => {
+  //   const { value } = e.target;
+  //   setItemsPerPage(Number(value));
+  // };
 
   return (
     <div
@@ -64,7 +73,7 @@ const MobileTable = ({
           header === "Products"
             ? filteredProducts
                 .filter(a => a.data.category === category)
-                .slice(page * 20 - 20, page * 20)
+                .slice(page * itemsPerPage - itemsPerPage, page * itemsPerPage)
                 .map((product, i) => (
                   <MobileRow
                     key={i}
@@ -91,6 +100,7 @@ const MobileTable = ({
             page={page}
             count={count}
             handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
           />{" "}
         </div>
       )}

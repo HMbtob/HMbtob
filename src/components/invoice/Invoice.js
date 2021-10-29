@@ -6,7 +6,6 @@ import InvoiceRow from "./InvoiceRow";
 
 const PickUpList = ({ location }) => {
   const { state, orders, order } = location;
-  console.log(state);
   const [invoiceLists] = useState(
     [].concat.apply(
       [],
@@ -15,13 +14,13 @@ const PickUpList = ({ location }) => {
           list =>
             state.includes(list.childOrderNumber) &&
             list.canceled === false &&
-            list.moved === false &&
-            list.shipped === false
+            list.moved === false
+          // &&
+          // list.shipped === false
         )
       )
     )
   );
-
   const history = useHistory();
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
@@ -41,8 +40,8 @@ const PickUpList = ({ location }) => {
     states: order.data.states,
     country: order.data.country,
     recipientEmail: order.data.recipientEmail,
-    shippingFee: order.data.shippingFee,
-    amountPrice: order.data.amountPrice,
+    // shippingFee: order.data.shippingFee,
+    // amountPrice: order.data.amountPrice,
   });
 
   const {
@@ -53,9 +52,61 @@ const PickUpList = ({ location }) => {
     states,
     country,
     recipientEmail,
-    shippingFee,
-    amountPrice,
+    // shippingFee,
+    // amountPrice,
   } = form;
+
+  const [shippingFee, setShippingFee] = useState(
+    order.data.currency === "KRW"
+      ? Number(order.data.shippingFee)
+          .toFixed(0)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      : Number(order.data.shippingFee)
+          .toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  );
+
+  const handleShippingFee = e => {
+    setShippingFee(
+      order.data.currency === "KRW"
+        ? Number(e.target.value.replaceAll(",", ""))
+            .toFixed(0)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        : Number(e.target.value.replaceAll(",", ""))
+            .toFixed(2)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    );
+  };
+
+  const [amountPrice, setAmountPrice] = useState(
+    order.data.currency === "KRW"
+      ? Number(order.data.amountPrice)
+          .toFixed(0)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      : Number(order.data.amountPrice)
+          .toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  );
+
+  const handleAmountPrice = e => {
+    setAmountPrice(
+      order.data.currency === "KRW"
+        ? Number(e.target.value.replaceAll(",", ""))
+            .toFixed(0)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        : Number(e.target.value.replaceAll(",", ""))
+            .toFixed(2)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    );
+  };
   class ComponentToPrint extends React.Component {
     render() {
       return (
@@ -177,11 +228,11 @@ const PickUpList = ({ location }) => {
               <div className="col-span-3 border-r border-black"> </div>
               <div className="col-span-3 justify-center flex flex-row items-center w-full p-1">
                 <input
-                  className="w-full text-center text-sm outline-none pr-2"
+                  className="w-full text-center text-sm outline-none "
                   type="text"
-                  value={shippingFee.toFixed(2)}
+                  value={shippingFee}
                   name="shippingFee"
-                  onChange={onchange}
+                  onChange={handleShippingFee}
                 />
                 {order?.data.currency}
               </div>
@@ -234,9 +285,9 @@ const PickUpList = ({ location }) => {
                 <input
                   className="text-center py-1 outline-none w-full"
                   type="text"
-                  value={amountPrice.toFixed(2)}
+                  value={amountPrice}
                   name="amountPrice"
-                  onChange={onchange}
+                  onChange={handleAmountPrice}
                 />
                 {order?.data.currency}
               </div>

@@ -166,6 +166,7 @@ const MyOrderDetail = ({ match }) => {
               orderr={order}
               currency={order.data.currency}
               list={order.data.list}
+              orderState={order.data.orderState}
             />
           ))}
         <div className="text-right flex flex-col items-end mt-6 text-lg">

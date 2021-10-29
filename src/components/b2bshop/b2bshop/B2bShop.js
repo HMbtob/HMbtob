@@ -73,8 +73,8 @@ const B2bShop = () => {
       .filter(doc => doc.data.exposeToB2b === "노출")
       .sort((a, b) => {
         return (
-          new Date(a.data.preOrderDeadline.seconds) -
-          new Date(b.data.preOrderDeadline.seconds)
+          new Date(b.data.createdAt.seconds) -
+          new Date(a.data.createdAt.seconds)
         );
       })
       .slice(0, 150)

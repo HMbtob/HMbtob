@@ -367,24 +367,28 @@ const ListProductRow = ({
                 className="cursor-pointer"
                 fontSize="small"
                 style={{ color: "blue", opacity: "0.7", fontSize: "15" }}
-                onClick={async () =>
+                onClick={async e => {
+                  e.preventDefault();
                   await db
                     .collection("products")
                     .doc(id)
-                    .update({ limitedStock: true })
-                }
+                    .update({ limitedStock: true });
+                  return false;
+                }}
               />
             ) : product.data.limitedStock === true ? (
               <SyncDisabledIcon
                 className="cursor-pointer"
                 fontSize="small"
                 style={{ color: "red", opacity: "0.7", fontSize: "15" }}
-                onClick={async () =>
+                onClick={async e => {
+                  e.preventDefault();
                   await db
                     .collection("products")
                     .doc(id)
-                    .update({ limitedStock: false })
-                }
+                    .update({ limitedStock: false });
+                  return false;
+                }}
               />
             ) : (
               ""

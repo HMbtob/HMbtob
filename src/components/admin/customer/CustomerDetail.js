@@ -65,7 +65,7 @@ const CustomerDetail = ({ match }) => {
     nickName: user?.data.nickName,
     memo: user?.data.memo,
     // 크레딧
-    handleCredit: "",
+    handleCredit: 0,
     creditType: "Store-Credit",
     // 커런시
     currency: user?.data.currency,
@@ -175,6 +175,9 @@ const CustomerDetail = ({ match }) => {
   };
 
   const saveCredit = () => {
+    if (handleCredit === 0) {
+      alert("올바른 숫자를 입력해 주세요");
+    }
     db.collection("accounts")
       .doc(user.id)
       .update({
@@ -536,8 +539,10 @@ const CustomerDetail = ({ match }) => {
               <option value="Shipped-Amount">Shipped-Amount</option>
               <option value="Refund">Refund</option>
               <option value="Compensate">Compensate</option>
+              <option value="Adjustment">Adjustment</option>
             </select>
             <input
+              type="number"
               name="handleCredit"
               value={handleCredit}
               onChange={onChange}
@@ -546,6 +551,7 @@ const CustomerDetail = ({ match }) => {
               onKeyPress={e => {
                 if (e.key === "Enter") {
                   saveCredit();
+                  return false;
                 }
               }}
             />

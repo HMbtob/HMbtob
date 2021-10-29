@@ -28,14 +28,25 @@ const UnshippedDetailRow = ({ list, checkedInputs, changeHandler }) => {
       <div className="col-span-2">{list.sku} </div>
       <div className="col-span-7 text-left w-full pl-2">{list.title}</div>
       <div className="col-span-3">
-        {(list.price - list.price * list.dcRate)?.toFixed(2)} {list.currency}
+        {list.currency === "KRW"
+          ? Number(
+              (list.price - list.price * list.dcRate)?.toFixed(0)
+            ).toLocaleString("ko-KR")
+          : (list.price - list.price * list.dcRate)?.toFixed(2)}{" "}
+        {list.currency}
       </div>
       <div className="col-span-2">{list.quan} 개</div>
       <div className="col-span-2">
         {Math.round(list.totalWeight * 0.001 * 10) / 10} kg
       </div>
       <div className="col-span-3">
-        {((list.price - list.price * list.dcRate) * list.quan).toFixed(2)}{" "}
+        {list.currency === "KRW"
+          ? Number(
+              ((list.price - list.price * list.dcRate) * list.quan)?.toFixed(0)
+            ).toLocaleString("ko-KR")
+          : ((list.price - list.price * list.dcRate) * list.quan)?.toFixed(
+              2
+            )}{" "}
         {list.currency}
       </div>
     </div>
