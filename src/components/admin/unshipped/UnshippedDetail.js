@@ -116,11 +116,6 @@ const UnshippedDetail = ({ match }) => {
       return alert("Please select the correct order number");
     }
 
-    // const orderNumbers = checkedInputs.map(input => input.slice(0, 13));
-    // console.log("orderNumbers", orderNumbers);
-    // const settedNumbers = [...new Set(orderNumbers)];
-    // console.log("settedNumbers", settedNumbers);
-
     // 저장
     await db
       .collection("orders")
@@ -195,7 +190,12 @@ const UnshippedDetail = ({ match }) => {
             .filter(arr1 => arr1.data.customer === customerId)
             .map(arr2 => arr2.data.list)
         )
-        .filter(arr3 => arr3.shipped === false)
+        .filter(
+          arr3 =>
+            arr3.moved === false &&
+            arr3.canceled === false &&
+            arr3.shipped === false
+        )
     );
   }, [orders, uid, customerId]);
 
@@ -338,6 +338,59 @@ const UnshippedDetail = ({ match }) => {
           >
             Credit Details
           </button>
+        </div>
+        <div className="w-full mb-12 flex flex-col items-center text-sm">
+          <div className="w-full text-center">상품별 수량 합계</div>
+          <div
+            className="grid grid-cols-12 text-center bg-gray-800 
+                      rounded-sm text-gray-100 text-sm py-1 w-2/3"
+          >
+            <div className="col-span-2">바코드</div>
+            <div className="col-span-2">SKU</div>
+            <div className="col-span-7">앨범명</div>
+            <div className="col-span-1">수량</div>
+          </div>
+
+          {unshipped &&
+            [
+              ...new Set(
+                unshipped
+                  .sort((a, b) => {
+                    return a?.title?.trim() < b?.title?.trim()
+                      ? -1
+                      : a?.title?.trim() > b?.title?.trim()
+                      ? 1
+                      : 0;
+                  })
+                  .map(li => li.title)
+              ),
+            ]
+              .reduce((acc, cur) => {
+                acc.push(
+                  unshipped
+                    .filter(li => li.title.trim() === cur.trim())
+                    .reduce(
+                      (a, c) => {
+                        return {
+                          title: c.title.trim(),
+                          quan: Number(a.quan) + Number(c.quan),
+                          barcode: c.barcode,
+                          sku: c.sku,
+                        };
+                      },
+                      { title: "", quan: 0, barcode: "", sku: "" }
+                    )
+                );
+                return acc;
+              }, [])
+              .map((li, i) => (
+                <div key={i} className="grid grid-cols-12 w-2/3 border py-1">
+                  <div className="col-span-2 text-center">{li.barcode}</div>
+                  <div className="col-span-2 text-center">{li.sku}</div>
+                  <div className="col-span-7">{li.title}</div>
+                  <div className="col-span-1 text-center">{li.quan} EA</div>
+                </div>
+              ))}
         </div>
         <div className="w-full text-center">상품종류</div>
         <div

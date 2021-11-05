@@ -23,6 +23,14 @@ export const initState = {
   reStockRequests: [],
   // 채팅방
   rooms: [],
+  // 검색어
+  searchQuery: "",
+  // 현재 페이지
+  currentPage: 1,
+  // 주문상태
+  orderState: "",
+  // 담당자
+  inChargeState: "",
 };
 
 export function dataReducer(state, action) {
@@ -74,6 +82,26 @@ export function dataReducer(state, action) {
       return {
         ...state,
         rooms: action.room,
+      };
+    case "SEARCH_QUERY":
+      return {
+        ...state,
+        searchQuery: action.searchQuery,
+      };
+    case "CURRENT_PAGE":
+      return {
+        ...state,
+        currentPage: action.currentPage,
+      };
+    case "ORDER_STATE":
+      return {
+        ...state,
+        orderState: action.orderState,
+      };
+    case "INCHARGESTATE":
+      return {
+        ...state,
+        inChargeState: action.inChargeState,
       };
 
     default:

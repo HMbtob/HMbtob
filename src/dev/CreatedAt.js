@@ -7,7 +7,6 @@ const CreatedAt = () => {
 
   const { products } = state;
   const today = new Date();
-  //   console.log(products);
   const batch = db.batch();
 
   const addCreatedAtToProduct = async () => {

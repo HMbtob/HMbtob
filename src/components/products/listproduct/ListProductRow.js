@@ -399,24 +399,26 @@ const ListProductRow = ({
                 className="cursor-pointer"
                 fontSize="small"
                 style={{ color: "red", opacity: "0.7", fontSize: "15" }}
-                onClick={async () =>
+                onClick={async e => {
+                  e.preventDefault();
                   await db
                     .collection("products")
                     .doc(id)
-                    .update({ reStockable: "가능" })
-                }
+                    .update({ reStockable: "가능" });
+                }}
               />
             ) : product.data.reStockable === "가능" ? (
               <LockOpenIcon
                 className="cursor-pointer"
                 fontSize="small"
                 style={{ color: "blue", opacity: "0.7", fontSize: "15" }}
-                onClick={async () =>
+                onClick={async e => {
+                  e.preventDefault();
                   await db
                     .collection("products")
                     .doc(id)
-                    .update({ reStockable: "불가능" })
-                }
+                    .update({ reStockable: "불가능" });
+                }}
               />
             ) : (
               ""

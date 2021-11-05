@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { InitDataContext } from "../../../App";
 import MyOrderListRow from "./MyOrderListRow";
 
@@ -6,6 +6,20 @@ const MyOrderList = () => {
   const state = useContext(InitDataContext);
   const { orders, user } = state;
   const userOrders = orders.filter(order => order.data.customer === user.email);
+  const [unshipped, setUnshipped] = useState([]);
+
+  useEffect(() => {
+    setUnshipped(
+      [].concat
+        .apply(
+          [],
+          orders
+            .filter(arr1 => arr1.data.customer === user.email)
+            .map(arr2 => arr2.data.list)
+        )
+        .filter(arr3 => arr3.shipped === false)
+    );
+  }, [orders, user.email]);
   return (
     <div className="w-full h-full flex justify-center">
       <div className="w-full lg:w-11/12 flex-col mt-8 lg:mt-20">
@@ -39,6 +53,70 @@ const MyOrderList = () => {
                 order={order}
               />
             ))}
+        </div>
+        <div className="w-full mb-12 flex flex-col items-center text-sm mt-12">
+          <div
+            className="w-full text-center my-4 text-gray-800 
+                      font-semibold text-lg"
+          >
+            Total quantity by product
+          </div>
+          <div
+            className="grid grid-cols-12 text-center bg-gray-800 
+                      rounded-sm text-gray-100 text-sm py-1 w-2/3"
+          >
+            <div className="col-span-2">바코드</div>
+            <div className="col-span-2">SKU</div>
+            <div className="col-span-7">앨범명</div>
+            <div className="col-span-1">수량</div>
+          </div>
+
+          {unshipped &&
+            [
+              ...new Set(
+                unshipped
+                  .filter(
+                    doc =>
+                      doc.moved === false &&
+                      doc.canceled === false &&
+                      doc.shipped === false
+                  )
+                  .sort((a, b) => {
+                    return a?.title?.trim() < b?.title?.trim()
+                      ? -1
+                      : a?.title?.trim() > b?.title?.trim()
+                      ? 1
+                      : 0;
+                  })
+                  .map(li => li.title)
+              ),
+            ]
+              .reduce((acc, cur) => {
+                acc.push(
+                  unshipped
+                    .filter(li => li.title.trim() === cur.trim())
+                    .reduce(
+                      (a, c) => {
+                        return {
+                          title: c.title.trim(),
+                          quan: Number(a.quan) + Number(c.quan),
+                          barcode: c.barcode,
+                          sku: c.sku,
+                        };
+                      },
+                      { title: "", quan: 0, barcode: "", sku: "" }
+                    )
+                );
+                return acc;
+              }, [])
+              .map(li => (
+                <div className="grid grid-cols-12 w-2/3 border py-1">
+                  <div className="col-span-2 text-center">{li.barcode}</div>
+                  <div className="col-span-2 text-center">{li.sku}</div>
+                  <div className="col-span-7">{li.title}</div>
+                  <div className="col-span-1 text-center">{li.quan} EA</div>
+                </div>
+              ))}
         </div>
       </div>
     </div>

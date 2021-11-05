@@ -10,13 +10,14 @@ const HiddenB2b = ({
   orders,
   shippings,
   currency,
+  sku,
 }) => {
   // 총판매
   // // 총 미발송
   const totalUnshipped = [].concat
     .apply(
       [],
-      orders.map(order => order.data.list.filter(arr => arr.productId === id))
+      orders.map(order => order.data.list.filter(arr => arr.sku === sku))
     )
     .reduce((i, c) => {
       return i + c.quan;
@@ -26,7 +27,7 @@ const HiddenB2b = ({
     .apply(
       [],
       shippings.map(shipping =>
-        shipping.data.list.filter(arr => arr.productId === id)
+        shipping.data.list.filter(arr => arr.sku === sku)
       )
     )
     .reduce((i, c) => {
@@ -80,8 +81,8 @@ place-items-center text-xs bg-transparent"
         value={handleStock}
         onChange={onChange}
       />
-      <div className="col-span-1">{totalUnshipped + totalshipped}</div>
       <div className="col-span-1">{totalUnshipped}</div>
+      <div className="col-span-1">{totalUnshipped - totalshipped}</div>
       <div className="col-span-2"></div>
       <div className="col-span-4 text-xs">
         {relDate &&

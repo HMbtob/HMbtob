@@ -1,17 +1,26 @@
 import React, { useContext, useEffect, useState } from "react";
-import { InitDataContext } from "../../../App";
+import { InitDataContext, InitDispatchContext } from "../../../App";
 import ListProductRow from "./ListProductRow";
 import Paging from "../../b2bshop/b2bshop/mobile/Paging";
 import RestockRequests from "./restockrequests/RestockRequests";
 import SearchIcon from "@material-ui/icons/Search";
 import RestoreIcon from "@material-ui/icons/Restore";
 import TopStoreProduct from "./TopStoreProduct";
+import { SearchProduct } from "../../../utils/SearchUtils";
 
-const ListProduct = () => {
+const ListProduct = ({ history }) => {
   const state = useContext(InitDataContext);
-  const { products, orders, shippings, user, exchangeRate, reStockRequests } =
-    state;
-
+  const dispatch = useContext(InitDispatchContext);
+  const {
+    products,
+    orders,
+    shippings,
+    user,
+    exchangeRate,
+    reStockRequests,
+    searchQuery,
+    currentPage,
+  } = state;
   // 페이지당 항목수
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const handleItemsPerPage = e => {
@@ -44,16 +53,14 @@ const ListProduct = () => {
     })
   );
   // 페이징
-  const [page, setPage] = useState(1);
-  const count = preProduct.length;
+  const count = preProduct?.length;
   const handlePageChange = page => {
-    setPage(page);
+    dispatch({ type: "CURRENT_PAGE", currentPage: page });
   };
   // 검색어
-  const [query, setQuery] = useState();
   const queryOnChange = e => {
     const { value } = e.target;
-    setQuery(value);
+    dispatch({ type: "SEARCH_QUERY", searchQuery: value });
   };
   // 검색하기
 
@@ -61,80 +68,32 @@ const ListProduct = () => {
     if (e) {
       e.preventDefault();
     }
-
-    setPreProduct(
-      products
-        .filter(doc =>
-          query.split(" ").length === 1
-            ? doc.data.title.toLowerCase().includes(query.toLowerCase()) ||
-              doc.data.title.toUpperCase().includes(query.toUpperCase()) ||
-              doc.data.sku.toLowerCase().includes(query.toLowerCase()) ||
-              doc.data.sku.toUpperCase().includes(query.toUpperCase()) ||
-              doc.data.barcode.toLowerCase().includes(query.toLowerCase()) ||
-              doc.data.barcode.toUpperCase().includes(query.toUpperCase())
-            : query.split(" ").length === 2
-            ? ((doc.data.title
-                .toLowerCase()
-                .includes(query.split(" ")[0].toLowerCase()) ||
-                doc.data.title
-                  .toUpperCase()
-                  .includes(query.split(" ")[0].toUpperCase())) &&
-                (doc.data.title
-                  .toLowerCase()
-                  .includes(query.split(" ")[1].toLowerCase()) ||
-                  doc.data.title
-                    .toUpperCase()
-                    .includes(query.split(" ")[1].toUpperCase()))) ||
-              ((doc.data.sku
-                .toLowerCase()
-                .includes(query.split(" ")[0].toLowerCase()) ||
-                doc.data.sku
-                  .toUpperCase()
-                  .includes(query.split(" ")[0].toUpperCase())) &&
-                (doc.data.sku
-                  .toLowerCase()
-                  .includes(query.split(" ")[1].toLowerCase()) ||
-                  doc.data.sku
-                    .toUpperCase()
-                    .includes(query.split(" ")[1].toUpperCase()))) ||
-              ((doc.data.barcode
-                .toLowerCase()
-                .includes(query.split(" ")[0].toLowerCase()) ||
-                doc.data.barcode
-                  .toUpperCase()
-                  .includes(query.split(" ")[0].toUpperCase())) &&
-                (doc.data.barcode
-                  .toLowerCase()
-                  .includes(query.split(" ")[1].toLowerCase()) ||
-                  doc.data.barcode
-                    .toUpperCase()
-                    .includes(query.split(" ")[1].toUpperCase())))
-            : ""
-        )
-        .sort((a, b) => {
-          return (
-            new Date(b.data.preOrderDeadline.seconds) -
-            new Date(a.data.preOrderDeadline.seconds)
-          );
-        })
-    );
-    setPage(1);
+    setPreProduct(SearchProduct(products, searchQuery));
   };
 
   // 초기화
   const handleClear = e => {
-    e.preventDefault();
-    setPreProduct(products);
-    setQuery("");
+    if (e) {
+      e.preventDefault();
+    }
+    dispatch({ type: "ORDER_STATE", orderState: "" });
+    dispatch({ type: "INCHARGESTATE", inChargeState: "" });
+    dispatch({ type: "CURRENT_PAGE", currentPage: 1 });
+    dispatch({ type: "SEARCH_QUERY", searchQuery: "" });
+    setPreProduct(
+      products.sort((a, b) => {
+        return new Date(b.data.createdAt) - new Date(a.data.createdAt);
+      })
+    );
   };
 
   useEffect(() => {
-    if (query) {
+    if (history.action === "POP") {
       searchProducts();
-    } else {
-      setPreProduct(products);
+    } else if (history.action === "PUSH") {
+      handleClear();
     }
-  }, [products]);
+  }, [history.action, products]);
 
   return (
     <div className="flex flex-col w-full">
@@ -149,7 +108,7 @@ const ListProduct = () => {
             className=" rounded-md outline-none pl-3 w-80"
             placeholder="search"
             onChange={queryOnChange}
-            value={query}
+            value={searchQuery}
           />{" "}
           <div className="flex flex-row justify-evenly w-1/4">
             <SearchIcon
@@ -210,7 +169,10 @@ const ListProduct = () => {
         <div className="w-full flex flex-col items-center">
           <div className="w-full">
             {preProduct
-              ?.slice(page * itemsPerPage - itemsPerPage, page * itemsPerPage)
+              ?.slice(
+                currentPage * itemsPerPage - itemsPerPage,
+                currentPage * itemsPerPage
+              )
               .map(product => (
                 <ListProductRow
                   key={product.id}
@@ -241,7 +203,7 @@ const ListProduct = () => {
         </div>
         <div className="flex flex-row w-full items-center justify-center">
           <Paging
-            page={page}
+            page={currentPage}
             count={count}
             handlePageChange={handlePageChange}
             itemsPerPage={itemsPerPage}

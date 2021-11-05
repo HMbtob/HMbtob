@@ -1,19 +1,28 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { InitDataContext } from "../../../App";
+import { InitDataContext, InitDispatchContext } from "../../../App";
 import OrderListRow from "./OrderListRow";
 import SearchIcon from "@material-ui/icons/Search";
 import RestoreIcon from "@material-ui/icons/Restore";
 import AddCircleOutlinedIcon from "@material-ui/icons/AddCircleOutlined";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import Paging from "../../b2bshop/b2bshop/mobile/Paging";
+import { SearchOrder } from "../../../utils/SearchUtils";
 
-const OrderList = ({ location, match }) => {
+const OrderList = ({ location, history }) => {
   const state = useContext(InitDataContext);
-  const { orders, shippings, accounts } = state;
-
+  const dispatch = useContext(InitDispatchContext);
+  const {
+    orders,
+    shippings,
+    accounts,
+    orderState,
+    inChargeState,
+    currentPage,
+    searchQuery,
+  } = state;
+  console.log(SearchOrder(orders, searchQuery));
   // 뒤로가기시 페이지 유지
-
   // 체크된 상품 전체
   const [checkedAllItems, setCheckedAllItems] = useState([]);
 
@@ -41,69 +50,142 @@ const OrderList = ({ location, match }) => {
   };
 
   // 주문상태별 sort
-  const [orderState, setOrderSate] = useState("");
-  const handleOrderState = e => {
-    const { value } = e.target;
-    setOrderSate(value);
+
+  const setOrderByFilter = () => {
     setOrder(
-      order
-        .filter(doc => doc?.data?.orderState === value)
-        .sort((a, b) => {
-          return (
-            new Date(a.data.createdAt.seconds) -
-            new Date(b.data.createdAt.seconds)
-          );
-        })
-    );
-  };
-  // 담당자별 sort
-  const [inChargeState, setInChargeSate] = useState("");
-  const handleInChargeState = e => {
-    const { value } = e.target; // 담당자 메일
-    // account 에서 선택된 담당자 메일로 필터
-    // 필터된 메일들이
-    setInChargeSate(value);
-    setOrder(
-      order
+      orders
         .filter(doc =>
-          accounts
-            .filter(account => account.data.inCharge === value)
-            .map(account => account.data.email)
-            .includes(doc.data.customer)
+          inChargeState.length === 0 && orderState.length === 0
+            ? doc
+            : inChargeState.length !== 0 && orderState.length === 0
+            ? accounts
+                .filter(account => account.data.inCharge === inChargeState)
+                .map(account => account.data.email)
+                .includes(doc.data.customer)
+            : inChargeState.length === 0 && orderState.length !== 0
+            ? doc?.data?.orderState === orderState
+            : inChargeState.length !== 0 && orderState.length !== 0
+            ? accounts
+                .filter(account => account.data.inCharge === inChargeState)
+                .map(account => account.data.email)
+                .includes(doc.data.customer) &&
+              doc?.data?.orderState === orderState
+            : doc
+        )
+        .filter(
+          doc =>
+            doc.data.orderNumber
+              .toLowerCase()
+              .includes(searchQuery.split(" ")[0]) ||
+            doc.data.orderNumber
+              .toLowerCase()
+              .includes(searchQuery.split(" ")[1]) ||
+            doc.data.customer
+              .toLowerCase()
+              .includes(searchQuery.split(" ")[0]) ||
+            doc.data.customer
+              .toLowerCase()
+              .includes(searchQuery.split(" ")[1]) ||
+            doc.data.customer
+              .toUpperCase()
+              .includes(searchQuery.split(" ")[0]) ||
+            doc.data.customer
+              .toUpperCase()
+              .includes(searchQuery.split(" ")[1]) ||
+            doc?.data?.nickName
+              ?.toLowerCase()
+              .includes(searchQuery.split(" ")[0]) ||
+            doc?.data?.nickName
+              ?.toLowerCase()
+              .includes(searchQuery.split(" ")[1]) ||
+            doc?.data?.nickName
+              ?.toUpperCase()
+              .includes(searchQuery.split(" ")[0]) ||
+            doc?.data?.nickName
+              ?.toUpperCase()
+              .includes(searchQuery.split(" ")[1])
         )
         .sort((a, b) => {
           return (
-            new Date(a.data.createdAt.seconds) -
-            new Date(b.data.createdAt.seconds)
+            new Date(b.data.createdAt.seconds) -
+            new Date(a.data.createdAt.seconds)
           );
         })
     );
   };
+  const handleOrderState = e => {
+    const { value } = e.target;
+    dispatch({ type: "ORDER_STATE", orderState: value });
+  };
+  // 담당자별 sort
+  const handleInChargeState = e => {
+    const { value } = e.target;
+    dispatch({ type: "INCHARGESTATE", inChargeState: value });
+  };
 
   // 검색어
-  const [query, setQuery] = useState();
   const queryOnChange = e => {
     const { value } = e.target;
-    setQuery(value);
+    dispatch({ type: "SEARCH_QUERY", searchQuery: value });
   };
+
   // 검색하기 orderNumber, customer
   const searchProduct = e => {
-    e.preventDefault();
-
+    if (e) {
+      e.preventDefault();
+    }
     setOrder(
       orders
         .filter(
           doc =>
-            doc.data.orderNumber.toLowerCase().includes(query.split(" ")[0]) ||
-            doc.data.orderNumber.toLowerCase().includes(query.split(" ")[1]) ||
-            doc.data.customer.toLowerCase().includes(query.split(" ")[0]) ||
-            doc.data.customer.toLowerCase().includes(query.split(" ")[1]) ||
-            doc.data.customer.toUpperCase().includes(query.split(" ")[0]) ||
-            doc.data.customer.toUpperCase().includes(query.split(" ")[1]) ||
-            doc?.data?.nickName?.toLowerCase().includes(query.split(" ")[0]) ||
-            doc?.data?.nickName?.toLowerCase().includes(query.split(" ")[1]) ||
-            doc?.data?.nickName?.toUpperCase().includes(query.split(" ")[0]) ||
-            doc?.data?.nickName?.toUpperCase().includes(query.split(" ")[1])
+            doc.data.orderNumber
+              .toLowerCase()
+              .includes(searchQuery.split(" ")[0]) ||
+            doc.data.orderNumber
+              .toLowerCase()
+              .includes(searchQuery.split(" ")[1]) ||
+            doc.data.customer
+              .toLowerCase()
+              .includes(searchQuery.split(" ")[0]) ||
+            doc.data.customer
+              .toLowerCase()
+              .includes(searchQuery.split(" ")[1]) ||
+            doc.data.customer
+              .toUpperCase()
+              .includes(searchQuery.split(" ")[0]) ||
+            doc.data.customer
+              .toUpperCase()
+              .includes(searchQuery.split(" ")[1]) ||
+            doc?.data?.nickName
+              ?.toLowerCase()
+              .includes(searchQuery.split(" ")[0]) ||
+            doc?.data?.nickName
+              ?.toLowerCase()
+              .includes(searchQuery.split(" ")[1]) ||
+            doc?.data?.nickName
+              ?.toUpperCase()
+              .includes(searchQuery.split(" ")[0]) ||
+            doc?.data?.nickName
+              ?.toUpperCase()
+              .includes(searchQuery.split(" ")[1])
+        )
+        .filter(doc =>
+          inChargeState.length === 0 && orderState.length === 0
+            ? doc
+            : inChargeState.length !== 0 && orderState.length === 0
+            ? accounts
+                .filter(account => account.data.inCharge === inChargeState)
+                .map(account => account.data.email)
+                .includes(doc.data.customer)
+            : inChargeState.length === 0 && orderState.length !== 0
+            ? doc?.data?.orderState === orderState
+            : inChargeState.length !== 0 && orderState.length !== 0
+            ? accounts
+                .filter(account => account.data.inCharge === inChargeState)
+                .map(account => account.data.email)
+                .includes(doc.data.customer) &&
+              doc?.data?.orderState === orderState
+            : doc
         )
         .sort((a, b) => {
           return (
@@ -119,7 +201,7 @@ const OrderList = ({ location, match }) => {
     e.preventDefault();
     if (sortDefault === false) {
       setOrder(
-        orders.sort((a, b) => {
+        order.sort((a, b) => {
           if (a.data.customer < b.data.customer) return 1;
           if (a.data.customer > b.data.customer) return -1;
           if (a.data.customer === b.data.customer) return 0;
@@ -128,7 +210,7 @@ const OrderList = ({ location, match }) => {
       handleSortDefault(true);
     } else if (sortDefault === true) {
       setOrder(
-        orders.sort((a, b) => {
+        order.sort((a, b) => {
           if (a.data.customer < b.data.customer) return -1;
           if (a.data.customer > b.data.customer) return 1;
           if (a.data.customer === b.data.customer) return 0;
@@ -142,7 +224,7 @@ const OrderList = ({ location, match }) => {
     e.preventDefault();
     if (sortDefault === false) {
       setOrder(
-        orders.sort((a, b) => {
+        order.sort((a, b) => {
           return (
             new Date(a.data.createdAt.seconds) -
             new Date(b.data.createdAt.seconds)
@@ -152,7 +234,7 @@ const OrderList = ({ location, match }) => {
       handleSortDefault(true);
     } else if (sortDefault === true) {
       setOrder(
-        orders.sort((a, b) => {
+        order.sort((a, b) => {
           return (
             new Date(b.data.createdAt.seconds) -
             new Date(a.data.createdAt.seconds)
@@ -163,19 +245,10 @@ const OrderList = ({ location, match }) => {
     }
   };
 
-  // 초기화 ;버튼
-  const handleClear = e => {
-    e.preventDefault();
-    setOrderSate("");
-    setInChargeSate("");
-    setOrder(orders);
-  };
-
   // 페이징
-  const [page, setPage] = useState(1);
   const count = order?.length;
   const handlePageChange = page => {
-    setPage(page);
+    dispatch({ type: "CURRENT_PAGE", currentPage: page });
   };
 
   // 페이지당 항목수
@@ -185,9 +258,40 @@ const OrderList = ({ location, match }) => {
     setItemsPerPage(Number(value));
   };
 
+  // 초기화 ;버튼
+  const handleClear = e => {
+    if (e) {
+      e.preventDefault();
+    }
+    dispatch({ type: "ORDER_STATE", orderState: "" });
+    dispatch({ type: "INCHARGESTATE", inChargeState: "" });
+    dispatch({ type: "CURRENT_PAGE", currentPage: 1 });
+    dispatch({ type: "SEARCH_QUERY", searchQuery: "" });
+    setOrder(
+      orders.sort((a, b) => {
+        return (
+          new Date(b.data.createdAt.seconds) -
+          new Date(a.data.createdAt.seconds)
+        );
+      })
+    );
+  };
+
   useEffect(() => {
-    setOrder(location.state ? location?.state?.includedProducts : orders);
-  }, [location]);
+    if (history.action === "POP") {
+      searchProduct();
+      setOrderByFilter();
+    } else if (history.action === "PUSH") {
+      if (location.state) {
+        setOrder(location.state.includedProducts);
+      } else if (orderState || inChargeState) {
+        setOrderByFilter();
+      } else {
+        handleClear();
+      }
+    }
+  }, [history.action, orderState, inChargeState]);
+
   return (
     <div className="w-full h-full flex justify-center">
       <div className=" w-11/12 flex-col mt-20">
@@ -202,7 +306,7 @@ const OrderList = ({ location, match }) => {
               className=" rounded-md outline-none pl-3 w-80"
               placeholder="search"
               onChange={queryOnChange}
-              value={query}
+              value={searchQuery}
             />{" "}
             <div className="flex flex-row justify-evenly w-1/4">
               <SearchIcon
@@ -250,7 +354,7 @@ const OrderList = ({ location, match }) => {
               <AssignmentIcon />
             </Link>
           </div>
-          <div>No.</div>
+          <div onClick={setOrderByFilter}>No.</div>
           <div
             className="col-span-2 cursor-pointer"
             onClick={sortProductByDate}
@@ -263,13 +367,12 @@ const OrderList = ({ location, match }) => {
           >
             CUSTOMER
           </div>
-          {/* <div>STATUS</div> */}
           <select
             value={orderState}
             onChange={handleOrderState}
             className="bg-transparent text-center outline-none"
           >
-            <option>STATUS</option>
+            <option value="">STATUS</option>
             <option value="Order">Order</option>
             <option value="Pre-Order">Pre Order</option>
             <option value="Special-Order">Special Order</option>
@@ -287,7 +390,7 @@ const OrderList = ({ location, match }) => {
             onChange={handleInChargeState}
             className="bg-transparent text-center outline-none"
           >
-            <option>In Charge</option>
+            <option value="">In Charge</option>
             {accounts
               .filter(account => account.data.type === "admin")
               .map((acc, i) => (
@@ -300,7 +403,10 @@ const OrderList = ({ location, match }) => {
         <div>
           {order &&
             order
-              .slice(page * itemsPerPage - itemsPerPage, page * itemsPerPage)
+              .slice(
+                currentPage * itemsPerPage - itemsPerPage,
+                currentPage * itemsPerPage
+              )
               .map(order => (
                 <OrderListRow
                   key={order.id}
@@ -322,7 +428,7 @@ const OrderList = ({ location, match }) => {
               ))}
         </div>
         <Paging
-          page={page}
+          page={currentPage}
           count={count}
           handlePageChange={handlePageChange}
           itemsPerPage={itemsPerPage}

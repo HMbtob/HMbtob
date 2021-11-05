@@ -750,6 +750,7 @@ const OrderDetail = ({ match }) => {
                     <option value="dhl">DHL</option>
                     <option value="EMS">EMS</option>
                     <option value="UMAC(PH)">UMAC(PH)</option>
+                    <option value="CJ Logisticd">CJ Logisticd</option>
                   </select>
                 </div>
                 <div className="grid grid-cols-2 h-8 items-center">
@@ -844,6 +845,15 @@ const OrderDetail = ({ match }) => {
                     onChange={onChange}
                     className="border p-1 pl-2"
                     placeholder="Optional"
+                  />{" "}
+                </div>
+                <div className="grid grid-cols-2 w-5/6 items-center">
+                  <div className="text-right pr-5">Recipient</div>
+                  <input
+                    name="recipient"
+                    value={recipient}
+                    onChange={onChange}
+                    className="border p-1 pl-2"
                   />{" "}
                 </div>
                 <div className="grid grid-cols-2 w-5/6 items-center">
@@ -955,15 +965,6 @@ const OrderDetail = ({ match }) => {
                       <input
                         name="zipcode"
                         value={zipcode}
-                        onChange={onChange}
-                        className="border p-1 pl-2"
-                      />{" "}
-                    </div>
-                    <div className="grid grid-cols-2 w-5/6 items-center">
-                      <div className="text-right pr-5">Recipient</div>
-                      <input
-                        name="recipient"
-                        value={recipient}
                         onChange={onChange}
                         className="border p-1 pl-2"
                       />{" "}

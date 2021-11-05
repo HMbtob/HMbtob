@@ -23,7 +23,7 @@ function Login() {
           )
           .then(userC => {
             const user = userC.user;
-            console.log(user);
+            // console.log(user);
           })
           .catch(e => console.log(e));
       })

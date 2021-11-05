@@ -148,7 +148,12 @@ const B2bOrder = () => {
 
   const options = [
     [{ credit: "Bank Transfer(Credit)" }],
-    [{ dhl: "DHL" }, { EMS: "EMS" }, { "UMAC(PH)": "UMAC(PH)" }],
+    [
+      { dhl: "DHL" },
+      { EMS: "EMS" },
+      { "UMAC(PH)": "UMAC(PH)" },
+      { "CJ Logisticd": "CJ Logisticd" },
+    ],
   ];
 
   // 운임, 총무게
@@ -324,9 +329,6 @@ const B2bOrder = () => {
       }
       fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
     }
-    // console.log(data);
-    // console.log(fullAddress);
-    // console.log(data.zonecode);
     setaddress(fullAddress);
     setZipcode(data.zonecode);
   };
