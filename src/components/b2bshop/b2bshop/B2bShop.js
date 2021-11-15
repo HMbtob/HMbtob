@@ -556,6 +556,13 @@ const B2bShop = () => {
               MyOrders
             </div>
             <div
+              onClick={() => history.push("/myshipping")}
+              className="text-sm font-mono font-bold text-center 
+          text-gray-200 bg-blue-900 mr-5 cursor-pointer"
+            >
+              MyShipping
+            </div>
+            <div
               onClick={() => history.push(`/myinfo/${user.uid}`)}
               className="text-sm font-mono font-bold text-center 
           text-gray-200 bg-blue-900 mr-5 cursor-pointer"
