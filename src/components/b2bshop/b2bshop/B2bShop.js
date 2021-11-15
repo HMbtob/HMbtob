@@ -610,19 +610,6 @@ const B2bShop = () => {
             />
           </>
         )}
-        {deal && (
-          <>
-            <div className="text-center text-sm font-bold text-gray-800">
-              HOT DEAL{" "}
-            </div>
-            <DealTable
-              dealProducts={deal}
-              exchangeRate={exchangeRate}
-              onChange={onChange}
-              user={user}
-            />
-          </>
-        )}
 
         {common && (
           <>
@@ -638,6 +625,19 @@ const B2bShop = () => {
               user={user}
               exchangeRate={exchangeRate}
               reStockRequest={reStockRequest}
+            />
+          </>
+        )}
+        {deal && (
+          <>
+            <div className="text-center text-sm font-bold text-gray-800">
+              HOT DEAL{" "}
+            </div>
+            <DealTable
+              dealProducts={deal}
+              exchangeRate={exchangeRate}
+              onChange={onChange}
+              user={user}
             />
           </>
         )}

@@ -17,7 +17,7 @@ const HiddenB2b = ({
   const totalUnshipped = [].concat
     .apply(
       [],
-      orders.map(order => order.data.list.filter(arr => arr.sku === sku))
+      orders.map(order => order.data.list.filter(arr => arr.sku === sku && arr.canceled === false))
     )
     .reduce((i, c) => {
       return i + c.quan;

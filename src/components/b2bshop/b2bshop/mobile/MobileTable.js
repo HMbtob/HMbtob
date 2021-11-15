@@ -37,7 +37,7 @@ const MobileTable = ({
 
   return (
     <div
-      className={`flex flex-col ${header === "Products" && "mb-14"}
+      className={`flex flex-col ${header === "Hot Deal" && "mb-14"}
     items-center bg-white border-b border-gray-500`}
     >
       <div

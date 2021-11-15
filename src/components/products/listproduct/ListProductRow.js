@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useHistory } from "react-router";
 import Modal from "../../modal/Modal";
 import HiddenB2b from "./HiddenB2b";
@@ -20,8 +20,11 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import LockIcon from "@material-ui/icons/Lock";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
-
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+
+import { InitDataContext, InitDispatchContext } from "../../../App";
+
+
 const ListProductRow = ({
   id,
   sku,
@@ -40,10 +43,13 @@ const ListProductRow = ({
   bigcProductId,
   user,
   exchangeRate,
-  product,
-  products,
   weight,
+  hiddenAll,
 }) => {
+
+  const state = useContext(InitDataContext);
+  const {products} = state
+  const product = products.find(product => product.id === id)
   const history = useHistory();
   const today = new Date();
 
@@ -166,7 +172,7 @@ const ListProductRow = ({
         ? price / exchangeRate[user?.currency]
         : (price / exchangeRate[user?.currency]).toFixed(2)
     );
-  }, [price, user, exchangeRate]);
+  }, [price, user, exchangeRate, products]);
   return (
     <div
       className={`border-b  border-gray-500 w-full py-1 ${
@@ -470,7 +476,7 @@ const ListProductRow = ({
           )}
         </div>
       </div>
-      {forHidden ? (
+      {forHidden && hiddenAll ? (
         ""
       ) : (
         <>

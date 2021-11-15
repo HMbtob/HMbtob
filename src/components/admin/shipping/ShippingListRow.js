@@ -2,11 +2,13 @@ import React, { useState, useContext } from "react";
 import { InitDataContext } from "../../../App";
 import { Link } from "react-router-dom";
 import { CSVLink } from "react-csv";
+import BuildIcon from "@mui/icons-material/Build";
 
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined";
 import CalendarViewMonthIcon from "@mui/icons-material/CalendarViewMonth";
 import HiddenRow from "./HiddenRow";
+import { db } from "../../../firebase";
 
 const ShippingListRow = ({ shipping, from, hiddenAll }) => {
   const state = useContext(InitDataContext);
@@ -25,7 +27,7 @@ const ShippingListRow = ({ shipping, from, hiddenAll }) => {
   );
   const order = orders.find(order => order.id === shipping.data.orderId);
 
-  const csvData = order.data.list.map(li => [
+  const csvData = shipping.data.list.map(li => [
     li.sku,
     li.sku,
     li.title,
@@ -54,6 +56,14 @@ const ShippingListRow = ({ shipping, from, hiddenAll }) => {
 
     return calNum;
   };
+
+  const [forFix, setForFix] = useState(false);
+  const handleForFix = () => {
+    setForFix(!forFix);
+  };
+  const [trackingNumber, setTrackingNumber] = useState(
+    shipping.data.trackingNumber
+  );
 
   if (shipping) {
     return (
@@ -95,9 +105,9 @@ const ShippingListRow = ({ shipping, from, hiddenAll }) => {
           <div className="col-span-3">
             {new Date(shipping?.data?.orderCreatedAt.toDate()).toLocaleString()}
           </div>
-          {shipping?.data?.trackingNumber?.split("\n")?.length > 1 ? (
+          {trackingNumber && trackingNumber.split("\n")?.length > 1 ? (
             <div className="col-span-2">Boxes</div>
-          ) : (
+          ) : !forFix ? (
             <div
               className="col-span-2 cursor-pointer"
               onClick={() =>
@@ -107,14 +117,40 @@ const ShippingListRow = ({ shipping, from, hiddenAll }) => {
                 )
               }
             >
-              {shipping?.data?.trackingNumber}
+              {trackingNumber}
+            </div>
+          ) : (
+            <div className="col-span-2 text-left w-full border bg-white">
+              <input
+                type="text"
+                value={trackingNumber}
+                onChange={e => setTrackingNumber(e.target.value)}
+                className="w-full outline-none py-1 px-1"
+                onKeyPress={e => {
+                  if (e.key === "Enter") {
+                    db.collection("shipping")
+                      .doc(shipping.id)
+                      .update({ trackingNumber });
+                    handleForFix();
+                  }
+                }}
+              />
             </div>
           )}
+          <div className="flex flex-row items-center">
+            {trackingNumber && trackingNumber.split("\n")?.length < 2 && (
+              <BuildIcon
+                className="cursor-pointer"
+                style={{ fontSize: "medium" }}
+                onClick={() => handleForFix()}
+              />
+            )}
 
-          <ExpandMoreIcon
-            className="cursor-pointer mr-3"
-            onClick={() => handleHidden(forHidden)}
-          />
+            <ExpandMoreIcon
+              className="cursor-pointer mr-3"
+              onClick={() => handleHidden(forHidden)}
+            />
+          </div>
           <div className="col-span-3">
             {shipping.data.nickName
               ? shipping.data.nickName

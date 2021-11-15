@@ -102,7 +102,7 @@ const AddProduct = ({ location }) => {
     { sku: "sku" },
     { title: "제목" },
     { price: "도매가" },
-    { purchasePrice: "매입가" },
+    // { purchasePrice: "매입가" },
     { artist: "그룹명" },
     { ent: "소속사" },
     { weight: "무게(g)" },
@@ -195,6 +195,10 @@ const AddProduct = ({ location }) => {
   };
   // 섬넬
   const getImages = async () => {
+    if(title.length < 1){
+      alert("TITLE 을 입력해주세요.")
+      return
+    }
     await axios
       .get(
         `https://us-central1-interasiastock.cloudfunctions.net/app/big/getThumbnail`,
@@ -210,6 +214,10 @@ const AddProduct = ({ location }) => {
   };
   // 디스크립션
   const getDisc = async () => {
+    if(title.length < 1){
+      alert("TITLE 을 입력해주세요.")
+      return
+    }
     await axios
       .get(
         `https://us-central1-interasiastock.cloudfunctions.net/app/big/getdesc`,
@@ -230,7 +238,13 @@ const AddProduct = ({ location }) => {
         "https://us-central1-interasiastock.cloudfunctions.net/app/big/addproduct",
         {
           name: title,
-          price: Number((price / 1100).toFixed(2)),
+          price: Number(
+            category === "cd"
+              ? (price / 1100).toFixed(2)
+              : category === "officialStore"
+              ? ((price / 0.8) / 1100).toFixed(2)
+              : ((price / 0.9) / 1100).toFixed(2)
+          ),
           weight: Number(weight / 1000),
           type: "physical",
           custom_fields: [{ name: customFieldName, value: relDate }],
@@ -266,7 +280,13 @@ const AddProduct = ({ location }) => {
           .doc(`${lastId[0]?.id}`)
           .set({
             sku,
-            purchasePrice: Number(purchasePrice),
+            purchasePrice: Number(
+              category === "cd"
+                ? price * 0.83
+                : category === "officialStore" || category === "beauty"
+                ? price
+                : price * 0.93
+            ),
             price: Number(price),
             createdAt: new Date(),
             artist,
@@ -542,6 +562,7 @@ const AddProduct = ({ location }) => {
           handleDiscrip={handleDiscrip}
           setDescr={setDescr}
           addBig={addBig}
+          category={category}
         />
       </div>
     </>

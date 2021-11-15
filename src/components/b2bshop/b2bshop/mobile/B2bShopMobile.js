@@ -149,12 +149,12 @@ const B2bShopMobile = () => {
           }),
       },
       {
-        "Hot Deal": products
+        Products: products
           .filter(
             product =>
               new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
           )
-          .filter(doc => doc.data.exposeToB2b === "DEAL")
+          .filter(doc => doc.data.exposeToB2b === "노출")
           .filter(doc =>
             query.split(" ").length === 1
               ? doc.data.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -210,12 +210,12 @@ const B2bShopMobile = () => {
           }),
       },
       {
-        Products: products
+        "Hot Deal": products
           .filter(
             product =>
               new Date(product?.data?.preOrderDeadline?.seconds * 1000) <= today
           )
-          .filter(doc => doc.data.exposeToB2b === "노출")
+          .filter(doc => doc.data.exposeToB2b === "DEAL")
           .filter(doc =>
             query.split(" ").length === 1
               ? doc.data.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -296,21 +296,7 @@ const B2bShopMobile = () => {
               );
             }),
         },
-        {
-          "Hot Deal": products
-            .filter(
-              product =>
-                new Date(product?.data?.preOrderDeadline?.seconds * 1000) <=
-                today
-            )
-            .filter(doc => doc.data.exposeToB2b === "DEAL")
-            .sort((a, b) => {
-              return (
-                new Date(b.data.relDate.seconds) -
-                new Date(a.data.relDate.seconds)
-              );
-            }),
-        },
+
         {
           Products: products
             .filter(
@@ -319,6 +305,21 @@ const B2bShopMobile = () => {
                 today
             )
             .filter(doc => doc.data.exposeToB2b === "노출")
+            .sort((a, b) => {
+              return (
+                new Date(b.data.relDate.seconds) -
+                new Date(a.data.relDate.seconds)
+              );
+            }),
+        },
+        {
+          "Hot Deal": products
+            .filter(
+              product =>
+                new Date(product?.data?.preOrderDeadline?.seconds * 1000) <=
+                today
+            )
+            .filter(doc => doc.data.exposeToB2b === "DEAL")
             .sort((a, b) => {
               return (
                 new Date(b.data.relDate.seconds) -

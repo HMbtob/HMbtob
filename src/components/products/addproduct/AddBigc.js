@@ -23,16 +23,17 @@ const AddBigc = ({
   handleDiscrip,
   setDescr,
   addBig,
+  category,
 }) => {
   return (
     <>
       <div
         className="text-left text-2xl  
-text-gray-800 mb-1 ml-2 mt-10 "
+                 text-gray-800 mb-1 ml-2 mt-10"
       >
         상품 추가
       </div>
-
+      {console.log(category)}
       <div className="bg-white p-10 border">
         {/* 상품명 */}
         <div className="grid grid-cols-4 p-2 items-center">
@@ -46,15 +47,23 @@ text-gray-800 mb-1 ml-2 mt-10 "
           />
         </div>
         {/* 가격 */}
-        <div className="grid grid-cols-4 p-2 items-center">
-          <div className="text-gray-600 text-right mr-3">Price </div>
-          <input
+        <div className="grid grid-cols-4 p-2">
+          <div className="text-gray-600 text-right mr-3">Price(USD)</div>
+          {/* <input
             className="col-span-3 border h-9 pl-2"
             type="number"
             onChange={onChange}
             name="price"
             value={price}
-          />
+          /> */}
+
+          <div className="pl-2 text-lg">
+            {category && category === "cd"
+              ? (price / 1100).toFixed(2)
+              : category === "officialStore"
+              ? ((price * 0.8) / 1100).toFixed(2)
+              : ((price * 0.9) / 1100).toFixed(2)}
+          </div>
         </div>
         {/* 카테고리.... */}
         <div className="grid grid-cols-4 p-2 items-center">

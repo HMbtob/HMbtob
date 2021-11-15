@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { InitDataContext } from "../../../App";
 import firebase from "firebase";
+import { Link } from "react-router-dom";
+import AssignmentIcon from "@material-ui/icons/Assignment";
 
 import { db } from "../../../firebase";
 import UnshippedDetailRow from "./UnshippedDetailRow";
@@ -23,9 +25,14 @@ const UnshippedDetail = ({ match }) => {
     // 크레딧
     handleCredit: 0,
     creditType: "Store-Credit",
+    // orderNumberSelect: "",
   });
 
-  const { handleCredit, creditType } = form;
+  const {
+    handleCredit,
+    creditType,
+    //  orderNumberSelect
+  } = form;
 
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -109,6 +116,41 @@ const UnshippedDetail = ({ match }) => {
     await setCheckedInputs([]);
     await alert("취소되었습니다");
   };
+  const [listToMove, setListToMove] = useState([]);
+  const [moveToOrderNumber, setMoveToOrderNumber] = useState([]);
+
+  useEffect(() => {
+    setListToMove(
+      [
+        ...[].concat.apply(
+          [],
+          settedNumbers.map(num =>
+            checkedInputs
+              .map(doc =>
+                orders
+                  .find(order => order.data.orderNumber.trim() === num)
+                  .data.list.find(arr => arr.childOrderNumber === doc)
+              )
+              .filter(input => input !== undefined)
+          )
+        ),
+      ].reduce((a, c, i, t) => {
+        if (orderNumberSelect.length > 0) {
+          c.orderNumber = orderNumberSelect.trim();
+          a.push(c);
+          return a;
+        }
+        // console.log("t",t)
+        return t;
+      }, [])
+    );
+  }, [checkedInputs, orderNumberSelect, orders]);
+
+  useEffect(() => {
+    setMoveToOrderNumber([
+      ...new Set(listToMove.map(li => li.orderNumber.trim())),
+    ]);
+  }, [listToMove]);
 
   const moveItems = async e => {
     e.preventDefault();
@@ -121,7 +163,9 @@ const UnshippedDetail = ({ match }) => {
       .collection("orders")
       .doc("b2b")
       .collection("b2borders")
-      .doc(orders.find(arr => arr.data.orderNumber === orderNumberSelect).id)
+      .doc(
+        orders.find(arr => arr.data.orderNumber.trim() === orderNumberSelect).id
+      )
       .update({
         list: [
           ...[].concat.apply(
@@ -137,9 +181,9 @@ const UnshippedDetail = ({ match }) => {
             )
           ),
           ...orders
-            .find(arr => arr.data.orderNumber === orderNumberSelect)
+            .find(arr => arr.data.orderNumber.trim() === orderNumberSelect)
             .data.list.filter(
-              li => !checkedInputs.includes(li.childOrderNumber)
+              li => !checkedInputs.includes(li.childOrderNumber.trim())
             ),
         ],
       });
@@ -175,7 +219,7 @@ const UnshippedDetail = ({ match }) => {
     alert("이동되었습니다.");
     history.replace(
       `/orderdetail/${
-        orders.find(arr => arr.data.orderNumber === orderNumberSelect).id
+        orders.find(arr => arr.data.orderNumber.trim() === orderNumberSelect).id
       }`
     );
   };
@@ -398,7 +442,18 @@ const UnshippedDetail = ({ match }) => {
         rounded-sm text-gray-100 text-sm py-1"
         >
           <div className="col-span-1"></div>
-          <div className="col-span-2">No.</div>
+          <div className="col-span-2">
+            No.{" "}
+            <Link
+              to={{
+                pathname: "/pickuplist",
+                state: checkedInputs,
+                orders,
+              }}
+            >
+              <AssignmentIcon />
+            </Link>
+          </div>
           <div className="col-span-2">주문일</div>
           <div className="col-span-2">발매일</div>
           <div className="col-span-2">바코드</div>
@@ -448,24 +503,29 @@ const UnshippedDetail = ({ match }) => {
             name="orderNumberSelect"
             value={orderNumberSelect}
             onChange={e => setorderNumberSelect(e.target.value)}
+            // onChange={onChange}
             className="p-1 border"
           >
             {/* 해당 주문자의 미발송 주문 가져와서 이동 */}
             <option>NO.</option>
-
             {orders
               .filter(
                 doc =>
                   doc.data.orderState !== "shipped" &&
                   doc.data.customer === customerId &&
-                  !settedNumbers.includes(doc.data.orderNumber.trim())
+                  !moveToOrderNumber.includes(doc.data.orderNumber.trim())
               )
               .map((doc, index) => (
-                <option key={index} value={doc.data.orderNumber}>
-                  {doc.data.orderNumber}
+                <option key={index} value={doc.data.orderNumber.trim()}>
+                  {doc.data.orderNumber.trim()}
                 </option>
               ))}
+            {/* {moveToOrderNumber.map((doc, i) => 
+                <option key={i} value={doc}>
+                    {doc}
+                </option>)} */}
           </select>
+          {console.log("orderNumberSelect", orderNumberSelect)}
 
           <button
             onClick={moveItems}

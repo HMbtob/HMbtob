@@ -21,6 +21,7 @@ const UnshippedDetailRow = ({ list, checkedInputs, changeHandler }) => {
       <div className="col-span-2">
         {list.createdAt.toDate().toLocaleDateString()}{" "}
       </div>
+
       <div className="col-span-2">
         {list.relDate.toDate().toLocaleDateString()}{" "}
       </div>

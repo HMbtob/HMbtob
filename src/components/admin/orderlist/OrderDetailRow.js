@@ -30,15 +30,22 @@ const OrderDetailRow = ({
     setFixedQuan(Number(e.target.value));
   };
 
+  const [memoInList, setMemoInList] = useState(aList.memoInList ? aList.memoInList : "");
+  const handleMemoInList = e => {
+    setMemoInList(e.target.value);
+  };
   // 수정
   const saveFix = e => {
-    e.preventDefault();
+    if(e){
+      e.preventDefault()
+    }
     const childIndex = order.data.list.findIndex(
       li => li.childOrderNumber === aList.childOrderNumber
     );
-    order.data.list[childIndex].price = fixedPrice;
-    order.data.list[childIndex].quan = fixedQuan;
-    order.data.list[childIndex].totalPrice = fixedPrice * fixedQuan;
+    order.data.list[childIndex].price = Number(fixedPrice);
+    order.data.list[childIndex].quan = Number(fixedQuan);
+    order.data.list[childIndex].totalPrice = Number(fixedPrice) * Number(fixedQuan);
+    order.data.list[childIndex].memoInList = memoInList;
     db.collection("orders")
       .doc("b2b")
       .collection("b2borders")
@@ -52,7 +59,7 @@ const OrderDetailRow = ({
       className={`${aList.shipped && " bg-blue-100"}
       ${aList?.moved && "bg-green-100"} ${
         aList?.canceled && "bg-gray-100"
-      } text-xs place-items-center grid grid-cols-28 grid-flow-colfixedPrice 
+      } text-xs place-items-center grid grid-cols-28 
       text-center border-b border-l border-r py-1 ${
         !preOrder && !aList?.moved && !aList?.canceled ? "bg-red-100" : ""
       }`}
@@ -111,7 +118,6 @@ const OrderDetailRow = ({
         </div>
       </div>
       <div className="col-span-2 flex flex-row bg-white p-1 border">
-        {/* {price && price?.toLocaleString("ko-KR")}{" "} */}
         <input
           type="number"
           value={fixedPrice}
@@ -141,7 +147,14 @@ const OrderDetailRow = ({
         {price && quan && (price.toFixed(2) * quan).toLocaleString("ko-KR")}{" "}
         {order && order.data.currency}
       </div>
-      <div className="col-span-2 text-left w-11/12">{aList?.memoInList}</div>
+      <div className="col-span-2 text-left w-full border">
+        <input
+          type="text"
+          value={memoInList}
+          onChange={handleMemoInList}
+          className="w-full outline-none py-1 px-1"
+        />
+      </div>
     </form>
   );
 };

@@ -7,6 +7,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import RestoreIcon from "@material-ui/icons/Restore";
 import TopStoreProduct from "./TopStoreProduct";
 import { SearchProduct } from "../../../utils/SearchUtils";
+import AddCircleOutlinedIcon from "@material-ui/icons/AddCircleOutlined";
 
 const ListProduct = ({ history }) => {
   const state = useContext(InitDataContext);
@@ -87,13 +88,19 @@ const ListProduct = ({ history }) => {
     );
   };
 
+  // 전체 펼치기
+  const [hiddenAll, setHiddenAll] = useState(true);
+  const handelHiddenAll = () => {
+    setHiddenAll(!hiddenAll);
+  };
+
   useEffect(() => {
     if (history.action === "POP") {
       searchProducts();
     } else if (history.action === "PUSH") {
       handleClear();
     }
-  }, [history.action, products]);
+  }, [history.action]);
 
   return (
     <div className="flex flex-col w-full">
@@ -157,6 +164,13 @@ const ListProduct = ({ history }) => {
               }
             >
               {header}
+              {header === "BTN" && (
+                <AddCircleOutlinedIcon
+                  className="ml-5"
+                  style={{ color: "gray" }}
+                  onClick={handelHiddenAll}
+                />
+              )}
             </div>
           ))}
           <div
@@ -197,6 +211,7 @@ const ListProduct = ({ history }) => {
                   user={user}
                   exchangeRate={exchangeRate}
                   products={products}
+                  hiddenAll={hiddenAll}
                 />
               ))}
           </div>

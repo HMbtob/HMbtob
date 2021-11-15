@@ -12,6 +12,7 @@ import LocalAirportIcon from "@material-ui/icons/LocalAirport";
 import { useCallback } from "react";
 import Modal from "../../modal/Modal";
 import CreditDetails from "../customer/CreditDetails";
+import AddDetailRow from "./AddDetailRow";
 
 const OrderDetail = ({ match }) => {
   const today = new Date();
@@ -47,8 +48,7 @@ const OrderDetail = ({ match }) => {
     // 크레딧
     handleCredit: 0,
     creditType: "Store-Credit",
-  });
-
+  });                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
   const {
     orderState,
     paymentMethod,
@@ -361,6 +361,25 @@ const OrderDetail = ({ match }) => {
       });
     alert("직접 수정 완료");
   };
+  // console.log(orderNumberSelect)
+  const [listToMove, setListToMove] = useState([])
+  useEffect(()=> {
+    setListToMove([
+      ...checkedInputs.map(doc =>
+        order.data.list.find(arr => arr.childOrderNumber === doc)
+        )].reduce((a,c,i,t) => {
+          if(orderNumberSelect.length > 0){
+            c.orderNumber = orderNumberSelect.trim()
+            a.push(c)
+            return a
+          }
+          // console.log("t",t)
+          return t
+          
+        }, []))
+        
+      },[checkedInputs, orderNumberSelect])
+      // console.log(listToMove)
 
   // 주문간 상품 이동
   const moveList = async e => {
@@ -376,9 +395,7 @@ const OrderDetail = ({ match }) => {
       .doc(orders.find(arr => arr.data.orderNumber === orderNumberSelect).id)
       .update({
         list: [
-          ...checkedInputs.map(doc =>
-            order.data.list.find(arr => arr.childOrderNumber === doc)
-          ),
+          ...listToMove,
           ...orders.find(arr => arr.data.orderNumber === orderNumberSelect).data
             .list,
         ],
@@ -1139,7 +1156,7 @@ const OrderDetail = ({ match }) => {
                   price={doc.price}
                   quan={doc.quan}
                   weight={doc.weight}
-                  totalWeight={doc.weight * doc.quan}
+                  totalWeight={doc.totalWeight}
                   dcRate={doc.dcRate}
                   changeHandler={changeHandler}
                   checkedInputs={checkedInputs}
@@ -1147,7 +1164,7 @@ const OrderDetail = ({ match }) => {
                   aList={doc}
                 />
               ))}
-
+            <AddDetailRow order={order} />
             {/* dep-3-5 */}
             <div className="text-center items-center justify-between flex flex-row mt-6 text-sm">
               <div>
@@ -1372,15 +1389,12 @@ const OrderDetail = ({ match }) => {
                   <div className="pr-2 w-full text-right">AMOUNT</div>
                   <div className="flex flex-row items-center justify-end w-full">
                     <div
-                      className="border flex flex-row bg-white
+                      className="flex flex-row 
                    items-center justify-end text-sm p-1 w-1/2 "
                     >
-                      <input
-                        type="number"
-                        value={preAmountPrice}
-                        onChange={handlePreAmountPrice}
-                        className="w-full text-center outline-none text-sm"
-                      />
+                      <div className="w-full text-center outline-none text-sm">
+                        {krwComma(preTotalPrice + preFee, order.data.currency)}
+                      </div>
                       {order?.data.currency}
                     </div>
                     <div className="text-xs  w-1/2 text-left">

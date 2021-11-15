@@ -21,7 +21,6 @@ const OrderList = ({ location, history }) => {
     currentPage,
     searchQuery,
   } = state;
-  console.log(SearchOrder(orders, searchQuery));
   // 뒤로가기시 페이지 유지
   // 체크된 상품 전체
   const [checkedAllItems, setCheckedAllItems] = useState([]);
@@ -138,37 +137,59 @@ const OrderList = ({ location, history }) => {
       orders
         .filter(
           doc =>
+          searchQuery.split(" ").length === 1
+          ? doc.data.orderNumber
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+              doc.data.orderNumber
+              .toUpperCase()
+              .includes(searchQuery.toUpperCase()) 
+              ||
+              // doc.data.customer
+              // .toLowerCase()
+              // .includes(searchQuery.toLowerCase()) ||
+              // doc.data.customer
+              // .toUpperCase()
+              // .includes(searchQuery.toUpperCase()) ||
+              doc?.data?.nickName
+              ?.toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+              doc?.data?.nickName
+              ?.toUpperCase()
+              .includes(searchQuery.toUpperCase()) 
+          : searchQuery.split(" ").length === 2
+          ?
             doc.data.orderNumber
               .toLowerCase()
-              .includes(searchQuery.split(" ")[0]) ||
+              .includes(searchQuery.split(" ")[0].toLowerCase()) ||
             doc.data.orderNumber
               .toLowerCase()
-              .includes(searchQuery.split(" ")[1]) ||
-            doc.data.customer
-              .toLowerCase()
-              .includes(searchQuery.split(" ")[0]) ||
-            doc.data.customer
-              .toLowerCase()
-              .includes(searchQuery.split(" ")[1]) ||
-            doc.data.customer
-              .toUpperCase()
-              .includes(searchQuery.split(" ")[0]) ||
-            doc.data.customer
-              .toUpperCase()
-              .includes(searchQuery.split(" ")[1]) ||
-            doc?.data?.nickName
+              .includes(searchQuery.split(" ")[1].toLowerCase()) ||
+            // doc.data.customer
+            //   .toLowerCase()
+            //   .includes(searchQuery.split(" ")[0].toLowerCase()) ||
+            // doc.data.customer
+            //   .toLowerCase()
+            //   .includes(searchQuery.split(" ")[1].toLowerCase()) ||
+            // doc.data.customer
+            //   .toUpperCase()
+            //   .includes(searchQuery.split(" ")[0].toUpperCase()) ||
+            // doc.data.customer
+            //   .toUpperCase()
+            //   .includes(searchQuery.split(" ")[1].toUpperCase()) ||
+            (doc?.data?.nickName
               ?.toLowerCase()
-              .includes(searchQuery.split(" ")[0]) ||
-            doc?.data?.nickName
-              ?.toLowerCase()
-              .includes(searchQuery.split(" ")[1]) ||
+              .includes(searchQuery.split(" ")[0].toLowerCase()) ||
             doc?.data?.nickName
               ?.toUpperCase()
-              .includes(searchQuery.split(" ")[0]) ||
+              .includes(searchQuery.split(" ")[0].toUpperCase()) ) &&
+            (doc?.data?.nickName
+              ?.toLowerCase()
+              .includes(searchQuery.split(" ")[1].toLowerCase()) ||
             doc?.data?.nickName
               ?.toUpperCase()
-              .includes(searchQuery.split(" ")[1])
-        )
+              .includes(searchQuery.split(" ")[1].toUpperCase()))
+        : "" )
         .filter(doc =>
           inChargeState.length === 0 && orderState.length === 0
             ? doc
@@ -344,6 +365,7 @@ const OrderList = ({ location, history }) => {
               className="cursor-pointer"
               onClick={() => handelHiddenAll(hiddenAll)}
             />
+
             <Link
               to={{
                 pathname: "/pickuplist",
