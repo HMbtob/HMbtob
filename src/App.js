@@ -35,6 +35,7 @@ import PickUpList from "./components/invoice/PickUpList";
 import Invoice from "./components/invoice/Invoice";
 import InAdminChat from "./components/chat/InAdminChat";
 import MobileHeader from "./components/header/MobileHeader";
+import { MyShipping } from "./components/b2bshop/myshipping/MyShipping";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -244,6 +245,7 @@ function App() {
                 <>
                   <Header />
                   <Switch>
+                    <Route path="/myshipping" component={MyShipping} />
                     <Route path="/myorderlist/:id" component={MyOrderDetail} />
                     <Route path="/myorderlist" component={MyOrderList} />
                     <Route path="/myinfo/:uid" component={MyInfo} />
@@ -327,7 +329,7 @@ function App() {
                   <Route path="/customerlist" component={CustomerList} />
 
                   {/* b2b */}
-
+                  <Route path="/myshipping" component={MyShipping} />
                   <Route path="/myorderlist/:id" component={MyOrderDetail} />
                   <Route path="/myorderlist" component={MyOrderList} />
                   <Route path="/myinfo/:uid" component={MyInfo} />

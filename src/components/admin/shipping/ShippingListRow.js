@@ -138,13 +138,15 @@ const ShippingListRow = ({ shipping, from, hiddenAll }) => {
             </div>
           )}
           <div className="flex flex-row items-center">
-            {trackingNumber && trackingNumber.split("\n")?.length < 2 && (
-              <BuildIcon
-                className="cursor-pointer"
-                style={{ fontSize: "medium" }}
-                onClick={() => handleForFix()}
-              />
-            )}
+            {from !== "myorder" &&
+              trackingNumber &&
+              trackingNumber.split("\n")?.length < 2 && (
+                <BuildIcon
+                  className="cursor-pointer"
+                  style={{ fontSize: "medium" }}
+                  onClick={() => handleForFix()}
+                />
+              )}
 
             <ExpandMoreIcon
               className="cursor-pointer mr-3"
