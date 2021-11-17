@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState, useRef } from "react";
+import React, { useEffect, useReducer } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Spinner from "react-spinkit";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -42,9 +42,6 @@ export const InitDispatchContext = React.createContext(null);
 
 function App() {
   const [user, loading] = useAuthState(auth);
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
-
   const [state, dispatch] = useReducer(dataReducer, initState);
   const { userType } = state;
   // TODO: 유저타입을 -> user.userType 으로 대체가능한가?
