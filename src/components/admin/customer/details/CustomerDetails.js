@@ -46,21 +46,10 @@ export function CustomerDetails({ match }) {
     officialStore: Number((user?.data.dcRates.officialStore * 100).toFixed(2)),
     beauty: Number((user?.data.dcRates.beauty * 100).toFixed(2)),
     specialOrder: Number((user?.data.dcRates.specialOrder * 100).toFixed(2)),
-    // 정액법
-    cdA: user?.data?.dcAmount?.cdA,
-    dvdBlueRayA: user?.data?.dcAmount?.dvdBlueRayA,
-    goodsA: user?.data?.dcAmount?.goodsA,
-    photoBookA: user?.data?.dcAmount?.photoBookA,
-    officialStoreA: user?.data?.dcAmount?.officialStoreA,
-    beautyA: user?.data?.dcAmount?.beautyA,
-    specialOrderA: user?.data?.dcAmount?.specialOrderA,
     // 추후 기입
     dhl: user?.data.shippingRate.dhl,
     nickName: user?.data.nickName,
     memo: user?.data.memo,
-    // 크레딧
-    handleCredit: 0,
-    creditType: "Store-Credit",
     // 커런시
     currency: user?.data.currency,
     // alias
@@ -85,18 +74,10 @@ export function CustomerDetails({ match }) {
     photoBook,
     officialStore,
     beauty,
-    cdA,
-    dvdBlueRayA,
-    goodsA,
-    photoBookA,
-    officialStoreA,
-    beautyA,
     specialOrder,
-    specialOrderA,
     dhl,
     nickName,
     memo,
-
     currency,
     alias,
     taxId,
@@ -112,15 +93,7 @@ export function CustomerDetails({ match }) {
     beauty,
     specialOrder,
   };
-  const dcAValues = {
-    beautyA,
-    cdA,
-    dvdBlueRayA,
-    goodsA,
-    officialStoreA,
-    photoBookA,
-    specialOrderA,
-  };
+
   const shippingRate = { dhl };
 
   const saveDetails = () => {
@@ -145,16 +118,6 @@ export function CustomerDetails({ match }) {
           beauty: Number((Number(beauty) / 100).toFixed(2)),
           specialOrder: Number((Number(specialOrder) / 100).toFixed(2)),
         },
-        dcAmount: {
-          cdA: Number(Number(cdA).toFixed(2)),
-          dvdBlueRayA: Number(Number(dvdBlueRayA).toFixed(2)),
-          goodsA: Number(Number(goodsA).toFixed(2)),
-          photoBookA: Number(Number(photoBookA).toFixed(2)),
-          officialStoreA: Number(Number(officialStoreA).toFixed(2)),
-          beautyA: Number(Number(beautyA).toFixed(2)),
-          specialOrderA: Number(Number(specialOrderA).toFixed(2)),
-        },
-        shippingRate: { dhl: Number(dhl) },
         nickName,
         inCharge,
         memo,
