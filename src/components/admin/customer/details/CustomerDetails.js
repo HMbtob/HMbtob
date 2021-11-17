@@ -3,6 +3,9 @@ import { InitDataContext } from "../../../../App";
 import { db } from "../../../../firebase";
 import useInputs from "../../../../hooks/useInput";
 import { CustomerCredit } from "./CustomerCredit";
+import { CustomerDcRate } from "./CustomerDcRate";
+import { CustomerDcAmount } from "./CustomerDcAmount";
+import { CustomerShippingRate } from "./CustomerShippingRate";
 import { CustomerSurvay } from "./CustomerSurvay";
 
 export function CustomerDetails({ match }) {
@@ -43,21 +46,10 @@ export function CustomerDetails({ match }) {
     officialStore: Number((user?.data.dcRates.officialStore * 100).toFixed(2)),
     beauty: Number((user?.data.dcRates.beauty * 100).toFixed(2)),
     specialOrder: Number((user?.data.dcRates.specialOrder * 100).toFixed(2)),
-    // 정액법
-    cdA: user?.data?.dcAmount?.cdA,
-    dvdBlueRayA: user?.data?.dcAmount?.dvdBlueRayA,
-    goodsA: user?.data?.dcAmount?.goodsA,
-    photoBookA: user?.data?.dcAmount?.photoBookA,
-    officialStoreA: user?.data?.dcAmount?.officialStoreA,
-    beautyA: user?.data?.dcAmount?.beautyA,
-    specialOrderA: user?.data?.dcAmount?.specialOrderA,
     // 추후 기입
     dhl: user?.data.shippingRate.dhl,
     nickName: user?.data.nickName,
     memo: user?.data.memo,
-    // 크레딧
-    handleCredit: 0,
-    creditType: "Store-Credit",
     // 커런시
     currency: user?.data.currency,
     // alias
@@ -82,18 +74,10 @@ export function CustomerDetails({ match }) {
     photoBook,
     officialStore,
     beauty,
-    cdA,
-    dvdBlueRayA,
-    goodsA,
-    photoBookA,
-    officialStoreA,
-    beautyA,
     specialOrder,
-    specialOrderA,
     dhl,
     nickName,
     memo,
-
     currency,
     alias,
     taxId,
@@ -109,15 +93,7 @@ export function CustomerDetails({ match }) {
     beauty,
     specialOrder,
   };
-  const dcAValues = {
-    beautyA,
-    cdA,
-    dvdBlueRayA,
-    goodsA,
-    officialStoreA,
-    photoBookA,
-    specialOrderA,
-  };
+
   const shippingRate = { dhl };
 
   const saveDetails = () => {
@@ -142,16 +118,6 @@ export function CustomerDetails({ match }) {
           beauty: Number((Number(beauty) / 100).toFixed(2)),
           specialOrder: Number((Number(specialOrder) / 100).toFixed(2)),
         },
-        dcAmount: {
-          cdA: Number(Number(cdA).toFixed(2)),
-          dvdBlueRayA: Number(Number(dvdBlueRayA).toFixed(2)),
-          goodsA: Number(Number(goodsA).toFixed(2)),
-          photoBookA: Number(Number(photoBookA).toFixed(2)),
-          officialStoreA: Number(Number(officialStoreA).toFixed(2)),
-          beautyA: Number(Number(beautyA).toFixed(2)),
-          specialOrderA: Number(Number(specialOrderA).toFixed(2)),
-        },
-        shippingRate: { dhl },
         nickName,
         inCharge,
         memo,
@@ -307,48 +273,6 @@ export function CustomerDetails({ match }) {
                         onChange={onChange}
                         className="text-center text-gray-800 text-sm py-1  border-r border-b"
                       />
-                      {user.data.dcAmount && (
-                        <div className="w-full flex flex-row items-center bg-white py-1 border-r">
-                          <input
-                            type="number"
-                            name={Object.keys(user.data.dcAmount).sort()[index]}
-                            value={dcAValues[`${doc}A`]}
-                            onChange={onChange}
-                            className="text-center pl-3 text-gray-800 w-2/3 text-sm outline-none"
-                          />
-                          <div className=" bg-white text-xs text-center w-1/3">
-                            {user.data.currency}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-              </div>
-              <div className="text-center my-1 font-semibold">
-                배송요율 {`[ 원 ]`}
-              </div>
-              <div
-                className={`grid grid-cols-${
-                  Object.keys(user.data.shippingRate).length
-                } border mb-10`}
-              >
-                {Object.keys(user.data.shippingRate)
-                  .sort()
-                  .map((doc, index) => (
-                    <div
-                      key={index}
-                      className="grid grid-cols-1  bg-gray-600 text-center  "
-                    >
-                      <div className="text-gray-100">{doc}</div>
-                      <input
-                        type="number"
-                        name={doc}
-                        value={shippingRate[doc]}
-                        onChange={onChange}
-                        className={`${
-                          shippingRate[doc] < 1 ? "bg-red-100" : ""
-                        } text-center text-gray-800 outline-none`}
-                      />
                     </div>
                   ))}
               </div>
@@ -473,6 +397,11 @@ export function CustomerDetails({ match }) {
         >
           수정하기
         </button>
+        {/* <div>line</div>
+        <CustomerDcRate user={user} />
+        <div>line</div> */}
+        <CustomerDcAmount user={user} />
+        <CustomerShippingRate user={user} />
         <CustomerCredit user={user} />
         {user.data.survay && <CustomerSurvay user={user} />}
       </div>
