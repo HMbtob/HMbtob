@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { InitDataContext } from "../../../App";
 import { db } from "../../../firebase";
 import Modal from "../../modal/Modal";
-import CreditDetails from "../../admin/customer/CreditDetails";
+import CreditDetails from "../../admin/customer/utils/CreditDetails";
 import useInputs from "../../../hooks/useInput";
 
 const MyInfo = ({ match }) => {

@@ -11,7 +11,7 @@ import UndoIcon from "@material-ui/icons/Undo";
 import LocalAirportIcon from "@material-ui/icons/LocalAirport";
 import { useCallback } from "react";
 import Modal from "../../modal/Modal";
-import CreditDetails from "../customer/CreditDetails";
+import CreditDetails from "../customer/utils/CreditDetails";
 import AddDetailRow from "./AddDetailRow";
 
 const OrderDetail = ({ match }) => {
@@ -48,7 +48,7 @@ const OrderDetail = ({ match }) => {
     // 크레딧
     handleCredit: 0,
     creditType: "Store-Credit",
-  });                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+  });
   const {
     orderState,
     paymentMethod,
@@ -362,24 +362,25 @@ const OrderDetail = ({ match }) => {
     alert("직접 수정 완료");
   };
   // console.log(orderNumberSelect)
-  const [listToMove, setListToMove] = useState([])
-  useEffect(()=> {
-    setListToMove([
-      ...checkedInputs.map(doc =>
-        order.data.list.find(arr => arr.childOrderNumber === doc)
-        )].reduce((a,c,i,t) => {
-          if(orderNumberSelect.length > 0){
-            c.orderNumber = orderNumberSelect.trim()
-            a.push(c)
-            return a
-          }
-          // console.log("t",t)
-          return t
-          
-        }, []))
-        
-      },[checkedInputs, orderNumberSelect])
-      // console.log(listToMove)
+  const [listToMove, setListToMove] = useState([]);
+  useEffect(() => {
+    setListToMove(
+      [
+        ...checkedInputs.map(doc =>
+          order.data.list.find(arr => arr.childOrderNumber === doc)
+        ),
+      ].reduce((a, c, i, t) => {
+        if (orderNumberSelect.length > 0) {
+          c.orderNumber = orderNumberSelect.trim();
+          a.push(c);
+          return a;
+        }
+        // console.log("t",t)
+        return t;
+      }, [])
+    );
+  }, [checkedInputs, orderNumberSelect]);
+  // console.log(listToMove)
 
   // 주문간 상품 이동
   const moveList = async e => {

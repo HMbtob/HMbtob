@@ -1,4 +1,4 @@
-import { db } from "../../../firebase";
+import { db } from "../../../../firebase";
 
 export function handleDelete(account) {
   let con = window.confirm("정말로 삭제하시겠습니까?");

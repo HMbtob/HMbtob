@@ -1,7 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import { handleDelete } from "./Utils";
+import { handleDelete } from "../utils/utils";
 
 const CustomerRow = ({ account }) => {
   const history = useHistory();

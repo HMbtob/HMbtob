@@ -1,12 +1,12 @@
 import React, { useContext, useState } from "react";
 import firebase from "firebase";
-import { InitDataContext } from "../../../App";
-import { db } from "../../../firebase";
-import CreditDetails from "./CreditDetails";
-import Modal from "../../modal/Modal";
-import useInputs from "../../../hooks/useInput";
+import { InitDataContext } from "../../../../App";
+import { db } from "../../../../firebase";
+import CreditDetails from "../utils/CreditDetails";
+import Modal from "../../../modal/Modal";
+import useInputs from "../../../../hooks/useInput";
 
-const CustomerDetail = ({ match }) => {
+export function CustomerDetails({ match }) {
   const { uid } = match.params;
   const state = useContext(InitDataContext);
   const { accounts, dhlShippingFee } = state;
@@ -198,7 +198,7 @@ const CustomerDetail = ({ match }) => {
       <div className="w-11/12 flex-col mt-20 flex items-center">
         <div
           className="text-center text-md bg-gray-800 
-        rounded-sm text-gray-100 mb-5 w-full"
+          rounded-sm text-gray-100 mb-5 w-full"
         >
           USER DETAILS{" "}
         </div>
@@ -509,7 +509,7 @@ const CustomerDetail = ({ match }) => {
         <div className="w-1/2 mb-12 flex flex-col items-center">
           <div
             className="text-center text-md bg-gray-800 
-          rounded text-gray-100 mb-5 mt-5 w-full py-1"
+            rounded text-gray-100 mb-5 mt-5 w-full py-1"
           >
             CREDIT
           </div>
@@ -567,7 +567,7 @@ const CustomerDetail = ({ match }) => {
           <div className="w-1/2 mb-12">
             <div
               className="text-center text-md bg-gray-800 
-          rounded text-gray-100 mb-5 mt-5 w-full py-1"
+            rounded text-gray-100 mb-5 mt-5 w-full py-1"
             >
               SURVAY
             </div>
@@ -586,6 +586,4 @@ const CustomerDetail = ({ match }) => {
       </div>
     </div>
   );
-};
-
-export default CustomerDetail;
+}
