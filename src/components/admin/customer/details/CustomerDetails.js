@@ -1,10 +1,9 @@
-import React, { useContext, useState } from "react";
-import firebase from "firebase";
+import React, { useContext } from "react";
 import { InitDataContext } from "../../../../App";
 import { db } from "../../../../firebase";
-import CreditDetails from "../utils/CreditDetails";
-import Modal from "../../../modal/Modal";
 import useInputs from "../../../../hooks/useInput";
+import { CustomerCredit } from "./CustomerCredit";
+import { CustomerSurvay } from "./CustomerSurvay";
 
 export function CustomerDetails({ match }) {
   const { uid } = match.params;
@@ -14,22 +13,14 @@ export function CustomerDetails({ match }) {
 
   const user = accounts.find(account => account.data.uid === uid);
   const inCharges = accounts.filter(account => account.data.type === "admin");
-  const { creditDetails } = user.data;
-  const [modalOpen, setModalOpen] = useState(false);
 
   const countries = [].concat(
     ...z
       ?.map(zo => Object.values(zo).map(co => co.country))
       .map(doc => [].concat(...doc))
   );
-  const openModal = () => {
-    setModalOpen(true);
-  };
-  const closeModal = () => {
-    setModalOpen(false);
-  };
 
-  const [form, onChange, reset, credit_reset] = useInputs({
+  const [form, onChange] = useInputs({
     type: user?.data.type,
     recipientEmail: user?.data.recipientEmail,
     recipientPhoneNumber: user?.data.recipientPhoneNumber,
@@ -102,8 +93,7 @@ export function CustomerDetails({ match }) {
     dhl,
     nickName,
     memo,
-    handleCredit,
-    creditType,
+
     currency,
     alias,
     taxId,
@@ -174,32 +164,10 @@ export function CustomerDetails({ match }) {
     alert("수정 완료");
   };
 
-  const saveCredit = () => {
-    if (handleCredit === 0) {
-      alert("올바른 숫자를 입력해 주세요");
-    }
-    db.collection("accounts")
-      .doc(user.id)
-      .update({
-        credit: Number(user.data.credit) + Number(handleCredit),
-        creditDetails: firebase.firestore.FieldValue.arrayUnion({
-          type: creditType,
-          amount: Number(handleCredit),
-          currency: user.data.currency,
-          date: new Date(),
-          totalAmount: Number(user.data.credit) + Number(handleCredit),
-        }),
-      });
-    credit_reset();
-  };
-
   return (
     <div className="w-full h-full flex justify-center">
       <div className="w-11/12 flex-col mt-20 flex items-center">
-        <div
-          className="text-center text-md bg-gray-800 
-          rounded-sm text-gray-100 mb-5 w-full"
-        >
+        <div className="text-center text-md bg-gray-800 rounded-sm text-gray-100 mb-5 w-full">
           USER DETAILS{" "}
         </div>
         {type === "none" ||
@@ -505,84 +473,8 @@ export function CustomerDetails({ match }) {
         >
           수정하기
         </button>
-
-        <div className="w-1/2 mb-12 flex flex-col items-center">
-          <div
-            className="text-center text-md bg-gray-800 
-            rounded text-gray-100 mb-5 mt-5 w-full py-1"
-          >
-            CREDIT
-          </div>
-          <div className="grid grid-cols-2 text-center mb-3">
-            <div>CREDIT :</div>
-            <div>
-              {Math.round(user.data.credit).toLocaleString("ko-KR")}{" "}
-              {user.data.currency}
-            </div>
-          </div>
-          <div className="grid grid-cols-2 mb-6">
-            <Modal
-              open={modalOpen}
-              close={closeModal}
-              header={"CREDIT DETAILS"}
-            >
-              <CreditDetails creditDetails={creditDetails} reset={reset} />
-            </Modal>
-
-            <select
-              name="creditType"
-              className="border p-1 m-1"
-              value={creditType}
-              onChange={onChange}
-            >
-              <option value="Store-Credit">Store-Credit</option>
-              <option value="Shipped-Amount">Shipped-Amount</option>
-              <option value="Refund">Refund</option>
-              <option value="Compensate">Compensate</option>
-              <option value="Adjustment">Adjustment</option>
-            </select>
-            <input
-              type="number"
-              name="handleCredit"
-              value={handleCredit}
-              onChange={onChange}
-              placeholder="Amount"
-              className="border p-1 m-1 outline-none"
-              onKeyPress={e => {
-                if (e.key === "Enter") {
-                  saveCredit();
-                  return false;
-                }
-              }}
-            />
-          </div>
-          <button
-            className="bg-gray-600 p-1 rounded text-gray-200 m-2 w-52"
-            onClick={openModal}
-          >
-            Credit Details
-          </button>
-        </div>
-        {user.data.survay && (
-          <div className="w-1/2 mb-12">
-            <div
-              className="text-center text-md bg-gray-800 
-            rounded text-gray-100 mb-5 mt-5 w-full py-1"
-            >
-              SURVAY
-            </div>
-            <div>
-              {Object.keys(user?.data?.survay).map((sur, i) => (
-                <div key={i} className="grid grid-cols-3 p-1 text-gray-800">
-                  <div className="text-right pr-2">{sur} :</div>
-                  <div className="col-span-2">
-                    {Object.values(user?.data?.survay)[i]}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <CustomerCredit user={user} />
+        {user.data.survay && <CustomerSurvay user={user} />}
       </div>
     </div>
   );
