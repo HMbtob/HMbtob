@@ -1,10 +1,12 @@
-import React, { useContext } from "react";
-import { InitDataContext } from "../../../App";
+import React, { useEffect, useState } from "react";
 import CustomerRow from "./CustomerRow";
+import { AccountsData } from "../../../utils/DataFetch";
 
 const CustomerList = () => {
-  const state = useContext(InitDataContext);
-  const { accounts } = state;
+  const [accounts, setAccountss] = useState([]);
+  useEffect(() => {
+    AccountsData(setAccountss);
+  }, []);
   return (
     <div className="w-full flex justify-center mb-20">
       <div className=" w-11/12 flex-col mt-20">
