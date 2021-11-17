@@ -8,7 +8,7 @@ import { db } from "../../../firebase";
 import UnshippedDetailRow from "./UnshippedDetailRow";
 import { useHistory } from "react-router";
 import Modal from "../../modal/Modal";
-import CreditDetails from "../customer/CreditDetails";
+import CreditDetails from "../customer/utils/CreditDetails";
 import useInputs from "../../../hooks/useInput";
 
 const UnshippedDetail = ({ match }) => {

@@ -23,8 +23,6 @@ import OrderDetail from "./components/admin/orderlist/OrderDetail";
 import Unshiped from "./components/admin/unshipped/Unshiped";
 import ShippingList from "./components/admin/shipping/ShippingList";
 import UnshipedDetail from "./components/admin/unshipped/UnshippedDetail";
-import CustomerList from "./components/admin/customer/CustomerList";
-import CustomerDetail from "./components/admin/customer/CustomerDetail";
 import MyOrderList from "./components/b2bshop/myorder/MyOrderList";
 import MyOrderDetail from "./components/b2bshop/myorder/MyOrderDetail";
 import MyInfo from "./components/b2bshop/myorder/MyInfo";
@@ -36,6 +34,8 @@ import Invoice from "./components/invoice/Invoice";
 import InAdminChat from "./components/chat/InAdminChat";
 import MobileHeader from "./components/header/MobileHeader";
 import { MyShipping } from "./components/b2bshop/myshipping/MyShipping";
+import { CustomerIndex } from "./components/admin/customer/CustomerIndex";
+import { CustomerDetails } from "./components/admin/customer/details/CustomerDetails";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -321,9 +321,9 @@ function App() {
                   <Route
                     exact
                     path="/customerdetail/:uid"
-                    component={CustomerDetail}
+                    component={CustomerDetails}
                   />
-                  <Route path="/customerlist" component={CustomerList} />
+                  <Route path="/customerlist" component={CustomerIndex} />
 
                   {/* b2b */}
                   <Route path="/myshipping" component={MyShipping} />
