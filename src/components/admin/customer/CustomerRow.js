@@ -1,20 +1,11 @@
 import React from "react";
 import { useHistory } from "react-router";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import { db } from "../../../firebase";
+import { handleDelete } from "./Utils";
 
 const CustomerRow = ({ account }) => {
   const history = useHistory();
-  // 유저삭제
-  const handleDelete = () => {
-    let con = window.confirm("정말로 삭제하시겠습니까?");
-    if (con === true) {
-      db.collection("accounts").doc(account.id).delete();
-      // window.location.replace("/customerlist");
-    } else if (con === false) {
-      return;
-    }
-  };
+
   return (
     <div
       className={`grid grid-cols-7 text-center py-1 
@@ -35,7 +26,7 @@ const CustomerRow = ({ account }) => {
           className="cursor-pointer"
           fontSize="small"
           style={{ color: "gray" }}
-          onClick={handleDelete}
+          onClick={() => handleDelete(account)}
         />
       </div>
       <div

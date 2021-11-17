@@ -100,7 +100,7 @@ const AddDetailRow = ({ order }) => {
     setChildOrderNumber(
       `${order.data.orderNumber.trim()}-${order.data.list.length + 1}`
     );
-  }, [order.data.list.length]);
+  }, [order]);
 
   return (
     <div
