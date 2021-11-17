@@ -34,6 +34,7 @@ const ShippingListRow = ({ shipping, from, hiddenAll }) => {
     li.barcode,
     "interasia01",
     li.quan,
+    li.price,
   ]);
 
   const today = new Date();
