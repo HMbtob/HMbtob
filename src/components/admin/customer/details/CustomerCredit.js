@@ -1,21 +1,17 @@
 import React, { useState } from "react";
-import { db } from "../../../../firebase";
-import useInputs from "../../../../hooks/useInput";
 import Modal from "../../../modal/Modal";
 import CreditDetails from "../utils/CreditDetails";
-import firebase from "firebase";
 import { useForm } from "react-hook-form";
+import { ErrorMessage } from "@hookform/error-message";
+import { saveCredit } from "../utils/utils";
 
 export function CustomerCredit({ user }) {
   const {
     register,
     handleSubmit,
-    watch,
+    resetField,
     formState: { errors },
-  } = useForm();
-  const onSubmit = data => console.log(data);
-
-  console.log(watch("example")); // watch input value by passing the name of it
+  } = useForm({ defaultValues: { creditType: "Store-Credit" } });
 
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -26,50 +22,23 @@ export function CustomerCredit({ user }) {
     setModalOpen(false);
   };
 
-  const [form, onChange, reset, credit_reset] = useInputs({
-    handleCredit: 0,
-    creditType: "Store-Credit",
-  });
-
-  const { handleCredit, creditType } = form;
-
-  const saveCredit = () => {
-    if (handleCredit === 0) {
-      alert("올바른 숫자를 입력해 주세요");
-    }
-    db.collection("accounts")
-      .doc(user.id)
-      .update({
-        credit: Number(user.data.credit) + Number(handleCredit),
-        creditDetails: firebase.firestore.FieldValue.arrayUnion({
-          type: creditType,
-          amount: Number(handleCredit),
-          currency: user.data.currency,
-          date: new Date(),
-          totalAmount: Number(user.data.credit) + Number(handleCredit),
-        }),
-      });
-    credit_reset();
+  const onSubmit = data => {
+    saveCredit(user, data);
+    resetField("handleCredit");
   };
+
   return (
-    <div className="w-1/2 mb-12 flex flex-col items-center">
+    <form
+      className="w-1/2 mb-12 flex flex-col items-center"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div
         className="text-center text-md bg-gray-800 
             rounded text-gray-100 mb-5 mt-5 w-full py-1"
       >
         CREDIT
       </div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {/* register your input into the hook by invoking the "register" function */}
-        <input defaultValue="test" {...register("example")} />
 
-        {/* include validation with required or other standard HTML validation rules */}
-        <input {...register("exampleRequired", { required: true })} />
-        {/* errors will return when field validation fails  */}
-        {errors.exampleRequired && <span>This field is required</span>}
-
-        <input type="submit" />
-      </form>
       <div className="grid grid-cols-2 text-center mb-3">
         <div>CREDIT :</div>
         <div>
@@ -77,19 +46,16 @@ export function CustomerCredit({ user }) {
           {user.data.currency}
         </div>
       </div>
-      <div className="grid grid-cols-2 mb-6">
+      <div className="grid grid-cols-2">
         <Modal open={modalOpen} close={closeModal} header={"CREDIT DETAILS"}>
-          <CreditDetails
-            creditDetails={user.data.creditDetails}
-            reset={reset}
-          />
+          <CreditDetails creditDetails={user.data.creditDetails} />
         </Modal>
 
         <select
-          name="creditType"
+          {...register("creditType", {
+            required: { value: true, message: "필수 입력 항목입니다." },
+          })}
           className="border p-1 m-1"
-          value={creditType}
-          onChange={onChange}
         >
           <option value="Store-Credit">Store-Credit</option>
           <option value="Shipped-Amount">Shipped-Amount</option>
@@ -98,26 +64,32 @@ export function CustomerCredit({ user }) {
           <option value="Adjustment">Adjustment</option>
         </select>
         <input
+          {...register("handleCredit", {
+            required: { value: true, message: "필수 입력 항목입니다." },
+            maxLength: { value: 20, message: "너무 큰 숫자입니다." },
+            minLength: { value: 1, message: "너무 작은 숫자입니다." },
+          })}
           type="number"
-          name="handleCredit"
-          value={handleCredit}
-          onChange={onChange}
-          placeholder="Amount"
-          className="border p-1 m-1 outline-none"
-          onKeyPress={e => {
-            if (e.key === "Enter") {
-              saveCredit();
-              return false;
-            }
-          }}
+          placeholder="Credits"
+          className="border p-1 m-1 outline-none pl-2"
         />
       </div>
+      <ErrorMessage
+        errors={errors}
+        name="handleCredit"
+        render={({ message }) => (
+          <div className="text-center font-semibold w-full text-red-600 mb-5">
+            {message}
+          </div>
+        )}
+      />
       <button
+        type="button"
         className="bg-gray-600 p-1 rounded text-gray-200 m-2 w-52"
-        onClick={openModal}
+        onClick={() => openModal()}
       >
         Credit Details
       </button>
-    </div>
+    </form>
   );
 }

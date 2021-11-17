@@ -3,6 +3,9 @@ import { InitDataContext } from "../../../../App";
 import { db } from "../../../../firebase";
 import useInputs from "../../../../hooks/useInput";
 import { CustomerCredit } from "./CustomerCredit";
+import { CustomerDcRate } from "./CustomerDcRate";
+import { CustomerDcAmount } from "./CustomerDcAmount";
+import { CustomerShippingRate } from "./CustomerShippingRate";
 import { CustomerSurvay } from "./CustomerSurvay";
 
 export function CustomerDetails({ match }) {
@@ -151,7 +154,7 @@ export function CustomerDetails({ match }) {
           beautyA: Number(Number(beautyA).toFixed(2)),
           specialOrderA: Number(Number(specialOrderA).toFixed(2)),
         },
-        shippingRate: { dhl },
+        shippingRate: { dhl: Number(dhl) },
         nickName,
         inCharge,
         memo,
@@ -307,48 +310,6 @@ export function CustomerDetails({ match }) {
                         onChange={onChange}
                         className="text-center text-gray-800 text-sm py-1  border-r border-b"
                       />
-                      {user.data.dcAmount && (
-                        <div className="w-full flex flex-row items-center bg-white py-1 border-r">
-                          <input
-                            type="number"
-                            name={Object.keys(user.data.dcAmount).sort()[index]}
-                            value={dcAValues[`${doc}A`]}
-                            onChange={onChange}
-                            className="text-center pl-3 text-gray-800 w-2/3 text-sm outline-none"
-                          />
-                          <div className=" bg-white text-xs text-center w-1/3">
-                            {user.data.currency}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-              </div>
-              <div className="text-center my-1 font-semibold">
-                배송요율 {`[ 원 ]`}
-              </div>
-              <div
-                className={`grid grid-cols-${
-                  Object.keys(user.data.shippingRate).length
-                } border mb-10`}
-              >
-                {Object.keys(user.data.shippingRate)
-                  .sort()
-                  .map((doc, index) => (
-                    <div
-                      key={index}
-                      className="grid grid-cols-1  bg-gray-600 text-center  "
-                    >
-                      <div className="text-gray-100">{doc}</div>
-                      <input
-                        type="number"
-                        name={doc}
-                        value={shippingRate[doc]}
-                        onChange={onChange}
-                        className={`${
-                          shippingRate[doc] < 1 ? "bg-red-100" : ""
-                        } text-center text-gray-800 outline-none`}
-                      />
                     </div>
                   ))}
               </div>
@@ -473,6 +434,11 @@ export function CustomerDetails({ match }) {
         >
           수정하기
         </button>
+        {/* <div>line</div>
+        <CustomerDcRate user={user} />
+        <div>line</div> */}
+        <CustomerDcAmount user={user} />
+        <CustomerShippingRate user={user} />
         <CustomerCredit user={user} />
         {user.data.survay && <CustomerSurvay user={user} />}
       </div>
