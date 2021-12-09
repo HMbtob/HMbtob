@@ -241,7 +241,7 @@ const UnshippedDetail = ({ match }) => {
             arr3.shipped === false
         )
     );
-  }, [orders, uid, customerId]);
+  }, [orders, uid, customerId, accounts]);
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
@@ -399,6 +399,12 @@ const UnshippedDetail = ({ match }) => {
             [
               ...new Set(
                 unshipped
+                  .filter(
+                    doc =>
+                      doc.moved === false &&
+                      doc.canceled === false &&
+                      doc.shipped === false
+                  )
                   .sort((a, b) => {
                     return a?.title?.trim() < b?.title?.trim()
                       ? -1

@@ -36,6 +36,10 @@ import MobileHeader from "./components/header/MobileHeader";
 import { MyShipping } from "./components/b2bshop/myshipping/MyShipping";
 import { CustomerIndex } from "./components/admin/customer/CustomerIndex";
 import { CustomerDetails } from "./components/admin/customer/details/CustomerDetails";
+import { OrderLists } from "./components/orderlist/index";
+import { OrderListDetail } from "./components/orderlist/orderlistdetail/index";
+import { ShippingLists } from "./components/shippinglist";
+import { PickUpList2 } from "./components/pickuplist2";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -43,7 +47,7 @@ export const InitDispatchContext = React.createContext(null);
 function App() {
   const [user, loading] = useAuthState(auth);
   const [state, dispatch] = useReducer(dataReducer, initState);
-  const { userType } = state;
+  const { userType, product } = state;
   // TODO: 유저타입을 -> user.userType 으로 대체가능한가?
   const history = useHistory();
 
@@ -296,6 +300,14 @@ function App() {
                     ""
                   )}
 
+                  {/* New */}
+                  <Route
+                    path="/orderlistdetail/:id"
+                    component={OrderListDetail}
+                  />
+                  <Route path="/orderlists" component={OrderLists} />
+                  <Route path="/shippinglists" component={ShippingLists} />
+
                   {/* 석팀장님 */}
                   <Route
                     path="/orderproductslist"
@@ -304,6 +316,8 @@ function App() {
 
                   {/* order */}
                   <Route path="/orderdetail/:id" component={OrderDetail} />
+                  {/* <Route path="/orderlists/:id" component={OrderListDetail} />
+                  <Route path="/orderlists" component={OrderLists} /> */}
                   <Route path="/orderlist" component={OrderList} />
                   {/* shipping */}
                   <Route path="/unshipped/:uid" component={UnshipedDetail} />
@@ -333,6 +347,7 @@ function App() {
                   <Route path="/b2bspecialorder" component={B2bSpecialOrder} />
                   <Route path="/b2border" component={B2bOrder} />
                   <Route path="/b2bshop" component={B2bShop} />
+                  <Route path="/pickuplist2" component={PickUpList2} />
                   <Route path="/pickuplist" component={PickUpList} />
                   <Route path="/invoice" component={Invoice} />
                   <Route path="/chat" component={InAdminChat} />

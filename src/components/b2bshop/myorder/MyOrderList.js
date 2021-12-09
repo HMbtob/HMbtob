@@ -17,7 +17,12 @@ const MyOrderList = () => {
             .filter(arr1 => arr1.data.customer === user.email)
             .map(arr2 => arr2.data.list)
         )
-        .filter(arr3 => arr3.shipped === false)
+        .filter(
+          arr3 =>
+            arr3.moved === false &&
+            arr3.canceled === false &&
+            arr3.shipped === false
+        )
     );
   }, [orders, user.email]);
   return (
@@ -63,12 +68,13 @@ const MyOrderList = () => {
           </div>
           <div
             className="grid grid-cols-12 text-center bg-gray-800 
-                      rounded-sm text-gray-100 text-sm py-1 w-2/3"
+                      rounded-sm text-gray-100 text-sm py-1 w-3/4"
           >
-            <div className="col-span-2">바코드</div>
+            <div className="col-span-2">Barcode</div>
             <div className="col-span-2">SKU</div>
-            <div className="col-span-7">앨범명</div>
-            <div className="col-span-1">수량</div>
+            <div className="col-span-1">RELEASE</div>
+            <div className="col-span-6">Title</div>
+            <div className="col-span-1">Qty</div>
           </div>
 
           {unshipped &&
@@ -102,18 +108,22 @@ const MyOrderList = () => {
                           quan: Number(a.quan) + Number(c.quan),
                           barcode: c.barcode,
                           sku: c.sku,
+                          relDate: new Date(c.relDate?.seconds * 1000),
                         };
                       },
-                      { title: "", quan: 0, barcode: "", sku: "" }
+                      { title: "", quan: 0, barcode: "", sku: "", relDate: "" }
                     )
                 );
                 return acc;
               }, [])
-              .map(li => (
-                <div className="grid grid-cols-12 w-2/3 border py-1">
+              .map((li, i) => (
+                <div key={i} className="grid grid-cols-12 w-3/4 border py-1">
                   <div className="col-span-2 text-center">{li.barcode}</div>
                   <div className="col-span-2 text-center">{li.sku}</div>
-                  <div className="col-span-7">{li.title}</div>
+                  <div className="col-span-1 text-center">
+                    {li.relDate.toISOString().substring(0, 10)}
+                  </div>
+                  <div className="col-span-6 pl-3">{li.title}</div>
                   <div className="col-span-1 text-center">{li.quan} EA</div>
                 </div>
               ))}

@@ -1,6 +1,8 @@
 import React from "react";
 import CreatedAt from "./CreatedAt";
 import Excel from "./Excel";
+import { NewAddress } from "./NewAddress";
+import { OrderListToNew } from "./OrderListToNew";
 import SaveProducts from "./SaveProducts";
 import ShippingFee from "./ShippingFee";
 const Dev = () => {
@@ -10,6 +12,8 @@ const Dev = () => {
       <ShippingFee />
       <SaveProducts />
       <CreatedAt />
+      <NewAddress />
+      <OrderListToNew />
     </div>
   );
 };

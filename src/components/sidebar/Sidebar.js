@@ -47,14 +47,16 @@ const Sidebar = () => {
     //   d-1
     <div className="flex-col items-center w-auto text-gray-300 bg-gray-600">
       {/* d-2 */}
-      <div className="bg-gray-600 pt-16 p-8 text-lg text-gray-300 leading-10 text-center">
+      <div className="bg-gray-600 pt-16 w-40 p-8 text-lg text-gray-300 leading-10 text-center">
         {user?.email === "interasiadev@gmail.com" && (
-          <div
-            onClick={() => history.push(`/fordev`)}
-            className="cursor-pointer hover:text-gray-50"
-          >
-            {"개발"}
-          </div>
+          <>
+            <div
+              onClick={() => history.push(`/fordev`)}
+              className="cursor-pointer hover:text-gray-50"
+            >
+              {"개발"}
+            </div>
+          </>
         )}
 
         {/* d-3 */}
@@ -62,7 +64,7 @@ const Sidebar = () => {
           <div
             key={index}
             onClick={() => history.push(`${Object.values(menu)}`)}
-            className="cursor-pointer hover:text-gray-50 w-24"
+            className="cursor-pointer hover:text-gray-50"
           >
             {Object.keys(menu)}
           </div>
@@ -78,6 +80,27 @@ const Sidebar = () => {
               {unReadedQ.length}
             </div>
           )}
+        </div>
+        <div
+          onClick={() => history.push(`/orderlists`)}
+          className="cursor-pointer hover:text-gray-50 
+          flex flex-row justify-center items-center"
+        >
+          NEW 주문
+        </div>
+        <div
+          onClick={() => history.push(`/shippinglists`)}
+          className="cursor-pointer hover:text-gray-50 
+          flex flex-row justify-center items-center"
+        >
+          NEW 배송
+        </div>
+        <div
+          onClick={() => history.push(`/`)}
+          className="cursor-pointer hover:text-gray-50 
+          flex flex-row justify-center items-center"
+        >
+          STORE
         </div>
       </div>
     </div>

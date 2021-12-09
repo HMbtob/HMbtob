@@ -28,7 +28,7 @@ const ListProduct = ({ history }) => {
     const { value } = e.target;
     setItemsPerPage(Number(value));
   };
-
+  console.log(products?.length);
   // 헤더 항목
   const headers = [
     "BTN",

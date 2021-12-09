@@ -601,7 +601,6 @@ const OrderDetail = ({ match }) => {
       )
     );
   }, [checkedInputs, order.data.list]);
-
   const saveCredit = () => {
     if (handleCredit === 0) {
       alert("올바른 숫자를 입력해 주세요");

@@ -4,7 +4,11 @@ import firebase from "firebase";
 import useInputs from "../../../hooks/useInput";
 
 const AddDetailRow = ({ order }) => {
-  const [form, onChange, reset] = useInputs({
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState(0);
+  const [quan, setQuan] = useState(0);
+  const [totalWeight, setTotalWeight] = useState(0);
+  const [form, onChange] = useInputs({
     barcode: "",
     canceled: false,
     createdAt: new Date(),
@@ -17,14 +21,10 @@ const AddDetailRow = ({ order }) => {
     nickName: order.data.nickName,
     orderNumber: order.data.orderNumber,
     preOrderDeadline: new Date(),
-    price: 0,
     productId: "",
-    quan: 0,
     relDate: new Date(),
     shipped: false,
     sku: "",
-    title: "",
-    totalWeight: 0,
     memoInList: "",
   });
 
@@ -40,14 +40,10 @@ const AddDetailRow = ({ order }) => {
     moved,
     nickName,
     orderNumber,
-    price,
     productId,
-    quan,
     relDate,
     shipped,
     sku,
-    title,
-    totalWeight,
     memoInList,
   } = form;
 
@@ -57,44 +53,56 @@ const AddDetailRow = ({ order }) => {
   const [totalPrice, setTotalPrice] = useState(price * quan);
 
   const addList = () => {
-    db.collection("orders")
-      .doc("b2b")
-      .collection("b2borders")
-      .doc(order.id)
-      .update({
-        list: firebase.firestore.FieldValue.arrayUnion({
-          barcode,
-          canceled,
-          childOrderNumber,
-          createdAt: new Date(createdAt),
-          currency,
-          dcAmount,
-          dcRate,
-          exchangeRate,
-          moveTo,
-          moved,
-          nickName,
-          orderNumber,
-          preOrderDeadline: new Date(relDate),
-          price: Number(price),
-          productId,
-          quan: Number(quan),
-          relDate: new Date(relDate),
-          shipped,
-          sku,
-          title,
-          totalPrice: Number(totalPrice),
-          totalWeight: Number(totalWeight) * 1000,
-          weight: (Number(totalWeight) * 1000) / quan,
-          memoInList,
-        }),
-      });
-    setTotalPrice(0);
-    reset();
+    console.log(title.length, price.length, quan.length, totalWeight.length);
+    if (
+      title.length >= 1 &&
+      price.length >= 1 &&
+      quan.length >= 1 &&
+      totalWeight.length >= 1
+    ) {
+      db.collection("orders")
+        .doc("b2b")
+        .collection("b2borders")
+        .doc(order.id)
+        .update({
+          list: firebase.firestore.FieldValue.arrayUnion({
+            barcode,
+            canceled,
+            childOrderNumber,
+            createdAt: new Date(createdAt),
+            currency,
+            dcAmount,
+            dcRate,
+            exchangeRate,
+            moveTo,
+            moved,
+            nickName,
+            orderNumber,
+            preOrderDeadline: new Date(relDate),
+            price: Number(price),
+            productId,
+            quan: Number(quan),
+            relDate: new Date(relDate),
+            shipped,
+            sku,
+            title,
+            totalPrice: Number(totalPrice),
+            totalWeight: Number(totalWeight) * 1000,
+            weight: (Number(totalWeight) * 1000) / quan,
+            memoInList,
+          }),
+        });
+      setTitle("");
+      setPrice(0);
+      setQuan(0);
+      setTotalWeight(0);
+    } else {
+      alert("올바른 값을 입력해 주세요.");
+    }
   };
   useEffect(() => {
     setTotalPrice(price * quan);
-  }, [price, quan]);
+  }, [price, quan, order.data.currency]);
 
   useEffect(() => {
     setChildOrderNumber(
@@ -141,7 +149,7 @@ const AddDetailRow = ({ order }) => {
           type="text"
           name="title"
           value={title}
-          onChange={onChange}
+          onChange={e => setTitle(e.target.value)}
           className="w-full outline-none py-1 px-2 border"
         />
       </div>
@@ -151,7 +159,7 @@ const AddDetailRow = ({ order }) => {
           type="number"
           name="price"
           value={price}
-          onChange={onChange}
+          onChange={e => setPrice(e.target.value)}
           className="w-16 text-center outline-none"
         />
         {order && order?.data?.currency}
@@ -161,7 +169,7 @@ const AddDetailRow = ({ order }) => {
           type="number"
           name="quan"
           value={quan}
-          onChange={onChange}
+          onChange={e => setQuan(e.target.value)}
           className="w-12 text-center outline-none"
         />
         {/* {quan && quan}  */}
@@ -172,7 +180,7 @@ const AddDetailRow = ({ order }) => {
           type="number"
           name="totalWeight"
           value={totalWeight}
-          onChange={onChange}
+          onChange={e => setTotalWeight(e.target.value)}
           className="w-12 text-center outline-none"
         />
         {/* {quan && quan}  */}
