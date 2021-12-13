@@ -1,18 +1,24 @@
-import React, { useEffect } from "react";
+import React, {
+  useEffect,
+  //  useState
+} from "react";
 
 export function OrderListDetailRow({ order, register, checkAll, setValue }) {
+  const today = new Date();
+  const preOrder = order.data.relDate.toDate() < today;
+
   useEffect(() => {
     setValue(order.id, checkAll);
   }, [setValue, order.id, checkAll]);
 
   return (
-    <div className="grid grid-cols-36 text-center border-r border-b border-l py-1">
+    <div
+      className={`${
+        !preOrder ? "bg-red-100" : ""
+      } grid grid-cols-36 text-center border-r border-b border-l py-1`}
+    >
       <div>
-        <input
-          {...register(`${order.id}`)}
-          checked={checkAll ? checkAll : null}
-          type="checkbox"
-        />
+        <input {...register(`${order.id}`)} type="checkbox" />
       </div>
       <div className="col-span-3">{order.data.country}</div>
       <div className="col-span-2">

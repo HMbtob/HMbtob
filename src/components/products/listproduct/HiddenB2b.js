@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { db } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
 
@@ -11,13 +11,44 @@ const HiddenB2b = ({
   shippings,
   currency,
   sku,
+  product,
 }) => {
+  const [ordered, setOrdered] = useState([]);
+  // const [shipped, setShipped] = useState([]);
+
+  useEffect(() => {
+    db.collectionGroup("order").onSnapshot(snapshot =>
+      setOrdered(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
+    );
+
+    // db.collectionGroup("orderListInShippings").onSnapshot(snapshot =>
+    //   setShipped(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
+    // );
+  }, []);
   // 총판매
   // // 총 미발송
+  // console.log(
+  //   "ordered",
+  //   ordered
+  //     .filter(doc => doc.data.productId === product.id)
+  //     .reduce((a, c) => {
+  //       return a + c.data.quan;
+  //     }, 0)
+  // );
+  // console.log(
+  //   "shipped",
+  //   shipped
+  //     .filter(doc => doc.data.productId === product.id)
+  //     .reduce((a, c) => {
+  //       return a + c.data.quan;
+  //     }, 0)
+  // );
   const totalUnshipped = [].concat
     .apply(
       [],
-      orders.map(order => order.data.list.filter(arr => arr.sku === sku && arr.canceled === false))
+      orders.map(order =>
+        order.data.list.filter(arr => arr.sku === sku && arr.canceled === false)
+      )
     )
     .reduce((i, c) => {
       return i + c.quan;
@@ -81,7 +112,15 @@ place-items-center text-xs bg-transparent"
         value={handleStock}
         onChange={onChange}
       />
-      <div className="col-span-1">{totalUnshipped}</div>
+      <div className="col-span-1">
+        {totalUnshipped}(
+        {ordered
+          .filter(doc => doc.data.productId === product.id)
+          .reduce((a, c) => {
+            return a + c.data.quan;
+          }, 0)}
+        )
+      </div>
       <div className="col-span-1">{totalUnshipped - totalshipped}</div>
       <div className="col-span-2"></div>
       <div className="col-span-4 text-xs">

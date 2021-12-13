@@ -25,7 +25,7 @@ export function CSVLinkComponent({ shipping }) {
 
   useEffect(() => {
     db.collection("accounts")
-      .doc(shipping.data.userId)
+      .doc(shipping.data.customer || shipping.data.userId)
       .collection("shippingsInAccount")
       .doc(shipping.id)
       .collection("orderListInShippings")

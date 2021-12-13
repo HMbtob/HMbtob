@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { db } from "../../firebase";
 
 export function HiddenRowRow({ li }) {
   return (
@@ -20,7 +21,21 @@ export function HiddenRowRow({ li }) {
   );
 }
 
-export function HiddenRow({ orderListInShippings, shipping }) {
+export function HiddenRow({ shipping }) {
+  const [orderListInShippings, setOrderListInShippings] = useState([]);
+  useEffect(() => {
+    db.collection("accounts")
+      .doc(shipping.data.customer || shipping.data.userId)
+      .collection("shippingsInAccount")
+      .doc(shipping.id)
+      .collection("orderListInShippings")
+      .onSnapshot(snapshot =>
+        setOrderListInShippings(
+          snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+        )
+      );
+  }, [shipping]);
+
   return (
     <div
       className="grid-flow-col text-center

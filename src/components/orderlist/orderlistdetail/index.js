@@ -3,8 +3,13 @@ import { db } from "../../../firebase";
 import { useForm } from "react-hook-form";
 import { OrderListDetailHeader } from "./OrderListDetailHeader";
 import { OrderListDetailPrice } from "./OrderListDetailPrice";
+import { AddOrder } from "./AddOrder";
+import { ToTals } from "./ToTals";
+// import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 export function OrderListDetail({ match, location }) {
+  const history = useHistory();
   const { id } = match.params;
   const { state } = location;
   const [orders, setOrders] = useState([]);
@@ -12,6 +17,43 @@ export function OrderListDetail({ match, location }) {
 
   // for 전체선택
   const [checkAll, setCheckAll] = useState(false);
+
+  // checked item
+  const asdasd = async () => {
+    const asdad = getValues();
+    const checkedItems = orders.filter(order =>
+      Object.keys(asdad)
+        .reduce((a, c) => {
+          if (asdad[c] === true) {
+            a.push(c);
+          }
+          return a;
+        }, [])
+        .includes(order.id)
+    );
+    const ids = checkedItems.map(doc => doc.id);
+    history.push({
+      pathname: "/pickuplist2",
+      state: { checkedItems, ids },
+    });
+  };
+
+  // for sort
+  const [forSort, setForSort] = useState({
+    sortBy: "title",
+    order: true,
+  });
+
+  const handleSort = e => {
+    try {
+      setForSort({
+        sortBy: e.target.id || "title",
+        order: !forSort.order,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const OrderListDetailRow = React.lazy(() =>
     import("./OrderListDetailRow").then(module => ({
@@ -23,10 +65,12 @@ export function OrderListDetail({ match, location }) {
     db.collection("accounts")
       .doc(id)
       .collection("order")
+      .orderBy(forSort.sortBy || "title", forSort.order ? "asc" : "desc")
       .onSnapshot(snapshot =>
         setOrders(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
       );
-  }, [id]);
+  }, [id, forSort]);
+
   return (
     <form className="w-full h-full flex flex-col justify-center items-center">
       <div className="w-11/12 flex-col mt-20">
@@ -37,7 +81,7 @@ export function OrderListDetail({ match, location }) {
           유저별 주문 확인
         </div>
 
-        <OrderListDetailHeader />
+        <OrderListDetailHeader handleSort={handleSort} />
         {orders.map((order, i) => (
           <React.Suspense key={i} fallback={<div>Loading...</div>}>
             <OrderListDetailRow
@@ -48,6 +92,7 @@ export function OrderListDetail({ match, location }) {
             />
           </React.Suspense>
         ))}
+        <AddOrder id={id} />
         <div>
           <button
             type="button"
@@ -56,13 +101,23 @@ export function OrderListDetail({ match, location }) {
           >
             전체선택
           </button>
+
+          {/* <Link
+            to={{
+              pathname: "/pickuplist2",
+              state: checkedItems?.map(doc => doc.id),
+              checkedItems,
+            }}
+          > */}
           <button
             type="button"
-            onClick={() => setCheckAll(!checkAll)}
+            onClick={() => asdasd()}
             className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3"
           >
             PickUp List
           </button>
+          {/* </Link> */}
+          <ToTals orders={orders} />
         </div>
         <OrderListDetailPrice
           handleSubmit={handleSubmit}

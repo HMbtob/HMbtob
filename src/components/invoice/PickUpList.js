@@ -4,6 +4,7 @@ import { useHistory } from "react-router";
 
 const PickUpList = ({ location }) => {
   const { state, orders } = location;
+
   const [pickUpLists] = useState(
     [].concat.apply(
       [],

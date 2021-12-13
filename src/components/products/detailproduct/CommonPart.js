@@ -120,6 +120,7 @@ const CommonPart = ({ product, id }) => {
     exposeToB2b,
     price,
   } = form;
+
   // 섬넬
   const getImages = async () => {
     await axios
@@ -356,7 +357,7 @@ const CommonPart = ({ product, id }) => {
           <div className="flex justify-end">
             <button
               // type="submit"
-              onClick={Appp}
+              onClick={e => Appp(e)}
               className="bg-gray-600 py-2 px-10 rounded 
             text-gray-200 text-lg font-light
              "

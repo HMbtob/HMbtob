@@ -29,16 +29,24 @@ export function ShippingLists() {
         </div>
         <ShippingListsHeader handelHiddenAll={handelHiddenAll} />
         <div>
-          {shippings.map((shipping, i) => (
-            <React.Suspense key={i} fallback={<div>Loading...</div>}>
-              <ShippingListsRow
-                shipping={shipping}
-                users={users}
-                // exchangeRate={exchangeRate}
-                hiddenAll={hiddenAll}
-              />
-            </React.Suspense>
-          ))}
+          {shippings
+            .sort((a, b) => {
+              return a.data.shippedDate < b.data.shippedDate
+                ? 1
+                : a.data.shippedDate > b.data.shippedDate
+                ? -1
+                : 0;
+            })
+            .map((shipping, i) => (
+              <React.Suspense key={i} fallback={<div>Loading...</div>}>
+                <ShippingListsRow
+                  shipping={shipping}
+                  users={users}
+                  // exchangeRate={exchangeRate}
+                  hiddenAll={hiddenAll}
+                />
+              </React.Suspense>
+            ))}
         </div>
       </div>
     </div>

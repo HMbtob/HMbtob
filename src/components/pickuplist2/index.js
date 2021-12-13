@@ -3,21 +3,10 @@ import { useHistory } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 
 export function PickUpList2({ location }) {
-  const { state, orders } = location;
-  const [pickUpLists] = useState(
-    [].concat.apply(
-      [],
-      orders.map(order =>
-        order.data.list.filter(
-          list =>
-            state.includes(list.childOrderNumber) &&
-            list.canceled === false &&
-            list.moved === false &&
-            list.shipped === false
-        )
-      )
-    )
-  );
+  console.log(location);
+  const { checkedItems, ids } = location.state;
+  // const { state, orders } = location;
+  const [pickUpLists] = useState(checkedItems);
   const history = useHistory();
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
@@ -40,10 +29,10 @@ export function PickUpList2({ location }) {
                bg-gray-700 text-white"
             >
               <div className="col-span-1">no.</div>
-              <div className="col-span-3">Order Num</div>
               <div className="col-span-3">bar</div>
+              <div className="col-span-3">sku</div>
               <div className="col-span-8">title</div>
-              <div className="col-span-4">ver</div>
+              <div className="col-span-4">memo</div>
               <div className="col-span-1">qty</div>
             </div>
 
@@ -60,12 +49,18 @@ export function PickUpList2({ location }) {
                   >
                     <div className="col-span-1 text-center">{i + 1}</div>
                     <div className="col-span-3 text-center">
-                      {list.orderNumber}
+                      {list.data.barcode}
                     </div>
-                    <div className="col-span-3 text-center">{list.sku}</div>
-                    <div className="col-span-8 text-left">{list.title}</div>
-                    <div className="col-span-4"></div>
-                    <div className="col-span-1 text-center">{list.quan}</div>
+                    <div className="col-span-3 text-center">
+                      {list.data.sku}
+                    </div>
+                    <div className="col-span-8 text-left">
+                      {list.data.title}
+                    </div>
+                    <div className="col-span-4">{list?.data?.memo}</div>
+                    <div className="col-span-1 text-center">
+                      {list.data.quan}
+                    </div>
                   </div>
                 ))}
           </div>

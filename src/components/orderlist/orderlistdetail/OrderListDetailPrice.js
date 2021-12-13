@@ -28,6 +28,7 @@ export function OrderListDetailPrice({
 
   // for 총 갯수
   const [totalSorts, setTotalSorts] = useState(0);
+  const [totalEa, setTotalEa] = useState(0);
 
   // 무게/배송지에 따른 배송비 계산하기. 배송지, 배송요율 설정해야함
   const onCal = async () => {
@@ -44,19 +45,25 @@ export function OrderListDetailPrice({
         }, [])
         .includes(order.id)
     );
+    console.log(checkedItems);
     if (checkedItems.length < 1) {
       return alert("계산할 상품을 선택해 주세요.");
     }
     setTotalSorts(checkedItems.length);
+    setTotalEa(
+      checkedItems.reduce((a, c) => {
+        return a + Number(c.data.quan);
+      }, 0)
+    );
     // 체크된 아이템 총가격
     const totalPrice = checkedItems.reduce((a, c) => {
-      return a + c.data.totalPrice;
+      return a + Number(c.data.totalPrice);
     }, 0);
 
     // 체크된 아이템 총무게
     const totalWeight =
       checkedItems.reduce((a, c) => {
-        return a + c.data.totalWeight;
+        return a + Number(c.data.totalWeight);
       }, 0) / 1000;
 
     // 몇번째 구간에 걸리는지
@@ -171,7 +178,7 @@ export function OrderListDetailPrice({
             )
           }
         >
-          총 {totalSorts}종 발송처리
+          총 {totalSorts} 종,{totalEa} EA 발송처리
         </button>
       </div>
     </div>

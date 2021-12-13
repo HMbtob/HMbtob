@@ -24,7 +24,6 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 
 import { InitDataContext, InitDispatchContext } from "../../../App";
 
-
 const ListProductRow = ({
   id,
   sku,
@@ -46,10 +45,9 @@ const ListProductRow = ({
   weight,
   hiddenAll,
 }) => {
-
   const state = useContext(InitDataContext);
-  const {products} = state
-  const product = products.find(product => product.id === id)
+  const { products } = state;
+  const product = products.find(product => product.id === id);
   const history = useHistory();
   const today = new Date();
 
