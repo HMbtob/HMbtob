@@ -35,7 +35,7 @@ const Sidebar = () => {
   const underMenu = [
     { 상품추가: "/addproduct" },
     { 상품목록: "/listproduct" },
-    { 주문하기: "/b2bshop" },
+    // { 주문하기: "/b2bshop" },
     { 주문확인: "/orderlist" },
     { 배송관리: "/shippinglist" },
     { 미발송건: "/unshipped" },
@@ -64,7 +64,13 @@ const Sidebar = () => {
           <div
             key={index}
             onClick={() => history.push(`${Object.values(menu)}`)}
-            className="cursor-pointer hover:text-gray-50"
+            className={`${
+              Object.keys(menu)[0] === "주문확인" ||
+              Object.keys(menu)[0] === "배송관리" ||
+              Object.keys(menu)[0] === "미발송건"
+                ? "line-through"
+                : ""
+            } cursor-pointer hover:text-gray-50`}
           >
             {Object.keys(menu)}
           </div>
@@ -96,7 +102,7 @@ const Sidebar = () => {
           NEW 배송
         </div>
         <div
-          onClick={() => history.push(`/`)}
+          onClick={() => window.open("https://interasia.biz", "blank")}
           className="cursor-pointer hover:text-gray-50 
           flex flex-row justify-center items-center"
         >

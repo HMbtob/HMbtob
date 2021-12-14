@@ -45,7 +45,6 @@ export function OrderListDetailPrice({
         }, [])
         .includes(order.id)
     );
-    console.log(checkedItems);
     if (checkedItems.length < 1) {
       return alert("계산할 상품을 선택해 주세요.");
     }

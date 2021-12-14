@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../../firebase";
 import { krwComma } from "../../../utils/shippingUtils";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export function OrderListDetailRow({ order, register, checkAll, setValue }) {
   const today = new Date();
@@ -10,9 +12,6 @@ export function OrderListDetailRow({ order, register, checkAll, setValue }) {
   const [qty, setQty] = useState(order.data.quan);
 
   const saveDetail = () => {
-    console.log("order", order);
-    console.log("price", price);
-    console.log("qty", qty);
     try {
       db.collection("accounts")
         .doc(order.data.customer || order.data.userId)
@@ -29,6 +28,22 @@ export function OrderListDetailRow({ order, register, checkAll, setValue }) {
     }
   };
 
+  const deleteOrder = async () => {
+    if (window.confirm("삭제하시겠습니까?")) {
+      try {
+        await db
+          .collection("accounts")
+          .doc(order.data.customer || order.data.userId)
+          .collection("order")
+          .doc(order.id)
+          .update({ canceled: true });
+        alert("삭제되었습니다.");
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
+
   useEffect(() => {
     setValue(order.id, checkAll);
   }, [setValue, order.id, checkAll]);
@@ -37,10 +52,16 @@ export function OrderListDetailRow({ order, register, checkAll, setValue }) {
     <div
       className={`${
         !preOrder ? "bg-red-100" : ""
-      } grid grid-cols-36 text-center border-r border-b border-l py-1 text-sm`}
+      } grid grid-cols-36 text-center border-r border-b border-l py-1 text-sm ${
+        order.data.canceled && "line-through"
+      }`}
     >
       <div>
-        <input {...register(`${order.id}`)} type="checkbox" />
+        <input
+          {...register(`${order.id}`)}
+          type="checkbox"
+          disabled={order.data.canceled}
+        />
       </div>
       <div className="col-span-3">{order.data.country}</div>
       <div className="col-span-2">
@@ -56,8 +77,22 @@ export function OrderListDetailRow({ order, register, checkAll, setValue }) {
       <div className="col-span-3">{order.data.sku}</div>
       <div className="col-span-3">{order.data.barcode}</div>
       <div className="col-span-10 flex flex-row items-center justify-between">
-        <div className="text-left">{order.data.title}</div>
-        <button type="button" onClick={() => saveDetail()}>
+        <div className="text-left">
+          <CheckCircleOutlineIcon
+            style={{ color: `${order.data.confirmed ? "green" : "red"}` }}
+          />
+          {order.data.title}
+          <DeleteIcon
+            style={{ color: "gray" }}
+            onClick={() => deleteOrder()}
+            className="cursor-pointer"
+          />
+        </div>
+        <button
+          type="button"
+          onClick={() => saveDetail()}
+          className=" rounded-md bg-blue-900 py-1 px-2 text-white"
+        >
           수정
         </button>{" "}
       </div>

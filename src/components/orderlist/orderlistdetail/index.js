@@ -5,7 +5,6 @@ import { OrderListDetailHeader } from "./OrderListDetailHeader";
 import { OrderListDetailPrice } from "./OrderListDetailPrice";
 import { AddOrder } from "./AddOrder";
 import { ToTals } from "./ToTals";
-// import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 
 export function OrderListDetail({ match, location }) {
@@ -24,7 +23,31 @@ export function OrderListDetail({ match, location }) {
   // for 전체선택
   const [checkAll, setCheckAll] = useState(false);
 
-  // checked item
+  // checked item -> confirmed
+  const confirmOrder = () => {
+    const getOrders = getValues();
+    const checkedItems = orders.filter(order =>
+      Object.keys(getOrders)
+        .reduce((a, c) => {
+          if (getOrders[c] === true) {
+            a.push(c);
+          }
+          return a;
+        }, [])
+        .includes(order.id)
+    );
+    checkedItems.map(
+      async item =>
+        await db
+          .collection("accounts")
+          .doc(id)
+          .collection("order")
+          .doc(item.id)
+          .update({ confirmed: true })
+    );
+  };
+
+  // checked item -> pick up list
   const asdasd = async () => {
     const asdad = getValues();
     const checkedItems = orders.filter(order =>
@@ -109,22 +132,20 @@ export function OrderListDetail({ match, location }) {
           >
             전체선택
           </button>
-
-          {/* <Link
-            to={{
-              pathname: "/pickuplist2",
-              state: checkedItems?.map(doc => doc.id),
-              checkedItems,
-            }}
-          > */}
           <button
             type="button"
             onClick={() => asdasd()}
-            className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3"
+            className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3 ml-5"
           >
             PickUp List
           </button>
-          {/* </Link> */}
+          <button
+            type="button"
+            onClick={() => confirmOrder()}
+            className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3 ml-5"
+          >
+            주문확인
+          </button>
           <ToTals orders={orders} />
         </div>
         <OrderListDetailPrice
