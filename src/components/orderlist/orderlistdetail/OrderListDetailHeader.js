@@ -28,13 +28,13 @@ export function OrderListDetailHeader({ handleSort }) {
       <div
         id="title"
         onClick={e => handleSort(e)}
-        className="col-span-11 flex items-center justify-center cursor-pointer"
+        className="col-span-10 flex items-center justify-center cursor-pointer"
       >
         title
         <ImportExportIcon style={{ height: "20" }} />
       </div>
       <div className="col-span-3">price</div>
-      <div>qty</div>
+      <div className="col-span-2">qty</div>
       <div className="col-span-3">totalPrice</div>
       <div className="col-span-4">memo</div>
     </div>

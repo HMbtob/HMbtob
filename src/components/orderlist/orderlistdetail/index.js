@@ -13,7 +13,13 @@ export function OrderListDetail({ match, location }) {
   const { id } = match.params;
   const { state } = location;
   const [orders, setOrders] = useState([]);
-  const { register, handleSubmit, setValue, getValues } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = useForm();
 
   // for 전체선택
   const [checkAll, setCheckAll] = useState(false);
@@ -89,6 +95,8 @@ export function OrderListDetail({ match, location }) {
               register={register}
               checkAll={checkAll}
               setValue={setValue}
+              handleSubmit={handleSubmit}
+              errors={errors}
             />
           </React.Suspense>
         ))}
