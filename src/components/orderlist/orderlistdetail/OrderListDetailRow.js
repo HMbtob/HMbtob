@@ -92,8 +92,11 @@ export function OrderListDetailRow({ order, register, checkAll, setValue }) {
         </div>
         <button
           type="button"
+          disabled={order.data.canceled}
           onClick={() => saveDetail()}
-          className=" rounded-md bg-blue-900 py-1 px-2 text-white"
+          className={`${
+            order.data.canceled ? "bg-gray-400" : "bg-blue-900"
+          } rounded-md  py-1 px-2 text-white`}
         >
           수정
         </button>{" "}
