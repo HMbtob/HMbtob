@@ -45,14 +45,16 @@ export function OrderListDetailRow({ order, register, checkAll, setValue }) {
   };
 
   useEffect(() => {
-    setValue(order.id, checkAll);
-  }, [setValue, order.id, checkAll]);
+    if (!order.data.canceled) {
+      setValue(order.id, checkAll);
+    }
+  }, [setValue, order.id, checkAll, order.data.canceled]);
 
   return (
     <div
       className={`${
         !preOrder ? "bg-red-100" : ""
-      } grid grid-cols-36 text-center border-r border-b border-l py-1 text-sm ${
+      } grid grid-cols-36 text-center border-r border-b border-l py-1 text-sm items-center ${
         order.data.canceled && "line-through"
       }`}
     >
@@ -96,7 +98,7 @@ export function OrderListDetailRow({ order, register, checkAll, setValue }) {
           수정
         </button>{" "}
       </div>
-      <div className="col-span-3 flex flex-row justify-center">
+      <div className="col-span-3 flex flex-row justify-center items-center">
         {/* {Number(order.data.price).toLocaleString()} {} */}
         <input
           type="text"
@@ -110,7 +112,7 @@ export function OrderListDetailRow({ order, register, checkAll, setValue }) {
         />
         {order.data.currency}
       </div>
-      <div className="flex flex-row justify-center col-span-2">
+      <div className="flex flex-row justify-center col-span-2 items-center">
         <input
           type="number"
           value={qty}

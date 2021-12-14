@@ -18,8 +18,8 @@ export function OrderListDetailPrice({
   // tracking number
   const [trackingNumber, setTrackingNum] = useState("");
 
-  // for 가격 입력
-  const [inputedPrice, setInputedPrice] = useState(0);
+  // for 배송비 입력
+
   const [inputedShippingFee, setInputedShippingFee] = useState(0);
 
   // for 가격 계산
@@ -108,11 +108,10 @@ export function OrderListDetailPrice({
   // button disabled
   const [disButton, setDisButton] = useState(true);
   useEffect(() => {
-    (inputedPrice > 0 || trackingNumber.length > 0) &&
-    (caledPrice > 0 || trackingNumber.length > 0)
+    caledPrice > 0 || trackingNumber.length > 0
       ? setDisButton(false)
       : setDisButton(true);
-  }, [inputedPrice, caledPrice, trackingNumber]);
+  }, [caledPrice, trackingNumber]);
 
   return (
     <div>
@@ -140,10 +139,11 @@ export function OrderListDetailPrice({
         <Inputed
           checkedRadio={checkedRadio}
           setCheckedRadio={setCheckedRadio}
-          setInputedPrice={setInputedPrice}
           setInputedShippingFee={setInputedShippingFee}
-          inputedPrice={inputedPrice}
           inputedShippingFee={inputedShippingFee}
+          //
+          onCal={onCal}
+          caledPrice={caledPrice}
         />
       </div>
       <div className="flex flex-row w-full justify-center mt-12">
@@ -168,7 +168,6 @@ export function OrderListDetailPrice({
                 orders,
                 getValues,
                 checkedRadio,
-                inputedPrice,
                 inputedShippingFee,
                 caledPrice,
                 caledshippingFee,

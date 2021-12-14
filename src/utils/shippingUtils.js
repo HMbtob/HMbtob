@@ -22,7 +22,6 @@ export const onSubmitToShip = async (
   orders,
   getValues,
   checkedRadio,
-  inputedPrice,
   inputedShippingFee,
   caledPrice,
   caledshippingFee,
@@ -70,12 +69,7 @@ export const onSubmitToShip = async (
         .substring(0, 10)}-${orders[0]?.data.userUid.substring(0, 4)}`,
       shippedDate: today,
       ...addressInfo.docs.map(doc => doc.data())[0],
-      itemsPrice:
-        checkedRadio === "caled"
-          ? caledPrice
-          : checkedRadio === "inputed"
-          ? inputedPrice
-          : caledPrice,
+      itemsPrice: caledPrice,
       shippingFee:
         checkedRadio === "caled"
           ? caledshippingFee
@@ -86,7 +80,7 @@ export const onSubmitToShip = async (
         checkedRadio === "caled"
           ? caledPrice + caledshippingFee
           : checkedRadio === "inputed"
-          ? inputedPrice + inputedShippingFee
+          ? caledPrice + inputedShippingFee
           : caledPrice + caledshippingFee,
 
       currency: orders[0]?.data.currency,

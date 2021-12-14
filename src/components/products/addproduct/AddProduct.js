@@ -195,9 +195,9 @@ const AddProduct = ({ location }) => {
   };
   // 섬넬
   const getImages = async () => {
-    if(title.length < 1){
-      alert("TITLE 을 입력해주세요.")
-      return
+    if (title.length < 1) {
+      alert("TITLE 을 입력해주세요.");
+      return;
     }
     await axios
       .get(
@@ -214,9 +214,9 @@ const AddProduct = ({ location }) => {
   };
   // 디스크립션
   const getDisc = async () => {
-    if(title.length < 1){
-      alert("TITLE 을 입력해주세요.")
-      return
+    if (title.length < 1) {
+      alert("TITLE 을 입력해주세요.");
+      return;
     }
     await axios
       .get(
@@ -242,8 +242,8 @@ const AddProduct = ({ location }) => {
             category === "cd"
               ? (price / 1100).toFixed(2)
               : category === "officialStore"
-              ? ((price / 0.8) / 1100).toFixed(2)
-              : ((price / 0.9) / 1100).toFixed(2)
+              ? (price / 0.8 / 1100).toFixed(2)
+              : (price / 0.9 / 1100).toFixed(2)
           ),
           weight: Number(weight / 1000),
           type: "physical",
@@ -295,7 +295,7 @@ const AddProduct = ({ location }) => {
             stock: stock,
             y: Number(y),
             z: Number(z),
-            title,
+            title: title.trim(),
             thumbNail: thumbnailUrl,
             weight: Number(weight),
             category,
