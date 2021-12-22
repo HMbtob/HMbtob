@@ -10,6 +10,7 @@ import { CSVLink } from "react-csv";
 import { OrderListPie } from "../OrderListPie";
 import { ContentsToPrint } from "./ContentsToPrint";
 import { toDate } from "../../../utils/shippingUtils";
+import { Credit } from "./credit";
 
 export function OrderListDetail({ match, location }) {
   const { id } = match.params;
@@ -178,11 +179,21 @@ export function OrderListDetail({ match, location }) {
   return (
     <form className="w-full h-full flex flex-col justify-center items-center">
       <div className="w-11/12 flex-col mt-20">
+        {/* 크레딧 */}
         <div
           className="text-center text-xl bg-gray-800 py-1 
           rounded-sm font-bold text-gray-100 mb-5 w-full"
         >
-          유저별 주문 확인({orders[0]?.data?.nickName})
+          Credit ({orders[0]?.data?.nickName})
+        </div>
+        <Credit id={id} />
+
+        {/* 주문 */}
+        <div
+          className="text-center text-xl bg-gray-800 py-1 
+          rounded-sm font-bold text-gray-100 mb-5 w-full"
+        >
+          주문 확인 ({orders[0]?.data?.nickName})
         </div>
 
         <OrderListDetailHeader handleSort={handleSort} />
@@ -207,7 +218,7 @@ export function OrderListDetail({ match, location }) {
           className="text-center text-lg bg-gray-800 py-1 
           rounded-sm font-bold text-gray-100 mb-5 w-full mt-10"
         >
-          Picking Up List
+          Picking Up List ({orders[0]?.data?.nickName})
         </div>
         <OrderListDetailHeader handleSort={handleSort} />
         {orders

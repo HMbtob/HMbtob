@@ -3,7 +3,8 @@ import { db } from "../../../firebase";
 import { krwComma } from "../../../utils/shippingUtils";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
-
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
 export function OrderListDetailRow({
   order,
   register,
@@ -48,6 +49,19 @@ export function OrderListDetailRow({
       } catch (e) {
         console.log(e);
       }
+    }
+  };
+
+  const pickingUpOrder = async () => {
+    try {
+      await db
+        .collection("accounts")
+        .doc(order.data.customer || order.data.userId)
+        .collection("order")
+        .doc(order.id)
+        .update({ pickingUp: !order.data.pickingUp });
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -102,6 +116,19 @@ export function OrderListDetailRow({
       <div className="col-span-3">{order.data.barcode}</div>
       <div className="col-span-10 flex flex-row items-center justify-between">
         <div className="text-left">
+          {!order.data.pickingUp ? (
+            <FileDownloadIcon
+              onClick={() => pickingUpOrder()}
+              style={{ color: "gray" }}
+              className="cursor-pointer ml-2"
+            />
+          ) : (
+            <FileUploadIcon
+              onClick={() => pickingUpOrder()}
+              style={{ color: "gray" }}
+              className="cursor-pointer ml-2"
+            />
+          )}
           <CheckCircleOutlineIcon
             style={{ color: `${order.data.confirmed ? "green" : "red"}` }}
           />

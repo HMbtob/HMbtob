@@ -78,7 +78,7 @@ const HiddenB2b = ({
     await db
       .collection("products")
       .doc(id)
-      .update({ price: handlePrice, stock: handleStock });
+      .update({ price: Number(handlePrice), stock: Number(handleStock) });
     await alert("수정됨");
   };
   return (

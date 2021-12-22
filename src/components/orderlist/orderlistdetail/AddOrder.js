@@ -62,7 +62,7 @@ export function AddOrder({ id, from }) {
       .onSnapshot(snapshot => setExchangeRate(snapshot.data()));
   }, [id]);
   return (
-    <div className="grid grid-cols-36 text-center border-r border-b border-l py-1">
+    <div className="grid grid-cols-36 text-center border-r border-b border-l py-1 mb-20">
       <div>
         <button type="button" onClick={handleSubmit(onSubmit)}>
           <AddCircleOutlineIcon />{" "}
