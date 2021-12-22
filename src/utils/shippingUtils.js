@@ -116,5 +116,7 @@ export const onSubmitToShip = async (
 
 // ToLocalString date
 export function toDate(timeSec) {
-  return new Date(timeSec * 1000).toISOString().substring(0, 10);
+  if (timeSec) {
+    return new Date(timeSec * 1000).toISOString().substring(0, 10);
+  }
 }

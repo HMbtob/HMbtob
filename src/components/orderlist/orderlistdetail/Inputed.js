@@ -17,7 +17,7 @@ export function Inputed({
           value="inputed"
           onChange={e => setCheckedRadio(e.target.value)}
         />
-        <div>입력한 가격으로 발송처리</div>
+        <div>입력한 배송비로 발송처리</div>
       </div>
       {checkedRadio === "inputed" && (
         <>

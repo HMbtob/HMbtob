@@ -13,16 +13,6 @@ export function CSVLinkComponent({ shipping }) {
     .replaceAll(".", "-")
     .replaceAll(" ", "")}han.csv`;
 
-  //   const csvData = assfsdfd?.data?.list.map(li => [
-  //     li.sku,
-  //     li.sku,
-  //     li.title,
-  //     li.barcode,
-  //     "interasia01",
-  //     li.quan,
-  //     li.price,
-  //   ]);
-
   useEffect(() => {
     db.collection("accounts")
       .doc(shipping.data.customer || shipping.data.userId)

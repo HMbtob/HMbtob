@@ -8,6 +8,7 @@ import RestoreIcon from "@material-ui/icons/Restore";
 import TopStoreProduct from "./TopStoreProduct";
 import { SearchProduct } from "../../../utils/SearchUtils";
 import AddCircleOutlinedIcon from "@material-ui/icons/AddCircleOutlined";
+import { db } from "../../../firebase";
 
 const ListProduct = ({ history }) => {
   const state = useContext(InitDataContext);
@@ -28,7 +29,6 @@ const ListProduct = ({ history }) => {
     const { value } = e.target;
     setItemsPerPage(Number(value));
   };
-  console.log(products?.length);
   // 헤더 항목
   const headers = [
     "BTN",
@@ -93,6 +93,17 @@ const ListProduct = ({ history }) => {
   const handelHiddenAll = () => {
     setHiddenAll(!hiddenAll);
   };
+
+  // orderListInShippings
+
+  const [orderListInShippings, setOrderListInShippings] = useState([]);
+  useEffect(() => {
+    db.collectionGroup("orderListInShippings").onSnapshot(snapshot =>
+      setOrderListInShippings(
+        snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+      )
+    );
+  }, []);
 
   useEffect(() => {
     if (history.action === "POP") {
@@ -212,6 +223,7 @@ const ListProduct = ({ history }) => {
                   exchangeRate={exchangeRate}
                   products={products}
                   hiddenAll={hiddenAll}
+                  orderListInShippings={orderListInShippings}
                 />
               ))}
           </div>

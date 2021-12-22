@@ -5,7 +5,7 @@ import { ErrorMessage } from "@hookform/error-message";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
-export function AddOrder({ id }) {
+export function AddOrder({ id, from }) {
   const [user, setUser] = useState("");
   const [exchangeRate, setExchangeRate] = useState({});
   const {
@@ -32,6 +32,7 @@ export function AddOrder({ id }) {
         dcRate: 0,
         exchangeRate,
         moved: false,
+        memo: data.memo || "",
         nickName: user?.nickName || "customer",
         preOrderDeadline: new Date(),
         price: data.price,
@@ -47,6 +48,7 @@ export function AddOrder({ id }) {
         userId: id,
         userUid: user?.uid || id,
         weight: 1,
+        pickingUp: from === "picking" ? true : false,
       });
     reset();
   };

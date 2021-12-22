@@ -7,6 +7,10 @@ export function OrderLists() {
   const state = useContext(InitDataContext);
   const { accounts, user } = state;
   const [chargeAcc, setChargeAcc] = useState([]);
+  const handleChargeAcc = e => {
+    setChargeAcc(accounts.filter(acc => acc.data.inCharge === e.target.value));
+  };
+  const [admins, setAdmins] = useState([]);
 
   const OrderListRow = React.lazy(() =>
     import("./OrderListRow").then(module => ({
@@ -16,14 +20,15 @@ export function OrderLists() {
 
   useEffect(() => {
     setChargeAcc(accounts.filter(acc => acc.data.inCharge === user?.email));
+    setAdmins(accounts.filter(acc => acc.data.type === "admin"));
   }, [accounts, user]);
   return (
     <div className="w-full h-full flex justify-center">
       <div className=" w-11/12 flex-col mt-20">
-        <OrderListHeader />
-        {accounts.map((acc, i) => (
+        <OrderListHeader admins={admins} handleChargeAcc={handleChargeAcc} />
+        {chargeAcc.map((acc, i) => (
           <React.Suspense key={i} fallback={<div>Loading...</div>}>
-            <OrderListRow acc={acc} />
+            <OrderListRow acc={acc} accounts={accounts} />
           </React.Suspense>
         ))}
       </div>

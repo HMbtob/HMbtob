@@ -217,6 +217,7 @@ function App() {
   if (user && userType === "none") {
     return (
       <div className="grid place-items-center h-screen w-full">
+        {console.log("none")}
         <div className="flex h-auto text-lg">
           We are checking the contents of the survey.
         </div>
@@ -233,55 +234,55 @@ function App() {
       </div>
     );
   }
-  // if (user && userType === "customer") {
-  //   return (
-  //     <Router>
-  //       <div className="flex flex-col bg-gray-50 h-auto min-h-screen w-screen">
-  //         {" "}
-  //         <InitDispatchContext.Provider value={dispatch}>
-  //           <InitDataContext.Provider value={state}>
-  //             {" "}
-  //             {/* <div className="flex flex-col"> */}
-  //             {isPc && (
-  //               <>
-  //                 <Header />
-  //                 <Switch>
-  //                   <Route path="/myshipping" component={MyShipping} />
-  //                   <Route path="/myorderlist/:id" component={MyOrderDetail} />
-  //                   <Route path="/myorderlist" component={MyOrderList} />
-  //                   <Route path="/myinfo/:uid" component={MyInfo} />
-  //                   <Route
-  //                     path="/b2bspecialorder"
-  //                     component={B2bSpecialOrder}
-  //                   />
-  //                   <Route path="/b2border" component={B2bOrder} />
-  //                   <Route path="/" component={B2bShop} />
-  //                 </Switch>{" "}
-  //               </>
-  //             )}
-  //             {isMobile && (
-  //               <>
-  //                 <MobileHeader />
-  //                 <Switch>
-  //                   <Route path="/myorderlist/:id" component={MyOrderDetail} />
-  //                   <Route path="/myorderlist" component={MyOrderList} />
-  //                   <Route path="/myinfo/:uid" component={MyInfo} />
-  //                   <Route
-  //                     path="/b2bspecialorder"
-  //                     component={B2bSpecialOrder}
-  //                   />
-  //                   <Route path="/b2border" component={B2bOrder} />
-  //                   <Route path="/" component={B2bShopMobile} />
-  //                 </Switch>
-  //               </>
-  //             )}
-  //             {/* </div> */}
-  //           </InitDataContext.Provider>{" "}
-  //         </InitDispatchContext.Provider>
-  //       </div>
-  //     </Router>
-  //   );
-  // }
+  if (user && userType === "customer") {
+    return (
+      <Router>
+        <div className="flex flex-col bg-gray-50 h-auto min-h-screen w-screen">
+          {" "}
+          <InitDispatchContext.Provider value={dispatch}>
+            <InitDataContext.Provider value={state}>
+              {" "}
+              {/* <div className="flex flex-col"> */}
+              {isPc && (
+                <>
+                  <Header />
+                  <Switch>
+                    <Route path="/myshipping" component={MyShipping} />
+                    <Route path="/myorderlist/:id" component={MyOrderDetail} />
+                    <Route path="/myorderlist" component={MyOrderList} />
+                    <Route path="/myinfo/:uid" component={MyInfo} />
+                    <Route
+                      path="/b2bspecialorder"
+                      component={B2bSpecialOrder}
+                    />
+                    <Route path="/b2border" component={B2bOrder} />
+                    <Route path="/" component={B2bShop} />
+                  </Switch>{" "}
+                </>
+              )}
+              {isMobile && (
+                <>
+                  <MobileHeader />
+                  <Switch>
+                    <Route path="/myorderlist/:id" component={MyOrderDetail} />
+                    <Route path="/myorderlist" component={MyOrderList} />
+                    <Route path="/myinfo/:uid" component={MyInfo} />
+                    <Route
+                      path="/b2bspecialorder"
+                      component={B2bSpecialOrder}
+                    />
+                    <Route path="/b2border" component={B2bOrder} />
+                    <Route path="/" component={B2bShopMobile} />
+                  </Switch>
+                </>
+              )}
+              {/* </div> */}
+            </InitDataContext.Provider>{" "}
+          </InitDispatchContext.Provider>
+        </div>
+      </Router>
+    );
+  }
 
   if (user && userType === "admin") {
     return (
@@ -299,7 +300,6 @@ function App() {
                   ) : (
                     ""
                   )}
-
                   {/* New */}
                   <Route
                     path="/orderlistdetail/:id"

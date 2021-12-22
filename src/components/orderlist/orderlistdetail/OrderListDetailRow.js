@@ -4,7 +4,14 @@ import { krwComma } from "../../../utils/shippingUtils";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export function OrderListDetailRow({ order, register, checkAll, setValue }) {
+export function OrderListDetailRow({
+  order,
+  register,
+  checkAll,
+  setValue,
+  checkAllReled,
+  checkPickingUp,
+}) {
   const today = new Date();
   const preOrder = order.data.relDate.toDate() < today;
 
@@ -46,9 +53,24 @@ export function OrderListDetailRow({ order, register, checkAll, setValue }) {
 
   useEffect(() => {
     if (!order.data.canceled) {
-      setValue(order.id, checkAll);
+      if (checkAllReled && preOrder) {
+        setValue(order.id, checkAllReled);
+      } else if (checkPickingUp && order.data.pickingUp === true) {
+        setValue(order.id, checkPickingUp);
+      } else {
+        setValue(order.id, checkAll);
+      }
     }
-  }, [setValue, order.id, checkAll, order.data.canceled]);
+  }, [
+    setValue,
+    order.id,
+    checkAll,
+    order.data.canceled,
+    checkAllReled,
+    preOrder,
+    checkPickingUp,
+    order.data.pickingUp,
+  ]);
 
   return (
     <div

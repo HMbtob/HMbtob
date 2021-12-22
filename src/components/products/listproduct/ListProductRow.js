@@ -44,6 +44,7 @@ const ListProductRow = ({
   exchangeRate,
   weight,
   hiddenAll,
+  orderListInShippings,
 }) => {
   const state = useContext(InitDataContext);
   const { products } = state;
@@ -493,6 +494,7 @@ const ListProductRow = ({
             shippings={shippings}
             product={product}
             currency={user.currency}
+            orderListInShippings={orderListInShippings}
           />
           <HiddenBigc
             id={id}

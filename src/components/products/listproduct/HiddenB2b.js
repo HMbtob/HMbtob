@@ -12,6 +12,7 @@ const HiddenB2b = ({
   currency,
   sku,
   product,
+  orderListInShippings,
 }) => {
   const [ordered, setOrdered] = useState([]);
   // const [shipped, setShipped] = useState([]);
@@ -114,6 +115,20 @@ place-items-center text-xs bg-transparent"
       />
       <div className="col-span-1">
         {totalUnshipped}(
+        {orderListInShippings
+          .filter(doc => doc.data.productId === product.id)
+          .reduce((a, c) => {
+            return a + c.data.quan;
+          }, 0) +
+          ordered
+            .filter(doc => doc.data.productId === product.id)
+            .reduce((a, c) => {
+              return a + c.data.quan;
+            }, 0)}{" "}
+        )
+      </div>
+      <div className="col-span-1">
+        {totalUnshipped - totalshipped}(
         {ordered
           .filter(doc => doc.data.productId === product.id)
           .reduce((a, c) => {
@@ -121,7 +136,6 @@ place-items-center text-xs bg-transparent"
           }, 0)}
         )
       </div>
-      <div className="col-span-1">{totalUnshipped - totalshipped}</div>
       <div className="col-span-2"></div>
       <div className="col-span-4 text-xs">
         {relDate &&
