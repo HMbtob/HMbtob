@@ -66,7 +66,10 @@ export const onSubmitToShip = async (
     .set({
       shippingNumber: `${today
         .toISOString()
-        .substring(0, 10)}-${orders[0]?.data.userUid.substring(0, 4)}`,
+        .substring(2, 10)}-${orders[0]?.data.userUid.substring(
+        0,
+        3
+      )}${saveId.substring(0, 3)}`,
       shippedDate: today,
       ...addressInfo.docs.map(doc => doc.data())[0],
       itemsPrice: caledPrice,
@@ -111,6 +114,50 @@ export const onSubmitToShip = async (
         .doc(order.id)
         .delete()
   );
+  // 크레딧 마지막 밸런스 가져오기
+  const lastBalance = await db
+    .collection("accounts")
+    .doc(orders[0]?.data.userId)
+    .collection("credit")
+    .orderBy("createdAt", "desc")
+    .limit(1)
+    .get()
+    .then(doc => doc.docs.map(doc => ({ id: doc.id, data: doc.data() })));
+
+  const balance = lastBalance[0]?.data?.balance || 0;
+  const total =
+    balance -
+    (checkedRadio === "caled"
+      ? caledPrice + caledshippingFee
+      : checkedRadio === "inputed"
+      ? caledPrice + inputedShippingFee
+      : caledPrice + caledshippingFee);
+  console.log("checkedRadio", checkedRadio);
+  // 크레딧 차감
+  await db
+    .collection("accounts")
+    .doc(orders[0]?.data.userId)
+    .collection("credit")
+    .doc()
+    .set({
+      createdAt: today,
+      content: "Shipped Order",
+      currency: orders[0]?.data.currency,
+      memo: `${today
+        .toISOString()
+        .substring(2, 10)}-${orders[0]?.data.userUid.substring(
+        0,
+        3
+      )}${saveId.substring(0, 3)}`,
+      plus: 0,
+      minus:
+        checkedRadio === "caled"
+          ? caledPrice + caledshippingFee
+          : checkedRadio === "inputed"
+          ? caledPrice + inputedShippingFee
+          : caledPrice + caledshippingFee,
+      balance: total,
+    });
   alert("상품발송이 완료 되었습니다.");
 };
 

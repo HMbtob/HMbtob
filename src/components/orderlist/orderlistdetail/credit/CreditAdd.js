@@ -5,7 +5,6 @@ import { ErrorMessage } from "@hookform/error-message";
 import { db } from "../../../../firebase";
 
 export function CreditAdd({ id, lastBalance, user }) {
-  const today = new Date();
   const {
     register,
     handleSubmit,
@@ -15,7 +14,6 @@ export function CreditAdd({ id, lastBalance, user }) {
     defaultValues: {
       plus: 0,
       minus: 0,
-      createdAt: today.toISOString().substring(0, 10),
     },
   });
   const onSubmit = async data => {
@@ -54,7 +52,7 @@ export function CreditAdd({ id, lastBalance, user }) {
             required: { value: true, message: "필수 항목 입니다." },
             maxLength: { value: 500, message: "너무 길게 작성되었습니다." },
           })}
-          type="date"
+          type="datetime-local"
           className="text-left py-1 pl-2 text-gray-800 outline-none border bg-transparent w-full"
         />
         <ErrorMessage
