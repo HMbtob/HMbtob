@@ -1,7 +1,11 @@
 import React from "react";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
-export function ShippingListsHeader({ handelHiddenAll }) {
+export function ShippingListsHeader({
+  handelHiddenAll,
+  // handleSelectedUser,
+  // users,
+}) {
   return (
     <div
       className="grid grid-cols-12 grid-flow-col text-center 
@@ -17,7 +21,20 @@ export function ShippingListsHeader({ handelHiddenAll }) {
           onClick={() => handelHiddenAll()}
         />
       </div>
-      <div className="">Nick Name</div>
+      <div className="">
+        {/* <select
+          onChange={e => handleSelectedUser(e)}
+          className="bg-transparent items-center outline-none"
+        >
+          <option value="Nick Name">Nick Name</option>
+          {users.map((user, i) => (
+            <option key={i} value={user.data.nickName || user.id}>
+              {user.data.nickName || user.id}
+            </option>
+          ))}
+        </select> */}
+        Nick Name
+      </div>
       <div className="">Type</div>
 
       <div className="">Country</div>

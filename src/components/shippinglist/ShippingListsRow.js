@@ -8,7 +8,7 @@ import { CSVLinkComponent } from "./CSVLinkComponent";
 import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined";
 import { Link } from "react-router-dom";
 
-export function ShippingListsRow({ shipping, hiddenAll, users }) {
+export function ShippingListsRow({ shipping, hiddenAll }) {
   // const sort = orderListInShippings?.length;
   // const totalQty = orderListInShippings?.reduce((a, c) => {
   //   return a + c.data.quan;
@@ -26,26 +26,6 @@ export function ShippingListsRow({ shipping, hiddenAll, users }) {
     setForFix(!forFix);
   };
 
-  useEffect(() => {
-    // async function fetchList() {
-    //   setOrderListInShippings([]);
-    //   await users.map(async user =>
-    //     db
-    //       .collection("accounts")
-    //       .doc(user.id)
-    //       .collection("shippingsInAccount")
-    //       .doc(shipping.id)
-    //       .collection("orderListInShippings")
-    //       .onSnapshot(snapshot =>
-    //         setOrderListInShippings(ps => [
-    //           ...ps,
-    //           ...snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })),
-    //         ])
-    //       )
-    //   );
-    // }
-    // fetchList();
-  }, [shipping, users]);
   return (
     <div className="border-b border-r border-l w-full border-gray-500">
       <div

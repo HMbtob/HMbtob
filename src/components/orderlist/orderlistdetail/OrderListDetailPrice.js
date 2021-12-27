@@ -114,10 +114,10 @@ export function OrderListDetailPrice({
   }, [caledPrice, trackingNumber]);
 
   return (
-    <div>
+    <div className="mb-32">
       <div
         className="grid grid-flow-col text-center bg-gray-800 mt-12
-           text-gray-100 py-1 rounded-sm text-md items-center"
+           text-gray-100 py-1 rounded-sm text-md items-center "
       >
         발송처리
       </div>

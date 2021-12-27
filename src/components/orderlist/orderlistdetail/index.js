@@ -11,6 +11,7 @@ import { OrderListPie } from "../OrderListPie";
 import { ContentsToPrint } from "./ContentsToPrint";
 import { toDate } from "../../../utils/shippingUtils";
 import { Credit } from "./credit";
+import { ShippingListsHeader } from "../../shippinglist/ShippingListsHeader";
 
 export function OrderListDetail({ match, location }) {
   const { id } = match.params;
@@ -98,11 +99,25 @@ export function OrderListDetail({ match, location }) {
     }
   };
 
+  const ShippingListsRow = React.lazy(() =>
+    import("../../shippinglist/ShippingListsRow").then(module => ({
+      default: module.ShippingListsRow,
+    }))
+  );
+
+  ////////////////////////////////////////////////////////////////////
+  // For shippings
   const OrderListDetailRow = React.lazy(() =>
     import("./OrderListDetailRow").then(module => ({
       default: module.OrderListDetailRow,
     }))
   );
+  const [shippings, setShippings] = useState([]);
+  const [hiddenAll, setHiddenAll] = useState(true);
+  const handelHiddenAll = () => {
+    setHiddenAll(!hiddenAll);
+  };
+
   ////////////////////////////////////////////////////////////////////
   // 인쇄
   const componentRef = useRef();
@@ -174,10 +189,19 @@ export function OrderListDetail({ match, location }) {
       .onSnapshot(snapshot =>
         setOrders(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
       );
+
+    db.collection("accounts")
+      .doc(id)
+      .collection("shippingsInAccount")
+      .onSnapshot(snapshot =>
+        setShippings(
+          snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+        )
+      );
   }, [id, forSort]);
 
   return (
-    <form className="w-full h-full flex flex-col justify-center items-center">
+    <form className="w-full h-full flex flex-col justify-center items-center mb-20">
       <div className="w-11/12 flex-col mt-20">
         {/* 크레딧 */}
         <div
@@ -290,6 +314,33 @@ export function OrderListDetail({ match, location }) {
           orders={orders}
           account={state}
         />
+        <div
+          className="text-center text-lg bg-gray-800 py-1 
+          rounded-sm font-bold text-gray-100 mb-5 w-full mt-10"
+        >
+          Shipping List ({orders[0]?.data?.nickName})
+        </div>
+        <ShippingListsHeader handelHiddenAll={handelHiddenAll} />
+        <div>
+          {shippings
+            .sort((a, b) => {
+              return a.data.shippedDate < b.data.shippedDate
+                ? 1
+                : a.data.shippedDate > b.data.shippedDate
+                ? -1
+                : 0;
+            })
+            .map((shipping, i) => (
+              <React.Suspense key={i} fallback={<div>Loading...</div>}>
+                <ShippingListsRow
+                  shipping={shipping}
+                  // users={users}
+                  // exchangeRate={exchangeRate}
+                  hiddenAll={hiddenAll}
+                />
+              </React.Suspense>
+            ))}
+        </div>
       </div>
       <div hidden>
         <ContentsToPrint

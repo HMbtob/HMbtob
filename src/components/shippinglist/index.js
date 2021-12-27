@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../firebase";
 import { ShippingListsHeader } from "./ShippingListsHeader";
-import { ShippingListsRow } from "./ShippingListsRow";
+// import { ShippingListsRow } from "./ShippingListsRow";
 export function ShippingLists() {
+  const ShippingListsRow = React.lazy(() =>
+    import("./ShippingListsRow").then(module => ({
+      default: module.ShippingListsRow,
+    }))
+  );
   const [users, setUsers] = useState([]);
+  // const [selectedUser, setSelectedUser] = useState("Nick Name");
+  // const handleSelectedUser = e => {
+  //   setSelectedUser(e.target.value);
+  //   console.log(selectedUser);
+  // };
   const [shippings, setShippings] = useState([]);
   const [hiddenAll, setHiddenAll] = useState(true);
   const handelHiddenAll = () => {
@@ -27,7 +37,11 @@ export function ShippingLists() {
         >
           Shipped Items{" "}
         </div>
-        <ShippingListsHeader handelHiddenAll={handelHiddenAll} />
+        <ShippingListsHeader
+          handelHiddenAll={handelHiddenAll}
+          // handleSelectedUser={handleSelectedUser}
+          // users={users}
+        />
         <div>
           {shippings
             .sort((a, b) => {
@@ -41,7 +55,7 @@ export function ShippingLists() {
               <React.Suspense key={i} fallback={<div>Loading...</div>}>
                 <ShippingListsRow
                   shipping={shipping}
-                  users={users}
+                  // users={users}
                   // exchangeRate={exchangeRate}
                   hiddenAll={hiddenAll}
                 />
