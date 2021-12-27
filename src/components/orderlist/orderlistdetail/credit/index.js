@@ -80,7 +80,7 @@ export function Credit({ id }) {
         }, [])
         .map((credit, i) => (
           <React.Suspense key={i} fallback={<div>Loading...</div>}>
-            <CreditRow credit={credit} />
+            <CreditRow credit={credit} id={id} user={user} />
           </React.Suspense>
         ))}
       <div className="flex flex-row w-full items-center justify-center">
