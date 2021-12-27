@@ -8,8 +8,8 @@ export function CreditHeader() {
     >
       <div className="col-span-3">날짜</div>
       <div className="col-span-5">내용</div>
-      <div className="col-span-3">+</div>
-      <div className="col-span-3">-</div>
+      <div className="col-span-3">Paid</div>
+      <div className="col-span-3">Shipped</div>
       <div className="col-span-3">잔액</div>
       <div className="col-span-3">MEMO</div>
     </div>

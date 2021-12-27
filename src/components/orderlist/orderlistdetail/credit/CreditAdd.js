@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 import { db } from "../../../../firebase";
 
-export function CreditAdd({ id, lastBalance, user }) {
+export function CreditAdd({ id, user }) {
   const {
     register,
     handleSubmit,
@@ -29,7 +29,6 @@ export function CreditAdd({ id, lastBalance, user }) {
           currency: user.currency,
           plus: Number(data.plus),
           minus: Number(data.minus),
-          balance: Number(lastBalance + Number(data.plus) - Number(data.minus)),
           memo: data.memo || "",
         });
     } catch (e) {

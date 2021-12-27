@@ -69,6 +69,15 @@ export function Credit({ id }) {
           currentPage * itemsPerPage - itemsPerPage,
           currentPage * itemsPerPage
         )
+        .reduce((a, c, i) => {
+          let balance =
+            i === 0
+              ? c.data.balance || 0
+              : a[i - 1].data.balance + c.data.plus - c.data.minus;
+          c.data.balance = balance;
+          a.push(c);
+          return a;
+        }, [])
         .map((credit, i) => (
           <React.Suspense key={i} fallback={<div>Loading...</div>}>
             <CreditRow credit={credit} />
@@ -82,12 +91,8 @@ export function Credit({ id }) {
           itemsPerPage={itemsPerPage}
         />
       </div>
-      <CreditAdd
-        id={id}
-        lastBalance={credits[credits.length - 1]?.data?.balance || 0}
-        user={user}
-        exchangeRate={exchangeRate}
-      />
+
+      <CreditAdd id={id} user={user} exchangeRate={exchangeRate} />
     </div>
   );
 }
