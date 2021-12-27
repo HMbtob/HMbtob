@@ -9,7 +9,6 @@ import { ToTals } from "./ToTals";
 import { CSVLink } from "react-csv";
 import { OrderListPie } from "../OrderListPie";
 import { ContentsToPrint } from "./ContentsToPrint";
-import { toDate } from "../../../utils/shippingUtils";
 import { Credit } from "./credit";
 import { ShippingListsHeader } from "../../shippinglist/ShippingListsHeader";
 

@@ -2,17 +2,17 @@ import React, { useEffect, useReducer } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Spinner from "react-spinkit";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useMediaQuery } from "react-responsive";
+// import { useMediaQuery } from "react-responsive";
 import { useHistory } from "react-router";
 import { auth, db } from "./firebase";
 
 import { initState, dataReducer } from "./reducer/Reducer";
 
-import B2bShop from "./components/b2bshop/b2bshop/B2bShop";
-import B2bShopMobile from "./components/b2bshop/b2bshop/mobile/B2bShopMobile";
+// import B2bShop from "./components/b2bshop/b2bshop/B2bShop";
+// import B2bShopMobile from "./components/b2bshop/b2bshop/mobile/B2bShopMobile";
 
-import B2bOrder from "./components/b2bshop/b2bshop/B2bOrder";
-import B2bSpecialOrder from "./components/b2bshop/b2bshop/B2bSpecialOrder";
+// import B2bOrder from "./components/b2bshop/b2bshop/B2bOrder";
+// import B2bSpecialOrder from "./components/b2bshop/b2bshop/B2bSpecialOrder";
 import OrderList from "./components/admin/orderlist/OrderList";
 import Sidebar from "./components/sidebar/Sidebar";
 import Login from "./components/login/Login";
@@ -23,17 +23,17 @@ import OrderDetail from "./components/admin/orderlist/OrderDetail";
 import Unshiped from "./components/admin/unshipped/Unshiped";
 import ShippingList from "./components/admin/shipping/ShippingList";
 import UnshipedDetail from "./components/admin/unshipped/UnshippedDetail";
-import MyOrderList from "./components/b2bshop/myorder/MyOrderList";
-import MyOrderDetail from "./components/b2bshop/myorder/MyOrderDetail";
-import MyInfo from "./components/b2bshop/myorder/MyInfo";
+// import MyOrderList from "./components/b2bshop/myorder/MyOrderList";
+// import MyOrderDetail from "./components/b2bshop/myorder/MyOrderDetail";
+// import MyInfo from "./components/b2bshop/myorder/MyInfo";
 import OrderProductList from "./components/teamjangnim/OrderProductList";
 import Dev from "./dev/Dev";
 import Header from "./components/header/Header";
 import PickUpList from "./components/invoice/PickUpList";
 import Invoice from "./components/invoice/Invoice";
 import InAdminChat from "./components/chat/InAdminChat";
-import MobileHeader from "./components/header/MobileHeader";
-import { MyShipping } from "./components/b2bshop/myshipping/MyShipping";
+// import MobileHeader from "./components/header/MobileHeader";
+// import { MyShipping } from "./components/b2bshop/myshipping/MyShipping";
 import { CustomerIndex } from "./components/admin/customer/CustomerIndex";
 import { CustomerDetails } from "./components/admin/customer/details/CustomerDetails";
 import { OrderLists } from "./components/orderlist/index";
@@ -52,13 +52,13 @@ function App() {
   const history = useHistory();
 
   // 반응형
-  const isPc = useMediaQuery({
-    query: "(min-width:768px)",
-  });
+  // const isPc = useMediaQuery({
+  //   query: "(min-width:768px)",
+  // });
 
-  const isMobile = useMediaQuery({
-    query: "(max-width:767px)",
-  });
+  // const isMobile = useMediaQuery({
+  //   query: "(max-width:767px)",
+  // });
 
   useEffect(() => {
     db.collection("accounts")
@@ -217,7 +217,6 @@ function App() {
   if (user && userType === "none") {
     return (
       <div className="grid place-items-center h-screen w-full">
-        {console.log("none")}
         <div className="flex h-auto text-lg">
           We are checking the contents of the survey.
         </div>
@@ -234,55 +233,55 @@ function App() {
       </div>
     );
   }
-  if (user && userType === "customer") {
-    return (
-      <Router>
-        <div className="flex flex-col bg-gray-50 h-auto min-h-screen w-screen">
-          {" "}
-          <InitDispatchContext.Provider value={dispatch}>
-            <InitDataContext.Provider value={state}>
-              {" "}
-              {/* <div className="flex flex-col"> */}
-              {isPc && (
-                <>
-                  <Header />
-                  <Switch>
-                    <Route path="/myshipping" component={MyShipping} />
-                    <Route path="/myorderlist/:id" component={MyOrderDetail} />
-                    <Route path="/myorderlist" component={MyOrderList} />
-                    <Route path="/myinfo/:uid" component={MyInfo} />
-                    <Route
-                      path="/b2bspecialorder"
-                      component={B2bSpecialOrder}
-                    />
-                    <Route path="/b2border" component={B2bOrder} />
-                    <Route path="/" component={B2bShop} />
-                  </Switch>{" "}
-                </>
-              )}
-              {isMobile && (
-                <>
-                  <MobileHeader />
-                  <Switch>
-                    <Route path="/myorderlist/:id" component={MyOrderDetail} />
-                    <Route path="/myorderlist" component={MyOrderList} />
-                    <Route path="/myinfo/:uid" component={MyInfo} />
-                    <Route
-                      path="/b2bspecialorder"
-                      component={B2bSpecialOrder}
-                    />
-                    <Route path="/b2border" component={B2bOrder} />
-                    <Route path="/" component={B2bShopMobile} />
-                  </Switch>
-                </>
-              )}
-              {/* </div> */}
-            </InitDataContext.Provider>{" "}
-          </InitDispatchContext.Provider>
-        </div>
-      </Router>
-    );
-  }
+  // if (user && userType === "customer") {
+  //   return (
+  //     <Router>
+  //       <div className="flex flex-col bg-gray-50 h-auto min-h-screen w-screen">
+  //         {" "}
+  //         <InitDispatchContext.Provider value={dispatch}>
+  //           <InitDataContext.Provider value={state}>
+  //             {" "}
+  //             {/* <div className="flex flex-col"> */}
+  //             {isPc && (
+  //               <>
+  //                 <Header />
+  //                 <Switch>
+  //                   <Route path="/myshipping" component={MyShipping} />
+  //                   <Route path="/myorderlist/:id" component={MyOrderDetail} />
+  //                   <Route path="/myorderlist" component={MyOrderList} />
+  //                   <Route path="/myinfo/:uid" component={MyInfo} />
+  //                   <Route
+  //                     path="/b2bspecialorder"
+  //                     component={B2bSpecialOrder}
+  //                   />
+  //                   <Route path="/b2border" component={B2bOrder} />
+  //                   <Route path="/" component={B2bShop} />
+  //                 </Switch>{" "}
+  //               </>
+  //             )}
+  //             {isMobile && (
+  //               <>
+  //                 <MobileHeader />
+  //                 <Switch>
+  //                   <Route path="/myorderlist/:id" component={MyOrderDetail} />
+  //                   <Route path="/myorderlist" component={MyOrderList} />
+  //                   <Route path="/myinfo/:uid" component={MyInfo} />
+  //                   <Route
+  //                     path="/b2bspecialorder"
+  //                     component={B2bSpecialOrder}
+  //                   />
+  //                   <Route path="/b2border" component={B2bOrder} />
+  //                   <Route path="/" component={B2bShopMobile} />
+  //                 </Switch>
+  //               </>
+  //             )}
+  //             {/* </div> */}
+  //           </InitDataContext.Provider>{" "}
+  //         </InitDispatchContext.Provider>
+  //       </div>
+  //     </Router>
+  //   );
+  // }
 
   if (user && userType === "admin") {
     return (
