@@ -32,14 +32,23 @@ export function OrderListRow({ acc, accounts }) {
       <div>
         <div className="text-xs">
           {
-            orders?.filter(
-              order =>
-                toDate(order?.data?.createdAt?.seconds) ===
-                today?.toISOString().substring(0, 10)
+            orders?.filter(order =>
+              // toDate(order?.data?.createdAt?.seconds) ===
+              // today?.toISOString().substring(0, 10)
+              {
+                let today = new Date().getTime();
+                let gap =
+                  new Date(order?.data?.createdAt?.seconds * 1000).getTime() -
+                  today;
+                let day = Math.ceil(gap / (1000 * 60 * 60 * 24));
+                console.log(day);
+                return day < 3 && day >= 0;
+              }
             )?.length
           }{" "}
           Type
         </div>
+
         <div className="text-2xs">
           (
           {orders

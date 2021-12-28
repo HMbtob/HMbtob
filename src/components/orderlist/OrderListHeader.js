@@ -9,7 +9,7 @@ export function OrderListHeader({ admins, handleChargeAcc }) {
       <div>Nick Name</div>
       <div className="col-span-2">E-mail</div>
       <div></div>
-      <div>TODAY's 주문</div>
+      <div>신규 주문(최근 2일)</div>
       <div>미확인주문</div>
       <div>확인된주문</div>
       <div>취소된주문</div>
