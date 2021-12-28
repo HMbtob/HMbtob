@@ -21,7 +21,7 @@ export function OrderLists() {
   useEffect(() => {
     setChargeAcc(accounts.filter(acc => acc.data.inCharge === user?.email));
     setAdmins(accounts.filter(acc => acc.data.type === "admin"));
-    setSelected(user.email);
+    setSelected(user?.email);
   }, [accounts, user]);
   return (
     <div className="w-full h-full flex justify-center">

@@ -10,12 +10,14 @@ export function OrderListRow({ acc, accounts }) {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    db.collection("accounts")
+    const unsub = db
+      .collection("accounts")
       .doc(acc.id)
       .collection("order")
       .onSnapshot(snapshot =>
         setOrders(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
       );
+    return () => unsub();
   }, [acc]);
   return (
     <div className="grid grid-cols-9 text-center border-b border-l border-r py-1 items-center">
@@ -30,7 +32,7 @@ export function OrderListRow({ acc, accounts }) {
       <div className="text-xs text-left col-span-2">{acc?.data?.email}</div>
       <div>{/* <OrderListRowPie /> */}</div>
       <div>
-        <div className="text-xs">
+        <div className="text-md text-red-600 font-bold">
           {
             orders?.filter(order =>
               // toDate(order?.data?.createdAt?.seconds) ===

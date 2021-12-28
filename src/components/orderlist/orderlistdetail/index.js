@@ -285,7 +285,9 @@ export function OrderListDetail({ match, location }) {
         {/* 하단 버튼 영역 */}
         <div className="flex flex-row justify-between">
           {/* <CSVLink /> */}
-          <ToTals orders={orders} />
+          <ToTals
+            orders={orders.filter(order => order.data.canceled === false)}
+          />
           <div>
             <button
               type="button"

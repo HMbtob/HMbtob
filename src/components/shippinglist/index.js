@@ -8,7 +8,7 @@ export function ShippingLists() {
       default: module.ShippingListsRow,
     }))
   );
-  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([]);
   // const [selectedUser, setSelectedUser] = useState("Nick Name");
   // const handleSelectedUser = e => {
   //   setSelectedUser(e.target.value);
@@ -20,12 +20,17 @@ export function ShippingLists() {
     setHiddenAll(!hiddenAll);
   };
   useEffect(() => {
-    db.collectionGroup("shippingsInAccount").onSnapshot(snapshot =>
-      setShippings(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
-    );
-    db.collection("accounts").onSnapshot(snapshot =>
-      setUsers(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
-    );
+    const unsub = db
+      .collectionGroup("shippingsInAccount")
+      .onSnapshot(snapshot =>
+        setShippings(
+          snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+        )
+      );
+    // db.collection("accounts").onSnapshot(snapshot =>
+    //   setUsers(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
+    // );
+    return () => unsub();
   }, []);
 
   return (

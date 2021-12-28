@@ -21,7 +21,6 @@ export function OrderListHeader({
       <div>
         <select
           value={selected}
-          defaultValue={selected}
           onChange={e => {
             handleChargeAcc(e);
             setSelected(e.target.value);

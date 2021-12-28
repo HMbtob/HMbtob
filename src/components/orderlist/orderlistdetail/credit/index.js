@@ -30,19 +30,28 @@ export function Credit({ id }) {
   };
 
   useEffect(() => {
-    db.collection("accounts")
+    const unsub1 = db
+      .collection("accounts")
       .doc(id)
       .collection("credit")
       .orderBy("createdAt", "asc")
       .onSnapshot(snapshot =>
         setCredits(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
       );
-    db.collection("accounts")
+    const unsub2 = db
+      .collection("accounts")
       .doc(id)
       .onSnapshot(snapshot => setUser(snapshot.data()));
-    db.collection("exchangeRate")
+    const unsub3 = db
+      .collection("exchangeRate")
       .doc("rates")
       .onSnapshot(snapshot => setExchangeRate(snapshot.data()));
+
+    return () => {
+      unsub1();
+      unsub2();
+      unsub3();
+    };
   }, [id]);
 
   useEffect(() => {
