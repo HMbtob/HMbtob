@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { db } from "../../../firebase";
 import { krwComma } from "../../../utils/shippingUtils";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import DeleteIcon from "@mui/icons-material/Delete";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 export function OrderListDetailRow({
@@ -44,8 +43,23 @@ export function OrderListDetailRow({
           .doc(order.data.customer || order.data.userId)
           .collection("order")
           .doc(order.id)
-          .update({ canceled: true });
+          .delete();
         alert("삭제되었습니다.");
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
+  const cancelOrder = async () => {
+    if (window.confirm("취소하시겠습니까?")) {
+      try {
+        await db
+          .collection("accounts")
+          .doc(order.data.customer || order.data.userId)
+          .collection("order")
+          .doc(order.id)
+          .update({ canceled: true });
+        alert("취소되었습니다.");
       } catch (e) {
         console.log(e);
       }
@@ -133,27 +147,41 @@ export function OrderListDetailRow({
             style={{ color: `${order.data.confirmed ? "green" : "red"}` }}
           />
           {order.data.title}
-          <DeleteIcon
-            style={{ color: "gray" }}
-            onClick={() => deleteOrder()}
-            className="cursor-pointer"
-          />
         </div>
-        <button
-          type="button"
-          disabled={order.data.canceled}
-          onClick={() => saveDetail()}
-          className={`${
-            order.data.canceled ? "bg-gray-400" : "bg-blue-900"
-          } rounded-md  py-1 px-2 text-white`}
-        >
-          수정
-        </button>{" "}
+        <div>
+          <button
+            type="button"
+            disabled={order.data.canceled}
+            onClick={() => cancelOrder()}
+            className={`${
+              order.data.canceled ? "bg-gray-400" : "bg-blue-900"
+            } rounded font-normal text-xs py-1 px-1 text-white`}
+          >
+            취소
+          </button>{" "}
+          <button
+            type="button"
+            onClick={() => deleteOrder()}
+            className={`${"bg-blue-900"} rounded font-normal text-xs py-1 px-1 text-white`}
+          >
+            삭제
+          </button>{" "}
+          <button
+            type="button"
+            disabled={order.data.canceled}
+            onClick={() => saveDetail()}
+            className={`${
+              order.data.canceled ? "bg-gray-400" : "bg-blue-900"
+            } rounded font-normal text-xs py-1 px-1 text-white`}
+          >
+            수정
+          </button>{" "}
+        </div>
       </div>
       <div className="col-span-3 flex flex-row justify-center items-center">
-        {/* {Number(order.data.price).toLocaleString()} {} */}
         <input
           type="text"
+          disabled={order.data.canceled}
           value={krwComma(price, order.data.currency)}
           onChange={e => {
             const { value } = e.target;
@@ -168,6 +196,7 @@ export function OrderListDetailRow({
         <input
           type="number"
           value={qty}
+          disabled={order.data.canceled}
           onChange={e => setQty(e.target.value)}
           className="w-2/3 text-right pr-2 border outline-none"
         />{" "}

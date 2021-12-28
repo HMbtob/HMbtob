@@ -11,6 +11,7 @@ import { OrderListPie } from "../OrderListPie";
 import { ContentsToPrint } from "./ContentsToPrint";
 import { Credit } from "./credit";
 import { ShippingListsHeader } from "../../shippinglist/ShippingListsHeader";
+import { Addresses } from "./Addresses";
 
 export function OrderListDetail({ match, location }) {
   const { id } = match.params;
@@ -179,7 +180,26 @@ export function OrderListDetail({ match, location }) {
     setTimeout(() => handlePrint(), 3000);
   };
   /////////////////////////////////////////////////////////////////////
+  // shipping addresses
+  const [shippingAddresses, setShippingAddresses] = useState([]);
+  const [type, setType] = useState("Default Address");
+  const [add, setAdd] = useState(null);
 
+  useEffect(() => {
+    db.collection("accounts")
+      .doc(id)
+      .collection("addresses")
+      .orderBy("name", "asc")
+      .onSnapshot(snapshot =>
+        setShippingAddresses(
+          snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+        )
+      );
+  }, [id]);
+
+  useEffect(() => {
+    setAdd(shippingAddresses.find(li => li.data.name === type));
+  }, [shippingAddresses, type]);
   useEffect(() => {
     db.collection("accounts")
       .doc(id)
@@ -261,51 +281,69 @@ export function OrderListDetail({ match, location }) {
             </React.Suspense>
           ))}
         <AddOrder id={id} from="picking" />
-        <div>
-          <button
-            type="button"
-            onClick={() => setCheckAll(!checkAll)}
-            className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3"
-          >
-            전체선택
-          </button>
-          <button
-            type="button"
-            onClick={() => setCheckAllReled(!checkAllReled)}
-            className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3 ml-5"
-          >
-            출시상품선택
-          </button>
-          <button
-            type="button"
-            onClick={() => setCheckPickingUp(!checkPickingUp)}
-            className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3 ml-5"
-          >
-            픽업선택
-          </button>
-          <button
-            type="button"
-            onClick={() => printGoback()}
-            className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3 ml-5"
-          >
-            PickUp List
-          </button>
-          <button
-            type="button"
-            onClick={() => confirmOrder()}
-            className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3 ml-5"
-          >
-            주문확인
-          </button>
-          <button
-            type="button"
-            onClick={() => cancelPickUp()}
-            className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3 ml-5"
-          >
-            픽업취소
-          </button>
+
+        {/* 하단 버튼 영역 */}
+        <div className="flex flex-row justify-between">
           {/* <CSVLink /> */}
           <ToTals orders={orders} />
+          <div>
+            <button
+              type="button"
+              onClick={() => setCheckAll(!checkAll)}
+              className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3"
+            >
+              전체선택
+            </button>
+            <button
+              type="button"
+              onClick={() => setCheckAllReled(!checkAllReled)}
+              className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3 ml-5"
+            >
+              출시상품선택
+            </button>
+            <button
+              type="button"
+              onClick={() => confirmOrder()}
+              className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3 ml-5"
+            >
+              주문확인
+            </button>
+          </div>
+
+          {/* 픽업 버튼들 영역 */}
+          <div>
+            <div>
+              <button
+                type="button"
+                onClick={() => printGoback()}
+                className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3 ml-5"
+              >
+                {"PickingUp&Print"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setCheckPickingUp(!checkPickingUp)}
+                className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3 ml-5"
+              >
+                픽업선택
+              </button>
+              <button
+                type="button"
+                onClick={() => cancelPickUp()}
+                className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3 ml-5"
+              >
+                픽업취소
+              </button>
+            </div>
+            <div>
+              <Addresses
+                type={type}
+                setType={setType}
+                shippingAddresses={shippingAddresses}
+                add={add}
+              />
+            </div>
+          </div>
         </div>
         <OrderListDetailPrice
           handleSubmit={handleSubmit}
@@ -347,6 +385,8 @@ export function OrderListDetail({ match, location }) {
           pickUpLists={pickUpLists}
           today={today.toLocaleString()}
           nickName={orders[0]?.data?.nickName || ""}
+          add={add}
+          type={type}
         />
       </div>
     </form>

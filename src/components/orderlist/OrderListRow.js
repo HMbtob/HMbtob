@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { db } from "../../firebase";
 import { toDate } from "../../utils/shippingUtils";
-import { OrderListRowPie } from "./OrderListPie";
+// import { OrderListRowPie } from "./OrderListPie";
 
 export function OrderListRow({ acc, accounts }) {
   const history = useHistory();

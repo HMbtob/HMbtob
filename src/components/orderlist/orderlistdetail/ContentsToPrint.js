@@ -8,6 +8,85 @@ export class ContentsToPrint extends Component {
           <div className="text-center text-xl">
             Pick Up List ({this.props.nickName}) ({this.props.today})
           </div>
+          {this.props.add && this.props.type !== "Ship To Korea" ? (
+            <div>
+              <div>
+                {"shippingType : "}
+                {this.props.add?.data?.shippingType}
+              </div>
+              <div>
+                {"paymentMethod : "}
+                {this.props.add?.data?.paymentMethod}
+              </div>
+              <div>
+                {"recipient : "}
+                {this.props.add?.data?.recipient}
+              </div>
+              <div>
+                {"recipientEmail : "}
+                {this.props.add?.data?.recipientEmail}
+              </div>
+              <div>
+                {"recipientPhoneNumber : "}
+                {this.props.add?.data?.recipientPhoneNumber}
+              </div>
+              <div>
+                {"country : "}
+                {this.props.add?.data?.country}
+              </div>
+              <div>
+                {"states : "}
+                {this.props.add?.data?.states}
+              </div>
+              <div>
+                {"city : "}
+                {this.props.add?.data?.city}
+              </div>
+              <div>
+                {"street : "}
+                {this.props.add?.data?.street}
+              </div>
+              <div>
+                {"zipcode : "}
+                {this.props.add?.data?.zipcode}
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div>
+                {"shippingType : "}
+                {this.props.add?.data?.shippingType}
+              </div>
+              <div>
+                {"paymentMethod : "}
+                {this.props.add?.data?.paymentMethod}
+              </div>
+              <div>
+                {"recipient : "}
+                {this.props.add?.data?.recipient}
+              </div>
+              <div>
+                {"recipientEmail : "}
+                {this.props.add?.data?.recipientEmail}
+              </div>
+              <div>
+                {"recipientPhoneNumber : "}
+                {this.props.add?.data?.recipientPhoneNumber}
+              </div>
+              <div>
+                {"country : "}
+                {this.props.add?.data?.address}
+              </div>
+              <div>
+                {"states : "}
+                {this.props.add?.data?.detailAddress}
+              </div>
+              <div>
+                {"city : "}
+                {this.props.add?.data?.zipcode}
+              </div>
+            </div>
+          )}
 
           <div
             className="grid grid-cols-20 border text-center
