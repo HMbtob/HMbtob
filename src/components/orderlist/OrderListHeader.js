@@ -1,6 +1,11 @@
 import React from "react";
 
-export function OrderListHeader({ admins, handleChargeAcc }) {
+export function OrderListHeader({
+  admins,
+  handleChargeAcc,
+  selected,
+  setSelected,
+}) {
   return (
     <div
       className="grid grid-cols-9  grid-flow-col text-center bg-gray-800
@@ -15,9 +20,12 @@ export function OrderListHeader({ admins, handleChargeAcc }) {
       <div>취소된주문</div>
       <div>
         <select
-          // value={chargeAcc}
-          // defaultValue={userEmail}
-          onChange={e => handleChargeAcc(e)}
+          value={selected}
+          defaultValue={selected}
+          onChange={e => {
+            handleChargeAcc(e);
+            setSelected(e.target.value);
+          }}
           className=" outline-none bg-gray-800 w-full text-center"
         >
           {admins.map((admin, i) => (

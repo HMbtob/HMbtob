@@ -41,7 +41,6 @@ export function OrderListRow({ acc, accounts }) {
                   new Date(order?.data?.createdAt?.seconds * 1000).getTime() -
                   today;
                 let day = Math.ceil(gap / (1000 * 60 * 60 * 24));
-                console.log(day);
                 return day < 3 && day >= 0;
               }
             )?.length
