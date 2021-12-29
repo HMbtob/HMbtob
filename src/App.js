@@ -26,6 +26,7 @@ import { OrderLists } from "./components/orderlist/index";
 import { OrderListDetail } from "./components/orderlist/orderlistdetail/index";
 import { ShippingLists } from "./components/shippinglist";
 import { PickUpList2 } from "./components/pickuplist2";
+import { DashBoard } from "./components/dashboard";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -234,6 +235,7 @@ function App() {
                   />
                   <Route path="/orderlists" component={OrderLists} />
                   <Route path="/shippinglists" component={ShippingLists} />
+                  <Route path="/dashboard" component={DashBoard} />
 
                   {/* 석팀장님 */}
                   <Route
@@ -270,7 +272,7 @@ function App() {
                   <Route path="/pickuplist2" component={PickUpList2} />
                   <Route path="/invoice" component={Invoice} />
                   <Route path="/chat" component={InAdminChat} />
-                  <Route path="/" component={OrderLists} />
+                  <Route path="/" component={DashBoard} />
                 </Switch>
               </div>
             </InitDataContext.Provider>

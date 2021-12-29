@@ -7,7 +7,6 @@ import { OrderListDetailPrice } from "./OrderListDetailPrice";
 import { AddOrder } from "./AddOrder";
 import { ToTals } from "./ToTals";
 import { CSVLink } from "react-csv";
-import { OrderListPie } from "../OrderListPie";
 import { ContentsToPrint } from "./ContentsToPrint";
 import { Credit } from "./credit";
 import { ShippingListsHeader } from "../../shippinglist/ShippingListsHeader";
@@ -186,7 +185,8 @@ export function OrderListDetail({ match, location }) {
   const [add, setAdd] = useState(null);
 
   useEffect(() => {
-    db.collection("accounts")
+    const unsub1 = db
+      .collection("accounts")
       .doc(id)
       .collection("addresses")
       .orderBy("name", "asc")
@@ -195,24 +195,28 @@ export function OrderListDetail({ match, location }) {
           snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
         )
       );
+    return () => unsub1();
   }, [id]);
 
   useEffect(() => {
     setAdd(shippingAddresses.find(li => li.data.name === type));
   }, [shippingAddresses, type]);
+
   useEffect(() => {
     db.collection("accounts")
       .doc(id)
       .collection("order")
       .orderBy(forSort.sortBy || "title", forSort.order ? "asc" : "desc")
-      .onSnapshot(snapshot =>
+      .get()
+      .then(snapshot =>
         setOrders(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
       );
 
     db.collection("accounts")
       .doc(id)
       .collection("shippingsInAccount")
-      .onSnapshot(snapshot =>
+      .get()
+      .then(snapshot =>
         setShippings(
           snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
         )

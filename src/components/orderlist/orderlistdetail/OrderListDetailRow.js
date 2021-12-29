@@ -148,7 +148,7 @@ export function OrderListDetailRow({
           />
           {order.data.title}
         </div>
-        <div>
+        <div className="">
           <button
             type="button"
             disabled={order.data.canceled}
