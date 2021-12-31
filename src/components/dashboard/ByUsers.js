@@ -38,7 +38,7 @@ export function ByUsers({ orders, users }) {
       </select>
       {selectedUser && (
         <LineChart
-          width={2500}
+          width={1500}
           height={600}
           data={[
             ...new Set(

@@ -15,38 +15,86 @@ import { Addresses } from "./Addresses";
 export function OrderListDetail({ match, location }) {
   const { id } = match.params;
   const { state } = location;
+
   const today = new Date();
   const [orders, setOrders] = useState([]);
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    getValues,
-    formState: { errors },
-  } = useForm();
+  const { handleSubmit } = useForm();
 
-  // for 전체선택
-  const [checkAll, setCheckAll] = useState(false);
+  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+  // 체크박스
+  const [checkedInputs, setCheckedInputs] = useState([]);
 
-  // for 출시상품 전체선택
-  const [checkAllReled, setCheckAllReled] = useState(false);
+  const changeHandler = (checked, id) => {
+    checked
+      ? setCheckedInputs([...checkedInputs, id])
+      : setCheckedInputs(checkedInputs.filter(el => el !== id));
+  };
+  const idArray = [];
 
-  // 픽업상품 선택
-  const [checkPickingUp, setCheckPickingUp] = useState(false);
+  // 전체 선택
+  const handleAllCheck = () => {
+    if (
+      checkedInputs.length !==
+      orders.filter(li => li.data.canceled === false).length
+    ) {
+      // 전체 체크 박스가 체크 되면 id를 가진 모든 elements를 배열에 넣어주어서,
+      // 전체 체크 박스 체크
+      orders
+        .filter(li => li.data.canceled === false)
+        .map(el => idArray.push(el.id));
+      setCheckedInputs(idArray);
+    }
+    // 반대의 경우 전체 체크 박스 체크 삭제
+    else if (
+      checkedInputs.length ===
+      orders.filter(li => li.data.canceled === false).length
+    ) {
+      setCheckedInputs([]);
+    }
+  };
+  // 출시상품선택
+  const handleRelCheck = () => {
+    const today = new Date();
+    checkedInputs.length !==
+    orders.filter(
+      order =>
+        order.data.relDate.toDate() < today && order.data.canceled === false
+    ).length
+      ? setCheckedInputs(
+          orders
+            .filter(
+              order =>
+                order.data.relDate.toDate() < today &&
+                order.data.canceled === false
+            )
+            .map(doc => doc.id)
+        )
+      : setCheckedInputs([]);
+  };
+
+  // picking up 상품 선택
+  const handlePickUpCheck = () => {
+    checkedInputs.length !==
+    orders.filter(
+      order => order.data.pickingUp === true && order.data.canceled === false
+    ).length
+      ? setCheckedInputs(
+          orders
+            .filter(
+              order =>
+                order.data.pickingUp === true && order.data.canceled === false
+            )
+            .map(doc => doc.id)
+        )
+      : setCheckedInputs([]);
+  };
 
   // checked item -> confirmed
   const confirmOrder = () => {
-    const getOrders = getValues();
     const checkedItems = orders.filter(order =>
-      Object.keys(getOrders)
-        .reduce((a, c) => {
-          if (getOrders[c] === true) {
-            a.push(c);
-          }
-          return a;
-        }, [])
-        .includes(order.id)
+      checkedInputs.includes(order.id)
     );
+
     checkedItems.map(
       async item =>
         await db
@@ -59,17 +107,10 @@ export function OrderListDetail({ match, location }) {
   };
   // PickUpList -> OrderList
   const cancelPickUp = () => {
-    const getOrders = getValues();
     const checkedItems = orders.filter(order =>
-      Object.keys(getOrders)
-        .reduce((a, c) => {
-          if (getOrders[c] === true) {
-            a.push(c);
-          }
-          return a;
-        }, [])
-        .includes(order.id)
+      checkedInputs.includes(order.id)
     );
+
     checkedItems.map(
       async item =>
         await db
@@ -127,18 +168,8 @@ export function OrderListDetail({ match, location }) {
 
   const [pickUpLists, setPickUpLists] = useState([]);
   const printGoback = async () => {
-    const asdad = getValues();
     const checkedItems = orders
-      .filter(order =>
-        Object.keys(asdad)
-          .reduce((a, c) => {
-            if (asdad[c] === true) {
-              a.push(c);
-            }
-            return a;
-          }, [])
-          .includes(order.id)
-      )
+      .filter(order => checkedInputs.includes(order.id))
       .sort((a, b) => {
         return a?.title?.trim() < b?.title?.trim()
           ? -1
@@ -203,24 +234,30 @@ export function OrderListDetail({ match, location }) {
   }, [shippingAddresses, type]);
 
   useEffect(() => {
-    db.collection("accounts")
+    const unsub2 = db
+      .collection("accounts")
       .doc(id)
       .collection("order")
       .orderBy(forSort.sortBy || "title", forSort.order ? "asc" : "desc")
-      .get()
-      .then(snapshot =>
+      // .get()
+      .onSnapshot(snapshot =>
         setOrders(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
       );
 
-    db.collection("accounts")
+    const unsub3 = db
+      .collection("accounts")
       .doc(id)
       .collection("shippingsInAccount")
-      .get()
-      .then(snapshot =>
+      // .get()
+      .onSnapshot(snapshot =>
         setShippings(
           snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
         )
       );
+    return () => {
+      unsub2();
+      unsub3();
+    };
   }, [id, forSort]);
 
   return (
@@ -250,13 +287,8 @@ export function OrderListDetail({ match, location }) {
             <React.Suspense key={i} fallback={<div>Loading...</div>}>
               <OrderListDetailRow
                 order={order}
-                register={register}
-                checkAll={checkAll}
-                checkAllReled={checkAllReled}
-                checkPickingUp={checkPickingUp}
-                setValue={setValue}
-                handleSubmit={handleSubmit}
-                errors={errors}
+                changeHandler={changeHandler}
+                checkedInputs={checkedInputs}
               />
             </React.Suspense>
           ))}
@@ -274,13 +306,8 @@ export function OrderListDetail({ match, location }) {
             <React.Suspense key={i} fallback={<div>Loading...</div>}>
               <OrderListDetailRow
                 order={order}
-                register={register}
-                checkAll={checkAll}
-                checkAllReled={checkAllReled}
-                checkPickingUp={checkPickingUp}
-                setValue={setValue}
-                handleSubmit={handleSubmit}
-                errors={errors}
+                changeHandler={changeHandler}
+                checkedInputs={checkedInputs}
               />
             </React.Suspense>
           ))}
@@ -295,14 +322,14 @@ export function OrderListDetail({ match, location }) {
           <div>
             <button
               type="button"
-              onClick={() => setCheckAll(!checkAll)}
+              onClick={() => handleAllCheck()}
               className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3"
             >
               전체선택
             </button>
             <button
               type="button"
-              onClick={() => setCheckAllReled(!checkAllReled)}
+              onClick={() => handleRelCheck()}
               className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3 ml-5"
             >
               출시상품선택
@@ -328,7 +355,7 @@ export function OrderListDetail({ match, location }) {
               </button>
               <button
                 type="button"
-                onClick={() => setCheckPickingUp(!checkPickingUp)}
+                onClick={() => handlePickUpCheck()}
                 className=" bg-blue-900 text-white py-1 px-3 rounded-sm my-3 ml-5"
               >
                 픽업선택
@@ -353,9 +380,9 @@ export function OrderListDetail({ match, location }) {
         </div>
         <OrderListDetailPrice
           handleSubmit={handleSubmit}
-          getValues={getValues}
           orders={orders}
           account={state}
+          checkedInputs={checkedInputs}
         />
         <div
           className="text-center text-lg bg-gray-800 py-1 

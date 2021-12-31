@@ -1,26 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { db } from "../../../firebase";
 import { krwComma } from "../../../utils/shippingUtils";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
-export function OrderListDetailRow({
-  order,
-  register,
-  checkAll,
-  setValue,
-  checkAllReled,
-  checkPickingUp,
-}) {
+
+export function OrderListDetailRow({ order, changeHandler, checkedInputs }) {
   const today = new Date();
   const preOrder = order.data.relDate.toDate() < today;
 
   const [price, setPrice] = useState(order.data.price);
   const [qty, setQty] = useState(order.data.quan);
 
-  const saveDetail = () => {
+  const saveDetail = async () => {
     try {
-      db.collection("accounts")
+      await db
+        .collection("accounts")
         .doc(order.data.customer || order.data.userId)
         .collection("order")
         .doc(order.id)
@@ -49,7 +44,9 @@ export function OrderListDetailRow({
         console.log(e);
       }
     }
+    alert("삭제를 실패했습니다.");
   };
+
   const cancelOrder = async () => {
     if (window.confirm("취소하시겠습니까?")) {
       try {
@@ -79,27 +76,6 @@ export function OrderListDetailRow({
     }
   };
 
-  useEffect(() => {
-    if (!order.data.canceled) {
-      if (checkAllReled && preOrder) {
-        setValue(order.id, checkAllReled);
-      } else if (checkPickingUp && order.data.pickingUp === true) {
-        setValue(order.id, checkPickingUp);
-      } else {
-        setValue(order.id, checkAll);
-      }
-    }
-  }, [
-    setValue,
-    order.id,
-    checkAll,
-    order.data.canceled,
-    checkAllReled,
-    preOrder,
-    checkPickingUp,
-    order.data.pickingUp,
-  ]);
-
   return (
     <div
       className={`${
@@ -110,8 +86,11 @@ export function OrderListDetailRow({
     >
       <div>
         <input
-          {...register(`${order.id}`)}
           type="checkbox"
+          className=" w-full"
+          id={order.id}
+          onChange={e => changeHandler(e.target.checked, order.id)}
+          checked={checkedInputs.includes(order.id) ? true : false}
           disabled={order.data.canceled}
         />
       </div>
@@ -200,7 +179,6 @@ export function OrderListDetailRow({
           onChange={e => setQty(e.target.value)}
           className="w-2/3 text-right pr-2 border outline-none"
         />{" "}
-        {/* {order.data.quan}  */}
         ea
       </div>
       <div className="col-span-3">

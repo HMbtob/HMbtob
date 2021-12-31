@@ -30,7 +30,6 @@ export function OrderListRow({ acc, accounts }) {
         {acc?.data?.nickName}
       </div>
       <div className="text-xs text-left col-span-2">{acc?.data?.email}</div>
-      <div>{/* <OrderListRowPie /> */}</div>
       <div>
         <div className="text-md text-red-600 font-bold">
           {
@@ -63,7 +62,6 @@ export function OrderListRow({ acc, accounts }) {
             }, 0)}
           EA)
         </div>
-        <div></div>
       </div>
       {/* 미확인주문/수량 */}
       <div>

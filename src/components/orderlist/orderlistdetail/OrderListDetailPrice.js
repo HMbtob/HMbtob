@@ -8,9 +8,9 @@ import { ShipToKorea } from "./ShipToKorea";
 
 export function OrderListDetailPrice({
   handleSubmit,
-  getValues,
   orders,
   account,
+  checkedInputs,
 }) {
   // for 계산 or 입력 라디오
   const [checkedRadio, setCheckedRadio] = useState("caled");
@@ -33,18 +33,10 @@ export function OrderListDetailPrice({
   // 무게/배송지에 따른 배송비 계산하기. 배송지, 배송요율 설정해야함
   const onCal = async () => {
     const fee = await db.collection("shippingFee").doc("dhl").get();
-    const values = getValues();
-    // 체크된 아이템 리스트
     const checkedItems = orders.filter(order =>
-      Object.keys(values)
-        .reduce((a, c) => {
-          if (values[c] === true) {
-            a.push(c);
-          }
-          return a;
-        }, [])
-        .includes(order.id)
+      checkedInputs.includes(order.id)
     );
+
     if (checkedItems.length < 1) {
       return alert("계산할 상품을 선택해 주세요.");
     }
@@ -166,12 +158,12 @@ export function OrderListDetailPrice({
             handleSubmit(
               onSubmitToShip(
                 orders,
-                getValues,
                 checkedRadio,
                 inputedShippingFee,
                 caledPrice,
                 caledshippingFee,
-                trackingNumber
+                trackingNumber,
+                checkedInputs
               )
             )
           }

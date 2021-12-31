@@ -20,31 +20,21 @@ export const krwComma = (num, cur) => {
 // 발송처리
 export const onSubmitToShip = async (
   orders,
-  getValues,
   checkedRadio,
   inputedShippingFee,
   caledPrice,
   caledshippingFee,
-  trackingNumber
+  trackingNumber,
+  checkedInputs
 ) => {
   if (trackingNumber.length < 1) {
     return alert("운송장 번호를 작성해 주세요.");
   }
   const today = new Date();
   const saveId = uuid();
-  const values = getValues();
   // 계산된가격
+  const checkedItems = orders.filter(order => checkedInputs.includes(order.id));
 
-  const checkedItems = orders.filter(order =>
-    Object.keys(values)
-      .reduce((a, c) => {
-        if (values[c] === true) {
-          a.push(c);
-        }
-        return a;
-      }, [])
-      .includes(order.id)
-  );
   if (checkedItems?.length < 1) {
     return alert("발송할 상품을 선택해 주세요.");
   }
@@ -132,7 +122,6 @@ export const onSubmitToShip = async (
       : checkedRadio === "inputed"
       ? caledPrice + inputedShippingFee
       : caledPrice + caledshippingFee);
-  console.log("checkedRadio", checkedRadio);
   // 크레딧 차감
   await db
     .collection("accounts")
