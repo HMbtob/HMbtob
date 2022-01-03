@@ -112,7 +112,7 @@ export function OrderListDetailRow({ order, changeHandler, checkedInputs }) {
       <div className="col-span-3">{order.data.sku}</div>
       <div className="col-span-3">{order.data.barcode}</div>
       <div className="col-span-10 flex flex-row items-center justify-between">
-        <div className="text-left flex flex-row">
+        <div className="text-left flex flex-row items-center">
           {!order.data.pickingUp ? (
             <FileDownloadIcon
               onClick={() => pickingUpOrder()}
@@ -130,8 +130,11 @@ export function OrderListDetailRow({ order, changeHandler, checkedInputs }) {
             style={{ color: `${order.data.confirmed ? "green" : "red"}` }}
           />
           {deadLine && (
-            <div className=" text-blue-700 font-semibold">{"[PO]"}</div>
+            <div className=" text-white bg-blue-800 rounded-md font-semibold px-1 h-full mr-2">
+              {"PO"}
+            </div>
           )}
+
           {order.data.title}
         </div>
         <div className="">
