@@ -270,6 +270,7 @@ export function OrderListDetail({ match, location }) {
         >
           Credit ({orders[0]?.data?.nickName})
         </div>
+
         <Credit id={id} />
 
         {/* 주문 */}

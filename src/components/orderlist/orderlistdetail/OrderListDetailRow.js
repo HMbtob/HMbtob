@@ -9,6 +9,9 @@ export function OrderListDetailRow({ order, changeHandler, checkedInputs }) {
   const today = new Date();
   const preOrder = order.data.relDate.toDate() < today;
 
+  const deadLine =
+    order.data.createdAt.toDate() <= order.data.preOrderDeadline.toDate();
+
   const [price, setPrice] = useState(order.data.price);
   const [qty, setQty] = useState(order.data.quan);
 
@@ -105,10 +108,11 @@ export function OrderListDetailRow({ order, changeHandler, checkedInputs }) {
           .toISOString()
           .substring(0, 10)}
       </div>
+
       <div className="col-span-3">{order.data.sku}</div>
       <div className="col-span-3">{order.data.barcode}</div>
       <div className="col-span-10 flex flex-row items-center justify-between">
-        <div className="text-left">
+        <div className="text-left flex flex-row">
           {!order.data.pickingUp ? (
             <FileDownloadIcon
               onClick={() => pickingUpOrder()}
@@ -125,6 +129,9 @@ export function OrderListDetailRow({ order, changeHandler, checkedInputs }) {
           <CheckCircleOutlineIcon
             style={{ color: `${order.data.confirmed ? "green" : "red"}` }}
           />
+          {deadLine && (
+            <div className=" text-blue-700 font-semibold">{"[PO]"}</div>
+          )}
           {order.data.title}
         </div>
         <div className="">

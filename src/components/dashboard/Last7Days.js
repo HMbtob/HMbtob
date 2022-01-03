@@ -14,7 +14,7 @@ export function Last7Days({ orders }) {
       <div className="text-xl font-semibold">최근 7일간 상품별 판매량</div>
       <LineChart
         width={1500}
-        height={600}
+        height={300}
         data={[
           ...new Set(
             orders
