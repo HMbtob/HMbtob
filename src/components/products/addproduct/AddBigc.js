@@ -22,8 +22,9 @@ const AddBigc = ({
   discripUrl,
   handleDiscrip,
   setDescr,
-  addBig,
   category,
+  addBig,
+  toggleBcSaveButton,
 }) => {
   return (
     <>
@@ -33,7 +34,6 @@ const AddBigc = ({
       >
         상품 추가
       </div>
-      {console.log(category)}
       <div className="bg-white p-10 border">
         {/* 상품명 */}
         <div className="grid grid-cols-4 p-2 items-center">
@@ -227,10 +227,11 @@ const AddBigc = ({
         </div>
         <button
           // type="submit"
-          onClick={addBig}
-          className="bg-gray-600 py-2 px-10 rounded 
-            text-gray-200 text-lg font-light
-             "
+          disabled={toggleBcSaveButton}
+          onClick={() => addBig()}
+          className={`${
+            toggleBcSaveButton ? "bg-gray-400" : "bg-gray-600"
+          } " py-2 px-10 rounded text-gray-200 text-lg font-light"`}
         >
           SAVE
         </button>

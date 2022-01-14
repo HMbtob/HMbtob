@@ -10,6 +10,7 @@ export function OrderListDetailRow({ order, changeHandler, checkedInputs }) {
   const preOrder = order.data.relDate.toDate() < today;
 
   const deadLine =
+    order.data.sku !== "AddOrder" &&
     order.data.createdAt.toDate() <= order.data.preOrderDeadline.toDate();
 
   const [price, setPrice] = useState(order.data.price);

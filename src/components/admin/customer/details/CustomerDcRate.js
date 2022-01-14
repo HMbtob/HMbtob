@@ -1,7 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
-import { saveDcRates } from "../utils/utils";
 
 export function CustomerDcRate({ user }) {
   const {

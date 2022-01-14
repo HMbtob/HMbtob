@@ -27,6 +27,7 @@ import { OrderListDetail } from "./components/orderlist/orderlistdetail/index";
 import { ShippingLists } from "./components/shippinglist";
 import { PickUpList2 } from "./components/pickuplist2";
 import { DashBoard } from "./components/dashboard";
+import { Invoice2 } from "./components/invoice2";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -270,6 +271,7 @@ function App() {
 
                   {/* b2b */}
                   <Route path="/pickuplist2" component={PickUpList2} />
+                  <Route path="/invoice2" component={Invoice2} />
                   <Route path="/invoice" component={Invoice} />
                   <Route path="/chat" component={InAdminChat} />
                   <Route path="/" component={DashBoard} />

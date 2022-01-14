@@ -6,11 +6,12 @@ import { OrderListDetailHeader } from "./OrderListDetailHeader";
 import { OrderListDetailPrice } from "./OrderListDetailPrice";
 import { AddOrder } from "./AddOrder";
 import { ToTals } from "./ToTals";
-import { CSVLink } from "react-csv";
+// import { CSVLink } from "react-csv";
 import { ContentsToPrint } from "./ContentsToPrint";
 import { Credit } from "./credit";
 import { ShippingListsHeader } from "../../shippinglist/ShippingListsHeader";
 import { Addresses } from "./Addresses";
+import { AddProduct } from "./addproduct";
 
 export function OrderListDetail({ match, location }) {
   const { id } = match.params;
@@ -177,6 +178,7 @@ export function OrderListDetail({ match, location }) {
           ? 1
           : 0;
       });
+    console.log(checkedItems);
     if (checkedItems.length === 0) {
       return alert("인쇄할 상품을 선택해 주세요.");
     }
@@ -278,8 +280,9 @@ export function OrderListDetail({ match, location }) {
           className="text-center text-xl bg-gray-800 py-1 
           rounded-sm font-bold text-gray-100 mb-5 w-full"
         >
-          주문 확인 ({orders[0]?.data?.nickName})
+          추가 주문 ({orders[0]?.data?.nickName})
         </div>
+        <AddProduct id={id} add={add} />
 
         <OrderListDetailHeader handleSort={handleSort} />
         {orders

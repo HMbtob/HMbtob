@@ -11,7 +11,6 @@ export function DashBoard() {
   const [orders, setOrders] = useState([]);
   const [ordersInShippings, setOrdersInShippings] = useState([]);
   const [users, setUsers] = useState([]);
-
   const [total, setTotal] = useState([]);
 
   useEffect(() => {

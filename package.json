@@ -2,7 +2,7 @@
   "name": "interasia",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://api.bigcommerce.com/",
+  "proxy": "https://api.bigcommerce.com",
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^29.1.0",
     "@ckeditor/ckeditor5-image": "^29.1.0",

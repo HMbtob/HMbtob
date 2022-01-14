@@ -6,6 +6,7 @@ import { InitDataContext } from "../../../App";
 import { db } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
 import AddBigc from "./AddBigc";
+import { useCallback } from "react";
 
 const AddProduct = ({ location }) => {
   console.log(location?.state?.product);
@@ -17,13 +18,8 @@ const AddProduct = ({ location }) => {
   const [cats, setCats] = useState([]);
   const [parentCat, setParentCat] = useState([]);
   const [childCat, setChildCat] = useState([]);
-  const [lastId, setLastId] = useState("");
 
-  const [toggleSaveButton, setToggleSaveButton] = useState(false);
-
-  const onSaveButtonClick = () => {
-    setToggleSaveButton(!toggleSaveButton);
-  };
+  const [toggleBcSaveButton, setToggleBcSaveButton] = useState(false);
 
   // 썸넬
 
@@ -141,7 +137,6 @@ const AddProduct = ({ location }) => {
   const {
     sku,
     title,
-    purchasePrice,
     artist,
     ent,
     category,
@@ -167,32 +162,15 @@ const AddProduct = ({ location }) => {
     brandName,
     customFieldName,
   } = form;
-  const callCats = async () => {
+  const callCats = useCallback(async () => {
     await axios
       .get(
         `https://us-central1-interasiastock.cloudfunctions.net/app/big/getcategory`
       )
       .then(cats => setCats(cats.data.data))
       .catch(error => console.log(error));
-  };
+  }, []);
 
-  const callLastId = async () => {
-    await axios
-      .get(
-        `https://us-central1-interasiastock.cloudfunctions.net/app/big/getlastproductid`,
-
-        {
-          params: { sort: "id", direction: "desc", limit: 1 },
-          headers: {
-            "x-auth-token": "23t2vx6zwiq32xa8b0uspfo7mb7181x",
-            accept: "application/json",
-            "content-type": "application/json",
-          },
-        }
-      )
-      .then(ids => setLastId(ids.data.data))
-      .catch(error => console.log("id", error));
-  };
   // 섬넬
   const getImages = async () => {
     if (title.length < 1) {
@@ -209,7 +187,10 @@ const AddProduct = ({ location }) => {
           },
         }
       )
-      .then(res => setThumbnailUrl(res.data))
+      .then(res => {
+        console.log(res);
+        setThumbnailUrl(res.data);
+      })
       .catch(e => console.log(e));
   };
   // 디스크립션
@@ -232,118 +213,125 @@ const AddProduct = ({ location }) => {
       .catch(e => console.log(e));
   };
 
-  const addBig = async () => {
+  const Appp = async id => {
     try {
-      const res = await axios.post(
-        "https://us-central1-interasiastock.cloudfunctions.net/app/big/addproduct",
-        {
-          name: title,
-          price: Number(
+      await db
+        .collection("products")
+        .doc(String(id))
+        .set({
+          sku,
+          purchasePrice: Number(
             category === "cd"
-              ? (price / 1100).toFixed(2)
-              : category === "officialStore"
-              ? (price / 0.8 / 1100).toFixed(2)
-              : (price / 0.9 / 1100).toFixed(2)
+              ? price * 0.83
+              : category === "officialStore" || category === "beauty"
+              ? price
+              : price * 0.93
           ),
-          weight: Number(weight / 1000),
-          type: "physical",
-          custom_fields: [{ name: customFieldName, value: relDate }],
-          images: [{ is_thumbnail: true, image_url: thumbnailUrl }],
-          sku: sku,
-          upc: barcode,
-          inventory_tracking: "product",
-          inventory_level: inventoryLevel,
-          brand_name: brandName,
-          categories: checkedInputs,
-          description: `${descr} <img src=${discripUrl} alt="" />`,
-        }
-      );
-      await onSaveButtonClick();
-      await alert("빅커머스 추가완료. 5초 후에 등록해주세요.");
+          price: Number(price),
+          createdAt: new Date(),
+          artist,
+          ent,
+          x: Number(x),
+          stock: stock,
+          y: Number(y),
+          z: Number(z),
+          title: title.trim(),
+          thumbNail: thumbnailUrl,
+          weight: Number(weight),
+          category,
+          relDate: new Date(relDate),
+          preOrderDeadline: new Date(preOrderDeadline),
+          options: {
+            poster,
+            pob,
+            photocard,
+            weverseGift,
+            interAsiaPhotocard,
+          },
+          barcode,
+          reStockable: reStockable,
+          exposeToB2b: exposeToB2b,
+          bigC: id,
+          productMemo: [
+            {
+              memo: "add product",
+              date: new Date(),
+              writer: "server",
+            },
+          ],
+          limitedStock: false,
+          totalStock: stock,
+          totalSold: 0,
+          stockHistory: [
+            {
+              type: "add product on list",
+              writer: user.nickName || user.email,
+              amount: 0,
+              date: new Date(),
+            },
+          ],
+          descr,
+          discripUrl,
+        });
+      await reset();
+      alert("추가완료");
+      history.push("/listproduct");
     } catch (e) {
-      if (e) console.log("post err", e);
-      await alert(
-        "빅커머스 실패. 잠시 후에 시도하거나 sku, barcode, title을 수정해 주세요"
-      );
+      setToggleBcSaveButton(false);
+      console.log("get added product err", e);
     }
   };
 
-  const Appp = async e => {
-    e.preventDefault();
-
-    await callLastId();
-    // setInterval(async () => {
-    if (lastId) {
-      try {
-        await db
-          .collection("products")
-          .doc(`${lastId[0]?.id}`)
-          .set({
-            sku,
-            purchasePrice: Number(
-              category === "cd"
-                ? price * 0.83
-                : category === "officialStore" || category === "beauty"
-                ? price
-                : price * 0.93
-            ),
-            price: Number(price),
-            createdAt: new Date(),
-            artist,
-            ent,
-            x: Number(x),
-            stock: stock,
-            y: Number(y),
-            z: Number(z),
-            title: title.trim(),
-            thumbNail: thumbnailUrl,
-            weight: Number(weight),
-            category,
-            relDate: new Date(relDate),
-            preOrderDeadline: new Date(preOrderDeadline),
-            options: {
-              poster,
-              pob,
-              photocard,
-              weverseGift,
-              interAsiaPhotocard,
-            },
-            barcode,
-            reStockable: reStockable,
-            exposeToB2b: exposeToB2b,
-            bigC: lastId[0],
-            productMemo: [
-              {
-                memo: "add product",
-                date: new Date(),
-                writer: "server",
-              },
-            ],
-            limitedStock: false,
-            totalStock: stock,
-            totalSold: 0,
-            stockHistory: [
-              {
-                type: "add product on list",
-                writer: user.nickName || user.email,
-                amount: 0,
-                date: new Date(),
-              },
-            ],
-            descr,
-            discripUrl,
-          });
-      } catch (e) {
-        if (e) console.log("get added product err", e);
-      }
-
-      await reset();
-      await alert("추가완료");
-      history.push("/listproduct");
-    } else {
-      alert("잠시 후 다시 시도해주세요.");
-    }
-    // }, 2000);
+  const addBig = async () => {
+    setToggleBcSaveButton(true);
+    const data = {
+      name: title,
+      price: Number(
+        category === "cd"
+          ? (price / 1100).toFixed(2)
+          : category === "officialStore"
+          ? (price / 0.8 / 1100).toFixed(2)
+          : (price / 0.9 / 1100).toFixed(2)
+      ),
+      weight: Number(weight / 1000),
+      type: "physical",
+      custom_fields_name: customFieldName,
+      custom_fields_Value: relDate,
+      is_thumbnail: true,
+      image_url: thumbnailUrl,
+      sku: sku,
+      upc: barcode,
+      inventory_tracking: "product",
+      inventory_level: Number(inventoryLevel),
+      brand_name: brandName,
+      categories: checkedInputs,
+      description: `${descr} <img src=${discripUrl} alt="" />`,
+    };
+    await axios
+      .get(
+        `https://us-central1-interasiastock.cloudfunctions.net/app/big/addproduct`,
+        // `https://us-central1-interasiastock.cloudfunctions.net/app/big/getThumbnail`,
+        { params: data }
+      )
+      .then(response => {
+        if (response?.data?.id) {
+          // onSaveButtonClick();
+          return Appp(response.data.id);
+        } else if (response?.data?.errors) {
+          console.log("response.data.errors", response.data.errors);
+          setToggleBcSaveButton(false);
+          return alert(`${Object.values(response.data.errors)[0]}`);
+        } else {
+          console.log(response);
+          setToggleBcSaveButton(false);
+          alert("알 수 없는 오류. 관리자에세 문의해주세요.");
+        }
+      })
+      .catch(e => {
+        console.log("요청실패 오류 Catch", e);
+        setToggleBcSaveButton(false);
+        alert("알 수 없는 오류. 관리자에세 문의해주세요.");
+      });
   };
 
   useEffect(() => {
@@ -370,7 +358,7 @@ const AddProduct = ({ location }) => {
     <>
       <div className="w-3/5 m-auto my-20">
         <div
-          onClick={callLastId}
+          // onClick={callLastId}
           className="text-left text-2xl  
         text-gray-800 mb-1 ml-2 "
         >
@@ -395,6 +383,20 @@ const AddProduct = ({ location }) => {
           ))}
           {/* 날짜 인풋 */}
           <div className="grid grid-cols-4 p-2 items-center">
+            {/* {console.log("parentCat", parentCat)}
+            {console.log("childCat", childCat)}
+            {console.log("checkedInputs", checkedInputs)}
+            {console.log("title", title)}
+
+            {console.log("weight", weight)}
+            {console.log("customFieldName", customFieldName)}
+            {console.log("relDate", relDate)}
+            {console.log("thumbnailUrl", thumbnailUrl)}
+            {console.log("sku", sku)}
+            {console.log("barcode", barcode)}
+            {console.log("inventoryLevel", inventoryLevel)}
+            {console.log("brandName", brandName)}
+            {console.log("checkedInputs", checkedInputs)} */}
             <div className="text-gray-600 text-right  mr-3">출시일</div>
             <input
               required
@@ -526,17 +528,17 @@ const AddProduct = ({ location }) => {
             ))}
           </div>
           <div className="flex justify-end">
-            <button
+            {/* <button
               disabled={!toggleSaveButton}
               // type="submit"
-              onClick={Appp}
+              onClick={() => Appp()}
               className={`${
                 !toggleSaveButton ? "bg-gray-300" : "bg-gray-600"
               } py-2 px-10 rounded 
             text-gray-200 text-lg font-light`}
             >
               SAVE
-            </button>
+            </button> */}
           </div>
         </div>
         {/* 빅커머스 */}
@@ -561,8 +563,10 @@ const AddProduct = ({ location }) => {
           discripUrl={discripUrl}
           handleDiscrip={handleDiscrip}
           setDescr={setDescr}
-          addBig={addBig}
           category={category}
+          descr={descr}
+          addBig={addBig}
+          toggleBcSaveButton={toggleBcSaveButton}
         />
       </div>
     </>

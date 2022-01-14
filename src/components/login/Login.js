@@ -16,16 +16,18 @@ function Login() {
     auth
       .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
       .then(() => {
-        return auth
-          .signInWithEmailAndPassword(
-            emailRef.current.value,
-            passwordRef.current.value
-          )
-          .then(userC => {
-            const user = userC.user;
-            // console.log(user);
-          })
-          .catch(e => console.log(e));
+        return (
+          auth
+            .signInWithEmailAndPassword(
+              emailRef.current.value,
+              passwordRef.current.value
+            )
+            // .then(userC => {
+            //   const user = userC.user;
+            //   // console.log(user);
+            // })
+            .catch(e => console.log(e))
+        );
       })
       // .then(authUser => console.log(authUser))
       .catch(e => {

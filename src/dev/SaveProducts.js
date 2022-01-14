@@ -8,11 +8,11 @@ import axios from "axios";
 const SaveProducts = () => {
   const state = useContext(InitDataContext);
   const { allOrderProductsList, user } = state;
-  console.log(allOrderProductsList);
+  const today = new Date();
   const CLIENT_EMAIL = "forsheet@interasiastock.iam.gserviceaccount.com";
 
   const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
-
+  console.log(allOrderProductsList);
   const batch = db.batch();
   const testBatch = async () => {
     // 모든 상품정보 가져오기 에서 상품 아이디 가져오기
@@ -29,8 +29,9 @@ const SaveProducts = () => {
     // 행으로 입력하기
     const rows = await sheet.getRows();
 
+    console.log(allOrderProductsList);
     console.log("반복문 시작");
-    for (let i = 3223; i <= 3225; i++) {
+    for (let i = 3547; i <= 3548; i++) {
       console.log(i, "번째");
 
       const productId = allOrderProductsList?.data[i]?.id;
@@ -73,7 +74,7 @@ const SaveProducts = () => {
             ? field?.data?.data[0]?.value
             : "2024-01-01"
         )
-        .catch(error => console.log(error));
+        .catch(error => console.log(error.response));
       console.log(relDate);
 
       relDate =
@@ -164,7 +165,6 @@ const SaveProducts = () => {
       //   ? "20" + relDate
       //   : "2023-01-01";
 
-      console.log(relDate);
       // 썸네일 주소
       const thumb = await axios
         .get(`/stores/7uw7zc08qw/v3/catalog/products/${productId}/images`, {
@@ -186,6 +186,7 @@ const SaveProducts = () => {
       await batch.set(productRef, {
         sku: allOrderProductsList?.data[i]?.sku || "...",
         purchasePrice: pPrice || 0,
+        createdAt: today,
         price: price || 0,
         artist: "...",
         ent: "...",
@@ -298,26 +299,26 @@ const SaveProducts = () => {
         test{" "}
       </button>
       <button
-        onClick={() => console.log(allOrderProductsList.data[3225])}
-        className="text-left text-2xl  
-         mb-1 ml-2 bg-gray-500 text-gray-200 p-1 rounded m-1"
-      >
-        상품 추가
-      </button>
-      {/* <button
-        onClick={() => console.log(allOrderProductsList[982])}
+        onClick={() => console.log(allOrderProductsList.data[3541])}
         className="text-left text-2xl  
          mb-1 ml-2 bg-gray-500 text-gray-200 p-1 rounded m-1"
       >
         상품 추가
       </button>
       <button
-        onClick={() => console.log(allOrderProductsList[983])}
+        onClick={() => console.log(allOrderProductsList.data[3542])}
         className="text-left text-2xl  
          mb-1 ml-2 bg-gray-500 text-gray-200 p-1 rounded m-1"
       >
         상품 추가
-      </button> */}
+      </button>
+      <button
+        onClick={() => console.log(allOrderProductsList.data[3543])}
+        className="text-left text-2xl  
+         mb-1 ml-2 bg-gray-500 text-gray-200 p-1 rounded m-1"
+      >
+        상품 추가
+      </button>
     </>
   );
 };

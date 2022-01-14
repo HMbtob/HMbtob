@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { InitDataContext, InitDispatchContext } from "../../../App";
 import OrderListRow from "./OrderListRow";
@@ -7,7 +7,6 @@ import RestoreIcon from "@material-ui/icons/Restore";
 import AddCircleOutlinedIcon from "@material-ui/icons/AddCircleOutlined";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import Paging from "../../b2bshop/b2bshop/mobile/Paging";
-import { SearchOrder } from "../../../utils/SearchUtils";
 
 const OrderList = ({ location, history }) => {
   const state = useContext(InitDataContext);
@@ -135,16 +134,14 @@ const OrderList = ({ location, history }) => {
     }
     setOrder(
       orders
-        .filter(
-          doc =>
+        .filter(doc =>
           searchQuery.split(" ").length === 1
-          ? doc.data.orderNumber
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
+            ? doc.data.orderNumber
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
               doc.data.orderNumber
-              .toUpperCase()
-              .includes(searchQuery.toUpperCase()) 
-              ||
+                .toUpperCase()
+                .includes(searchQuery.toUpperCase()) ||
               // doc.data.customer
               // .toLowerCase()
               // .includes(searchQuery.toLowerCase()) ||
@@ -152,44 +149,44 @@ const OrderList = ({ location, history }) => {
               // .toUpperCase()
               // .includes(searchQuery.toUpperCase()) ||
               doc?.data?.nickName
-              ?.toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
+                ?.toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
               doc?.data?.nickName
-              ?.toUpperCase()
-              .includes(searchQuery.toUpperCase()) 
-          : searchQuery.split(" ").length === 2
-          ?
-            doc.data.orderNumber
-              .toLowerCase()
-              .includes(searchQuery.split(" ")[0].toLowerCase()) ||
-            doc.data.orderNumber
-              .toLowerCase()
-              .includes(searchQuery.split(" ")[1].toLowerCase()) ||
-            // doc.data.customer
-            //   .toLowerCase()
-            //   .includes(searchQuery.split(" ")[0].toLowerCase()) ||
-            // doc.data.customer
-            //   .toLowerCase()
-            //   .includes(searchQuery.split(" ")[1].toLowerCase()) ||
-            // doc.data.customer
-            //   .toUpperCase()
-            //   .includes(searchQuery.split(" ")[0].toUpperCase()) ||
-            // doc.data.customer
-            //   .toUpperCase()
-            //   .includes(searchQuery.split(" ")[1].toUpperCase()) ||
-            (doc?.data?.nickName
-              ?.toLowerCase()
-              .includes(searchQuery.split(" ")[0].toLowerCase()) ||
-            doc?.data?.nickName
-              ?.toUpperCase()
-              .includes(searchQuery.split(" ")[0].toUpperCase()) ) &&
-            (doc?.data?.nickName
-              ?.toLowerCase()
-              .includes(searchQuery.split(" ")[1].toLowerCase()) ||
-            doc?.data?.nickName
-              ?.toUpperCase()
-              .includes(searchQuery.split(" ")[1].toUpperCase()))
-        : "" )
+                ?.toUpperCase()
+                .includes(searchQuery.toUpperCase())
+            : searchQuery.split(" ").length === 2
+            ? doc.data.orderNumber
+                .toLowerCase()
+                .includes(searchQuery.split(" ")[0].toLowerCase()) ||
+              doc.data.orderNumber
+                .toLowerCase()
+                .includes(searchQuery.split(" ")[1].toLowerCase()) ||
+              // doc.data.customer
+              //   .toLowerCase()
+              //   .includes(searchQuery.split(" ")[0].toLowerCase()) ||
+              // doc.data.customer
+              //   .toLowerCase()
+              //   .includes(searchQuery.split(" ")[1].toLowerCase()) ||
+              // doc.data.customer
+              //   .toUpperCase()
+              //   .includes(searchQuery.split(" ")[0].toUpperCase()) ||
+              // doc.data.customer
+              //   .toUpperCase()
+              //   .includes(searchQuery.split(" ")[1].toUpperCase()) ||
+              ((doc?.data?.nickName
+                ?.toLowerCase()
+                .includes(searchQuery.split(" ")[0].toLowerCase()) ||
+                doc?.data?.nickName
+                  ?.toUpperCase()
+                  .includes(searchQuery.split(" ")[0].toUpperCase())) &&
+                (doc?.data?.nickName
+                  ?.toLowerCase()
+                  .includes(searchQuery.split(" ")[1].toLowerCase()) ||
+                  doc?.data?.nickName
+                    ?.toUpperCase()
+                    .includes(searchQuery.split(" ")[1].toUpperCase())))
+            : ""
+        )
         .filter(doc =>
           inChargeState.length === 0 && orderState.length === 0
             ? doc

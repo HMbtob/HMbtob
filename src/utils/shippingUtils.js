@@ -83,17 +83,26 @@ export const onSubmitToShip = async (
       userId: orders[0]?.data.userId,
     });
   // 생성한 발송에 선택한 상품 콜렉션에 추가
-  checkedItems.map(
-    async order =>
-      await db
-        .collection("accounts")
-        .doc(orders[0]?.data.userId)
-        .collection("shippingsInAccount")
-        .doc(saveId)
-        .collection("orderListInShippings")
-        .doc()
-        .set({ ...order.data })
-  );
+  checkedItems.map(async order => {
+    await db
+      .collection("accounts")
+      .doc(orders[0]?.data.userId)
+      .collection("shippingsInAccount")
+      .doc(saveId)
+      .collection("orderListInShippings")
+      .doc(order.id)
+      .set({ ...order.data });
+    await db
+      .collection("products")
+      .doc(order.data.productId)
+      .collection("newStockHistory")
+      .doc(order.id)
+      .update({
+        shipped: true,
+        shippedQty: order.data.quan,
+        shippedDate: today,
+      });
+  });
   // 추가후 선택한 상품 주문에서 삭제
   checkedItems.map(
     async order =>

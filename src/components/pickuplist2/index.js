@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 
 export function PickUpList2({ location }) {
-  const { checkedItems, ids } = location.state;
+  const { checkedItems } = location.state;
   // const { state, orders } = location;
   const [pickUpLists] = useState(checkedItems);
   const history = useHistory();

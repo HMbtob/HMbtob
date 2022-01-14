@@ -22,7 +22,7 @@ import LockOpenIcon from "@material-ui/icons/LockOpen";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 
-import { InitDataContext, InitDispatchContext } from "../../../App";
+import { InitDataContext } from "../../../App";
 
 const ListProductRow = ({
   id,
@@ -113,7 +113,9 @@ const ListProductRow = ({
   };
 
   const [relDate2, setRelDate2] = useState(
-    new Date(product.data.relDate.seconds * 1000).toISOString().substring(0, 10)
+    new Date(product?.data?.relDate?.seconds * 1000)
+      ?.toISOString()
+      ?.substring(0, 10)
   );
 
   const handleRelDate2 = e => {
@@ -226,6 +228,7 @@ const ListProductRow = ({
               stockHistory={product.data.stockHistory}
               bigTotalSold={bigTotalSold}
               totalStock={totalStock}
+              id={id}
             />
           </Modal>
           <button onClick={includedProduct} className="cursor-pointer">

@@ -3,7 +3,6 @@ import { InitDataContext } from "../../../../App";
 import { db } from "../../../../firebase";
 import useInputs from "../../../../hooks/useInput";
 import { CustomerCredit } from "./CustomerCredit";
-import { CustomerDcRate } from "./CustomerDcRate";
 import { CustomerDcAmount } from "./CustomerDcAmount";
 import { CustomerShippingRate } from "./CustomerShippingRate";
 import { CustomerSurvay } from "./CustomerSurvay";
@@ -397,9 +396,6 @@ export function CustomerDetails({ match }) {
         >
           수정하기
         </button>
-        {/* <div>line</div>
-        <CustomerDcRate user={user} />
-        <div>line</div> */}
         <CustomerDcAmount user={user} />
         <CustomerShippingRate user={user} />
         <CustomerCredit user={user} />

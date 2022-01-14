@@ -47,9 +47,13 @@ export function OrderListDetailPrice({
       }, 0)
     );
     // 체크된 아이템 총가격
-    const totalPrice = checkedItems.reduce((a, c) => {
-      return a + Number(c.data.totalPrice);
-    }, 0);
+    const totalPrice = Number(
+      checkedItems
+        .reduce((a, c) => {
+          return a + Number(c.data.totalPrice);
+        }, 0)
+        .toFixed(0)
+    );
 
     // 체크된 아이템 총무게
     const totalWeight =

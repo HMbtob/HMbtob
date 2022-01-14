@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { db } from "../../../firebase";
 import { ErrorMessage } from "@hookform/error-message";
+import uuid from "react-uuid";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
@@ -35,9 +36,9 @@ export function AddOrder({ id, from }) {
         memo: data.memo || "",
         nickName: user?.nickName || "customer",
         preOrderDeadline: new Date(),
-        price: data.price,
-        productId: "AddOrder",
-        quan: data.ea,
+        price: Number(data.price),
+        productId: uuid(),
+        quan: Number(data.ea),
         relDate: new Date(),
         shipped: false,
         shippingType: "dhl",

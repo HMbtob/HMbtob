@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import uuid from "react-uuid";
 import { db } from "../firebase";
 
 export function OrderListToNew() {
   const [accounts, setAccounts] = useState([]);
-  const [shippings, setShippings] = useState([]);
   const [orders, setOrders] = useState([]);
 
   const asdasdasdasd = () => {
@@ -108,9 +106,6 @@ export function OrderListToNew() {
       .onSnapshot(snapshot =>
         setOrders(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
       );
-    db.collection("shipping").onSnapshot(snapshot =>
-      setShippings(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
-    );
   }, []);
 
   useEffect(() => {

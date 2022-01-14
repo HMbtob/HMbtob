@@ -47,6 +47,26 @@ export function Last7Days({ orders }) {
   return (
     <div className="flex flex-col w-full items-center mt-12">
       <div className="text-xl font-semibold">최근 7일간 상품별 판매량</div>
+      {console.log([
+        ...new Set(
+          orders
+            .sort((a, b) => {
+              return a?.title?.trim() < b?.title?.trim()
+                ? -1
+                : a?.title?.trim() > b?.title?.trim()
+                ? 1
+                : 0;
+            })
+            .filter(order => {
+              let today = new Date().getTime();
+              let gap =
+                new Date(order.createdAt.seconds * 1000).getTime() - today;
+              let day = Math.ceil(gap / (1000 * 60 * 60 * 24));
+              return day > -8;
+            })
+            .map(li => li.title.trim())
+        ),
+      ])}
       <LineChart
         width={1500}
         height={300}

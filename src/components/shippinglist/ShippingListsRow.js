@@ -9,11 +9,6 @@ import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined";
 import { Link } from "react-router-dom";
 
 export function ShippingListsRow({ shipping, hiddenAll }) {
-  // const sort = orderListInShippings?.length;
-  // const totalQty = orderListInShippings?.reduce((a, c) => {
-  //   return a + c.data.quan;
-  // }, 0);
-
   const [forHidden, setForHidden] = useState(true);
   const handleHidden = () => {
     setForHidden(!forHidden);
@@ -26,6 +21,8 @@ export function ShippingListsRow({ shipping, hiddenAll }) {
     setForFix(!forFix);
   };
 
+  const [date, setDate] = useState(toDate(shipping.data.shippedDate.seconds));
+
   return (
     <div className="border-b border-r border-l w-full border-gray-500">
       <div
@@ -34,7 +31,26 @@ export function ShippingListsRow({ shipping, hiddenAll }) {
        py-1 bg-white"
       >
         <div>{shipping.data.shippingNumber}</div>
-        <div>{toDate(shipping.data.shippedDate.seconds)}</div>
+        <div>
+          {!forFix ? (
+            toDate(shipping.data.shippedDate.seconds)
+          ) : (
+            <input
+              className="col-span-3 border h-9 pl-3"
+              type="date"
+              onChange={e => {
+                setDate(e.target.value);
+                db.collection("accounts")
+                  .doc(shipping.data.userId)
+                  .collection("shippingsInAccount")
+                  .doc(shipping.id)
+                  .update({ shippedDate: new Date(e.target.value) });
+                handleForFix();
+              }}
+              value={date}
+            />
+          )}
+        </div>
         <div>{shipping.data.name}</div>
         <div className="flex flex-row items-center">
           {shipping?.data?.trackingNumber?.split(",")?.length > 1 ? (
@@ -86,16 +102,16 @@ export function ShippingListsRow({ shipping, hiddenAll }) {
         <div className="flex flex-row items-center">
           {shipping.data.nickName}
           <CSVLinkComponent shipping={shipping} />
-          {/* <Link
+          <Link
             to={{
               pathname: "/invoice2",
               // state: checkedInputs,
               // orders,
-              // order,
+              shipping,
             }}
           >
             <AssignmentOutlinedIcon />
-          </Link> */}
+          </Link>
         </div>
         <div>{shipping.data.shippingType}</div>
         <div>{shipping.data.country} </div>

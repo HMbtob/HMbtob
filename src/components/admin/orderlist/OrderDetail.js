@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import firebase from "firebase";
 import { useHistory } from "react-router";
 import { InitDataContext } from "../../../App";
@@ -221,14 +221,17 @@ const OrderDetail = ({ match }) => {
   }
 
   // 어느나라에 걸리는지
-  const zone =
-    z && country.length > 0 && country !== "korea"
-      ? Object.keys(
-          z.find(doc =>
-            Object.values(doc).find(asd => asd.country.includes(country))
+  const zone = useMemo(
+    () =>
+      z && country.length > 0 && country !== "korea"
+        ? Object.keys(
+            z.find(doc =>
+              Object.values(doc).find(asd => asd.country.includes(country))
+            )
           )
-        )
-      : ["zone1"];
+        : ["zone1"],
+    [z, country]
+  );
   // 배송비 가격
   const [preFee, setPreFee] = useState(order?.data.shippingFee);
   const handleFee = e => {
@@ -305,9 +308,6 @@ const OrderDetail = ({ match }) => {
 
   // amount price
   const [preAmountPrice, setPreAmountPrice] = useState(order?.data.amountPrice);
-  const handlePreAmountPrice = e => {
-    setPreAmountPrice(Number(e.target.value));
-  };
 
   // 재계산 amount
   const amountPrice = totalPrice + fee;
@@ -379,7 +379,7 @@ const OrderDetail = ({ match }) => {
         return t;
       }, [])
     );
-  }, [checkedInputs, orderNumberSelect]);
+  }, [checkedInputs, orderNumberSelect, order.data.list]);
   // console.log(listToMove)
 
   // 주문간 상품 이동
@@ -600,7 +600,7 @@ const OrderDetail = ({ match }) => {
         order.data.currency
       )
     );
-  }, [checkedInputs, order.data.list]);
+  }, [checkedInputs, order.data.list, order.data.currency]);
   const saveCredit = () => {
     if (handleCredit === 0) {
       alert("올바른 숫자를 입력해 주세요");
@@ -683,9 +683,10 @@ const OrderDetail = ({ match }) => {
   }, [
     inputWeight,
     z,
-    country.length,
+    country,
     checkedWeight,
     zone,
+    num,
     num2,
     num3,
     order.data.currency,
@@ -693,6 +694,7 @@ const OrderDetail = ({ match }) => {
     order.data.shippingRate,
     shippingType,
     ItemPrice,
+    totalWeight,
   ]);
   return (
     // dep-1

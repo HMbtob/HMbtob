@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { InitDataContext, InitDispatchContext } from "../../../App";
 import ListProductRow from "./ListProductRow";
 import Paging from "../../b2bshop/b2bshop/mobile/Paging";
@@ -63,30 +63,36 @@ const ListProduct = ({ history }) => {
     const { value } = e.target;
     dispatch({ type: "SEARCH_QUERY", searchQuery: value });
   };
-  // 검색하기
 
-  const searchProducts = e => {
-    if (e) {
-      e.preventDefault();
-    }
-    setPreProduct(SearchProduct(products, searchQuery));
-  };
+  // 검색하기
+  const searchProducts = useCallback(
+    e => {
+      if (e) {
+        e.preventDefault();
+      }
+      setPreProduct(SearchProduct(products, searchQuery));
+    },
+    [products, searchQuery]
+  );
 
   // 초기화
-  const handleClear = e => {
-    if (e) {
-      e.preventDefault();
-    }
-    dispatch({ type: "ORDER_STATE", orderState: "" });
-    dispatch({ type: "INCHARGESTATE", inChargeState: "" });
-    dispatch({ type: "CURRENT_PAGE", currentPage: 1 });
-    dispatch({ type: "SEARCH_QUERY", searchQuery: "" });
-    setPreProduct(
-      products.sort((a, b) => {
-        return new Date(b.data.createdAt) - new Date(a.data.createdAt);
-      })
-    );
-  };
+  const handleClear = useCallback(
+    e => {
+      if (e) {
+        e.preventDefault();
+      }
+      dispatch({ type: "ORDER_STATE", orderState: "" });
+      dispatch({ type: "INCHARGESTATE", inChargeState: "" });
+      dispatch({ type: "CURRENT_PAGE", currentPage: 1 });
+      dispatch({ type: "SEARCH_QUERY", searchQuery: "" });
+      setPreProduct(
+        products.sort((a, b) => {
+          return new Date(b.data.createdAt) - new Date(a.data.createdAt);
+        })
+      );
+    },
+    [products]
+  );
 
   // 전체 펼치기
   const [hiddenAll, setHiddenAll] = useState(true);
@@ -116,7 +122,7 @@ const ListProduct = ({ history }) => {
   return (
     <div className="flex flex-col w-full">
       <form
-        onSubmit={searchProducts}
+        onSubmit={e => searchProducts(e)}
         className="top-2 left-40 absolute z-50 flex flex-row
         "
       >
