@@ -1,5 +1,6 @@
 import React from "react";
 import CreatedAt from "./CreatedAt";
+import ThermalPrinter from "./ThermalPrinter";
 import Excel from "./Excel";
 import { NewAddress } from "./NewAddress";
 import Order from "./Order";
@@ -9,6 +10,8 @@ import ShippingFee from "./ShippingFee";
 const Dev = () => {
   return (
     <div className="mt-20">
+      {/* <Epson /> */}
+      <ThermalPrinter />
       <Order />
       <Excel />
       <ShippingFee />

@@ -73,6 +73,7 @@ export function CreditRow({ credit, id, user }) {
             <BuildIcon style={{ color: "gray" }} />
           </button>
         </div>
+        {console.log(id)}
         <div className="col-span-3 border-r py-1">
           {toDate(credit.data.createdAt.seconds)}
         </div>

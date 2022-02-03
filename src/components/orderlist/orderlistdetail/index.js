@@ -132,7 +132,7 @@ export function OrderListDetail({ match, location }) {
   const handleSort = e => {
     try {
       setForSort({
-        sortBy: e.target.id || "title",
+        sortBy: e.target.id,
         order: !forSort.order,
       });
     } catch (e) {
@@ -287,9 +287,23 @@ export function OrderListDetail({ match, location }) {
         <OrderListDetailHeader handleSort={handleSort} />
         {orders
           .filter(order => order.data.pickingUp !== true)
+          .reduce((a, c, i) => {
+            let before =
+              i === 0
+                ? new Date(c.data.createdAt.seconds * 1000)
+                    .toISOString()
+                    .substring(0, 10)
+                : new Date(a[i - 1].data.createdAt.seconds * 1000)
+                    .toISOString()
+                    .substring(0, 10);
+            c.data.before = before;
+            a.push(c);
+            return a;
+          }, [])
           .map((order, i) => (
             <React.Suspense key={i} fallback={<div>Loading...</div>}>
               <OrderListDetailRow
+                forSort={forSort}
                 order={order}
                 changeHandler={changeHandler}
                 checkedInputs={checkedInputs}
@@ -306,9 +320,23 @@ export function OrderListDetail({ match, location }) {
         <OrderListDetailHeader handleSort={handleSort} />
         {orders
           .filter(order => order.data.pickingUp === true)
+          .reduce((a, c, i) => {
+            let before =
+              i === 0
+                ? new Date(c.data.createdAt.seconds * 1000)
+                    .toISOString()
+                    .substring(0, 10)
+                : new Date(a[i - 1].data.createdAt.seconds * 1000)
+                    .toISOString()
+                    .substring(0, 10);
+            c.data.before = before;
+            a.push(c);
+            return a;
+          }, [])
           .map((order, i) => (
             <React.Suspense key={i} fallback={<div>Loading...</div>}>
               <OrderListDetailRow
+                forSort={forSort}
                 order={order}
                 changeHandler={changeHandler}
                 checkedInputs={checkedInputs}

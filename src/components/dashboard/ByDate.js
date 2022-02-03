@@ -19,26 +19,7 @@ class CustomizedLabel extends PureComponent {
   }
 }
 
-export function ByDate({ orders }) {
-  const monthDate = [
-    ...new Set(
-      orders
-        ?.sort((a, b) => {
-          return a?.createdAt < b?.createdAt
-            ? -1
-            : a?.createdAt > b?.createdAt
-            ? 1
-            : 0;
-        })
-        .map(
-          order =>
-            `${
-              new Date(order.createdAt.seconds * 1000).getMonth() + 1
-            }-${new Date(order.createdAt.seconds * 1000).getDate()}`
-        )
-    ),
-  ];
-
+export function ByDate({ byDate }) {
   return (
     <div className="flex flex-col w-full items-center mt-12">
       <div className="text-xl font-semibold">일별 판매량</div>
@@ -46,32 +27,7 @@ export function ByDate({ orders }) {
       <LineChart
         width={1500}
         height={300}
-        data={monthDate.map(d =>
-          orders
-            ?.sort((a, b) => {
-              return a?.createdAt < b?.createdAt
-                ? -1
-                : a?.createdAt > b?.createdAt
-                ? 1
-                : 0;
-            })
-            .map(order => ({
-              monthDate: `${
-                new Date(order.createdAt.seconds * 1000).getMonth() + 1
-              }-${new Date(order.createdAt.seconds * 1000).getDate()}`,
-              quan: order.quan,
-            }))
-            .filter(f => f.monthDate === d && f.quan < 10000)
-            .reduce(
-              (a, c) => {
-                return {
-                  monthDate: c.monthDate,
-                  quan: Number(a.quan) + Number(c.quan),
-                };
-              },
-              { monthDate: "", quan: 0 }
-            )
-        )}
+        data={byDate}
         syncId="anyId"
         margin={{
           top: 10,

@@ -5,9 +5,18 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 
-export function OrderListDetailRow({ order, changeHandler, checkedInputs }) {
+export function OrderListDetailRow({
+  order,
+  changeHandler,
+  checkedInputs,
+  forSort,
+}) {
   const today = new Date();
   const preOrder = order.data.relDate.toDate() < today;
+  const beforeDate =
+    new Date(order.data.createdAt.seconds * 1000)
+      .toISOString()
+      .substring(0, 10) === order.data.before;
 
   const deadLine =
     order.data.sku !== "AddOrder" &&
@@ -43,12 +52,12 @@ export function OrderListDetailRow({ order, changeHandler, checkedInputs }) {
           .collection("order")
           .doc(order.id)
           .delete();
-        alert("삭제되었습니다.");
+        return alert("삭제되었습니다.");
       } catch (e) {
         console.log(e);
+        alert("삭제를 실패했습니다.");
       }
     }
-    alert("삭제를 실패했습니다.");
   };
 
   const cancelOrder = async () => {
@@ -69,6 +78,7 @@ export function OrderListDetailRow({ order, changeHandler, checkedInputs }) {
 
   const pickingUpOrder = async () => {
     try {
+      changeHandler(false, order.id);
       await db
         .collection("accounts")
         .doc(order.data.customer || order.data.userId)
@@ -84,9 +94,9 @@ export function OrderListDetailRow({ order, changeHandler, checkedInputs }) {
     <div
       className={`${
         !preOrder ? "bg-red-100" : ""
-      } grid grid-cols-36 text-center border-r border-b border-l py-1 text-sm items-center ${
+      } border-gray-300 grid grid-cols-36 text-center border-r border-b border-l py-1 text-sm items-center ${
         order.data.canceled && "line-through"
-      }`}
+      } ${forSort.sortBy === "createdAt" && !beforeDate && "border-t-8"}`}
     >
       <div>
         <input
@@ -98,6 +108,7 @@ export function OrderListDetailRow({ order, changeHandler, checkedInputs }) {
           disabled={order.data.canceled}
         />
       </div>
+
       <div className="col-span-3">{order.data.country}</div>
       <div className="col-span-2">
         {new Date(order.data.createdAt.seconds * 1000)

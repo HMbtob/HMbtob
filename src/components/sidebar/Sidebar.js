@@ -36,12 +36,12 @@ const Sidebar = () => {
     { 상품추가: "/addproduct" },
     { 상품목록: "/listproduct" },
     // { 주문하기: "/b2bshop" },
-    { 주문확인: "/orderlist" },
-    { 배송관리: "/shippinglist" },
-    { 미발송건: "/unshipped" },
+    // { 주문확인: "/orderlist" },
+    // { 배송관리: "/shippinglist" },
+    // { 미발송건: "/unshipped" },
     { 고객관리: "/customerlist" },
     // { 고객문의: "/chat" },
-    { 상품판매량: "/orderproductslist" },
+    // { 상품판매량: "/orderproductslist" },
   ];
   return (
     //   d-1
@@ -75,7 +75,7 @@ const Sidebar = () => {
             {Object.keys(menu)}
           </div>
         ))}
-        <div
+        {/* <div
           onClick={() => history.push(`/chat`)}
           className="cursor-pointer hover:text-gray-50 
           flex flex-row justify-center items-center"
@@ -86,7 +86,7 @@ const Sidebar = () => {
               {unReadedQ.length}
             </div>
           )}
-        </div>
+        </div> */}
         <div
           onClick={() => history.push(`/orderlists`)}
           className="cursor-pointer hover:text-gray-50 
@@ -107,6 +107,20 @@ const Sidebar = () => {
           flex flex-row justify-center items-center"
         >
           STORE
+        </div>
+        <div
+          onClick={() => history.push(`/receiptprint`)}
+          className="cursor-pointer hover:text-gray-50 
+          flex flex-row justify-center items-center mt-36"
+        >
+          영수증인쇄
+        </div>
+        <div
+          onClick={() => history.push(`/orderproductslist`)}
+          className="cursor-pointer hover:text-gray-50 
+          flex flex-row justify-center items-center mt-"
+        >
+          상품판매량
         </div>
       </div>
     </div>

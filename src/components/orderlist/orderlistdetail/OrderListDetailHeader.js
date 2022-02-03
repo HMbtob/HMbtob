@@ -11,9 +11,14 @@ export function OrderListDetailHeader({ handleSort }) {
       <div
         id="createdAt"
         onClick={e => handleSort(e)}
-        className="col-span-2 flex items-center justify-center cursor-pointer"
+        className="col-span-2 flex items-center justify-center cursor-pointer z-10"
       >
-        주문일 <ImportExportIcon style={{ height: "20" }} />
+        주문일
+        <ImportExportIcon
+          id="createdAt"
+          onClick={e => handleSort(e)}
+          style={{ height: "20" }}
+        />
       </div>
       <div
         id="relDate"
@@ -21,7 +26,11 @@ export function OrderListDetailHeader({ handleSort }) {
         className="col-span-2 flex items-center justify-center cursor-pointer"
       >
         출시일
-        <ImportExportIcon style={{ height: "20" }} />
+        <ImportExportIcon
+          id="relDate"
+          onClick={e => handleSort(e)}
+          style={{ height: "20" }}
+        />
       </div>
       <div className="col-span-3">sku</div>
       <div className="col-span-3">barcode</div>
@@ -31,7 +40,11 @@ export function OrderListDetailHeader({ handleSort }) {
         className="col-span-10 flex items-center justify-center cursor-pointer"
       >
         title
-        <ImportExportIcon style={{ height: "20" }} />
+        <ImportExportIcon
+          id="title"
+          onClick={e => handleSort(e)}
+          style={{ height: "20" }}
+        />
       </div>
       <div className="col-span-3">price</div>
       <div className="col-span-2">qty</div>

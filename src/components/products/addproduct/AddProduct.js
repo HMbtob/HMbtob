@@ -83,7 +83,7 @@ const AddProduct = ({ location }) => {
     photocard: false,
     weverseGift: false,
     interAsiaPhotocard: false,
-    barcode: location?.state?.product?.data?.barcode || "",
+    barcode: location?.state?.product?.data?.barcode || "default",
     reStockable: location?.state?.product?.data?.reStockable || "",
     exposeToB2b: location?.state?.product?.data?.exposeToB2b || "",
     stock: location?.state?.product?.data?.stock || 0,
@@ -251,7 +251,7 @@ const AddProduct = ({ location }) => {
           barcode,
           reStockable: reStockable,
           exposeToB2b: exposeToB2b,
-          bigC: id,
+          bigC: { id },
           productMemo: [
             {
               memo: "add product",
@@ -321,6 +321,10 @@ const AddProduct = ({ location }) => {
           console.log("response.data.errors", response.data.errors);
           setToggleBcSaveButton(false);
           return alert(`${Object.values(response.data.errors)[0]}`);
+        } else if (response?.data?.code === 400) {
+          console.log("response.data.errors", response?.data?.title);
+          setToggleBcSaveButton(false);
+          return alert(`${response?.data?.title}`);
         } else {
           console.log(response);
           setToggleBcSaveButton(false);

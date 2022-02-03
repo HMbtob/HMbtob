@@ -55,7 +55,7 @@ export function Credit({ id }) {
   }, [id]);
 
   useEffect(() => {
-    setCurrentPage(parseInt(credits.length / itemsPerPage) + 1);
+    setCurrentPage(Math.ceil(credits.length / itemsPerPage));
   }, [credits, itemsPerPage]);
 
   return (

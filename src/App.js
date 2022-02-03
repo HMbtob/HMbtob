@@ -5,21 +5,21 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useHistory } from "react-router";
 import { auth, db } from "./firebase";
 import { initState, dataReducer } from "./reducer/Reducer";
-import OrderList from "./components/admin/orderlist/OrderList";
+// import OrderList from "./components/admin/orderlist/OrderList";
 import Sidebar from "./components/sidebar/Sidebar";
 import Login from "./components/login/Login";
 import ListProduct from "./components/products/listproduct/ListProduct";
 import AddProduct from "./components/products/addproduct/AddProduct";
 import DetailProduct from "./components/products/detailproduct/DetailProduct";
-import OrderDetail from "./components/admin/orderlist/OrderDetail";
-import Unshiped from "./components/admin/unshipped/Unshiped";
-import ShippingList from "./components/admin/shipping/ShippingList";
-import UnshipedDetail from "./components/admin/unshipped/UnshippedDetail";
+// import OrderDetail from "./components/admin/orderlist/OrderDetail";
+// import Unshiped from "./components/admin/unshipped/Unshiped";
+// import ShippingList from "./components/admin/shipping/ShippingList";
+// import UnshipedDetail from "./components/admin/unshipped/UnshippedDetail";
 import OrderProductList from "./components/teamjangnim/OrderProductList";
 import Dev from "./dev/Dev";
 import Header from "./components/header/Header";
 import Invoice from "./components/invoice/Invoice";
-import InAdminChat from "./components/chat/InAdminChat";
+// import InAdminChat from "./components/chat/InAdminChat";
 import { CustomerIndex } from "./components/admin/customer/CustomerIndex";
 import { CustomerDetails } from "./components/admin/customer/details/CustomerDetails";
 import { OrderLists } from "./components/orderlist/index";
@@ -28,6 +28,7 @@ import { ShippingLists } from "./components/shippinglist";
 import { PickUpList2 } from "./components/pickuplist2";
 import { DashBoard } from "./components/dashboard";
 import { Invoice2 } from "./components/invoice2";
+import ReceiptPrint from "./components/ReceiptPrint/ReceiptPrint";
 
 export const InitDataContext = React.createContext(null);
 export const InitDispatchContext = React.createContext(null);
@@ -63,21 +64,21 @@ function App() {
     );
   }, [dispatch]);
 
-  useEffect(() => {
-    db.collection("orders")
-      .doc("b2b")
-      .collection("b2borders")
-      .orderBy("createdAt", "desc")
-      .onSnapshot(snapshot =>
-        dispatch({
-          type: "ORDERS",
-          order: snapshot.docs.map(doc => ({
-            id: doc?.id,
-            data: doc?.data(),
-          })),
-        })
-      );
-  }, [dispatch]);
+  // useEffect(() => {
+  //   db.collection("orders")
+  //     .doc("b2b")
+  //     .collection("b2borders")
+  //     .orderBy("createdAt", "desc")
+  //     .onSnapshot(snapshot =>
+  //       dispatch({
+  //         type: "ORDERS",
+  //         order: snapshot.docs.map(doc => ({
+  //           id: doc?.id,
+  //           data: doc?.data(),
+  //         })),
+  //       })
+  //     );
+  // }, [dispatch]);
 
   useEffect(() => {
     db.collection("products").onSnapshot(snapshot =>
@@ -88,79 +89,79 @@ function App() {
     );
   }, [dispatch]);
 
-  useEffect(() => {
-    db.collection("rooms").onSnapshot(snapshot =>
-      dispatch({
-        type: "ROOMS",
-        room: snapshot.docs.map(doc => ({ id: doc?.id, data: doc?.data() })),
-      })
-    );
-  }, [dispatch]);
+  // useEffect(() => {
+  //   db.collection("rooms").onSnapshot(snapshot =>
+  //     dispatch({
+  //       type: "ROOMS",
+  //       room: snapshot.docs.map(doc => ({ id: doc?.id, data: doc?.data() })),
+  //     })
+  //   );
+  // }, [dispatch]);
 
-  useEffect(() => {
-    db.collection("shipping")
-      .orderBy("shippedDate", "desc")
-      .onSnapshot(snapshot =>
-        dispatch({
-          type: "SHIPPINGS",
-          shipping: snapshot.docs.map(doc => ({
-            id: doc?.id,
-            data: doc?.data(),
-          })),
-        })
-      );
-  }, [dispatch]);
+  // useEffect(() => {
+  //   db.collection("shipping")
+  //     .orderBy("shippedDate", "desc")
+  //     .onSnapshot(snapshot =>
+  //       dispatch({
+  //         type: "SHIPPINGS",
+  //         shipping: snapshot.docs.map(doc => ({
+  //           id: doc?.id,
+  //           data: doc?.data(),
+  //         })),
+  //       })
+  //     );
+  // }, [dispatch]);
 
-  useEffect(() => {
-    db.collection("notice")
-      .orderBy("index", "desc")
-      .onSnapshot(snapshot =>
-        dispatch({
-          type: "NOTICES",
-          notice: snapshot.docs.map(doc => ({
-            id: doc?.id,
-            data: doc?.data(),
-          })),
-        })
-      );
-  }, [dispatch]);
+  // useEffect(() => {
+  //   db.collection("notice")
+  //     .orderBy("index", "desc")
+  //     .onSnapshot(snapshot =>
+  //       dispatch({
+  //         type: "NOTICES",
+  //         notice: snapshot.docs.map(doc => ({
+  //           id: doc?.id,
+  //           data: doc?.data(),
+  //         })),
+  //       })
+  //     );
+  // }, [dispatch]);
 
   //
-  useEffect(() => {
-    db.collection("reStockRequests")
-      .orderBy("title", "desc")
-      .onSnapshot(snapshot =>
-        dispatch({
-          type: "RESTOCK_REQUEST",
-          reStockRequest: snapshot.docs.map(doc => ({
-            id: doc?.id,
-            data: doc?.data(),
-          })),
-        })
-      );
-  }, [dispatch]);
+  // useEffect(() => {
+  //   db.collection("reStockRequests")
+  //     .orderBy("title", "desc")
+  //     .onSnapshot(snapshot =>
+  //       dispatch({
+  //         type: "RESTOCK_REQUEST",
+  //         reStockRequest: snapshot.docs.map(doc => ({
+  //           id: doc?.id,
+  //           data: doc?.data(),
+  //         })),
+  //       })
+  //     );
+  // }, [dispatch]);
 
-  useEffect(() => {
-    db.collection("forNumberedId")
-      .doc("b2bOrder")
-      .onSnapshot(snapshot =>
-        dispatch({
-          type: "ORDER_COUNTS",
-          orderCounts: snapshot.data().counts,
-        })
-      );
-  }, [dispatch]);
+  // useEffect(() => {
+  //   db.collection("forNumberedId")
+  //     .doc("b2bOrder")
+  //     .onSnapshot(snapshot =>
+  //       dispatch({
+  //         type: "ORDER_COUNTS",
+  //         orderCounts: snapshot.data().counts,
+  //       })
+  //     );
+  // }, [dispatch]);
 
-  useEffect(() => {
-    db.collection("forNumberedId")
-      .doc("shipping")
-      .onSnapshot(snapshot =>
-        dispatch({
-          type: "SHIPPING_COUNTS",
-          shippingCounts: snapshot.data().counts,
-        })
-      );
-  }, [dispatch]);
+  // useEffect(() => {
+  //   db.collection("forNumberedId")
+  //     .doc("shipping")
+  //     .onSnapshot(snapshot =>
+  //       dispatch({
+  //         type: "SHIPPING_COUNTS",
+  //         shippingCounts: snapshot.data().counts,
+  //       })
+  //     );
+  // }, [dispatch]);
 
   useEffect(() => {
     db.collection("shippingFee")
@@ -237,6 +238,7 @@ function App() {
                   <Route path="/orderlists" component={OrderLists} />
                   <Route path="/shippinglists" component={ShippingLists} />
                   <Route path="/dashboard" component={DashBoard} />
+                  <Route path="/receiptprint" component={ReceiptPrint} />
 
                   {/* 석팀장님 */}
                   <Route
@@ -245,13 +247,13 @@ function App() {
                   />
 
                   {/* order */}
-                  <Route path="/orderdetail/:id" component={OrderDetail} />
-                  <Route path="/orderlist" component={OrderList} />
+                  {/* <Route path="/orderdetail/:id" component={OrderDetail} />
+                  <Route path="/orderlist" component={OrderList} /> */}
 
                   {/* shipping */}
-                  <Route path="/unshipped/:uid" component={UnshipedDetail} />
+                  {/* <Route path="/unshipped/:uid" component={UnshipedDetail} />
                   <Route path="/unshipped" component={Unshiped} />
-                  <Route path="/shippinglist" component={ShippingList} />
+                  <Route path="/shippinglist" component={ShippingList} /> */}
 
                   {/* product */}
                   <Route
@@ -273,7 +275,7 @@ function App() {
                   <Route path="/pickuplist2" component={PickUpList2} />
                   <Route path="/invoice2" component={Invoice2} />
                   <Route path="/invoice" component={Invoice} />
-                  <Route path="/chat" component={InAdminChat} />
+                  {/* <Route path="/chat" component={InAdminChat} /> */}
                   <Route path="/" component={DashBoard} />
                 </Switch>
               </div>
