@@ -2,8 +2,32 @@ import React, { useEffect, useState } from "react";
 import { db } from "../../../firebase";
 import { toDate } from "../../../utils/shippingUtils";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-const StockTable = ({ stockHistory, bigTotalSold, totalStock, id }) => {
+const StockTable = ({
+  stockHistory,
+  bigTotalSold,
+  totalStock,
+  id,
+  product,
+}) => {
+  const [totalOrder, setTotalOrder] = useState(null);
+  const [shippedOrder, setShippedOrder] = useState(null);
+
   const [newStockHistory, setNewStockHistory] = useState([]);
+  useEffect(() => {
+    setTotalOrder(
+      newStockHistory.reduce(
+        (a, c) => a + (c.data.canceled ? 0 : c.data.quan),
+        0
+      )
+    );
+    setShippedOrder(
+      newStockHistory.reduce(
+        (a, c) => a + (c.data.shipped ? c.data.quan : 0),
+        0
+      )
+    );
+  }, [newStockHistory]);
+
   useEffect(() => {
     db.collection("products")
       .doc(id)
@@ -16,7 +40,12 @@ const StockTable = ({ stockHistory, bigTotalSold, totalStock, id }) => {
   }, [id]);
   return (
     <div className="overflow-y-auto">
-      <div className="mb-2 font-semibold text-base">New Stock History</div>
+      <div className="mb-2 font-semibold text-base">
+        New Stock History(1월 14일 이후)
+      </div>
+      {console.log(newStockHistory)}
+      <div className="mb-2  text-sm">{product.data.title}</div>
+
       <div className="grid grid-cols-12 text-gray-200 bg-gray-800 text-center">
         <div className="col-span-2">주문방법</div>
         <div className="col-span-2">주문일</div>
@@ -30,8 +59,9 @@ const StockTable = ({ stockHistory, bigTotalSold, totalStock, id }) => {
         newStockHistory.map((de, i) => (
           <div
             key={i}
-            className="grid grid-cols-12 text-center 
-      border-b  py-1 place-items-center"
+            className={`grid grid-cols-12 text-center border-b  py-1 place-items-center ${
+              de.data.canceled && "line-through"
+            }`}
           >
             <div className="col-span-2 flex flex-row items-center justify-around">
               {de.data.shipped && <LocalShippingIcon />}
@@ -55,23 +85,48 @@ const StockTable = ({ stockHistory, bigTotalSold, totalStock, id }) => {
         ))}
       <div
         className="grid grid-cols-12 text-center 
-      border-b  py-1 place-items-center"
+      border-b border-t-4 py-1 place-items-center"
       >
-        <div className="col-span-2">sell on BigCommerce</div>
-        <div className="col-span-9"></div>
-        <div> - {bigTotalSold} </div>
+        <div className="col-span-2">총 주문 수량</div>
+        <div className="col-span-8"></div>
+        <div className="text-sm font-semibold">
+          {" "}
+          {totalOrder && totalOrder}{" "}
+        </div>
       </div>
       <div
-        className="grid grid-cols-8 text-center 
-      border-b  py-1 place-items-center"
+        className="grid grid-cols-12 text-center 
+      border-b   py-1 place-items-center"
       >
-        <div className="col-span-2"></div>
-        <div className="col-span-2"></div>
-        <div className="col-span-3 text-sm"> Amount</div>
-
-        <div> {totalStock - bigTotalSold}</div>
+        <div className="col-span-2">총 발송 수량</div>
+        <div className="col-span-9"></div>
+        <div className="text-sm font-semibold">
+          {" "}
+          {shippedOrder && shippedOrder}{" "}
+        </div>
       </div>
-      <div className="mt-12">기존</div>
+      <div
+        className="grid grid-cols-12 text-center 
+      border-b border-t-4 py-1 place-items-center"
+      >
+        <div className="col-span-2">빅커머스 판매수량 </div>
+        <div className="col-span-8"></div>
+        <div className="text-sm font-semibold"> {bigTotalSold} </div>
+      </div>
+      <div
+        className="grid grid-cols-12 text-center 
+       border-t-4 py-1 place-items-center"
+      >
+        <div className="col-span-8"></div>
+        <div className="col-span-2 text-base font-semibold">Amount</div>
+        <div className="col-span-1 text-base font-semibold">
+          {totalOrder + bigTotalSold}
+        </div>
+        <div className="col-span-1 text-base font-semibold">
+          {shippedOrder}{" "}
+        </div>
+      </div>
+      <div className="mt-12">1월 14일 이전</div>
       <div className="grid grid-cols-8 text-gray-200 bg-gray-800 text-center">
         <div className="col-span-2">Date</div>
         <div className="col-span-2">Type</div>

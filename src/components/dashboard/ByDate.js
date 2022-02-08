@@ -25,13 +25,13 @@ export function ByDate({ byDate }) {
       <div className="text-xl font-semibold">일별 판매량</div>
 
       <LineChart
-        width={1500}
+        width={900}
         height={300}
         data={byDate}
         syncId="anyId"
         margin={{
           top: 10,
-          right: 30,
+          right: 0,
           left: 0,
           bottom: 0,
         }}

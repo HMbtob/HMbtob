@@ -47,14 +47,14 @@ const ReceiptPrint = () => {
             (devobj, retcode) => {
               if (retcode === "OK") {
                 printer.current = devobj;
-                // printer.timeout = 60000;
-                // printer.onreceive = function (res) {
-                //   alert(res.success);
-                // };
-                // printer.oncoveropen = function () {
-                //   alert("coveropen");
-                // };
-                // print();
+                printer.timeout = 60000;
+                printer.onreceive = function (res) {
+                  alert(res.success);
+                };
+                printer.oncoveropen = function () {
+                  alert("coveropen");
+                };
+                print();
 
                 setConnectionStatus(STATUS_CONNECTED);
               } else {
@@ -147,11 +147,11 @@ const ReceiptPrint = () => {
     prn.addText(`상품명           수량    단가    금액`);
     prn.addText(`\n`);
     prn.addText(barcode);
-    prn.addText(`       `);
+    prn.addText(`     `);
     prn.addText(Number(qty?.toFixed(0)).toLocaleString("ko-kr"));
-    prn.addText(`      `);
+    prn.addText(`    `);
     prn.addText(Number(price?.toFixed(0)).toLocaleString("ko-kr"));
-    prn.addText(`      `);
+    prn.addText(`    `);
     prn.addText(Number((qty * price)?.toFixed(0)).toLocaleString("ko-kr"));
     prn.addText(`\n`);
     prn.addText(`*${title}`);
@@ -197,12 +197,23 @@ const ReceiptPrint = () => {
     prn.addCut(prn.CUT_FEED);
     prn.send();
   };
-
-  const repeat = async (j, barcode, title, qty, price) => {
-    for (let i = 0; i < j; i++) {
-      await print(barcode, title, qty, price);
-    }
+  let repeat;
+  const printtt = () => {
+    let cnt = 0;
+    repeat = setInterval(() => {
+      cnt++;
+      console.log(cnt, "번째");
+      print(barcode, title, qty, price);
+      if (cnt === j) {
+        clearInterval(repeat);
+      }
+    }, 2000);
   };
+
+  const stopPrint = () => {
+    clearInterval(repeat);
+  };
+
   return (
     <div className="w-full h-full flex justify-center">
       <div
@@ -313,9 +324,16 @@ const ReceiptPrint = () => {
             <button
               className=" bg-gray-800 font-semibold text-white py-1 px-4 my-5"
               disabled={connectionStatus !== STATUS_CONNECTED}
-              onClick={() => repeat(j, barcode, title, qty, price)}
+              onClick={() => printtt(j, barcode, title, qty, price)}
             >
               인쇄하기
+            </button>
+            <button
+              className=" bg-gray-800 font-semibold text-white py-1 px-4 my-5"
+              disabled={connectionStatus !== STATUS_CONNECTED}
+              onClick={() => stopPrint()}
+            >
+              인쇄중지
             </button>
             <div className="text-sm">
               (연결 후 하단에 로고, QR코드 로딩완료 후 인쇄)

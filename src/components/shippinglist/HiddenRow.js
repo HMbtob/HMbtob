@@ -55,7 +55,10 @@ export function HiddenRow({ shipping }) {
             className="grid grid-cols-20 text-gray-800 items-center pt-1"
           >
             <div className="col-span-3">{li.data.childOrderNumber}</div>
-            <div className="col-span-9 text-left">{li.data.title}</div>
+            <div className="col-span-9 text-left">
+              {" "}
+              {li.data.title} {li?.data?.optionName}
+            </div>
             <div className="col-span-2">
               {li.data.price} {li.data.currency}
             </div>

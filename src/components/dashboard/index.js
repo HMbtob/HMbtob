@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { db } from "../../firebase";
-import { ByMonth } from "./ByMonth";
+// import { ByMonth } from "./ByMonth";
 import { ByUsers } from "./ByUsers";
 import { FirstContainer } from "./FirstContainer";
 import { Last7Days } from "./Last7Days";
 import { SecondContainer } from "./SecondContainer";
-//
 
 export function DashBoard() {
   const [orders, setOrders] = useState([]);
@@ -184,7 +183,7 @@ export function DashBoard() {
 
   return (
     <div className="mt-32 mb-32 w-full flex flex-col items-center">
-      <div className="text-4xl font-semibold mb-10">Dash Board</div>
+      <div className="text-4xl font-semibold mb-5">Dash Board</div>
       <FirstContainer
         lifetime={lifetime}
         orderQty={total.length}
@@ -192,7 +191,7 @@ export function DashBoard() {
       />
       <SecondContainer top5={top5} byUser={byUser} />
       <Last7Days orders={total} />
-      <ByMonth orders={total} />
+      {/* <ByMonth orders={total} /> */}
       <ByUsers orders={total} users={users} />
     </div>
   );

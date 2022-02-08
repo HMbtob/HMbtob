@@ -146,8 +146,7 @@ export function OrderListDetailRow({
               {"PO"}
             </div>
           )}
-
-          {order.data.title}
+          {order.data.title} {order?.data?.optionName}
         </div>
         <div className="">
           <button

@@ -167,6 +167,22 @@ const ListProductRow = ({
     }
   };
 
+  const [options, setOptions] = useState(null);
+
+  useEffect(() => {
+    product.data.optioned &&
+      db
+        .collection("products")
+        .doc(id)
+        .collection(product.data.optionName)
+        .get()
+        .then(snapshot =>
+          setOptions(
+            snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+          )
+        );
+  }, [product, id]);
+
   useEffect(() => {
     setPrice2(
       exchangeRate[user?.currency] === 1
@@ -225,6 +241,7 @@ const ListProductRow = ({
           </button>
           <Modal open={modalOpen} close={closeModal} header={"재고수불부"}>
             <StockTable
+              product={product}
               stockHistory={product.data.stockHistory}
               bigTotalSold={bigTotalSold}
               totalStock={totalStock}
@@ -482,23 +499,36 @@ const ListProductRow = ({
         ""
       ) : (
         <>
-          <HiddenB2b
-            id={id}
-            sku={sku}
-            thumbNail={thumbNail}
-            title={title}
-            price={price}
-            stock={stock}
-            totalSell={totalSell}
-            unShipped={unShipped}
-            relDate={relDate}
-            preOrderDeadline={preOrderDeadline}
-            orders={orders}
-            shippings={shippings}
-            product={product}
-            currency={user.currency}
-            orderListInShippings={orderListInShippings}
-          />
+          {options ? (
+            options.map(op => (
+              <HiddenB2b
+                id={id}
+                sku={sku}
+                price={price}
+                stock={stock}
+                relDate={relDate}
+                orders={orders}
+                shippings={shippings}
+                product={product}
+                currency={user.currency}
+                orderListInShippings={orderListInShippings}
+                op={op}
+              />
+            ))
+          ) : (
+            <HiddenB2b
+              id={id}
+              sku={sku}
+              price={price}
+              stock={stock}
+              relDate={relDate}
+              orders={orders}
+              shippings={shippings}
+              product={product}
+              currency={user.currency}
+              orderListInShippings={orderListInShippings}
+            />
+          )}
           <HiddenBigc
             id={id}
             sku={sku}

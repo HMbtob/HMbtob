@@ -13,6 +13,7 @@ const HiddenB2b = ({
   sku,
   product,
   orderListInShippings,
+  op,
 }) => {
   const [ordered, setOrdered] = useState([]);
   // const [shipped, setShipped] = useState([]);
@@ -68,23 +69,36 @@ const HiddenB2b = ({
 
   // 간단 수정창 input 관리
   const [form, onChange] = useInputs({
-    handlePrice: price,
-    handleStock: stock,
+    handlePrice: op ? op.data.optionPrice : price,
+    handleStock: op ? op.data.stock : stock,
   });
 
   const { handlePrice, handleStock } = form;
 
   const simpleSave = async () => {
+    if (op) {
+      await db
+        .collection("products")
+        .doc(id)
+        .collection(product.data.optionName)
+        .doc(op.id)
+        .update({
+          optionPrice: Number(handlePrice),
+          stock: Number(handleStock),
+        });
+      alert("수정됨");
+      return;
+    }
     await db
       .collection("products")
       .doc(id)
       .update({ price: Number(handlePrice), stock: Number(handleStock) });
-    await alert("수정됨");
+    alert("수정됨");
   };
   return (
     <div
       className="grid grid-cols-36 items-center 
-place-items-center text-xs bg-transparent"
+place-items-center text-xs bg-transparent border-t"
     >
       <button onClick={simpleSave} className="col-span-2">
         b2b-수정
@@ -92,7 +106,7 @@ place-items-center text-xs bg-transparent"
       <div className="col-span-5 flex flex-row justify-start w-full"></div>
       <div className="col-span-3"></div>
       <div className="col-span-2"></div>
-      <div className="col-span-9"></div>
+      <div className="col-span-9 w-full">{op?.data.name}</div>
       <div className="col-span-3 flex flex-row items-center justify-center">
         <div>{currency}</div>
 
@@ -113,28 +127,40 @@ place-items-center text-xs bg-transparent"
         value={handleStock}
         onChange={onChange}
       />
+
       <div className="col-span-1">
-        {totalUnshipped}(
+        {/* {totalUnshipped} */}
         {orderListInShippings
-          .filter(doc => doc.data.productId === product.id)
+          .filter(doc =>
+            op
+              ? doc?.data?.optionName === op?.data?.name
+              : doc.data.productId === product.id
+          )
           .reduce((a, c) => {
             return a + c.data.quan;
           }, 0) +
           ordered
-            .filter(doc => doc.data.productId === product.id)
+            .filter(doc =>
+              op
+                ? doc?.data?.optionName === op?.data?.name
+                : doc.data.productId === product.id
+            )
             .reduce((a, c) => {
               return a + c.data.quan;
             }, 0)}{" "}
-        )
       </div>
       <div className="col-span-1">
-        {totalUnshipped - totalshipped}(
+        {/* {totalUnshipped - totalshipped}( */}
         {ordered
-          .filter(doc => doc.data.productId === product.id)
+          .filter(doc =>
+            op
+              ? doc?.data?.optionName === op?.data?.name
+              : doc.data.productId === product.id
+          )
           .reduce((a, c) => {
             return a + c.data.quan;
           }, 0)}
-        )
+        {/* ) */}
       </div>
       <div className="col-span-2"></div>
       <div className="col-span-4 text-xs">

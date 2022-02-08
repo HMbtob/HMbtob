@@ -59,7 +59,7 @@ const HiddenBigc = ({ relDate, bigcProductId, handleBigTotalSold }) => {
   return (
     <div
       className="grid grid-cols-36 items-center 
-place-items-center text-xs bg-transparent"
+place-items-center text-xs bg-transparent border-t"
     >
       {bigcProductId && (
         <>
@@ -77,10 +77,9 @@ place-items-center text-xs bg-transparent"
                 style={{ color: "blue" }}
                 onClick={async () =>
                   await axios
-                    .put(
-                      `/stores/7uw7zc08qw/v3/catalog/products/${bigcProductId}`,
+                    .get(
+                      `https://us-central1-interasiastock.cloudfunctions.net/app/big/visible/${bigcProductId}/false`,
 
-                      { is_visible: false },
                       {
                         headers: {
                           accept: "application/json",
@@ -100,10 +99,9 @@ place-items-center text-xs bg-transparent"
                 style={{ color: "red" }}
                 onClick={async () =>
                   await axios
-                    .put(
-                      `/stores/7uw7zc08qw/v3/catalog/products/${bigcProductId}`,
+                    .get(
+                      `https://us-central1-interasiastock.cloudfunctions.net/app/big/visible/${bigcProductId}/true`,
 
-                      { is_visible: true },
                       {
                         headers: {
                           accept: "application/json",

@@ -338,6 +338,15 @@ const AddProduct = ({ location }) => {
       });
   };
 
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    db.collection("category")
+      .doc("RATES")
+      .get()
+      .then(snapshot => setCategories(snapshot.data()));
+  }, []);
+
   useEffect(() => {
     callCats();
   }, []);
@@ -426,7 +435,7 @@ const AddProduct = ({ location }) => {
           </div>
           {/* 드랍박스 인풋 */}
           {/* 카테고리 */}
-          {selects.map((select, index) => (
+          {/* {selects.map((select, index) => (
             <div key={index} className="grid grid-cols-4 p-2 items-center">
               <div className="text-gray-600 text-right  mr-3">
                 {selectsName[index]}
@@ -447,7 +456,37 @@ const AddProduct = ({ location }) => {
                 ))}
               </select>
             </div>
-          ))}
+          ))} */}
+          <div className="grid grid-cols-4 p-2 items-center">
+            <div className="text-gray-600 text-right  mr-3">카테고리</div>
+            <select
+              required
+              value={category}
+              name="category"
+              onChange={onChange}
+              className="col-span-3 border h-9 pl-3"
+            >
+              <option>필수선택</option>
+              {Object.keys(categories).map((option, index) => (
+                <option key={index} value={categories[option]}>
+                  {categories[option]}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="grid grid-cols-4 p-2 items-center">
+            <div className="text-gray-600 text-right  mr-3">
+              카테고리 추가하기
+            </div>
+
+            <div className="flex flex-row w-full col-span-3 ">
+              <input type="text" className="w-2/3 border p-2" />{" "}
+              <button type="button" className="">
+                카테고리 추가
+              </button>
+            </div>
+          </div>
+          {/* {console.log("category", category)} */}
           {/* restockable, 활성/비활성 */}
           <div className="grid grid-cols-4 p-2 items-center">
             <div className="text-gray-600 text-right  mr-3">재고추가가능</div>

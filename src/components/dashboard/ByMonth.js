@@ -15,7 +15,7 @@ export function ByMonth({ orders }) {
     <div className="flex flex-col w-full items-center mt-12">
       <div className="text-xl font-semibold">월별 판매량</div>
       <LineChart
-        width={1500}
+        width={1000}
         height={300}
         data={month.map(doc => ({
           month: doc + 1,

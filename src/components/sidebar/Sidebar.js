@@ -1,7 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  useContext,
+  // useEffect,
+  // useState,
+  // , useEffect, useState
+} from "react";
 import { useHistory } from "react-router-dom";
 import { InitDataContext } from "../../App";
-import { db } from "../../firebase";
+// import { db } from "../../firebase";
 
 const Sidebar = () => {
   const state = useContext(InitDataContext);
@@ -9,28 +14,28 @@ const Sidebar = () => {
   const history = useHistory();
 
   // 확인 안한 메시지
-  const [unReaded, setUnReaded] = useState([]);
-  const [unReadedQ, setUnReadedQ] = useState([]);
-  useEffect(() => {
-    db.collectionGroup("messages")
-      .where(`to`, "==", `${user?.email}`)
-      .onSnapshot(snapshot =>
-        setUnReaded({
-          messages: snapshot.docs.map(doc => ({
-            id: doc.id,
-            data: doc.data(),
-          })),
-        })
-      );
-  }, [user?.email]);
+  // const [unReaded, setUnReaded] = useState([]);
+  // const [unReadedQ, setUnReadedQ] = useState([]);
+  // useEffect(() => {
+  //   db.collectionGroup("messages")
+  //     .where(`to`, "==", `${user?.email}`)
+  //     .onSnapshot(snapshot =>
+  //       setUnReaded({
+  //         messages: snapshot.docs.map(doc => ({
+  //           id: doc.id,
+  //           data: doc.data(),
+  //         })),
+  //       })
+  //     );
+  // }, [user?.email]);
 
-  useEffect(() => {
-    setUnReadedQ(
-      unReaded?.messages?.filter(
-        mes => mes.data.to === user.email && mes.data.readed === false
-      )
-    );
-  }, [unReaded, user?.email]);
+  // useEffect(() => {
+  //   setUnReadedQ(
+  //     unReaded?.messages?.filter(
+  //       mes => mes.data.to === user.email && mes.data.readed === false
+  //     )
+  //   );
+  // }, [unReaded, user?.email]);
 
   const underMenu = [
     { 상품추가: "/addproduct" },
@@ -43,6 +48,7 @@ const Sidebar = () => {
     // { 고객문의: "/chat" },
     // { 상품판매량: "/orderproductslist" },
   ];
+
   return (
     //   d-1
     <div className="flex-col items-center w-auto text-gray-300 bg-gray-600">

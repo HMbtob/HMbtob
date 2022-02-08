@@ -70,7 +70,7 @@ export function Last7Days({ orders }) {
       </div>
 
       <LineChart
-        width={1500}
+        width={1000}
         height={300}
         data={data}
         syncId="anyId"

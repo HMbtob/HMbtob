@@ -88,7 +88,7 @@ export function ByUsers({ orders, users }) {
       </select>
       {selectedUser && (
         <LineChart
-          width={1500}
+          width={1000}
           height={300}
           data={[
             ...new Set(
@@ -153,7 +153,7 @@ export function ByUsers({ orders, users }) {
 
       {selectedUser && (
         <LineChart
-          width={1500}
+          width={1000}
           height={300}
           data={monthDate.map(d =>
             orders
