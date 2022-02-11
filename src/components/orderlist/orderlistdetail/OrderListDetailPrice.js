@@ -11,6 +11,7 @@ export function OrderListDetailPrice({
   orders,
   account,
   checkedInputs,
+  exR,
 }) {
   // for 계산 or 입력 라디오
   const [checkedRadio, setCheckedRadio] = useState("caled");
@@ -19,7 +20,6 @@ export function OrderListDetailPrice({
   const [trackingNumber, setTrackingNum] = useState("");
 
   // for 배송비 입력
-
   const [inputedShippingFee, setInputedShippingFee] = useState(0);
 
   // for 가격 계산
@@ -94,10 +94,19 @@ export function OrderListDetailPrice({
         : account.data.shippingRate.dhl * totalWeight;
     // to korea
     const shippingFeeToKorea = (parseInt(totalWeight / 15) + 1) * 4500;
-
     setCaledPrice(totalPrice);
     setCaledshippingFee(
-      checkedRadio === "caled" ? shippingFee : shippingFeeToKorea
+      exR
+        ? exR[account.data.currency] === 1
+          ? checkedRadio === "caled"
+            ? shippingFee / exR[account.data.currency]
+            : shippingFeeToKorea / exR[account.data.currency]
+          : checkedRadio === "caled"
+          ? Number((shippingFee / exR[account.data.currency]).toFixed(2))
+          : Number((shippingFeeToKorea / exR[account.data.currency]).toFixed(2))
+        : checkedRadio === "caled"
+        ? shippingFee
+        : shippingFeeToKorea
     );
   };
 

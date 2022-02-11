@@ -139,7 +139,7 @@ const AddProduct = ({ location }) => {
     title,
     artist,
     ent,
-    category,
+    // category,
     weight,
     x,
     y,
@@ -339,6 +339,7 @@ const AddProduct = ({ location }) => {
   };
 
   const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState("cd");
 
   useEffect(() => {
     db.collection("category")
@@ -394,22 +395,36 @@ const AddProduct = ({ location }) => {
               />
             </div>
           ))}
+
+          {/* 옵션 */}
+          <div className="grid grid-cols-4 p-2 items-center">
+            <div className="text-gray-600 text-right  mr-3">옵션추가</div>
+            <input
+              type="text"
+              placeholder="옵션이름"
+              className="col-span-2 border h-9 pl-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 p-2 items-center">
+            <div className="text-gray-600 text-right  mr-3">+</div>
+            <input
+              type="text"
+              placeholder="옵션"
+              className="col-span-1 border h-9 pl-3"
+            />
+            <input
+              type="number"
+              placeholder="가격"
+              className="col-span-1 border h-9 pl-3"
+            />
+            <input
+              type="number"
+              placeholder="재고"
+              className="col-span-1 border h-9 pl-3"
+            />
+          </div>
           {/* 날짜 인풋 */}
           <div className="grid grid-cols-4 p-2 items-center">
-            {/* {console.log("parentCat", parentCat)}
-            {console.log("childCat", childCat)}
-            {console.log("checkedInputs", checkedInputs)}
-            {console.log("title", title)}
-
-            {console.log("weight", weight)}
-            {console.log("customFieldName", customFieldName)}
-            {console.log("relDate", relDate)}
-            {console.log("thumbnailUrl", thumbnailUrl)}
-            {console.log("sku", sku)}
-            {console.log("barcode", barcode)}
-            {console.log("inventoryLevel", inventoryLevel)}
-            {console.log("brandName", brandName)}
-            {console.log("checkedInputs", checkedInputs)} */}
             <div className="text-gray-600 text-right  mr-3">출시일</div>
             <input
               required
@@ -463,7 +478,7 @@ const AddProduct = ({ location }) => {
               required
               value={category}
               name="category"
-              onChange={onChange}
+              onChange={e => setCategory(e.target.value)}
               className="col-span-3 border h-9 pl-3"
             >
               <option>필수선택</option>

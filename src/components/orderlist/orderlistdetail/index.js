@@ -262,6 +262,14 @@ export function OrderListDetail({ match, location }) {
     };
   }, [id, forSort]);
 
+  const [exR, setExR] = useState(null);
+
+  useEffect(() => {
+    db.collection("exchangeRate")
+      .get()
+      .then(snapshot => snapshot.docs.map(doc => setExR(doc.data())));
+  }, []);
+
   return (
     <form className="w-full h-full flex flex-col justify-center items-center mb-20">
       <div className="w-11/12 flex-col mt-20">
@@ -415,6 +423,7 @@ export function OrderListDetail({ match, location }) {
           orders={orders}
           account={state}
           checkedInputs={checkedInputs}
+          exR={exR}
         />
         <div
           className="text-center text-lg bg-gray-800 py-1 
