@@ -4,7 +4,13 @@ import { InitDataContext } from "../../../App";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 
-const HiddenBigc = ({ relDate, bigcProductId, handleBigTotalSold }) => {
+const HiddenBigc = ({
+  relDate,
+  bigcProductId,
+  handleBigTotalSold,
+  option,
+  optioned,
+}) => {
   const state = useContext(InitDataContext);
   const { unShippedProductsIdandQty } = state;
   const [product, setProduct] = useState({
@@ -28,6 +34,17 @@ const HiddenBigc = ({ relDate, bigcProductId, handleBigTotalSold }) => {
   };
 
   const fixfix = async (id, qty, price) => {
+    console.log(option);
+    if (optioned) {
+      await axios
+        .get(
+          `https://us-central1-interasiastock.cloudfunctions.net/app/big/fixproductinventoryprice/${id}/${option.id}/${qty}/${price}`
+        )
+        .then(res => console.log(res))
+        .catch(e => console.log(e));
+      alert("수정되었습니다.");
+      return;
+    }
     await axios
       .get(
         `https://us-central1-interasiastock.cloudfunctions.net/app/big/fixproductinventoryprice/${id}/${qty}/${price}`
@@ -43,15 +60,18 @@ const HiddenBigc = ({ relDate, bigcProductId, handleBigTotalSold }) => {
       )
       .then(p =>
         setProduct({
-          handlePrice: p.data.data.price,
-          handleStock: p.data.data.inventory_level,
+          handlePrice: optioned ? option.price : p.data.data.price,
+          handleStock: optioned
+            ? option.inventory_level
+            : p.data.data.inventory_level,
           total_sold: p.data.data.total_sold,
-          productName: p.data.data.name,
+          productName: optioned ? option.sku : p.data.data.name,
           isVisible: p.data.data.is_visible,
         })
       )
       .catch(e => console.log(e));
-  }, [bigcProductId]);
+  }, [bigcProductId, optioned, option]);
+
   useEffect(() => {
     sdadasdasd();
     handleBigTotalSold(total_sold);
@@ -61,6 +81,7 @@ const HiddenBigc = ({ relDate, bigcProductId, handleBigTotalSold }) => {
       className="grid grid-cols-36 items-center 
 place-items-center text-xs bg-transparent border-t"
     >
+      {console.log(option)}
       {bigcProductId && (
         <>
           <button
@@ -122,8 +143,7 @@ place-items-center text-xs bg-transparent border-t"
           <div className="col-span-2"></div>
           <div className="col-span-9 w-full">{productName && productName}</div>
           <div className="col-span-3  flex flex-row items-center justify-center">
-            <div>USD </div>
-
+            <div>USD</div>
             <input
               type="number"
               className="col-span-2 border w-3/4 p-1 text-center"

@@ -32,6 +32,7 @@ const StockTable = ({
     db.collection("products")
       .doc(id)
       .collection("newStockHistory")
+      .orderBy("createdAt", "asc")
       .onSnapshot(snapshot =>
         setNewStockHistory(
           snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))

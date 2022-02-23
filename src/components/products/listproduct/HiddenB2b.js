@@ -70,7 +70,7 @@ const HiddenB2b = ({
   // 간단 수정창 input 관리
   const [form, onChange] = useInputs({
     handlePrice: op ? op.data.optionPrice : price,
-    handleStock: op ? op.data.stock : stock,
+    handleStock: op ? op.data.optionStock : stock,
   });
 
   const { handlePrice, handleStock } = form;
@@ -80,11 +80,11 @@ const HiddenB2b = ({
       await db
         .collection("products")
         .doc(id)
-        .collection(product.data.optionName)
+        .collection("options")
         .doc(op.id)
         .update({
           optionPrice: Number(handlePrice),
-          stock: Number(handleStock),
+          optionStock: Number(handleStock),
         });
       alert("수정됨");
       return;
@@ -100,13 +100,13 @@ const HiddenB2b = ({
       className="grid grid-cols-36 items-center 
 place-items-center text-xs bg-transparent border-t"
     >
-      <button onClick={simpleSave} className="col-span-2">
+      <button onClick={() => simpleSave()} className="col-span-2">
         b2b-수정
       </button>
       <div className="col-span-5 flex flex-row justify-start w-full"></div>
       <div className="col-span-3"></div>
       <div className="col-span-2"></div>
-      <div className="col-span-9 w-full">{op?.data.name}</div>
+      <div className="col-span-9 w-full">{op?.data.optionName}</div>
       <div className="col-span-3 flex flex-row items-center justify-center">
         <div>{currency}</div>
 
@@ -132,8 +132,11 @@ place-items-center text-xs bg-transparent border-t"
         {/* {totalUnshipped} */}
         {orderListInShippings
           .filter(doc =>
-            op
-              ? doc?.data?.optionName === op?.data?.name
+            // op
+            //   ? doc?.data?.optionName === op?.data?.name
+            //   :
+            doc.data.optioned === true
+              ? doc.data.productId === product.id && doc.data.optionId === op.id
               : doc.data.productId === product.id
           )
           .reduce((a, c) => {
@@ -141,8 +144,9 @@ place-items-center text-xs bg-transparent border-t"
           }, 0) +
           ordered
             .filter(doc =>
-              op
-                ? doc?.data?.optionName === op?.data?.name
+              doc.data.optioned === true
+                ? doc.data.productId === product.id &&
+                  doc.data.optionId === op.id
                 : doc.data.productId === product.id
             )
             .reduce((a, c) => {
@@ -151,10 +155,12 @@ place-items-center text-xs bg-transparent border-t"
       </div>
       <div className="col-span-1">
         {/* {totalUnshipped - totalshipped}( */}
+        {console.log("orderListInShippings", orderListInShippings)}
+        {console.log("op", op)}
         {ordered
           .filter(doc =>
-            op
-              ? doc?.data?.optionName === op?.data?.name
+            doc.data.optioned === true
+              ? doc.data.productId === product.id && doc.data.optionId === op.id
               : doc.data.productId === product.id
           )
           .reduce((a, c) => {

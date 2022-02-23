@@ -146,7 +146,8 @@ export function OrderListDetailRow({
               {"PO"}
             </div>
           )}
-          {order.data.title} {order?.data?.optionName}
+          {order.data.title}{" "}
+          {order?.data?.optioned === true ? order?.data?.optionName : ""}
         </div>
         <div className="">
           <button
@@ -180,14 +181,34 @@ export function OrderListDetailRow({
       </div>
       <div className="col-span-3 flex flex-row justify-center items-center">
         <input
-          type="text"
+          type="number"
           disabled={order.data.canceled}
-          value={krwComma(price, order.data.currency)}
-          onChange={e => {
-            const { value } = e.target;
-            const onlyNumber = value.replace(/[^0-9]/g, "");
-            setPrice(onlyNumber);
-          }}
+          value={price}
+          step={0.01}
+          onChange={
+            e => setPrice(Number(e.target.value))
+            // {
+            //   const { value } = e.target;
+            //   console.log("value", value);
+            //   if (isNaN(Number(value))) {
+            //     console.log("숫자아님");
+            //     setPrice("");
+            //     return;
+            //   }
+
+            // setPrice(krwComma(Number(value), order.data.currency));
+            // console.log("value", value);
+
+            // const onlyNumber2 = Number(value.replaceAll(",", ""));
+
+            // console.log("0삭제 ", Number(Number(value).toFixed(2)));
+
+            // const onlyNumber = value.replace(/[^0-9]/g, "");
+            // console.log("onlyNumber", onlyNumber);
+
+            // console.log("onlyNumber2", onlyNumber2);
+            // }
+          }
           className="w-2/3 text-right pr-2 border outline-none"
         />
         {order.data.currency}

@@ -21,7 +21,7 @@ import LockIcon from "@material-ui/icons/Lock";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-
+import axios from "axios";
 import { InitDataContext } from "../../../App";
 
 const ListProductRow = ({
@@ -174,7 +174,7 @@ const ListProductRow = ({
       db
         .collection("products")
         .doc(id)
-        .collection(product.data.optionName)
+        .collection("options")
         .get()
         .then(snapshot =>
           setOptions(
@@ -190,6 +190,19 @@ const ListProductRow = ({
         : (price / exchangeRate[user?.currency]).toFixed(2)
     );
   }, [price, user, exchangeRate, products]);
+
+  const [bcOptions, setBcOptions] = useState(null);
+
+  useEffect(() => {
+    product.data.optioned === true &&
+      axios
+        .get(
+          `https://us-central1-interasiastock.cloudfunctions.net/app/big/productoptions/${bigcProductId}`
+        )
+        .then(data => setBcOptions(data.data))
+        .catch(e => console.log(e));
+  }, [bigcProductId, product]);
+
   return (
     <div
       className={`border-b  border-gray-500 w-full py-1 ${
@@ -529,22 +542,47 @@ const ListProductRow = ({
               orderListInShippings={orderListInShippings}
             />
           )}
-          <HiddenBigc
-            id={id}
-            sku={sku}
-            thumbNail={thumbNail}
-            title={title}
-            price={price}
-            stock={stock}
-            totalSell={totalSell}
-            unShipped={unShipped}
-            relDate={relDate}
-            preOrderDeadline={preOrderDeadline}
-            orders={orders}
-            shippings={shippings}
-            bigcProductId={bigcProductId}
-            handleBigTotalSold={handleBigTotalSold}
-          />
+          <div className="border-t-4"></div>
+          {bcOptions ? (
+            bcOptions.map(option => (
+              <HiddenBigc
+                id={id}
+                sku={sku}
+                thumbNail={thumbNail}
+                title={title}
+                price={price}
+                stock={stock}
+                totalSell={totalSell}
+                unShipped={unShipped}
+                relDate={relDate}
+                preOrderDeadline={preOrderDeadline}
+                orders={orders}
+                shippings={shippings}
+                bigcProductId={bigcProductId}
+                handleBigTotalSold={handleBigTotalSold}
+                optioned={product.data.optioned === true ? true : false}
+                option={option}
+              />
+            ))
+          ) : (
+            <HiddenBigc
+              id={id}
+              sku={sku}
+              thumbNail={thumbNail}
+              title={title}
+              price={price}
+              stock={stock}
+              totalSell={totalSell}
+              unShipped={unShipped}
+              relDate={relDate}
+              preOrderDeadline={preOrderDeadline}
+              orders={orders}
+              shippings={shippings}
+              bigcProductId={bigcProductId}
+              handleBigTotalSold={handleBigTotalSold}
+              optioned={product.data.optioned === true ? true : false}
+            />
+          )}
         </>
       )}
     </div>

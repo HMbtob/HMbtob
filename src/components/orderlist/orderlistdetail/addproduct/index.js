@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { db } from "../../../../firebase";
+
 export function AddProduct({ id, add }) {
   const AddProductRow = React.lazy(() =>
     import("./AddProductRow").then(module => ({
@@ -34,7 +35,8 @@ export function AddProduct({ id, add }) {
       return Number(
         (
           (price -
-            (price * user.dcRates[category] - user.dcAmount[`${category}A`])) /
+            price * user.dcRates[category] -
+            user.dcAmount[`${category}A`]) /
           exchangeRate[user.currency]
         ).toFixed(2)
       );
@@ -142,6 +144,41 @@ export function AddProduct({ id, add }) {
               totalWeight: product.data.weight * qty,
               memo: memo,
             });
+          await db
+            .collection("products")
+            .doc(product.id)
+            .collection("newStockHistory")
+            .doc()
+            .set({
+              ...add.data,
+              ...product.data,
+              addName: add.data.name,
+              userId: id,
+              userUid: user.data.uid,
+              currency: user.data.currency,
+              createdAt: today,
+              exchangeRate: exchangeRate,
+              canceled: false,
+              dcAmount: user.data.dcAmount[`${product.data.category}A`],
+              dcRate: user.data.dcRates[product.data.category],
+              nickName: user.data.nickName,
+              price: price,
+              productId: product.id,
+              quan: qty,
+              shipped: false,
+              title: product.data.title.trim(),
+              totalPrice: price * qty,
+              totalWeight: product.data.weight * qty,
+              memo: memo,
+            });
+          await db
+            .collection("products")
+            .doc(product.id)
+            .update({
+              stock: product.data.stock - qty,
+              totalSold: product.data.totalSold + qty,
+              totalStock: product.data.totalStock - qty,
+            });
           alert("주문이 추가되었습니다.");
         }
       } else {
@@ -172,6 +209,42 @@ export function AddProduct({ id, add }) {
             totalWeight: product.data.weight * qty,
             memo: memo,
           });
+        await db
+          .collection("products")
+          .doc(product.id)
+          .collection("newStockHistory")
+          .doc()
+          .set({
+            ...add.data,
+            ...product.data,
+            addName: add.data.name,
+            userId: id,
+            userUid: user.data.uid,
+            currency: user.data.currency,
+            createdAt: today,
+            exchangeRate: exchangeRate,
+            canceled: false,
+            dcAmount: user.data.dcAmount[`${product.data.category}A`],
+            dcRate: user.data.dcRates[product.data.category],
+            nickName: user.data.nickName,
+            price: price,
+            productId: product.id,
+            quan: qty,
+            shipped: false,
+            title: product.data.title.trim(),
+            totalPrice: price * qty,
+            totalWeight: product.data.weight * qty,
+            memo: memo,
+          });
+        await db
+          .collection("products")
+          .doc(product.id)
+          .update({
+            stock: product.data.stock - qty,
+            totalSold: product.data.totalSold + qty,
+            totalStock: product.data.totalStock - qty,
+          });
+        console.log("배송지 있을경우");
         alert("주문이 추가되었습니다.");
       }
     } catch (e) {

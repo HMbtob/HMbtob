@@ -183,17 +183,43 @@ export function OrderListDetail({ match, location }) {
       return alert("인쇄할 상품을 선택해 주세요.");
     }
     const ids = checkedItems.map(doc => doc.id);
-    const pIds = [...new Set(checkedItems.map(doc => doc.data.productId))];
+    const pIds = [
+      ...new Set(
+        checkedItems.map(doc =>
+          doc.data.optioned === true ? doc.data.optionId : doc.data.productId
+        )
+      ),
+    ];
+    console.log("pIds", pIds);
     setPickUpLists(
       pIds.map(id => ({
-        barcode: checkedItems.find(item => item.data.productId === id).data
-          .barcode,
-        sku: checkedItems.find(item => item.data.productId === id).data.sku,
-        title: checkedItems.find(item => item.data.productId === id).data.title,
+        barcode: checkedItems.find(item =>
+          item.data.optioned === true
+            ? item.data.optionId === id
+            : item.data.productId === id
+        ).data.barcode,
+        sku: checkedItems.find(item =>
+          item.data.optioned === true
+            ? item.data.optionId === id
+            : item.data.productId === id
+        ).data.sku,
+        title: checkedItems.find(item =>
+          item.data.optioned === true
+            ? item.data.optionId === id
+            : item.data.productId === id
+        ).data.title,
         memo:
-          checkedItems.find(item => item.data.productId === id).data.memo || "",
+          checkedItems.find(item =>
+            item.data.optioned === true
+              ? item.data.optionId === id
+              : item.data.productId === id
+          ).data.memo || "",
         quan: checkedItems
-          .filter(item => item.data.productId === id)
+          .filter(item =>
+            item.data.optioned === true
+              ? item.data.optionId === id
+              : item.data.productId === id
+          )
           .reduce((a, c) => {
             return a + Number(c.data.quan);
           }, 0),

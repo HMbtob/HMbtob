@@ -7,6 +7,7 @@ import { db } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
 import AddBigc from "./AddBigc";
 import { useCallback } from "react";
+import { OptionSet } from "./OptionSet";
 
 const AddProduct = ({ location }) => {
   console.log(location?.state?.product);
@@ -20,7 +21,16 @@ const AddProduct = ({ location }) => {
   const [childCat, setChildCat] = useState([]);
 
   const [toggleBcSaveButton, setToggleBcSaveButton] = useState(false);
+  // 옵션
+  const [optionSet, setOptionSet] = useState([]);
+  const [optionId, setOptionId] = useState("no");
+  const [optionName, setOptionName] = useState(null);
 
+  useEffect(() => {
+    db.collection("optionSet")
+      .doc(optionId)
+      .onSnapshot(snapshot => setOptionName(snapshot.data()));
+  }, [optionId]);
   // 썸넬
 
   const [thumbnailUrl, setThumbnailUrl] = useState(
@@ -109,21 +119,21 @@ const AddProduct = ({ location }) => {
     { stock: "재고" },
   ];
 
-  // 셀렉트인풋
-  const selects = [
-    {
-      category: [
-        { cd: "cd" },
-        { "dvd/blue-ray": "dvdBlueRay" },
-        { "photo book": "photoBook" },
-        { goods: "goods" },
-        { "store goods": "officialStore" },
-        { beauty: "beauty" },
-      ],
-    },
-  ];
+  // // 셀렉트인풋
+  // const selects = [
+  //   {
+  //     category: [
+  //       { cd: "cd" },
+  //       { "dvd/blue-ray": "dvdBlueRay" },
+  //       { "photo book": "photoBook" },
+  //       { goods: "goods" },
+  //       { "store goods": "officialStore" },
+  //       { beauty: "beauty" },
+  //     ],
+  //   },
+  // ];
 
-  const selectsName = ["카테고리"];
+  // const selectsName = ["카테고리"];
 
   // 체크박스 인풋
   const checkboxInput = [
@@ -272,7 +282,23 @@ const AddProduct = ({ location }) => {
           ],
           descr,
           discripUrl,
+          optioned: optionSet.length > 0 ? true : false,
         });
+      optionSet.map(
+        async (option, i) =>
+          await db
+            .collection("products")
+            .doc(String(id))
+            .collection("options")
+            .doc()
+            .set({
+              no: i,
+              optionName: option.optionName,
+              optionPrice: Number(option.optionPrice),
+              optionStock: Number(option.optionStock),
+            })
+      );
+
       await reset();
       alert("추가완료");
       history.push("/listproduct");
@@ -301,18 +327,62 @@ const AddProduct = ({ location }) => {
       image_url: thumbnailUrl,
       sku: sku,
       upc: barcode,
-      inventory_tracking: "product",
+      inventory_tracking: optionSet.length > 0 ? "variant" : "product",
       inventory_level: Number(inventoryLevel),
       brand_name: brandName,
       categories: checkedInputs,
       description: `${descr} <img src=${discripUrl} alt="" />`,
+      variants: optionSet.map(option => ({
+        price: Number(
+          category === "cd"
+            ? (option.optionPrice / 1100).toFixed(2)
+            : category === "officialStore"
+            ? (option.optionPrice / 0.8 / 1100).toFixed(2)
+            : (option.optionPrice / 0.9 / 1100).toFixed(2)
+        ),
+
+        inventory_level: option.optionStock,
+        sku: `${optionName.optionSetName}-${option.optionName}-${sku}`,
+        option_values: [
+          {
+            option_display_name: optionName.optionSetName,
+            label: option.optionName,
+          },
+        ],
+      })),
+      // variants: [
+      //   {
+      //     price: 11,
+      //     sku: "SKU-BLU1",
+      //     option_values: [
+      //       {
+      //         option_display_name: "Mug Color",
+      //         label: "Blue",
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     price: 10,
+      //     sku: "SKU-GRAY2",
+      //     option_values: [
+      //       {
+      //         option_display_name: "Mug Color",
+      //         label: "Gray",
+      //       },
+      //     ],
+      //   },
+      // ],
     };
-    await axios
-      .get(
-        `https://us-central1-interasiastock.cloudfunctions.net/app/big/addproduct`,
-        // `https://us-central1-interasiastock.cloudfunctions.net/app/big/getThumbnail`,
-        { params: data }
-      )
+    await axios({
+      method: "post",
+      url: "https://us-central1-interasiastock.cloudfunctions.net/app/big/addproduct",
+      data: data,
+    })
+      // .post(
+      //   `https://us-central1-interasiastock.cloudfunctions.net/app/big/addproduct`,
+      //   // `https://us-central1-interasiastock.cloudfunctions.net/app/big/getThumbnail`,
+      //   { params: data }
+      // )
       .then(response => {
         if (response?.data?.id) {
           // onSaveButtonClick();
@@ -397,33 +467,16 @@ const AddProduct = ({ location }) => {
           ))}
 
           {/* 옵션 */}
-          <div className="grid grid-cols-4 p-2 items-center">
-            <div className="text-gray-600 text-right  mr-3">옵션추가</div>
-            <input
-              type="text"
-              placeholder="옵션이름"
-              className="col-span-2 border h-9 pl-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 p-2 items-center">
-            <div className="text-gray-600 text-right  mr-3">+</div>
-            <input
-              type="text"
-              placeholder="옵션"
-              className="col-span-1 border h-9 pl-3"
-            />
-            <input
-              type="number"
-              placeholder="가격"
-              className="col-span-1 border h-9 pl-3"
-            />
-            <input
-              type="number"
-              placeholder="재고"
-              className="col-span-1 border h-9 pl-3"
-            />
-          </div>
+
+          <OptionSet
+            optionSet={optionSet}
+            setOptionSet={setOptionSet}
+            optionId={optionId}
+            setOptionId={setOptionId}
+            optionName={optionName}
+          />
           {/* 날짜 인풋 */}
+
           <div className="grid grid-cols-4 p-2 items-center">
             <div className="text-gray-600 text-right  mr-3">출시일</div>
             <input
