@@ -3,6 +3,10 @@ import axios from "axios";
 import { InitDataContext } from "../../../App";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import VisibilityIcon from "@material-ui/icons/Visibility";
+// import SyncAltIcon from "@material-ui/icons/SyncAlt";
+// import Modal from "../../modal/Modal";
+// import StockTable from "./StockTable";
+// import { db } from "../../../firebase";
 
 const HiddenBigc = ({
   relDate,
@@ -10,6 +14,9 @@ const HiddenBigc = ({
   handleBigTotalSold,
   option,
   optioned,
+  // totalStock,
+  // bigTotalSold,
+  // id,
 }) => {
   const state = useContext(InitDataContext);
   const { unShippedProductsIdandQty } = state;
@@ -24,7 +31,7 @@ const HiddenBigc = ({
   const { isVisible, handlePrice, handleStock, total_sold, productName } =
     product;
 
-  const onChange = e => {
+  const onChange = (e) => {
     const { name, value } = e.target;
 
     setProduct({
@@ -34,14 +41,14 @@ const HiddenBigc = ({
   };
 
   const fixfix = async (id, qty, price) => {
-    console.log(option);
+    // console.log(option);
     if (optioned) {
       await axios
         .get(
           `https://us-central1-interasiastock.cloudfunctions.net/app/big/fixproductinventoryprice/${id}/${option.id}/${qty}/${price}`
         )
-        .then(res => console.log(res))
-        .catch(e => console.log(e));
+        .then((res) => console.log(res))
+        .catch((e) => console.log(e));
       alert("수정되었습니다.");
       return;
     }
@@ -50,7 +57,7 @@ const HiddenBigc = ({
         `https://us-central1-interasiastock.cloudfunctions.net/app/big/fixproductinventoryprice/${id}/${qty}/${price}`
       )
       .then(() => alert("수정되었습니다."))
-      .catch(e => console.log(e));
+      .catch((e) => console.log(e));
   };
 
   const sdadasdasd = useCallback(async () => {
@@ -58,7 +65,7 @@ const HiddenBigc = ({
       .get(
         `https://us-central1-interasiastock.cloudfunctions.net/app/big/getproductinfo/${bigcProductId}`
       )
-      .then(p =>
+      .then((p) =>
         setProduct({
           handlePrice: optioned ? option.price : p.data.data.price,
           handleStock: optioned
@@ -69,8 +76,37 @@ const HiddenBigc = ({
           isVisible: p.data.data.is_visible,
         })
       )
-      .catch(e => console.log(e));
+      .catch((e) => console.log(e));
   }, [bigcProductId, optioned, option]);
+
+  // // 재고수불부 모달
+  // const [forHidden, setForHidden] = useState(true);
+
+  // const handleHidden = (forHidden) => {
+  //   if (forHidden === true) {
+  //     setForHidden(false);
+  //   } else if (forHidden === false) {
+  //     setForHidden(true);
+  //   }
+  // };
+  // const [modalOpen, setModalOpen] = useState(false);
+  // const openModal = () => {
+  //   if (forHidden) {
+  //     handleHidden(forHidden);
+  //   }
+  //   setModalOpen(true);
+  // };
+  // const closeModal = () => {
+  //   setModalOpen(false);
+  // };
+
+  // const [stockHistory, setStockHistory] = useState(null);
+
+  // //   useEffect(() => {
+  // // product.data.optioned &&
+  // // db.collection("products").doc(id).collection()
+
+  // //   },[])
 
   useEffect(() => {
     sdadasdasd();
@@ -81,7 +117,6 @@ const HiddenBigc = ({
       className="grid grid-cols-36 items-center 
 place-items-center text-xs bg-transparent border-t"
     >
-      {console.log(option)}
       {bigcProductId && (
         <>
           <button
@@ -110,7 +145,7 @@ place-items-center text-xs bg-transparent border-t"
                       }
                     )
                     .then(() => sdadasdasd())
-                    .catch(e => console.log(e))
+                    .catch((e) => console.log(e))
                 }
               />
             ) : isVisible === false ? (
@@ -132,14 +167,28 @@ place-items-center text-xs bg-transparent border-t"
                       }
                     )
                     .then(() => sdadasdasd())
-                    .catch(e => console.log(e))
+                    .catch((e) => console.log(e))
                 }
               />
             ) : (
               ""
             )}
           </div>
-          <div className="col-span-3"></div>
+          <div className="col-span-3">
+            {/* 재고수불부 아이콘
+            <button onClick={openModal}>
+              <SyncAltIcon fontSize="small" style={{ color: "gray" }} />
+            </button>
+            <Modal open={modalOpen} close={closeModal} header={"재고수불부"}>
+              <StockTable
+                product={product}
+                stockHistory={product?.data?.stockHistory}
+                bigTotalSold={bigTotalSold}
+                totalStock={totalStock}
+                id={id}
+              />
+            </Modal> */}
+          </div>
           <div className="col-span-2"></div>
           <div className="col-span-9 w-full">{productName && productName}</div>
           <div className="col-span-3  flex flex-row items-center justify-center">
@@ -166,11 +215,11 @@ place-items-center text-xs bg-transparent border-t"
           <div className="col-span-1">
             {unShippedProductsIdandQty &&
               (unShippedProductsIdandQty.filter(
-                doc => Object.keys(doc)[0] === bigcProductId.toString()
+                (doc) => Object.keys(doc)[0] === bigcProductId.toString()
               )[0]
                 ? Object.values(
                     unShippedProductsIdandQty.filter(
-                      doc => Object.keys(doc)[0] === bigcProductId.toString()
+                      (doc) => Object.keys(doc)[0] === bigcProductId.toString()
                     )[0]
                   )
                 : 0)}

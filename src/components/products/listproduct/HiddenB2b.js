@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
+import SyncAltIcon from "@material-ui/icons/SyncAlt";
+import Modal from "../../modal/Modal";
+import StockTable from "./StockTable";
 
 const HiddenB2b = ({
   id,
   price,
   stock,
   relDate,
-  orders,
-  shippings,
+  // orders,
+  // shippings,
   currency,
-  sku,
+  // sku,
   product,
   orderListInShippings,
   op,
@@ -19,8 +22,8 @@ const HiddenB2b = ({
   // const [shipped, setShipped] = useState([]);
 
   useEffect(() => {
-    db.collectionGroup("order").onSnapshot(snapshot =>
-      setOrdered(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
+    db.collectionGroup("order").onSnapshot((snapshot) =>
+      setOrdered(snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() })))
     );
 
     // db.collectionGroup("orderListInShippings").onSnapshot(snapshot =>
@@ -45,27 +48,67 @@ const HiddenB2b = ({
   //       return a + c.data.quan;
   //     }, 0)
   // );
-  const totalUnshipped = [].concat
-    .apply(
-      [],
-      orders.map(order =>
-        order.data.list.filter(arr => arr.sku === sku && arr.canceled === false)
-      )
-    )
-    .reduce((i, c) => {
-      return i + c.quan;
-    }, 0);
-  // // 총 발송
-  const totalshipped = [].concat
-    .apply(
-      [],
-      shippings.map(shipping =>
-        shipping.data.list.filter(arr => arr.sku === sku)
-      )
-    )
-    .reduce((i, c) => {
-      return i + c.quan;
-    }, 0);
+  // const totalUnshipped = [].concat
+  //   .apply(
+  //     [],
+  //     orders.map((order) =>
+  //       order.data.list.filter(
+  //         (arr) => arr.sku === sku && arr.canceled === false
+  //       )
+  //     )
+  //   )
+  //   .reduce((i, c) => {
+  //     return i + c.quan;
+  //   }, 0);
+  // // // 총 발송
+  // const totalshipped = [].concat
+  //   .apply(
+  //     [],
+  //     shippings.map((shipping) =>
+  //       shipping.data.list.filter((arr) => arr.sku === sku)
+  //     )
+  //   )
+  //   .reduce((i, c) => {
+  //     return i + c.quan;
+  //   }, 0);
+
+  // 재고수불부 모달
+  const [forHidden, setForHidden] = useState(true);
+
+  const handleHidden = (forHidden) => {
+    if (forHidden === true) {
+      setForHidden(false);
+    } else if (forHidden === false) {
+      setForHidden(true);
+    }
+  };
+  const [modalOpen, setModalOpen] = useState(false);
+  const openModal = () => {
+    if (forHidden) {
+      handleHidden(forHidden);
+    }
+    setModalOpen(true);
+  };
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
+  // const [stockHistory, setsStockHistory] = useState([]);
+  // useEffect(() => {
+  //   product.data.optioned &&
+  //     db
+  //       .collection("products")
+  //       .doc(product.id)
+  //       .collection("options")
+  //       .doc(op.id)
+  //       .collection("newStockHistory")
+  //       .get()
+  //       .then((snapshot) =>
+  //         setsStockHistory(
+  //           snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
+  //         )
+  //       );
+  // }, []);
 
   // 간단 수정창 input 관리
   const [form, onChange] = useInputs({
@@ -103,7 +146,26 @@ place-items-center text-xs bg-transparent border-t"
       <button onClick={() => simpleSave()} className="col-span-2">
         b2b-수정
       </button>
-      <div className="col-span-5 flex flex-row justify-start w-full"></div>
+      {product?.data?.optioned && (
+        <button onClick={openModal}>
+          <SyncAltIcon fontSize="small" style={{ color: "gray" }} />
+        </button>
+      )}
+      <Modal open={modalOpen} close={closeModal} header={"재고수불부"}>
+        <StockTable
+          product={product}
+          stockHistory={product?.data?.stockHistory}
+          bigTotalSold={0}
+          totalStock={0}
+          id={id}
+          option={product.data.optioned ? op : null}
+        />
+      </Modal>
+      <div
+        className={`col-span-${
+          product.data.optioned ? "4" : "5"
+        } flex flex-row justify-start w-full`}
+      ></div>
       <div className="col-span-3"></div>
       <div className="col-span-2"></div>
       <div className="col-span-9 w-full">{op?.data.optionName}</div>
@@ -118,7 +180,7 @@ place-items-center text-xs bg-transparent border-t"
           onChange={onChange}
         />
       </div>
-
+      {console.log("op", op)}
       <div className="col-span-2"></div>
       <input
         type="number"
@@ -131,7 +193,7 @@ place-items-center text-xs bg-transparent border-t"
       <div className="col-span-1">
         {/* {totalUnshipped} */}
         {orderListInShippings
-          .filter(doc =>
+          .filter((doc) =>
             // op
             //   ? doc?.data?.optionName === op?.data?.name
             //   :
@@ -143,7 +205,7 @@ place-items-center text-xs bg-transparent border-t"
             return a + c.data.quan;
           }, 0) +
           ordered
-            .filter(doc =>
+            .filter((doc) =>
               doc.data.optioned === true
                 ? doc.data.productId === product.id &&
                   doc.data.optionId === op.id
@@ -155,10 +217,9 @@ place-items-center text-xs bg-transparent border-t"
       </div>
       <div className="col-span-1">
         {/* {totalUnshipped - totalshipped}( */}
-        {console.log("orderListInShippings", orderListInShippings)}
-        {console.log("op", op)}
+
         {ordered
-          .filter(doc =>
+          .filter((doc) =>
             doc.data.optioned === true
               ? doc.data.productId === product.id && doc.data.optionId === op.id
               : doc.data.productId === product.id

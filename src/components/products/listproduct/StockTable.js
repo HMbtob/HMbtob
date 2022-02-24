@@ -8,6 +8,7 @@ const StockTable = ({
   totalStock,
   id,
   product,
+  option,
 }) => {
   const [totalOrder, setTotalOrder] = useState(null);
   const [shippedOrder, setShippedOrder] = useState(null);
@@ -29,23 +30,38 @@ const StockTable = ({
   }, [newStockHistory]);
 
   useEffect(() => {
-    db.collection("products")
-      .doc(id)
-      .collection("newStockHistory")
-      .orderBy("createdAt", "asc")
-      .onSnapshot(snapshot =>
-        setNewStockHistory(
-          snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
-        )
-      );
-  }, [id]);
+    option
+      ? db
+          .collection("products")
+          .doc(id)
+          .collection("options")
+          .doc(option.id)
+          .collection("newStockHistory")
+          .orderBy("createdAt", "asc")
+          .onSnapshot((snapshot) =>
+            setNewStockHistory(
+              snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
+            )
+          )
+      : db
+          .collection("products")
+          .doc(id)
+          .collection("newStockHistory")
+          .orderBy("createdAt", "asc")
+          .onSnapshot((snapshot) =>
+            setNewStockHistory(
+              snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
+            )
+          );
+  }, [id, option]);
   return (
     <div className="overflow-y-auto">
       <div className="mb-2 font-semibold text-base">
         New Stock History(1월 14일 이후)
       </div>
-      {console.log(newStockHistory)}
-      <div className="mb-2  text-sm">{product.data.title}</div>
+      <div className="mb-2  text-sm">
+        {product?.data?.title ? product?.data?.title : product.productName}
+      </div>
 
       <div className="grid grid-cols-12 text-gray-200 bg-gray-800 text-center">
         <div className="col-span-2">주문방법</div>

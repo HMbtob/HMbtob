@@ -48,13 +48,13 @@ const ListProductRow = ({
 }) => {
   const state = useContext(InitDataContext);
   const { products } = state;
-  const product = products.find(product => product.id === id);
+  const product = products.find((product) => product.id === id);
   const history = useHistory();
   const today = new Date();
 
   const [forHidden, setForHidden] = useState(true);
 
-  const handleHidden = forHidden => {
+  const handleHidden = (forHidden) => {
     if (forHidden === true) {
       setForHidden(false);
     } else if (forHidden === false) {
@@ -75,7 +75,7 @@ const ListProductRow = ({
 
   // 재고수불부에서 빅커머스 total_sold 가져가려고 만든 state
   const [bigTotalSold, setBigTotalSold] = useState(null);
-  const handleBigTotalSold = q => {
+  const handleBigTotalSold = (q) => {
     setBigTotalSold(q);
   };
   //상품별 메모 모달
@@ -104,7 +104,7 @@ const ListProductRow = ({
       : price / exchangeRate[user?.currency]
   );
 
-  const handlePrice2 = e => {
+  const handlePrice2 = (e) => {
     setPrice2(
       exchangeRate[user?.currency] === 1
         ? e.target.value / exchangeRate[user?.currency]
@@ -118,7 +118,7 @@ const ListProductRow = ({
       ?.substring(0, 10)
   );
 
-  const handleRelDate2 = e => {
+  const handleRelDate2 = (e) => {
     setRelDate2(e.target.value);
 
     db.collection("products")
@@ -127,7 +127,7 @@ const ListProductRow = ({
   };
 
   const [category, setCategory] = useState(product.data.category);
-  const handleCat = e => {
+  const handleCat = (e) => {
     setCategory(e.target.value);
     db.collection("products").doc(id).update({ category: e.target.value });
   };
@@ -148,20 +148,22 @@ const ListProductRow = ({
     //   orders.filter(order => order.data.list.some(li => li.productId === id))
     // );
     if (
-      orders.filter(order => order.data.list.some(li => li.productId === id))
-        .length > 0
+      orders.filter((order) =>
+        order.data.list.some((li) => li.productId === id)
+      ).length > 0
     ) {
       history.push({
         pathname: `/orderlist`,
         state: {
-          includedProducts: orders.filter(order =>
-            order.data.list.some(li => li.productId === id)
+          includedProducts: orders.filter((order) =>
+            order.data.list.some((li) => li.productId === id)
           ),
         },
       });
     } else if (
-      orders.filter(order => order.data.list.some(li => li.productId === id))
-        .length === 0
+      orders.filter((order) =>
+        order.data.list.some((li) => li.productId === id)
+      ).length === 0
     ) {
       alert("주문이 없습니다.");
     }
@@ -175,10 +177,11 @@ const ListProductRow = ({
         .collection("products")
         .doc(id)
         .collection("options")
+        .orderBy("optionName", "asc")
         .get()
-        .then(snapshot =>
+        .then((snapshot) =>
           setOptions(
-            snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+            snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
           )
         );
   }, [product, id]);
@@ -199,8 +202,8 @@ const ListProductRow = ({
         .get(
           `https://us-central1-interasiastock.cloudfunctions.net/app/big/productoptions/${bigcProductId}`
         )
-        .then(data => setBcOptions(data.data))
-        .catch(e => console.log(e));
+        .then((data) => setBcOptions(data.data))
+        .catch((e) => console.log(e));
   }, [bigcProductId, product]);
 
   return (
@@ -279,7 +282,7 @@ const ListProductRow = ({
             onChange={onChange}
             name="barcode2"
             className="p-1 outline-none bg-transparent"
-            onKeyPress={e => {
+            onKeyPress={(e) => {
               if (e.key === "Enter") {
                 db.collection("products").doc(id).update({ barcode: barcode2 });
                 return false;
@@ -294,7 +297,7 @@ const ListProductRow = ({
             onChange={onChange}
             name="sku2"
             className="p-1 outline-none bg-transparent"
-            onKeyPress={e => {
+            onKeyPress={(e) => {
               if (e.key === "Enter") {
                 db.collection("products").doc(id).update({ sku: sku2 });
                 return false;
@@ -365,7 +368,7 @@ const ListProductRow = ({
             onChange={onChange}
             name="title2"
             className="p-1 outline-none bg-transparent w-full"
-            onKeyPress={e => {
+            onKeyPress={(e) => {
               if (e.key === "Enter") {
                 db.collection("products").doc(id).update({ title: title2 });
                 return false;
@@ -381,7 +384,7 @@ const ListProductRow = ({
             onChange={handlePrice2}
             name="price2"
             className="p-1 outline-none bg-transparent w-full text-center"
-            onKeyPress={e => {
+            onKeyPress={(e) => {
               if (e.key === "Enter") {
                 db.collection("products").doc(id).update({ price: price2 });
                 return false;
@@ -405,7 +408,7 @@ const ListProductRow = ({
                 className="cursor-pointer"
                 fontSize="small"
                 style={{ color: "blue", opacity: "0.7", fontSize: "15" }}
-                onClick={async e => {
+                onClick={async (e) => {
                   e.preventDefault();
                   await db
                     .collection("products")
@@ -419,7 +422,7 @@ const ListProductRow = ({
                 className="cursor-pointer"
                 fontSize="small"
                 style={{ color: "red", opacity: "0.7", fontSize: "15" }}
-                onClick={async e => {
+                onClick={async (e) => {
                   e.preventDefault();
                   await db
                     .collection("products")
@@ -437,7 +440,7 @@ const ListProductRow = ({
                 className="cursor-pointer"
                 fontSize="small"
                 style={{ color: "red", opacity: "0.7", fontSize: "15" }}
-                onClick={async e => {
+                onClick={async (e) => {
                   e.preventDefault();
                   await db
                     .collection("products")
@@ -450,7 +453,7 @@ const ListProductRow = ({
                 className="cursor-pointer"
                 fontSize="small"
                 style={{ color: "blue", opacity: "0.7", fontSize: "15" }}
-                onClick={async e => {
+                onClick={async (e) => {
                   e.preventDefault();
                   await db
                     .collection("products")
@@ -480,7 +483,7 @@ const ListProductRow = ({
             onChange={onChange}
             name="weight2"
             className="p-1 outline-none w-3/4 text-center bg-transparent"
-            onKeyPress={e => {
+            onKeyPress={(e) => {
               if (e.key === "Enter") {
                 db.collection("products").doc(id).update({ weight: weight2 });
                 return false;
@@ -496,7 +499,7 @@ const ListProductRow = ({
               onChange={handleRelDate2}
               name="relDate2"
               className="p-1 outline-none bg-transparent w-full"
-              onKeyPress={e => {
+              onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   db.collection("products")
                     .doc(id)
@@ -513,15 +516,15 @@ const ListProductRow = ({
       ) : (
         <>
           {options ? (
-            options.map(op => (
+            options.map((op) => (
               <HiddenB2b
                 id={id}
-                sku={sku}
+                // sku={sku}
                 price={price}
                 stock={stock}
                 relDate={relDate}
-                orders={orders}
-                shippings={shippings}
+                // orders={orders}
+                // shippings={shippings}
                 product={product}
                 currency={user.currency}
                 orderListInShippings={orderListInShippings}
@@ -531,12 +534,12 @@ const ListProductRow = ({
           ) : (
             <HiddenB2b
               id={id}
-              sku={sku}
+              // sku={sku}
               price={price}
               stock={stock}
               relDate={relDate}
-              orders={orders}
-              shippings={shippings}
+              // orders={orders}
+              // shippings={shippings}
               product={product}
               currency={user.currency}
               orderListInShippings={orderListInShippings}
@@ -544,9 +547,9 @@ const ListProductRow = ({
           )}
           <div className="border-t-4"></div>
           {bcOptions ? (
-            bcOptions.map(option => (
+            bcOptions.map((option) => (
               <HiddenBigc
-                id={id}
+                // id={id}
                 sku={sku}
                 thumbNail={thumbNail}
                 title={title}
@@ -560,13 +563,15 @@ const ListProductRow = ({
                 shippings={shippings}
                 bigcProductId={bigcProductId}
                 handleBigTotalSold={handleBigTotalSold}
+                // bigTotalSold={bigTotalSold}
+                // totalStock={totalStock}
                 optioned={product.data.optioned === true ? true : false}
                 option={option}
               />
             ))
           ) : (
             <HiddenBigc
-              id={id}
+              // id={id}
               sku={sku}
               thumbNail={thumbNail}
               title={title}
@@ -578,8 +583,10 @@ const ListProductRow = ({
               preOrderDeadline={preOrderDeadline}
               orders={orders}
               shippings={shippings}
+              // totalStock={totalStock}
               bigcProductId={bigcProductId}
               handleBigTotalSold={handleBigTotalSold}
+              // bigTotalSold={bigTotalSold}
               optioned={product.data.optioned === true ? true : false}
             />
           )}

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { db } from "../../../firebase";
-import { krwComma } from "../../../utils/shippingUtils";
+// import { krwComma } from "../../../utils/shippingUtils";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
+import firebase from "firebase";
 
 export function OrderListDetailRow({
   order,
@@ -46,6 +47,47 @@ export function OrderListDetailRow({
   const deleteOrder = async () => {
     if (window.confirm("삭제하시겠습니까?")) {
       try {
+        if (order.data.optioned) {
+          if (order.data.canceled !== true) {
+            await db
+              .collection("products")
+              .doc(order.data.productId)
+              .collection("options")
+              .doc(order.data.optionId)
+              .update({
+                optionStock: firebase.firestore.FieldValue.increment(
+                  order.data.quan
+                ),
+              });
+          }
+          await db
+            .collection("products")
+            .doc(order.data.productId)
+            .collection("options")
+            .doc(order.data.optionId)
+            .collection("newStockHistory")
+            .doc(order.id)
+            .update({ canceled: true });
+          await db
+            .collection("accounts")
+            .doc(order.data.customer || order.data.userId)
+            .collection("order")
+            .doc(order.id)
+            .delete();
+          return alert("삭제되었습니다.");
+        }
+        await db
+          .collection("products")
+          .doc(order.data.productId)
+          .update({
+            stock: firebase.firestore.FieldValue.increment(order.data.quan),
+          });
+        await db
+          .collection("products")
+          .doc(order.data.productId)
+          .collection("newStockHistory")
+          .doc(order.id)
+          .update({ canceled: true });
         await db
           .collection("accounts")
           .doc(order.data.customer || order.data.userId)
@@ -63,6 +105,47 @@ export function OrderListDetailRow({
   const cancelOrder = async () => {
     if (window.confirm("취소하시겠습니까?")) {
       try {
+        if (order.data.optioned) {
+          await db
+            .collection("products")
+            .doc(order.data.productId)
+            .collection("options")
+            .doc(order.data.optionId)
+            .update({
+              optionStock: firebase.firestore.FieldValue.increment(
+                order.data.quan
+              ),
+            });
+          await db
+            .collection("products")
+            .doc(order.data.productId)
+            .collection("options")
+            .doc(order.data.optionId)
+            .collection("newStockHistory")
+            .doc(order.id)
+            .update({ canceled: true });
+          await db
+            .collection("accounts")
+            .doc(order.data.customer || order.data.userId)
+            .collection("order")
+            .doc(order.id)
+            .update({ canceled: true });
+          alert("취소되었습니다.");
+
+          return;
+        }
+        await db
+          .collection("products")
+          .doc(order.data.productId)
+          .update({
+            stock: firebase.firestore.FieldValue.increment(order.data.quan),
+          });
+        await db
+          .collection("products")
+          .doc(order.data.productId)
+          .collection("newStockHistory")
+          .doc(order.id)
+          .update({ canceled: true });
         await db
           .collection("accounts")
           .doc(order.data.customer || order.data.userId)
@@ -103,7 +186,7 @@ export function OrderListDetailRow({
           type="checkbox"
           className=" w-full"
           id={order.id}
-          onChange={e => changeHandler(e.target.checked, order.id)}
+          onChange={(e) => changeHandler(e.target.checked, order.id)}
           checked={checkedInputs.includes(order.id) ? true : false}
           disabled={order.data.canceled}
         />
@@ -186,7 +269,7 @@ export function OrderListDetailRow({
           value={price}
           step={0.01}
           onChange={
-            e => setPrice(Number(e.target.value))
+            (e) => setPrice(Number(e.target.value))
             // {
             //   const { value } = e.target;
             //   console.log("value", value);
@@ -218,7 +301,7 @@ export function OrderListDetailRow({
           type="number"
           value={qty}
           disabled={order.data.canceled}
-          onChange={e => setQty(e.target.value)}
+          onChange={(e) => setQty(e.target.value)}
           className="w-2/3 text-right pr-2 border outline-none"
         />{" "}
         ea
