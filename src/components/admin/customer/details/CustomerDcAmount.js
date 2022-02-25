@@ -12,7 +12,7 @@ export function CustomerDcAmount({ user }) {
     defaultValues: user.data.dcAmount,
   });
 
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     saveDcAmount(user, data);
   };
 
@@ -22,30 +22,29 @@ export function CustomerDcAmount({ user }) {
       className="flex flex-col items-center my-5"
     >
       <div className="text-center my-1 font-semibold">
-        할인액 {`[ ${user.data.currency} ]`}
+        할인액 [ KRW ]{/* {`[ ${user.data.currency} ]`} */}
       </div>
       <div className="grid grid-cols-7 border">
         {Object.keys(user.data.dcAmount)
           .sort()
-          .map(li => (
+          .map((li) => (
             <div className="grid grid-cols-1  text-center  ">
               <div className="text-gray-100 bg-gray-600">{li}</div>
               <div className="grid grid-cols-4 items-center border">
                 <input
                   {...register(li, {
                     required: { value: true, message: "필수 입력 항목입니다." },
+                    valueAsNumber: true,
                   })}
                   type="number"
                   className="text-center text-gray-800 outline-none col-span-3 bg-transparent"
                 />{" "}
-                <div className="text-xs bg-transparent">
-                  {user.data.currency}
-                </div>
+                <div className="text-xs bg-transparent">{"KRW"}</div>
               </div>
             </div>
           ))}
       </div>
-      {Object.keys(user.data.dcAmount).map(li => (
+      {Object.keys(user.data.dcAmount).map((li) => (
         <ErrorMessage
           errors={errors}
           name={li}

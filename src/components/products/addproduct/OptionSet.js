@@ -57,7 +57,7 @@ export function OptionSet({
   const saveOptionSet = () => {
     try {
       optionSet.map(
-        async option =>
+        async (option) =>
           await db
             .collection("optionSet")
             .doc(optionId)
@@ -79,7 +79,7 @@ export function OptionSet({
   const deleteOptionSet = async () => {
     try {
       await optionSet.map(
-        async option =>
+        async (option) =>
           await db
             .collection("optionSet")
             .doc(optionId)
@@ -96,9 +96,9 @@ export function OptionSet({
   };
 
   useEffect(() => {
-    db.collection("optionSet").onSnapshot(snapshot =>
+    db.collection("optionSet").onSnapshot((snapshot) =>
       setOptionSets(
-        snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+        snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
       )
     );
   }, []);
@@ -108,22 +108,23 @@ export function OptionSet({
       .doc(optionId)
       .collection("options")
       .orderBy("no", "asc")
-      .onSnapshot(snapshot =>
-        setOptionSet(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })))
+      .onSnapshot((snapshot) =>
+        setOptionSet(
+          snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        )
       );
   }, [optionId, setOptionSet]);
   return (
     <div>
-      {console.log(optionSet)}
       <div className="grid grid-cols-4 p-2 items-center">
         <div className="text-gray-600 text-right mr-3">옵션추가</div>
         <select
           className="border p-1"
           value={optionId}
-          onChange={e => setOptionId(e.target.value)}
+          onChange={(e) => setOptionId(e.target.value)}
         >
           <option value="no">선택안함</option>
-          {optionSets.map(op => (
+          {optionSets.map((op) => (
             <option value={op.id}>{op.data.optionSetName}</option>
           ))}
         </select>
@@ -136,7 +137,7 @@ export function OptionSet({
               type="text"
               className="border p-1 outline-none"
               value={addOptionSetName}
-              onChange={e => setAddOptionSetName(e.target.value)}
+              onChange={(e) => setAddOptionSetName(e.target.value)}
             />
             <button
               className=" cursor-pointer bg-gray-600 p-1 text-white ml-5 rounded-sm"
@@ -203,7 +204,7 @@ export function OptionSet({
               </button>
               <input
                 name="optionName"
-                onChange={e => handleOptionSet(e, i)}
+                onChange={(e) => handleOptionSet(e, i)}
                 value={option.optionName}
                 placeholder="이름"
                 type="text"
@@ -211,7 +212,7 @@ export function OptionSet({
               />
               <input
                 name="optionPrice"
-                onChange={e => handleOptionSet(e, i)}
+                onChange={(e) => handleOptionSet(e, i)}
                 value={option.optionPrice}
                 placeholder="가격"
                 type="number"
@@ -219,7 +220,7 @@ export function OptionSet({
               />
               <input
                 name="optionStock"
-                onChange={e => handleOptionSet(e, i)}
+                onChange={(e) => handleOptionSet(e, i)}
                 value={option.optionStock}
                 placeholder="재고"
                 type="number"

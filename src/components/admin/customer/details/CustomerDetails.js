@@ -4,6 +4,7 @@ import { db } from "../../../../firebase";
 import useInputs from "../../../../hooks/useInput";
 import { CustomerCredit } from "./CustomerCredit";
 import { CustomerDcAmount } from "./CustomerDcAmount";
+import { CustomerDcRate } from "./CustomerDcRate";
 import { CustomerShippingRate } from "./CustomerShippingRate";
 import { CustomerSurvay } from "./CustomerSurvay";
 
@@ -13,13 +14,13 @@ export function CustomerDetails({ match }) {
   const { accounts, dhlShippingFee } = state;
   const { z } = dhlShippingFee;
 
-  const user = accounts.find(account => account.data.uid === uid);
-  const inCharges = accounts.filter(account => account.data.type === "admin");
+  const user = accounts.find((account) => account.data.uid === uid);
+  const inCharges = accounts.filter((account) => account.data.type === "admin");
 
   const countries = [].concat(
     ...z
-      ?.map(zo => Object.values(zo).map(co => co.country))
-      .map(doc => [].concat(...doc))
+      ?.map((zo) => Object.values(zo).map((co) => co.country))
+      .map((doc) => [].concat(...doc))
   );
 
   const [form, onChange] = useInputs({
@@ -67,13 +68,13 @@ export function CustomerDetails({ match }) {
     recipient,
     shippingMessage,
     inCharge,
-    cd,
-    dvdBlueRay,
-    goods,
-    photoBook,
-    officialStore,
-    beauty,
-    specialOrder,
+    // cd,
+    // dvdBlueRay,
+    // goods,
+    // photoBook,
+    // officialStore,
+    // beauty,
+    // specialOrder,
     dhl,
     nickName,
     memo,
@@ -83,49 +84,47 @@ export function CustomerDetails({ match }) {
     companyName,
   } = form;
 
-  const dcValues = {
-    cd,
-    dvdBlueRay,
-    goods,
-    photoBook,
-    officialStore,
-    beauty,
-    specialOrder,
-  };
+  // const dcValues = {
+  //   cd,
+  //   dvdBlueRay,
+  //   goods,
+  //   photoBook,
+  //   officialStore,
+  //   beauty,
+  //   specialOrder,
+  // };
 
   const shippingRate = { dhl };
 
   const saveDetails = () => {
-    db.collection("accounts")
-      .doc(user.id)
-      .update({
-        recipientEmail,
-        recipientPhoneNumber,
-        street,
-        city,
-        states,
-        country,
-        zipcode,
-        recipient,
-        shippingMessage,
-        dcRates: {
-          cd: Number((Number(cd) / 100).toFixed(2)),
-          dvdBlueRay: Number((Number(dvdBlueRay) / 100).toFixed(2)),
-          photoBook: Number((Number(goods) / 100).toFixed(2)),
-          goods: Number((Number(photoBook) / 100).toFixed(2)),
-          officialStore: Number((Number(officialStore) / 100).toFixed(2)),
-          beauty: Number((Number(beauty) / 100).toFixed(2)),
-          specialOrder: Number((Number(specialOrder) / 100).toFixed(2)),
-        },
-        nickName,
-        inCharge,
-        memo,
-        type,
-        currency,
-        alias,
-        taxId,
-        companyName,
-      });
+    db.collection("accounts").doc(user.id).update({
+      recipientEmail,
+      recipientPhoneNumber,
+      street,
+      city,
+      states,
+      country,
+      zipcode,
+      recipient,
+      shippingMessage,
+      // dcRates: {
+      //   cd: Number((Number(cd) / 100).toFixed(2)),
+      //   dvdBlueRay: Number((Number(dvdBlueRay) / 100).toFixed(2)),
+      //   photoBook: Number((Number(goods) / 100).toFixed(2)),
+      //   goods: Number((Number(photoBook) / 100).toFixed(2)),
+      //   officialStore: Number((Number(officialStore) / 100).toFixed(2)),
+      //   beauty: Number((Number(beauty) / 100).toFixed(2)),
+      //   specialOrder: Number((Number(specialOrder) / 100).toFixed(2)),
+      // },
+      nickName,
+      inCharge,
+      memo,
+      type,
+      currency,
+      alias,
+      taxId,
+      companyName,
+    });
     alert("수정 완료");
   };
 
@@ -251,7 +250,7 @@ export function CustomerDetails({ match }) {
             </div>
 
             {/* 할인율 */}
-            <div className="grid grid-cols-1">
+            {/* <div className="grid grid-cols-1">
               <div className="text-center my-1 font-semibold">
                 DC Rate {`[ % ]`}
               </div>
@@ -275,7 +274,7 @@ export function CustomerDetails({ match }) {
                     </div>
                   ))}
               </div>
-            </div>
+            </div> */}
           </div>
           {/* 수령인 파트 */}
 
@@ -397,6 +396,8 @@ export function CustomerDetails({ match }) {
           수정하기
         </button>
         <CustomerDcAmount user={user} />
+        <CustomerDcRate user={user} />
+
         <CustomerShippingRate user={user} />
         <CustomerCredit user={user} />
         {user.data.survay && <CustomerSurvay user={user} />}

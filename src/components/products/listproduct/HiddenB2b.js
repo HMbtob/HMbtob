@@ -180,7 +180,6 @@ place-items-center text-xs bg-transparent border-t"
           onChange={onChange}
         />
       </div>
-      {console.log("op", op)}
       <div className="col-span-2"></div>
       <input
         type="number"

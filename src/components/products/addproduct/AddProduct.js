@@ -29,14 +29,14 @@ const AddProduct = ({ location }) => {
   useEffect(() => {
     db.collection("optionSet")
       .doc(optionId)
-      .onSnapshot(snapshot => setOptionName(snapshot.data()));
+      .onSnapshot((snapshot) => setOptionName(snapshot.data()));
   }, [optionId]);
   // 썸넬
 
   const [thumbnailUrl, setThumbnailUrl] = useState(
     location?.state?.product?.data?.thumbNail || ""
   );
-  const handleThumbnail = e => {
+  const handleThumbnail = (e) => {
     setThumbnailUrl(e.target.value);
   };
   // 디스크립션-이미지
@@ -44,7 +44,7 @@ const AddProduct = ({ location }) => {
   const [discripUrl, setDiscripUrl] = useState(
     location?.state?.product?.data?.discripUrl || ""
   );
-  const handleDiscrip = e => {
+  const handleDiscrip = (e) => {
     setDiscripUrl(e.target.value);
   };
   // 디스크립션 텍스트
@@ -58,7 +58,7 @@ const AddProduct = ({ location }) => {
       setCheckedInputs([...checkedInputs, id]);
     } else {
       // 체크 해제
-      setCheckedInputs(checkedInputs.filter(el => el !== id));
+      setCheckedInputs(checkedInputs.filter((el) => el !== id));
     }
   };
 
@@ -177,8 +177,8 @@ const AddProduct = ({ location }) => {
       .get(
         `https://us-central1-interasiastock.cloudfunctions.net/app/big/getcategory`
       )
-      .then(cats => setCats(cats.data.data))
-      .catch(error => console.log(error));
+      .then((cats) => setCats(cats.data.data))
+      .catch((error) => console.log(error));
   }, []);
 
   // 섬넬
@@ -197,11 +197,11 @@ const AddProduct = ({ location }) => {
           },
         }
       )
-      .then(res => {
+      .then((res) => {
         console.log(res);
         setThumbnailUrl(res.data);
       })
-      .catch(e => console.log(e));
+      .catch((e) => console.log(e));
   };
   // 디스크립션
   const getDisc = async () => {
@@ -219,11 +219,11 @@ const AddProduct = ({ location }) => {
           },
         }
       )
-      .then(res => setDiscripUrl(res.data))
-      .catch(e => console.log(e));
+      .then((res) => setDiscripUrl(res.data))
+      .catch((e) => console.log(e));
   };
 
-  const Appp = async id => {
+  const Appp = async (id) => {
     try {
       await db
         .collection("products")
@@ -332,7 +332,7 @@ const AddProduct = ({ location }) => {
       brand_name: brandName,
       categories: checkedInputs,
       description: `${descr} <img src=${discripUrl} alt="" />`,
-      variants: optionSet.map(option => ({
+      variants: optionSet.map((option) => ({
         price: Number(
           category === "cd"
             ? (option.optionPrice / 1100).toFixed(2)
@@ -383,7 +383,7 @@ const AddProduct = ({ location }) => {
       //   // `https://us-central1-interasiastock.cloudfunctions.net/app/big/getThumbnail`,
       //   { params: data }
       // )
-      .then(response => {
+      .then((response) => {
         if (response?.data?.id) {
           // onSaveButtonClick();
           return Appp(response.data.id);
@@ -401,21 +401,114 @@ const AddProduct = ({ location }) => {
           alert("알 수 없는 오류. 관리자에세 문의해주세요.");
         }
       })
-      .catch(e => {
+      .catch((e) => {
         console.log("요청실패 오류 Catch", e);
         setToggleBcSaveButton(false);
         alert("알 수 없는 오류. 관리자에세 문의해주세요.");
       });
   };
 
+  // 카테고리
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState("cd");
+
+  const [addCat, setAddCat] = useState("");
+  const addCategory = async () => {
+    // const qweqwe = await db.collection("category").doc("RATES").get();
+
+    // console.log(
+    //   Object.values(qweqwe.data()).reduce((a, c) => {
+    //     a[`${c}`] = 0;
+    //     return a;
+    //   }, {})
+    // );
+
+    if (addCat.length > 0) {
+      try {
+        const accounts = await db.collection("accounts").get();
+        await db
+          .collection("category")
+          .doc("RATES")
+          .update({
+            [`${addCat}`]: addCat,
+          });
+        accounts.docs.map(
+          async (doc) =>
+            await db
+              .collection("accounts")
+              .doc(doc.id)
+              .update({
+                dcRates: { ...doc.data().dcRates, [`${addCat}`]: 0 },
+                dcAmount: {
+                  ...doc.data().dcAmount,
+                  [`${addCat}A`]: 0,
+                },
+              })
+        );
+
+        alert("추가되었습니다.");
+        setAddCat("");
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      alert("올바른 카테고리 이름을 입력하세요");
+    }
+  };
+
+  const deleteCat = async () => {
+    try {
+      if (
+        category !== "cd" &&
+        category !== "beauty" &&
+        category !== "dvdBlueRay" &&
+        category !== "goods" &&
+        category !== "officialStore" &&
+        category !== "photoBook"
+      ) {
+        const qweqwe = await db.collection("category").doc("RATES").get();
+        const accounts = await db.collection("accounts").get();
+
+        const categories = qweqwe.data();
+        delete categories[category];
+
+        // const deledCat = accounts.docs[41].data().dcRates;
+        // const deledCatA = accounts.docs[41].data().dcAmount;
+
+        // delete deledCat[category];
+        // delete deledCatA[`${category}A`];
+
+        // await db.collection("accounts").doc(accounts.docs[41].id).update({
+        //   dcRates: deledCat,
+        //   dcAmount: deledCatA,
+        // });
+        await db.collection("category").doc("RATES").set(categories);
+
+        accounts.docs.map(async (doc) => {
+          const deledCat = doc.data().dcRates;
+          const deledCatA = doc.data().dcAmount;
+
+          delete deledCat[category];
+          delete deledCatA[`${category}A`];
+          await db.collection("accounts").doc(doc.id).update({
+            dcRates: deledCat,
+            dcAmount: deledCatA,
+          });
+        });
+
+        alert("카테고리를 삭제했습니다.");
+      } else {
+        alert("삭제할 수 없는 카테고리 입니다.");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   useEffect(() => {
     db.collection("category")
       .doc("RATES")
-      .get()
-      .then(snapshot => setCategories(snapshot.data()));
+      .onSnapshot((snapshot) => setCategories(snapshot.data()));
   }, []);
 
   useEffect(() => {
@@ -424,14 +517,14 @@ const AddProduct = ({ location }) => {
   useEffect(() => {
     setParentCat(
       cats
-        .filter(cat => cat.parent_id === 0)
+        .filter((cat) => cat.parent_id === 0)
         .sort((a, b) => {
           return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
         })
     );
     setChildCat(
       cats
-        .filter(cat => cat.parent_id !== 0)
+        .filter((cat) => cat.parent_id !== 0)
         .sort((a, b) => {
           return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
         })
@@ -531,7 +624,7 @@ const AddProduct = ({ location }) => {
               required
               value={category}
               name="category"
-              onChange={e => setCategory(e.target.value)}
+              onChange={(e) => setCategory(e.target.value)}
               className="col-span-3 border h-9 pl-3"
             >
               <option>필수선택</option>
@@ -548,9 +641,25 @@ const AddProduct = ({ location }) => {
             </div>
 
             <div className="flex flex-row w-full col-span-3 ">
-              <input type="text" className="w-2/3 border p-2" />{" "}
-              <button type="button" className="">
+              <input
+                type="text"
+                className="w-2/3 border p-2"
+                value={addCat}
+                onChange={(e) => setAddCat(e.target.value)}
+              />
+              <button
+                type="button"
+                className=" cursor-pointer bg-gray-600 p-1 text-white ml-5 rounded-sm"
+                onClick={() => addCategory()}
+              >
                 카테고리 추가
+              </button>
+              <button
+                type="button"
+                className=" cursor-pointer bg-gray-600 p-1 text-white ml-5 rounded-sm"
+                onClick={() => deleteCat()}
+              >
+                카테고리 삭제
               </button>
             </div>
           </div>
@@ -595,7 +704,7 @@ const AddProduct = ({ location }) => {
               name="thumbnailUrl"
               value={thumbnailUrl}
               placeholder="이미지 주소 복사해서 붙혀넣기 후 엔터. 소요시간 10초"
-              onKeyPress={e => {
+              onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   getImages();
                   return false;
@@ -613,7 +722,7 @@ const AddProduct = ({ location }) => {
               name="discripUrl"
               value={discripUrl}
               placeholder="이미지 주소 복사해서 붙혀넣기 후 엔터. 소요시간 10초"
-              onKeyPress={e => {
+              onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   getDisc();
                   return false;
