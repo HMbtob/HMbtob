@@ -126,11 +126,11 @@ const ListProductRow = ({
       .update({ relDate: new Date(e.target.value) });
   };
 
-  const [category, setCategory] = useState(product.data.category);
-  const handleCat = (e) => {
-    setCategory(e.target.value);
-    db.collection("products").doc(id).update({ category: e.target.value });
-  };
+  // const [category, setCategory] = useState(product.data.category);
+  // const handleCat = (e) => {
+  //   setCategory(e.target.value);
+  //   db.collection("products").doc(id).update({ category: e.target.value });
+  // };
 
   const handleDelete = () => {
     let con = window.confirm("정말로 삭제하시겠습니까?");
@@ -206,6 +206,15 @@ const ListProductRow = ({
         .catch((e) => console.log(e));
   }, [bigcProductId, product]);
 
+  // 카테고리
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState(product.data.category || "cd");
+
+  useEffect(() => {
+    db.collection("category")
+      .doc("RATES")
+      .onSnapshot((snapshot) => setCategories(snapshot.data()));
+  }, []);
   return (
     <div
       className={`border-b  border-gray-500 w-full py-1 ${
@@ -339,10 +348,22 @@ const ListProductRow = ({
             <select
               name="category"
               value={category}
-              onChange={handleCat}
+              // onChange={handleCat}
+              onChange={(e) => {
+                setCategory(e.target.value);
+                db.collection("products")
+                  .doc(id)
+                  .update({ category: e.target.value });
+              }}
               className="bg-transparent outline-none ml-3"
             >
-              <option value="cd">
+              <option>필수선택</option>
+              {Object.keys(categories).map((option, index) => (
+                <option key={index} value={categories[option]}>
+                  {categories[option]}
+                </option>
+              ))}
+              {/* <option value="cd">
                 cd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
               </option>
               <option value="dvdBlueRay">
@@ -359,7 +380,7 @@ const ListProductRow = ({
               </option>
               <option value="beauty">
                 beauty&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
-              </option>
+              </option> */}
             </select>
           </div>
           <input
