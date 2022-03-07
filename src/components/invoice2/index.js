@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 import useInputs from "../../hooks/useInput";
 import InvoiceRow from "../invoice/InvoiceRow";
 import { db } from "../../firebase";
@@ -45,7 +45,7 @@ export function Invoice2({ location }) {
           .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
   );
 
-  const handleShippingFee = e => {
+  const handleShippingFee = (e) => {
     setShippingFee(
       shipping.data.currency === "KRW"
         ? Number(e.target.value.replaceAll(",", ""))
@@ -71,7 +71,7 @@ export function Invoice2({ location }) {
           .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
   );
 
-  const handleAmountPrice = e => {
+  const handleAmountPrice = (e) => {
     setAmountPrice(
       shipping.data.currency === "KRW"
         ? Number(e.target.value.replaceAll(",", ""))
@@ -91,9 +91,9 @@ export function Invoice2({ location }) {
       .collection("shippingsInAccount")
       .doc(shipping.id)
       .collection("orderListInShippings")
-      .onSnapshot(snapshot =>
+      .onSnapshot((snapshot) =>
         setOrderInshipping(
-          snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+          snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
         )
       );
   }, [shipping]);
@@ -227,7 +227,7 @@ export function Invoice2({ location }) {
                   type="text"
                   value={shippingFee}
                   name="shippingFee"
-                  onChange={e => handleShippingFee(e)}
+                  onChange={(e) => handleShippingFee(e)}
                 />
                 {shipping?.data?.currency}
               </div>

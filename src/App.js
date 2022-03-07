@@ -2,7 +2,7 @@ import React, { useEffect, useReducer } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Spinner from "react-spinkit";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 import { auth, db } from "./firebase";
 import { initState, dataReducer } from "./reducer/Reducer";
 // import OrderList from "./components/admin/orderlist/OrderList";
@@ -43,7 +43,7 @@ function App() {
   useEffect(() => {
     db.collection("accounts")
       .doc(user?.email)
-      .onSnapshot(doc =>
+      .onSnapshot((doc) =>
         dispatch({ type: "USERTYPE", userType: doc?.data()?.type })
       );
   }, [user]);
@@ -51,15 +51,18 @@ function App() {
   useEffect(() => {
     db.collection("accounts")
       .doc(user?.email)
-      .onSnapshot(doc => dispatch({ type: "USER", user: doc?.data() }));
+      .onSnapshot((doc) => dispatch({ type: "USER", user: doc?.data() }));
   }, [user]);
 
   // FIXME: account type -> customer 만 가져오게
   useEffect(() => {
-    db.collection("accounts").onSnapshot(snapshot =>
+    db.collection("accounts").onSnapshot((snapshot) =>
       dispatch({
         type: "ACCOUNTS",
-        account: snapshot.docs.map(doc => ({ id: doc?.id, data: doc?.data() })),
+        account: snapshot.docs.map((doc) => ({
+          id: doc?.id,
+          data: doc?.data(),
+        })),
       })
     );
   }, [dispatch]);
@@ -81,10 +84,13 @@ function App() {
   // }, [dispatch]);
 
   useEffect(() => {
-    db.collection("products").onSnapshot(snapshot =>
+    db.collection("products").onSnapshot((snapshot) =>
       dispatch({
         type: "PRODUCTS",
-        product: snapshot.docs.map(doc => ({ id: doc?.id, data: doc?.data() })),
+        product: snapshot.docs.map((doc) => ({
+          id: doc?.id,
+          data: doc?.data(),
+        })),
       })
     );
   }, [dispatch]);
@@ -166,7 +172,7 @@ function App() {
   useEffect(() => {
     db.collection("shippingFee")
       .doc("dhl")
-      .onSnapshot(snapshot =>
+      .onSnapshot((snapshot) =>
         dispatch({
           type: "DHL_SHIPPING_FEE",
           dhlShippingFee: snapshot.data(),
@@ -177,7 +183,7 @@ function App() {
   useEffect(() => {
     db.collection("exchangeRate")
       .doc("rates")
-      .onSnapshot(snapshot =>
+      .onSnapshot((snapshot) =>
         dispatch({
           type: "EXCHANGE_RATE",
           exchangeRate: snapshot.data(),

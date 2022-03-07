@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { db } from "../../firebase";
-// import { ByMonth } from "./ByMonth";
+import { ByMonth } from "./ByMonth";
 import { ByUsers } from "./ByUsers";
 import { FirstContainer } from "./FirstContainer";
 import { Last7Days } from "./Last7Days";
@@ -44,13 +44,13 @@ export function DashBoard() {
                 : 0;
             })
             .map(
-              order =>
+              (order) =>
                 `${
                   new Date(order.createdAt.seconds * 1000).getMonth() + 1
                 }-${new Date(order.createdAt.seconds * 1000).getDate()}`
             )
         ),
-      ].map(d =>
+      ].map((d) =>
         total
           ?.sort((a, b) => {
             return a?.createdAt < b?.createdAt
@@ -59,13 +59,13 @@ export function DashBoard() {
               ? 1
               : 0;
           })
-          .map(order => ({
+          .map((order) => ({
             monthDate: `${
               new Date(order.createdAt.seconds * 1000).getMonth() + 1
             }-${new Date(order.createdAt.seconds * 1000).getDate()}`,
             quan: order.quan,
           }))
-          .filter(f => f.monthDate === d && f.quan < 10000)
+          .filter((f) => f.monthDate === d && f.quan < 10000)
           .reduce(
             (a, c) => {
               return {
@@ -95,13 +95,13 @@ export function DashBoard() {
             //   let day = Math.ceil(gap / (1000 * 60 * 60 * 24));
             //   return day > -8;
             // })
-            .map(li => li.title.trim())
+            .map((li) => li.title.trim())
         ),
       ]
         .reduce((a, c) => {
           a.push(
             total
-              .filter(li => li.title.trim() === c.trim())
+              .filter((li) => li.title.trim() === c.trim())
               .reduce(
                 (a, c) => {
                   return {
@@ -138,13 +138,13 @@ export function DashBoard() {
             //   let day = Math.ceil(gap / (1000 * 60 * 60 * 24));
             //   return day > -8;
             // })
-            .map(li => li.nickName.trim())
+            .map((li) => li.nickName.trim())
         ),
       ]
         .reduce((a, c) => {
           a.push(
             total
-              .filter(li => li.nickName.trim() === c.trim())
+              .filter((li) => li.nickName.trim() === c.trim())
               .reduce(
                 (a, c) => {
                   return {
@@ -168,13 +168,15 @@ export function DashBoard() {
   useEffect(() => {
     db.collectionGroup("order")
       .get()
-      .then(order => setOrders(order.docs.map(doc => doc.data())));
+      .then((order) => setOrders(order.docs.map((doc) => doc.data())));
     db.collectionGroup("orderListInShippings")
       .get()
-      .then(order => setOrdersInShippings(order.docs.map(doc => doc.data())));
+      .then((order) =>
+        setOrdersInShippings(order.docs.map((doc) => doc.data()))
+      );
     db.collection("accounts")
       .get()
-      .then(user => setUsers(user.docs.map(doc => doc.data())));
+      .then((user) => setUsers(user.docs.map((doc) => doc.data())));
   }, []);
 
   useEffect(() => {
@@ -184,6 +186,9 @@ export function DashBoard() {
   return (
     <div className="mt-32 mb-32 w-full flex flex-col items-center">
       <div className="text-4xl font-semibold mb-5">Dash Board</div>
+      {/* {console.log(orders[1109])}
+      {console.log(orders)}
+      {console.log(ordersInShippings)} */}
       <FirstContainer
         lifetime={lifetime}
         orderQty={total.length}
@@ -191,7 +196,7 @@ export function DashBoard() {
       />
       <SecondContainer top5={top5} byUser={byUser} />
       <Last7Days orders={total} />
-      {/* <ByMonth orders={total} /> */}
+      <ByMonth orders={total} />
       <ByUsers orders={total} users={users} />
     </div>
   );

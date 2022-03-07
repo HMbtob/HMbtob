@@ -190,7 +190,37 @@ place-items-center text-xs bg-transparent border-t"
             </Modal> */}
           </div>
           <div className="col-span-2"></div>
-          <div className="col-span-9 w-full">{productName && productName}</div>
+          <div className="col-span-9 w-full">
+            {productName && (
+              <input
+                className="w-full p-1 bg-transparent"
+                type="text"
+                name="productName"
+                value={productName}
+                onChange={onChange}
+                onKeyPress={async (e) => {
+                  if (e.key === "Enter") {
+                    await axios
+                      .post(
+                        `https://us-central1-interasiastock.cloudfunctions.net/app/big/fixproducttitle`,
+                        {
+                          id: bigcProductId,
+                          name: productName,
+                        }
+                      )
+                      .then((res) => {
+                        // console.log(res);
+                        alert("수정되었습니다.");
+                      })
+                      .catch((e) => {
+                        console.log(e);
+                        alert("실패했습니다.");
+                      });
+                  }
+                }}
+              />
+            )}
+          </div>
           <div className="col-span-3  flex flex-row items-center justify-center">
             <div>USD</div>
             <input

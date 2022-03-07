@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 import { db } from "../../firebase";
 import { toDate } from "../../utils/shippingUtils";
 // import { OrderListRowPie } from "./OrderListPie";
@@ -14,8 +14,10 @@ export function OrderListRow({ acc, accounts }) {
       .collection("accounts")
       .doc(acc.id)
       .collection("order")
-      .onSnapshot(snapshot =>
-        setOrders(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
+      .onSnapshot((snapshot) =>
+        setOrders(
+          snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
+        )
       );
     return () => unsub();
   }, [acc]);
@@ -33,7 +35,7 @@ export function OrderListRow({ acc, accounts }) {
       <div>
         <div className="text-md text-red-600 font-bold">
           {
-            orders?.filter(order =>
+            orders?.filter((order) =>
               // toDate(order?.data?.createdAt?.seconds) ===
               // today?.toISOString().substring(0, 10)
               {
@@ -53,7 +55,7 @@ export function OrderListRow({ acc, accounts }) {
           (
           {orders
             ?.filter(
-              order =>
+              (order) =>
                 toDate(order?.data?.createdAt?.seconds) ===
                 today?.toISOString().substring(0, 10)
             )
@@ -66,13 +68,13 @@ export function OrderListRow({ acc, accounts }) {
       {/* 미확인주문/수량 */}
       <div>
         <div className="text-xs">
-          {orders?.filter(order => order?.data?.confirmed !== true)?.length}{" "}
+          {orders?.filter((order) => order?.data?.confirmed !== true)?.length}{" "}
           Type
         </div>
         <div className="text-2xs">
           (
           {orders
-            ?.filter(order => order?.data?.confirmed !== true)
+            ?.filter((order) => order?.data?.confirmed !== true)
             ?.reduce((a, c) => {
               return a + Number(c.data.quan);
             }, 0)}{" "}
@@ -82,13 +84,13 @@ export function OrderListRow({ acc, accounts }) {
       {/* 확인된 주문/수량 */}
       <div>
         <div className="text-xs">
-          {orders?.filter(order => order?.data?.confirmed === true)?.length}{" "}
+          {orders?.filter((order) => order?.data?.confirmed === true)?.length}{" "}
           Type
         </div>
         <div className="text-2xs">
           (
           {orders
-            ?.filter(order => order?.data?.confirmed === true)
+            ?.filter((order) => order?.data?.confirmed === true)
             ?.reduce((a, c) => {
               return a + Number(c.data.quan);
             }, 0)}{" "}
@@ -98,12 +100,13 @@ export function OrderListRow({ acc, accounts }) {
       {/* 취소된주문/수량 */}
       <div>
         <div className="text-xs">
-          {orders?.filter(order => order?.data?.canceled === true)?.length} Type
+          {orders?.filter((order) => order?.data?.canceled === true)?.length}{" "}
+          Type
         </div>
         <div className="text-2xs">
           (
           {orders
-            ?.filter(order => order?.data?.canceled === true)
+            ?.filter((order) => order?.data?.canceled === true)
             ?.reduce((a, c) => {
               return a + Number(c.data.quan);
             }, 0)}{" "}
@@ -112,7 +115,7 @@ export function OrderListRow({ acc, accounts }) {
       </div>
       <div className="text-xs">
         {
-          accounts.find(account => account.id === acc?.data?.inCharge)?.data
+          accounts.find((account) => account.id === acc?.data?.inCharge)?.data
             ?.nickName
         }
       </div>

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 import Modal from "../../modal/Modal";
 import HiddenB2b from "./HiddenB2b";
 import HiddenBigc from "./HiddenBigc";

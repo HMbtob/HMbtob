@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../firebase";
+import { OrderListInShippingsRow } from "./OrderListInShippingsRow";
 
 export function HiddenRowRow({ li }) {
   return (
@@ -22,6 +23,7 @@ export function HiddenRowRow({ li }) {
 }
 
 export function HiddenRow({ shipping }) {
+  const cancelShipping = () => {};
   const [orderListInShippings, setOrderListInShippings] = useState([]);
   useEffect(() => {
     db.collection("accounts")
@@ -29,9 +31,9 @@ export function HiddenRow({ shipping }) {
       .collection("shippingsInAccount")
       .doc(shipping.id)
       .collection("orderListInShippings")
-      .onSnapshot(snapshot =>
+      .onSnapshot((snapshot) =>
         setOrderListInShippings(
-          snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+          snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
         )
       );
   }, [shipping]);
@@ -50,21 +52,12 @@ export function HiddenRow({ shipping }) {
       )}
       {orderListInShippings &&
         orderListInShippings?.map((li, i) => (
-          <div
-            key={i}
-            className="grid grid-cols-20 text-gray-800 items-center pt-1"
-          >
-            <div className="col-span-3">{li.data.childOrderNumber}</div>
-            <div className="col-span-9 text-left">
-              {" "}
-              {li.data.title} {li?.data?.optionName}
-            </div>
-            <div className="col-span-2">
-              {li.data.price} {li.data.currency}
-            </div>
-            <div className="col-span-2">{li.data.barcode} </div>
-            <div className="col-span-2">{li.data.quan} ea</div>
-          </div>
+          <OrderListInShippingsRow
+            li={li}
+            i={i}
+            shipping={shipping}
+            orderListInShippings={orderListInShippings}
+          />
         ))}
     </div>
   );

@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import { handleDelete } from "../utils/utils";
 

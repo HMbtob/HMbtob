@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 import useInputs from "./../../hooks/useInput";
 import InvoiceRow from "./InvoiceRow";
 
@@ -9,9 +9,9 @@ const PickUpList = ({ location }) => {
   const [invoiceLists] = useState(
     [].concat.apply(
       [],
-      orders.map(order =>
+      orders.map((order) =>
         order.data.list.filter(
-          list =>
+          (list) =>
             state.includes(list.childOrderNumber) &&
             list.canceled === false &&
             list.moved === false
@@ -68,7 +68,7 @@ const PickUpList = ({ location }) => {
           .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
   );
 
-  const handleShippingFee = e => {
+  const handleShippingFee = (e) => {
     setShippingFee(
       order.data.currency === "KRW"
         ? Number(e.target.value.replaceAll(",", ""))
@@ -94,7 +94,7 @@ const PickUpList = ({ location }) => {
           .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
   );
 
-  const handleAmountPrice = e => {
+  const handleAmountPrice = (e) => {
     setAmountPrice(
       order.data.currency === "KRW"
         ? Number(e.target.value.replaceAll(",", ""))

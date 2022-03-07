@@ -28,7 +28,7 @@ export function OrderListDetail({ match, location }) {
   const changeHandler = (checked, id) => {
     checked
       ? setCheckedInputs([...checkedInputs, id])
-      : setCheckedInputs(checkedInputs.filter(el => el !== id));
+      : setCheckedInputs(checkedInputs.filter((el) => el !== id));
   };
   const idArray = [];
 
@@ -36,19 +36,19 @@ export function OrderListDetail({ match, location }) {
   const handleAllCheck = () => {
     if (
       checkedInputs.length !==
-      orders.filter(li => li.data.canceled === false).length
+      orders.filter((li) => li.data.canceled === false).length
     ) {
       // 전체 체크 박스가 체크 되면 id를 가진 모든 elements를 배열에 넣어주어서,
       // 전체 체크 박스 체크
       orders
-        .filter(li => li.data.canceled === false)
-        .map(el => idArray.push(el.id));
+        .filter((li) => li.data.canceled === false)
+        .map((el) => idArray.push(el.id));
       setCheckedInputs(idArray);
     }
     // 반대의 경우 전체 체크 박스 체크 삭제
     else if (
       checkedInputs.length ===
-      orders.filter(li => li.data.canceled === false).length
+      orders.filter((li) => li.data.canceled === false).length
     ) {
       setCheckedInputs([]);
     }
@@ -58,17 +58,17 @@ export function OrderListDetail({ match, location }) {
     const today = new Date();
     checkedInputs.length !==
     orders.filter(
-      order =>
+      (order) =>
         order.data.relDate.toDate() < today && order.data.canceled === false
     ).length
       ? setCheckedInputs(
           orders
             .filter(
-              order =>
+              (order) =>
                 order.data.relDate.toDate() < today &&
                 order.data.canceled === false
             )
-            .map(doc => doc.id)
+            .map((doc) => doc.id)
         )
       : setCheckedInputs([]);
   };
@@ -77,27 +77,27 @@ export function OrderListDetail({ match, location }) {
   const handlePickUpCheck = () => {
     checkedInputs.length !==
     orders.filter(
-      order => order.data.pickingUp === true && order.data.canceled === false
+      (order) => order.data.pickingUp === true && order.data.canceled === false
     ).length
       ? setCheckedInputs(
           orders
             .filter(
-              order =>
+              (order) =>
                 order.data.pickingUp === true && order.data.canceled === false
             )
-            .map(doc => doc.id)
+            .map((doc) => doc.id)
         )
       : setCheckedInputs([]);
   };
 
   // checked item -> confirmed
   const confirmOrder = () => {
-    const checkedItems = orders.filter(order =>
+    const checkedItems = orders.filter((order) =>
       checkedInputs.includes(order.id)
     );
 
     checkedItems.map(
-      async item =>
+      async (item) =>
         await db
           .collection("accounts")
           .doc(id)
@@ -108,12 +108,12 @@ export function OrderListDetail({ match, location }) {
   };
   // PickUpList -> OrderList
   const cancelPickUp = () => {
-    const checkedItems = orders.filter(order =>
+    const checkedItems = orders.filter((order) =>
       checkedInputs.includes(order.id)
     );
 
     checkedItems.map(
-      async item =>
+      async (item) =>
         await db
           .collection("accounts")
           .doc(id)
@@ -129,7 +129,7 @@ export function OrderListDetail({ match, location }) {
     order: true,
   });
 
-  const handleSort = e => {
+  const handleSort = (e) => {
     try {
       setForSort({
         sortBy: e.target.id,
@@ -141,7 +141,7 @@ export function OrderListDetail({ match, location }) {
   };
 
   const ShippingListsRow = React.lazy(() =>
-    import("../../shippinglist/ShippingListsRow").then(module => ({
+    import("../../shippinglist/ShippingListsRow").then((module) => ({
       default: module.ShippingListsRow,
     }))
   );
@@ -149,7 +149,7 @@ export function OrderListDetail({ match, location }) {
   ////////////////////////////////////////////////////////////////////
   // For shippings
   const OrderListDetailRow = React.lazy(() =>
-    import("./OrderListDetailRow").then(module => ({
+    import("./OrderListDetailRow").then((module) => ({
       default: module.OrderListDetailRow,
     }))
   );
@@ -170,7 +170,7 @@ export function OrderListDetail({ match, location }) {
   const [pickUpLists, setPickUpLists] = useState([]);
   const printGoback = async () => {
     const checkedItems = orders
-      .filter(order => checkedInputs.includes(order.id))
+      .filter((order) => checkedInputs.includes(order.id))
       .sort((a, b) => {
         return a?.title?.trim() < b?.title?.trim()
           ? -1
@@ -182,40 +182,40 @@ export function OrderListDetail({ match, location }) {
     if (checkedItems.length === 0) {
       return alert("인쇄할 상품을 선택해 주세요.");
     }
-    const ids = checkedItems.map(doc => doc.id);
+    const ids = checkedItems.map((doc) => doc.id);
     const pIds = [
       ...new Set(
-        checkedItems.map(doc =>
+        checkedItems.map((doc) =>
           doc.data.optioned === true ? doc.data.optionId : doc.data.productId
         )
       ),
     ];
     console.log("pIds", pIds);
     setPickUpLists(
-      pIds.map(id => ({
-        barcode: checkedItems.find(item =>
+      pIds.map((id) => ({
+        barcode: checkedItems.find((item) =>
           item.data.optioned === true
             ? item.data.optionId === id
             : item.data.productId === id
         ).data.barcode,
-        sku: checkedItems.find(item =>
+        sku: checkedItems.find((item) =>
           item.data.optioned === true
             ? item.data.optionId === id
             : item.data.productId === id
         ).data.sku,
-        title: checkedItems.find(item =>
+        title: checkedItems.find((item) =>
           item.data.optioned === true
             ? item.data.optionId === id
             : item.data.productId === id
         ).data.title,
         memo:
-          checkedItems.find(item =>
+          checkedItems.find((item) =>
             item.data.optioned === true
               ? item.data.optionId === id
               : item.data.productId === id
           ).data.memo || "",
         quan: checkedItems
-          .filter(item =>
+          .filter((item) =>
             item.data.optioned === true
               ? item.data.optionId === id
               : item.data.productId === id
@@ -227,7 +227,7 @@ export function OrderListDetail({ match, location }) {
     );
 
     ids.map(
-      async doc =>
+      async (doc) =>
         await db
           .collection("accounts")
           .doc(id)
@@ -249,16 +249,16 @@ export function OrderListDetail({ match, location }) {
       .doc(id)
       .collection("addresses")
       .orderBy("name", "asc")
-      .onSnapshot(snapshot =>
+      .onSnapshot((snapshot) =>
         setShippingAddresses(
-          snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+          snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
         )
       );
     return () => unsub1();
   }, [id]);
 
   useEffect(() => {
-    setAdd(shippingAddresses.find(li => li.data.name === type));
+    setAdd(shippingAddresses.find((li) => li.data.name === type));
   }, [shippingAddresses, type]);
 
   useEffect(() => {
@@ -268,8 +268,10 @@ export function OrderListDetail({ match, location }) {
       .collection("order")
       .orderBy(forSort.sortBy || "title", forSort.order ? "asc" : "desc")
       // .get()
-      .onSnapshot(snapshot =>
-        setOrders(snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })))
+      .onSnapshot((snapshot) =>
+        setOrders(
+          snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
+        )
       );
 
     const unsub3 = db
@@ -277,9 +279,9 @@ export function OrderListDetail({ match, location }) {
       .doc(id)
       .collection("shippingsInAccount")
       // .get()
-      .onSnapshot(snapshot =>
+      .onSnapshot((snapshot) =>
         setShippings(
-          snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+          snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
         )
       );
     return () => {
@@ -293,18 +295,19 @@ export function OrderListDetail({ match, location }) {
   useEffect(() => {
     db.collection("exchangeRate")
       .get()
-      .then(snapshot => snapshot.docs.map(doc => setExR(doc.data())));
+      .then((snapshot) => snapshot.docs.map((doc) => setExR(doc.data())));
   }, []);
 
   return (
     <form className="w-full h-full flex flex-col justify-center items-center mb-20">
       <div className="w-11/12 flex-col mt-20">
         {/* 크레딧 */}
+        {console.log(state?.data?.nickName)}
         <div
           className="text-center text-xl bg-gray-800 py-1 
           rounded-sm font-bold text-gray-100 mb-5 w-full"
         >
-          Credit ({orders[0]?.data?.nickName})
+          Credit ({state?.data?.nickName})
         </div>
 
         <Credit id={id} />
@@ -314,13 +317,13 @@ export function OrderListDetail({ match, location }) {
           className="text-center text-xl bg-gray-800 py-1 
           rounded-sm font-bold text-gray-100 mb-5 w-full"
         >
-          추가 주문 ({orders[0]?.data?.nickName})
+          추가 주문 ({state?.data?.nickName})
         </div>
         <AddProduct id={id} add={add} />
 
         <OrderListDetailHeader handleSort={handleSort} />
         {orders
-          .filter(order => order.data.pickingUp !== true)
+          .filter((order) => order.data.pickingUp !== true)
           .reduce((a, c, i) => {
             let before =
               i === 0
@@ -349,11 +352,11 @@ export function OrderListDetail({ match, location }) {
           className="text-center text-lg bg-gray-800 py-1 
           rounded-sm font-bold text-gray-100 mb-5 w-full mt-10"
         >
-          Picking Up List ({orders[0]?.data?.nickName})
+          Picking Up List ({state?.data?.nickName})
         </div>
         <OrderListDetailHeader handleSort={handleSort} />
         {orders
-          .filter(order => order.data.pickingUp === true)
+          .filter((order) => order.data.pickingUp === true)
           .reduce((a, c, i) => {
             let before =
               i === 0
@@ -383,7 +386,7 @@ export function OrderListDetail({ match, location }) {
         <div className="flex flex-row justify-between">
           {/* <CSVLink /> */}
           <ToTals
-            orders={orders.filter(order => order.data.canceled === false)}
+            orders={orders.filter((order) => order.data.canceled === false)}
           />
           <div>
             <button
@@ -455,7 +458,7 @@ export function OrderListDetail({ match, location }) {
           className="text-center text-lg bg-gray-800 py-1 
           rounded-sm font-bold text-gray-100 mb-5 w-full mt-10"
         >
-          Shipping List ({orders[0]?.data?.nickName})
+          Shipping List ({state?.data?.nickName})
         </div>
         <ShippingListsHeader handelHiddenAll={handelHiddenAll} />
         <div>
@@ -484,7 +487,7 @@ export function OrderListDetail({ match, location }) {
           ref={componentRef}
           pickUpLists={pickUpLists}
           today={today.toLocaleString()}
-          nickName={orders[0]?.data?.nickName || ""}
+          nickName={state?.data?.nickName || ""}
           add={add}
           type={type}
         />

@@ -30,19 +30,19 @@ export function Last7Days({ orders }) {
         //     ? 1
         //     : 0;
         // })
-        .filter(order => {
+        .filter((order) => {
           let today = new Date().getTime();
           let gap = new Date(order.createdAt.seconds * 1000).getTime() - today;
           let day = Math.ceil(gap / (1000 * 60 * 60 * 24));
           return day > -8;
         })
-        .map(li => li.title.trim())
+        .map((li) => li.title.trim())
     ),
   ]
     .reduce((a, c) => {
       a.push(
         orders
-          .filter(li => li.title.trim() === c.trim())
+          .filter((li) => li.title.trim() === c.trim())
           .reduce(
             (a, c) => {
               return {

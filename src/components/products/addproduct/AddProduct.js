@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 
 import { InitDataContext } from "../../../App";
 import { db } from "../../../firebase";
