@@ -23,6 +23,26 @@ export function ShippingListsRow({ shipping, hiddenAll }) {
 
   const [date, setDate] = useState(toDate(shipping.data.shippedDate.seconds));
 
+  // 배송비, 총액 수정
+  const [shippingFee, setShippingFee] = useState(shipping.data.shippingFee);
+  const editShippingFee = async (e) => {
+    e.preventDefault();
+    try {
+      await db
+        .collection("accounts")
+        .doc(shipping.data.userId)
+        .collection("shippingsInAccount")
+        .doc(shipping.id)
+        .update({
+          shippingFee,
+          totalAmount: shippingFee + shipping.data.itemsPrice,
+        });
+      alert("배송비와 총액이 수정되었습니다.");
+    } catch (e) {
+      console.log("수정을 실패했습니다.");
+    }
+  };
+
   return (
     <div className="border-b border-r border-l w-full border-gray-500">
       <div
@@ -38,7 +58,7 @@ export function ShippingListsRow({ shipping, hiddenAll }) {
             <input
               className="col-span-3 border h-9 pl-3"
               type="date"
-              onChange={e => {
+              onChange={(e) => {
                 setDate(e.target.value);
                 db.collection("accounts")
                   .doc(shipping.data.userId)
@@ -72,9 +92,9 @@ export function ShippingListsRow({ shipping, hiddenAll }) {
               <input
                 type="text"
                 value={trackingNumber}
-                onChange={e => setTrackingNumber(e.target.value)}
+                onChange={(e) => setTrackingNumber(e.target.value)}
                 className="w-full outline-none py-1 px-1"
-                onKeyPress={e => {
+                onKeyPress={(e) => {
                   if (e.key === "Enter") {
                     db.collection("accounts")
                       .doc(shipping.data.userId)
@@ -116,16 +136,27 @@ export function ShippingListsRow({ shipping, hiddenAll }) {
         <div>{shipping.data.shippingType}</div>
         <div>{shipping.data.country} </div>
         <div></div>
-        <div></div>
-        {/* <div>{sort && sort} type</div> */}
-        {/* <div>{totalQty && totalQty} ea</div> */}
+
         <div>
           {Number(shipping.data.itemsPrice).toLocaleString()}{" "}
           {shipping.data.currency}
         </div>
-        <div>
-          {Number(shipping.data.shippingFee).toLocaleString()}{" "}
-          {shipping.data.currency}
+        <div className="flex flex-row items-center col-span-2">
+          <input
+            className="w-full outline-none  text-right"
+            type="number"
+            value={shippingFee}
+            onChange={(e) => setShippingFee(Number(e.target.value))}
+          />
+          <div className="text-left">{shipping.data.currency}</div>
+          <button
+            type="button"
+            className="bg-gray-800 text-gray-100 py-1 px-1 rounded-sm cursor-pointer mr-2 w-1/4 ml-1"
+            onClick={(e) => editShippingFee(e)}
+          >
+            수정
+          </button>
+          {/* {Number(shipping.data.shippingFee).toLocaleString()}{" "} */}
         </div>
         <div>
           {Number(shipping.data.totalAmount).toLocaleString()}{" "}

@@ -40,11 +40,10 @@ export function ShippingListsHeader({
       <div className="">Country</div>
 
       <div className="">Sorts</div>
-      <div className="">EA</div>
 
       <div className="">Item Price</div>
 
-      <div className="">Shipping Fee</div>
+      <div className="col-span-2">Shipping Fee</div>
       <div className="">Total Amount</div>
     </div>
   );

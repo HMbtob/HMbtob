@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { db } from "../../../firebase";
 // import { krwComma } from "../../../utils/shippingUtils";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -173,6 +173,14 @@ export function OrderListDetailRow({
     }
   };
 
+  const [imgUrl, setImgUrl] = useState(null);
+  useEffect(() => {
+    db.collection("products")
+      .doc(order.data.productId)
+      .get()
+      .then((doc) => setImgUrl(doc.data().thumbNail));
+  }, [order]);
+
   return (
     <div
       className={`${
@@ -208,6 +216,7 @@ export function OrderListDetailRow({
       <div className="col-span-3">{order.data.barcode}</div>
       <div className="col-span-10 flex flex-row items-center justify-between">
         <div className="text-left flex flex-row items-center">
+          {imgUrl && <img className="h-8 rounded-sm " src={imgUrl} alt="" />}
           {!order.data.pickingUp ? (
             <FileDownloadIcon
               onClick={() => pickingUpOrder()}

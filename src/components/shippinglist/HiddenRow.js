@@ -23,7 +23,6 @@ export function HiddenRowRow({ li }) {
 }
 
 export function HiddenRow({ shipping }) {
-  const cancelShipping = () => {};
   const [orderListInShippings, setOrderListInShippings] = useState([]);
   useEffect(() => {
     db.collection("accounts")

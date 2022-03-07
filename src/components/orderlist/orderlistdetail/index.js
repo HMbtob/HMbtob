@@ -178,7 +178,6 @@ export function OrderListDetail({ match, location }) {
           ? 1
           : 0;
       });
-    console.log(checkedItems);
     if (checkedItems.length === 0) {
       return alert("인쇄할 상품을 선택해 주세요.");
     }
@@ -190,7 +189,6 @@ export function OrderListDetail({ match, location }) {
         )
       ),
     ];
-    console.log("pIds", pIds);
     setPickUpLists(
       pIds.map((id) => ({
         barcode: checkedItems.find((item) =>
