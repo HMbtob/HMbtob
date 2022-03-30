@@ -15,7 +15,7 @@ export function ShipToKorea({
           type="radio"
           name="price"
           value="shipToKorea"
-          onChange={e => setCheckedRadio(e.target.value)}
+          onChange={(e) => setCheckedRadio(e.target.value)}
         />
         <div>계산된 가격으로 발송처리</div>
       </div>

@@ -242,7 +242,7 @@ const AddProduct = ({ location }) => {
           artist,
           ent,
           x: Number(x),
-          stock: stock,
+          stock: Number(stock),
           y: Number(y),
           z: Number(z),
           title: title.trim(),
@@ -270,7 +270,7 @@ const AddProduct = ({ location }) => {
             },
           ],
           limitedStock: false,
-          totalStock: stock,
+          totalStock: Number(stock),
           totalSold: 0,
           stockHistory: [
             {

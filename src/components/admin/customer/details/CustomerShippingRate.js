@@ -12,7 +12,7 @@ export function CustomerShippingRate({ user }) {
     defaultValues: user.data.shippingRate,
   });
 
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     saveShippingRate(user, data);
   };
 

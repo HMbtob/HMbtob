@@ -25,7 +25,7 @@ const ListProduct = ({ history }) => {
   } = state;
   // 페이지당 항목수
   const [itemsPerPage, setItemsPerPage] = useState(50);
-  const handleItemsPerPage = e => {
+  const handleItemsPerPage = (e) => {
     const { value } = e.target;
     setItemsPerPage(Number(value));
   };
@@ -37,7 +37,7 @@ const ListProduct = ({ history }) => {
     "COVER",
     "TITLE",
     "PRICE",
-    "STORE",
+    "주문량",
     "STOCK",
     "SOLD",
     "UNSHIP",
@@ -55,18 +55,18 @@ const ListProduct = ({ history }) => {
   );
   // 페이징
   const count = preProduct?.length;
-  const handlePageChange = page => {
+  const handlePageChange = (page) => {
     dispatch({ type: "CURRENT_PAGE", currentPage: page });
   };
   // 검색어
-  const queryOnChange = e => {
+  const queryOnChange = (e) => {
     const { value } = e.target;
     dispatch({ type: "SEARCH_QUERY", searchQuery: value });
   };
 
   // 검색하기
   const searchProducts = useCallback(
-    e => {
+    (e) => {
       if (e) {
         e.preventDefault();
       }
@@ -77,7 +77,7 @@ const ListProduct = ({ history }) => {
 
   // 초기화
   const handleClear = useCallback(
-    e => {
+    (e) => {
       if (e) {
         e.preventDefault();
       }
@@ -104,9 +104,9 @@ const ListProduct = ({ history }) => {
 
   const [orderListInShippings, setOrderListInShippings] = useState([]);
   useEffect(() => {
-    db.collectionGroup("orderListInShippings").onSnapshot(snapshot =>
+    db.collectionGroup("orderListInShippings").onSnapshot((snapshot) =>
       setOrderListInShippings(
-        snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }))
+        snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))
       )
     );
   }, []);
@@ -122,7 +122,7 @@ const ListProduct = ({ history }) => {
   return (
     <div className="flex flex-col w-full">
       <form
-        onSubmit={e => searchProducts(e)}
+        onSubmit={(e) => searchProducts(e)}
         className="top-2 left-40 absolute z-50 flex flex-row
         "
       >
@@ -204,7 +204,7 @@ const ListProduct = ({ history }) => {
                 currentPage * itemsPerPage - itemsPerPage,
                 currentPage * itemsPerPage
               )
-              .map(product => (
+              .map((product) => (
                 <ListProductRow
                   key={product.id}
                   id={product.id}

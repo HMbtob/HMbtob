@@ -33,9 +33,11 @@ export function saveCredit(user, data) {
 export function saveShippingRate(user, data) {
   const { dhl } = data;
 
-  db.collection("accounts").doc(user.id).update({
-    shippingRate: { dhl },
-  });
+  db.collection("accounts")
+    .doc(user.id)
+    .update({
+      shippingRate: { dhl: Number(dhl) },
+    });
   alert("배송요율 수정 완료");
 }
 // 할인액 저장

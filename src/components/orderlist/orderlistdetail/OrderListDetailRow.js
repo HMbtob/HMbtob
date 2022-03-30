@@ -49,51 +49,77 @@ export function OrderListDetailRow({
       try {
         if (order.data.optioned) {
           if (order.data.canceled !== true) {
+            try {
+              await db
+                .collection("products")
+                .doc(order.data.productId)
+                .collection("options")
+                .doc(order.data.optionId)
+                .update({
+                  optionStock: firebase.firestore.FieldValue.increment(
+                    order.data.quan
+                  ),
+                });
+            } catch (e) {
+              console.log("수량 복구 오류", e);
+            }
+          }
+          try {
             await db
               .collection("products")
               .doc(order.data.productId)
               .collection("options")
               .doc(order.data.optionId)
-              .update({
-                optionStock: firebase.firestore.FieldValue.increment(
-                  order.data.quan
-                ),
-              });
+              .collection("newStockHistory")
+              .doc(order.id)
+              .update({ canceled: true });
+          } catch (e) {
+            console.log("재고수불부 오류", e);
           }
+          try {
+            await db
+              .collection("accounts")
+              .doc(order.data.customer || order.data.userId)
+              .collection("order")
+              .doc(order.id)
+              .delete();
+          } catch (e) {
+            console.log("계정 오류", e);
+          }
+          return alert("삭제되었습니다.");
+        }
+        try {
           await db
             .collection("products")
             .doc(order.data.productId)
-            .collection("options")
-            .doc(order.data.optionId)
-            .collection("newStockHistory")
-            .doc(order.id)
-            .update({ canceled: true });
+            .update({
+              stock: firebase.firestore.FieldValue.increment(order.data.quan),
+            });
+        } catch (e) {
+          console.log("수량 복구 오류", e);
+        }
+        try {
+          if (order.data.sku !== "AddOrder") {
+            await db
+              .collection("products")
+              .doc(order.data.productId)
+              .collection("newStockHistory")
+              .doc(order.id)
+              .update({ canceled: true });
+          }
+        } catch (e) {
+          console.log("재고수불부 오류", e);
+        }
+        try {
           await db
             .collection("accounts")
             .doc(order.data.customer || order.data.userId)
             .collection("order")
             .doc(order.id)
             .delete();
-          return alert("삭제되었습니다.");
+        } catch (e) {
+          console.log("주문삭제 오류", e);
         }
-        await db
-          .collection("products")
-          .doc(order.data.productId)
-          .update({
-            stock: firebase.firestore.FieldValue.increment(order.data.quan),
-          });
-        await db
-          .collection("products")
-          .doc(order.data.productId)
-          .collection("newStockHistory")
-          .doc(order.id)
-          .update({ canceled: true });
-        await db
-          .collection("accounts")
-          .doc(order.data.customer || order.data.userId)
-          .collection("order")
-          .doc(order.id)
-          .delete();
         return alert("삭제되었습니다.");
       } catch (e) {
         console.log(e);
@@ -106,52 +132,77 @@ export function OrderListDetailRow({
     if (window.confirm("취소하시겠습니까?")) {
       try {
         if (order.data.optioned) {
+          try {
+            await db
+              .collection("products")
+              .doc(order.data.productId)
+              .collection("options")
+              .doc(order.data.optionId)
+              .update({
+                optionStock: firebase.firestore.FieldValue.increment(
+                  order.data.quan
+                ),
+              });
+          } catch (e) {
+            console.log(e, "수량 복구 오류");
+          }
+          try {
+            await db
+              .collection("products")
+              .doc(order.data.productId)
+              .collection("options")
+              .doc(order.data.optionId)
+              .collection("newStockHistory")
+              .doc(order.id)
+              .update({ canceled: true });
+          } catch (e) {
+            console.log(e, "뉴 재고수불부 오류");
+          }
+          try {
+            await db
+              .collection("accounts")
+              .doc(order.data.customer || order.data.userId)
+              .collection("order")
+              .doc(order.id)
+              .update({ canceled: true });
+          } catch (e) {
+            console.log(e, "주문 취소처리 오류");
+          }
+          alert("취소되었습니다.");
+
+          return;
+        }
+        try {
           await db
             .collection("products")
             .doc(order.data.productId)
-            .collection("options")
-            .doc(order.data.optionId)
             .update({
-              optionStock: firebase.firestore.FieldValue.increment(
-                order.data.quan
-              ),
+              stock: firebase.firestore.FieldValue.increment(order.data.quan),
             });
+        } catch (e) {
+          console.log(e, "수량 복구 오류");
+        }
+        try {
           await db
             .collection("products")
             .doc(order.data.productId)
-            .collection("options")
-            .doc(order.data.optionId)
             .collection("newStockHistory")
             .doc(order.id)
             .update({ canceled: true });
+        } catch (e) {
+          console.log(e, "재고수불부 취소처리 오류");
+        }
+
+        try {
           await db
             .collection("accounts")
             .doc(order.data.customer || order.data.userId)
             .collection("order")
             .doc(order.id)
             .update({ canceled: true });
-          alert("취소되었습니다.");
-
-          return;
+        } catch (e) {
+          console.log(e, "");
         }
-        await db
-          .collection("products")
-          .doc(order.data.productId)
-          .update({
-            stock: firebase.firestore.FieldValue.increment(order.data.quan),
-          });
-        await db
-          .collection("products")
-          .doc(order.data.productId)
-          .collection("newStockHistory")
-          .doc(order.id)
-          .update({ canceled: true });
-        await db
-          .collection("accounts")
-          .doc(order.data.customer || order.data.userId)
-          .collection("order")
-          .doc(order.id)
-          .update({ canceled: true });
         alert("취소되었습니다.");
       } catch (e) {
         console.log(e);
@@ -172,14 +223,15 @@ export function OrderListDetailRow({
       console.log(e);
     }
   };
+  const [isListHover, setIsListHover] = useState(false);
 
-  const [imgUrl, setImgUrl] = useState(null);
-  useEffect(() => {
-    db.collection("products")
-      .doc(order.data.productId)
-      .get()
-      .then((doc) => setImgUrl(doc.data().thumbNail));
-  }, [order]);
+  // const [imgUrl, setImgUrl] = useState(null);
+  // useEffect(() => {
+  //   db.collection("products")
+  //     .doc(order.data.productId)
+  //     .get()
+  //     .then((doc) => setImgUrl(doc?.data()?.thumbNail || null));
+  // }, [order.data.productId]);
 
   return (
     <div
@@ -215,8 +267,20 @@ export function OrderListDetailRow({
       <div className="col-span-3">{order.data.sku}</div>
       <div className="col-span-3">{order.data.barcode}</div>
       <div className="col-span-10 flex flex-row items-center justify-between">
-        <div className="text-left flex flex-row items-center">
-          {imgUrl && <img className="h-8 rounded-sm " src={imgUrl} alt="" />}
+        <div
+          className="text-left flex flex-row items-center"
+          onMouseOver={() => setIsListHover(true)}
+          onMouseOut={() => setIsListHover(false)}
+        >
+          {isListHover ? (
+            <img
+              className="h-8 rounded-sm "
+              src={order?.data?.thumbNail}
+              alt=""
+            />
+          ) : (
+            ""
+          )}
           {!order.data.pickingUp ? (
             <FileDownloadIcon
               onClick={() => pickingUpOrder()}

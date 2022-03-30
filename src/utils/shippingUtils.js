@@ -33,7 +33,9 @@ export const onSubmitToShip = async (
   const today = new Date();
   const saveId = uuid();
   // 계산된가격
-  const checkedItems = orders.filter(order => checkedInputs.includes(order.id));
+  const checkedItems = orders.filter((order) =>
+    checkedInputs.includes(order.id)
+  );
 
   if (checkedItems?.length < 1) {
     return alert("발송할 상품을 선택해 주세요.");
@@ -48,114 +50,149 @@ export const onSubmitToShip = async (
 
   // 체크된 아이템 리스트
   // 발송생성
-  await db
-    .collection("accounts")
-    .doc(orders[0]?.data.userId)
-    .collection("shippingsInAccount")
-    .doc(saveId)
-    .set({
-      shippingNumber: `${today
-        .toISOString()
-        .substring(2, 10)}-${orders[0]?.data.userUid.substring(
-        0,
-        3
-      )}${saveId.substring(0, 3)}`,
-      shippedDate: today,
-      ...addressInfo.docs.map(doc => doc.data())[0],
-      itemsPrice: caledPrice,
-      shippingFee:
-        checkedRadio === "caled"
-          ? caledshippingFee
-          : checkedRadio === "inputed"
-          ? inputedShippingFee
-          : caledshippingFee,
-      totalAmount:
-        checkedRadio === "caled"
-          ? caledPrice + caledshippingFee
-          : checkedRadio === "inputed"
-          ? caledPrice + inputedShippingFee
-          : caledPrice + caledshippingFee,
-
-      currency: orders[0]?.data.currency,
-      exchangeRate: orders[0]?.data.exchangeRate,
-      trackingNumber,
-      nickName: orders[0]?.data.nickName,
-      userId: orders[0]?.data.userId,
-    });
-  // 생성한 발송에 선택한 상품 콜렉션에 추가
-  checkedItems.map(async order => {
+  try {
     await db
       .collection("accounts")
       .doc(orders[0]?.data.userId)
       .collection("shippingsInAccount")
       .doc(saveId)
-      .collection("orderListInShippings")
-      .doc(order.id)
-      .set({ ...order.data });
-    await db
-      .collection("products")
-      .doc(order.data.productId)
-      .collection("newStockHistory")
-      .doc(order.id)
-      .update({
-        shipped: true,
-        shippedQty: order.data.quan,
+      .set({
+        shippingNumber: `${today
+          .toISOString()
+          .substring(2, 10)}-${orders[0]?.data.userUid.substring(
+          0,
+          3
+        )}${saveId.substring(0, 3)}`,
         shippedDate: today,
-      });
-  });
-  // 추가후 선택한 상품 주문에서 삭제
-  checkedItems.map(
-    async order =>
-      await db
-        .collection("accounts")
-        .doc(orders[0]?.data.userId)
-        .collection("order")
-        .doc(order.id)
-        .delete()
-  );
-  // 크레딧 마지막 밸런스 가져오기
-  const lastBalance = await db
-    .collection("accounts")
-    .doc(orders[0]?.data.userId)
-    .collection("credit")
-    .orderBy("createdAt", "desc")
-    .limit(1)
-    .get()
-    .then(doc => doc.docs.map(doc => ({ id: doc.id, data: doc.data() })));
+        ...addressInfo.docs.map((doc) => doc.data())[0],
+        itemsPrice: caledPrice,
+        shippingFee:
+          checkedRadio === "caled"
+            ? caledshippingFee
+            : checkedRadio === "inputed"
+            ? inputedShippingFee
+            : caledshippingFee,
+        totalAmount:
+          checkedRadio === "caled"
+            ? caledPrice + caledshippingFee
+            : checkedRadio === "inputed"
+            ? caledPrice + inputedShippingFee
+            : caledPrice + caledshippingFee,
 
-  const balance = lastBalance[0]?.data?.balance || 0;
-  const total =
-    balance -
-    (checkedRadio === "caled"
-      ? caledPrice + caledshippingFee
-      : checkedRadio === "inputed"
-      ? caledPrice + inputedShippingFee
-      : caledPrice + caledshippingFee);
-  // 크레딧 차감
-  await db
-    .collection("accounts")
-    .doc(orders[0]?.data.userId)
-    .collection("credit")
-    .doc()
-    .set({
-      createdAt: today,
-      content: "Shipped Order",
-      currency: orders[0]?.data.currency,
-      memo: `${today
-        .toISOString()
-        .substring(2, 10)}-${orders[0]?.data.userUid.substring(
-        0,
-        3
-      )}${saveId.substring(0, 3)}`,
-      plus: 0,
-      minus:
-        checkedRadio === "caled"
-          ? caledPrice + caledshippingFee
-          : checkedRadio === "inputed"
-          ? caledPrice + inputedShippingFee
-          : caledPrice + caledshippingFee,
-      balance: total,
-    });
+        currency: orders[0]?.data.currency,
+        exchangeRate: orders[0]?.data.exchangeRate,
+        trackingNumber,
+        nickName: orders[0]?.data.nickName,
+        userId: orders[0]?.data.userId,
+      });
+  } catch (e) {
+    console.log("발송 생성 오류", e);
+  }
+
+  // 생성한 발송에 선택한 상품 콜렉션에 추가
+  await Promise.all(
+    checkedItems.map(async (order) => {
+      try {
+        await db
+          .collection("accounts")
+          .doc(orders[0]?.data.userId)
+          .collection("shippingsInAccount")
+          .doc(saveId)
+          .collection("orderListInShippings")
+          .doc(order.id)
+          .set({ ...order.data });
+      } catch (e) {
+        console.log("orderListInShippings 오류", order);
+        console.log(e);
+      }
+    })
+  );
+
+  // 재고수불부 업데이트
+  await Promise.all(
+    checkedItems.map(async (order) => {
+      try {
+        await db
+          .collection("products")
+          .doc(order.data.productId)
+          .collection("newStockHistory")
+          .doc(order.id)
+          .update({
+            shipped: true,
+            shippedQty: order.data.quan,
+            shippedDate: today,
+          });
+      } catch (e) {
+        console.log("newStockHistory", order);
+        console.log(e);
+      }
+    })
+  );
+  // 추가후 선택한 상품 주문에서 삭제
+  await Promise.all(
+    checkedItems.map(async (order) => {
+      try {
+        await db
+          .collection("accounts")
+          .doc(orders[0]?.data.userId)
+          .collection("order")
+          .doc(order.id)
+          .delete();
+      } catch (e) {
+        console.log("주문삭제 오류", order);
+        console.log(e);
+      }
+    })
+  );
+
+  // 크레딧 마지막 밸런스 가져오기
+  try {
+    const lastBalance = await db
+      .collection("accounts")
+      .doc(orders[0]?.data.userId)
+      .collection("credit")
+      .orderBy("createdAt", "desc")
+      .limit(1)
+      .get()
+      .then((doc) => doc.docs.map((doc) => ({ id: doc.id, data: doc.data() })));
+
+    const balance = lastBalance[0]?.data?.balance || 0;
+    const total =
+      balance -
+      (checkedRadio === "caled"
+        ? caledPrice + caledshippingFee
+        : checkedRadio === "inputed"
+        ? caledPrice + inputedShippingFee
+        : caledPrice + caledshippingFee);
+    // 크레딧 차감
+    await db
+      .collection("accounts")
+      .doc(orders[0]?.data.userId)
+      .collection("credit")
+      .doc()
+      .set({
+        createdAt: today,
+        content: "Shipped Order",
+        currency: orders[0]?.data.currency,
+        memo: `${today
+          .toISOString()
+          .substring(2, 10)}-${orders[0]?.data.userUid.substring(
+          0,
+          3
+        )}${saveId.substring(0, 3)}`,
+        plus: 0,
+        minus:
+          checkedRadio === "caled"
+            ? caledPrice + caledshippingFee
+            : checkedRadio === "inputed"
+            ? caledPrice + inputedShippingFee
+            : caledPrice + caledshippingFee,
+        balance: total,
+      });
+  } catch (e) {
+    console.log("크레딧 차감 오류", e);
+  }
+
   alert("상품발송이 완료 되었습니다.");
 };
 

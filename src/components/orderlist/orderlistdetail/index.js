@@ -300,7 +300,6 @@ export function OrderListDetail({ match, location }) {
     <form className="w-full h-full flex flex-col justify-center items-center mb-20">
       <div className="w-11/12 flex-col mt-20">
         {/* 크레딧 */}
-        {console.log(state?.data?.nickName)}
         <div
           className="text-center text-xl bg-gray-800 py-1 
           rounded-sm font-bold text-gray-100 mb-5 w-full"

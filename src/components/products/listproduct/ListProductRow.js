@@ -5,7 +5,7 @@ import HiddenB2b from "./HiddenB2b";
 import HiddenBigc from "./HiddenBigc";
 import StockTable from "./StockTable";
 import ProductMemo from "./ProductMemo";
-import StoreProduct from "./StoreProduct";
+// import StoreProduct from "./StoreProduct";
 import BuildIcon from "@material-ui/icons/Build";
 import SyncAltIcon from "@material-ui/icons/SyncAlt";
 import CommentIcon from "@material-ui/icons/Comment";
@@ -23,6 +23,7 @@ import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import axios from "axios";
 import { InitDataContext } from "../../../App";
+import OrderTable from "./OrderTable";
 
 const ListProductRow = ({
   id,
@@ -215,6 +216,41 @@ const ListProductRow = ({
       .doc("RATES")
       .onSnapshot((snapshot) => setCategories(snapshot.data()));
   }, []);
+
+  // 선주문 주문량
+  const [orderQty, setOrderQty] = useState("");
+  const handleOrderQty = (e) => {
+    setOrderQty(Number(e.target.value));
+  };
+
+  const [modalOpen3, setModalOpen3] = useState(false);
+  const openModal3 = () => {
+    if (forHidden) {
+      handleHidden(forHidden);
+    }
+    setModalOpen3(true);
+  };
+  const closeModal3 = () => {
+    setModalOpen3(false);
+  };
+  useEffect(() => {
+    const totalOrderQty = async () => {
+      const res = await db
+        .collection("products")
+        .doc(id)
+        .collection("orderQty")
+        .get();
+      const qty = res.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+      setOrderQty(
+        Number(
+          qty.reduce((a, c) => {
+            return a + c.data.orderQty;
+          }, 0)
+        )
+      );
+    };
+    totalOrderQty();
+  }, [id]);
   return (
     <div
       className={`border-b  border-gray-500 w-full py-1 ${
@@ -414,14 +450,64 @@ const ListProductRow = ({
           />
         </div>
         <div className="col-span-2 flex flex-row items-center">
-          <StoreProduct
+          <button type="button" onClick={openModal3}>
+            <SyncAltIcon fontSize="small" style={{ color: "gray" }} />
+          </button>
+          <Modal open={modalOpen3} close={closeModal3} header={"주문수량"}>
+            <OrderTable product={product} id={id} />
+          </Modal>
+          <input
+            type="number"
+            className="border w-3/4 p-1 text-center outline-none"
+            value={orderQty}
+            onChange={(e) => handleOrderQty(e)}
+            onKeyPress={async (e) => {
+              if (e.key === "Enter") {
+                try {
+                  await db
+                    .collection("products")
+                    .doc(id)
+                    .collection("orderQty")
+                    .doc()
+                    .set({
+                      createdAt: today,
+                      orderQty,
+                    });
+
+                  const res = await db
+                    .collection("products")
+                    .doc(id)
+                    .collection("orderQty")
+                    .get();
+                  const qty = res.docs.map((doc) => ({
+                    id: doc.id,
+                    data: doc.data(),
+                  }));
+
+                  setOrderQty(
+                    Number(
+                      qty.reduce((a, c) => {
+                        return a + c.data.orderQty;
+                      }, 0)
+                    )
+                  );
+
+                  alert("주문수량을 추가했습니다.");
+                } catch (e) {
+                  console.log(e);
+                  alert("주문수량 추가를 실패 했습니다.");
+                }
+              }
+            }}
+          />
+          {/* <StoreProduct
             stockHistory={product.data.stockHistory}
             bigTotalSold={bigTotalSold}
             totalStock={totalStock}
             product={product}
             user={user}
             products={products}
-          />
+          /> */}
           <div>
             {/* 무한재고 */}
             {product.data.limitedStock === false ? (
@@ -567,29 +653,36 @@ const ListProductRow = ({
             />
           )}
           <div className="border-t-4"></div>
+
           {bcOptions ? (
-            bcOptions.map((option) => (
-              <HiddenBigc
-                // id={id}
-                sku={sku}
-                thumbNail={thumbNail}
-                title={title}
-                price={price}
-                stock={stock}
-                totalSell={totalSell}
-                unShipped={unShipped}
-                relDate={relDate}
-                preOrderDeadline={preOrderDeadline}
-                orders={orders}
-                shippings={shippings}
-                bigcProductId={bigcProductId}
-                handleBigTotalSold={handleBigTotalSold}
-                // bigTotalSold={bigTotalSold}
-                // totalStock={totalStock}
-                optioned={product.data.optioned === true ? true : false}
-                option={option}
-              />
-            ))
+            bcOptions
+              .sort((a, b) => {
+                return a.option_values[0].label > b.option_values[0].label
+                  ? 1
+                  : -1;
+              })
+              .map((option) => (
+                <HiddenBigc
+                  // id={id}
+                  sku={sku}
+                  thumbNail={thumbNail}
+                  title={title}
+                  price={price}
+                  stock={stock}
+                  totalSell={totalSell}
+                  unShipped={unShipped}
+                  relDate={relDate}
+                  preOrderDeadline={preOrderDeadline}
+                  orders={orders}
+                  shippings={shippings}
+                  bigcProductId={bigcProductId}
+                  handleBigTotalSold={handleBigTotalSold}
+                  // bigTotalSold={bigTotalSold}
+                  // totalStock={totalStock}
+                  optioned={product.data.optioned === true ? true : false}
+                  option={option}
+                />
+              ))
           ) : (
             <HiddenBigc
               // id={id}

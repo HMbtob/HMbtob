@@ -3,9 +3,9 @@ import { db } from "../../../firebase";
 import { toDate } from "../../../utils/shippingUtils";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 const StockTable = ({
-  stockHistory,
+  // stockHistory,
   bigTotalSold,
-  totalStock,
+  // totalStock,
   id,
   product,
   option,
@@ -143,7 +143,7 @@ const StockTable = ({
           {shippedOrder}{" "}
         </div>
       </div>
-      <div className="mt-12">1월 14일 이전</div>
+      {/* <div className="mt-12">1월 14일 이전</div>
       <div className="grid grid-cols-8 text-gray-200 bg-gray-800 text-center">
         <div className="col-span-2">Date</div>
         <div className="col-span-2">Type</div>
@@ -190,7 +190,7 @@ const StockTable = ({
         <div className="col-span-3 text-sm"> Amount</div>
 
         <div> {totalStock - bigTotalSold}</div>
-      </div>
+      </div> */}
     </div>
   );
 };

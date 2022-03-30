@@ -7,6 +7,7 @@ import BuildIcon from "@mui/icons-material/Build";
 import { CSVLinkComponent } from "./CSVLinkComponent";
 import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined";
 import { Link } from "react-router-dom";
+import { CSVInvoice } from "./CSVInvoice";
 
 export function ShippingListsRow({ shipping, hiddenAll }) {
   const [forHidden, setForHidden] = useState(true);
@@ -132,6 +133,7 @@ export function ShippingListsRow({ shipping, hiddenAll }) {
           >
             <AssignmentOutlinedIcon />
           </Link>
+          <CSVInvoice shipping={shipping} />
         </div>
         <div>{shipping.data.shippingType}</div>
         <div>{shipping.data.country} </div>

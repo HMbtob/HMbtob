@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { db } from "../../../../firebase";
+import uuid from "react-uuid";
 
 export function AddProduct({ id, add }) {
   const AddProductRow = React.lazy(() =>
-    import("./AddProductRow").then(module => ({
+    import("./AddProductRow").then((module) => ({
       default: module.AddProductRow,
     }))
   );
@@ -49,11 +50,13 @@ export function AddProduct({ id, add }) {
       .where("exposeToB2b", "==", "노출")
       .orderBy("createdAt", "desc")
       .get()
-      .then(snapshot =>
-        snapshot.forEach(doc => products.push({ id: doc.id, data: doc.data() }))
+      .then((snapshot) =>
+        snapshot.forEach((doc) =>
+          products.push({ id: doc.id, data: doc.data() })
+        )
       );
     setSearched(
-      products.filter(doc =>
+      products.filter((doc) =>
         query.split(" ").length === 1
           ? doc.data.title.toLowerCase().includes(query.toLowerCase()) ||
             doc.data.title.toUpperCase().includes(query.toUpperCase()) ||
@@ -105,6 +108,7 @@ export function AddProduct({ id, add }) {
 
   const addOrder = async (product, add, price, qty, memo, user) => {
     const today = new Date();
+    const genId = uuid();
     if (qty < 1 || qty === 0 || qty === "") {
       alert("올바른 수량을 입력해 주세요.");
       return;
@@ -120,7 +124,7 @@ export function AddProduct({ id, add }) {
             .collection("accounts")
             .doc(id)
             .collection("order")
-            .doc()
+            .doc(genId)
             .set({
               ...add.data,
               ...product.data,
@@ -135,12 +139,12 @@ export function AddProduct({ id, add }) {
               dcAmount: user.data.dcAmount[`${product.data.category}A`],
               dcRate: user.data.dcRates[product.data.category],
               nickName: user.data.nickName,
-              price: price,
+              price: Number(price),
               productId: product.id,
               quan: qty,
               shipped: false,
               title: product.data.title.trim(),
-              totalPrice: price * qty,
+              totalPrice: Number(price) * qty,
               totalWeight: product.data.weight * qty,
               memo: memo,
             });
@@ -148,7 +152,7 @@ export function AddProduct({ id, add }) {
             .collection("products")
             .doc(product.id)
             .collection("newStockHistory")
-            .doc()
+            .doc(genId)
             .set({
               ...add.data,
               ...product.data,
@@ -162,12 +166,12 @@ export function AddProduct({ id, add }) {
               dcAmount: user.data.dcAmount[`${product.data.category}A`],
               dcRate: user.data.dcRates[product.data.category],
               nickName: user.data.nickName,
-              price: price,
+              price: Number(price),
               productId: product.id,
               quan: qty,
               shipped: false,
               title: product.data.title.trim(),
-              totalPrice: price * qty,
+              totalPrice: Number(price) * qty,
               totalWeight: product.data.weight * qty,
               memo: memo,
             });
@@ -186,7 +190,7 @@ export function AddProduct({ id, add }) {
           .collection("accounts")
           .doc(id)
           .collection("order")
-          .doc()
+          .doc(genId)
           .set({
             ...add.data,
             ...product.data,
@@ -200,12 +204,12 @@ export function AddProduct({ id, add }) {
             dcAmount: user.data.dcAmount[`${product.data.category}A`],
             dcRate: user.data.dcRates[product.data.category],
             nickName: user.data.nickName,
-            price: price,
+            price: Number(price),
             productId: product.id,
             quan: qty,
             shipped: false,
             title: product.data.title.trim(),
-            totalPrice: price * qty,
+            totalPrice: Number(price) * qty,
             totalWeight: product.data.weight * qty,
             memo: memo,
           });
@@ -227,12 +231,12 @@ export function AddProduct({ id, add }) {
             dcAmount: user.data.dcAmount[`${product.data.category}A`],
             dcRate: user.data.dcRates[product.data.category],
             nickName: user.data.nickName,
-            price: price,
+            price: Number(price),
             productId: product.id,
             quan: qty,
             shipped: false,
             title: product.data.title.trim(),
-            totalPrice: price * qty,
+            totalPrice: Number(price) * qty,
             totalWeight: product.data.weight * qty,
             memo: memo,
           });
@@ -254,12 +258,12 @@ export function AddProduct({ id, add }) {
   useEffect(() => {
     db.collection("accounts")
       .doc(id)
-      .onSnapshot(snapshot =>
+      .onSnapshot((snapshot) =>
         setUser({ id: snapshot.id, data: snapshot.data() })
       );
     db.collection("exchangeRate")
       .doc("rates")
-      .onSnapshot(snapshot =>
+      .onSnapshot((snapshot) =>
         setExchangeRate({ id: snapshot.id, data: snapshot.data() })
       );
   }, [id]);
@@ -271,7 +275,7 @@ export function AddProduct({ id, add }) {
           placeholder="검색 후 추가"
           type="text"
           value={query}
-          onChange={e => setQuery(e.target.value)}
+          onChange={(e) => setQuery(e.target.value)}
         />
         <button
           type="button"

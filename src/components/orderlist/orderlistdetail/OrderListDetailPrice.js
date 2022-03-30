@@ -33,7 +33,7 @@ export function OrderListDetailPrice({
   // 무게/배송지에 따른 배송비 계산하기. 배송지, 배송요율 설정해야함
   const onCal = async () => {
     const fee = await db.collection("shippingFee").doc("dhl").get();
-    const checkedItems = orders.filter(order =>
+    const checkedItems = orders.filter((order) =>
       checkedInputs.includes(order.id)
     );
 
@@ -70,23 +70,23 @@ export function OrderListDetailPrice({
       }
       num++;
     }
+    console.log("fee", fee);
     // 몇번째 존인지
     const zone = Object.keys(
       fee
         .data()
-        .z.find(doc =>
-          Object.values(doc).find(asd =>
+        .z.find((doc) =>
+          Object.values(doc).find((asd) =>
             asd.country.includes(checkedItems[0]?.data.country)
           )
         )
     );
-
     // 30키로 이하 배송비(외국)
     const shippingFee =
       totalWeight < 30
         ? Number(
             Object.values(
-              fee.data().z.find(doc => Object.keys(doc)[0] === zone[0])
+              fee.data().z.find((doc) => Object.keys(doc)[0] === zone[0])
             )[0]
               .fee[num - 1].split(",")
               .join("")
@@ -157,7 +157,7 @@ export function OrderListDetailPrice({
           cols="40"
           rows="5"
           value={trackingNumber}
-          onChange={e => setTrackingNum(e.target.value)}
+          onChange={(e) => setTrackingNum(e.target.value)}
           className="col-span-3 ml-20 outline-none border pl-2 text-sm"
           placeholder="tracking number.  2개 이상은 ' , '(콤마) 로 구분 "
         ></textarea>

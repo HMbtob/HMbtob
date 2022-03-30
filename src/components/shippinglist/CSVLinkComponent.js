@@ -19,9 +19,9 @@ export function CSVLinkComponent({ shipping }) {
       .collection("shippingsInAccount")
       .doc(shipping.id)
       .collection("orderListInShippings")
-      .onSnapshot(snapshot =>
+      .onSnapshot((snapshot) =>
         setCsvData(
-          snapshot.docs.map(doc => [
+          snapshot.docs.map((doc) => [
             doc.data().sku,
             doc.data().sku,
             doc.data().title,

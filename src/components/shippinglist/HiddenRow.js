@@ -30,6 +30,7 @@ export function HiddenRow({ shipping }) {
       .collection("shippingsInAccount")
       .doc(shipping.id)
       .collection("orderListInShippings")
+      .orderBy("title", "asc")
       .onSnapshot((snapshot) =>
         setOrderListInShippings(
           snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }))

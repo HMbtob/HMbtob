@@ -132,7 +132,7 @@ export function OrderListInShippingsRow({ li, i, shipping }) {
       </div>
       <div className="col-span-3 flex flex-row items-center">
         <input
-          className="p-2 outline-none w-1/2 "
+          className="p-2 outline-none w-1/2 text-right"
           type="number"
           step={0.01}
           value={price}
