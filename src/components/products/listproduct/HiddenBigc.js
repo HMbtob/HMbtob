@@ -67,11 +67,13 @@ const HiddenBigc = ({
       )
       .then((p) =>
         setProduct({
-          handlePrice: optioned ? option.price : p.data.data.price,
+          handlePrice: optioned
+            ? Number(option.price)
+            : Number(p.data.data.price),
           handleStock: optioned
-            ? option.inventory_level
-            : p.data.data.inventory_level,
-          total_sold: p.data.data.total_sold,
+            ? Number(option.inventory_level)
+            : Number(p.data.data.inventory_level),
+          total_sold: Number(p.data.data.total_sold),
           productName: optioned ? option.sku : p.data.data.name,
           isVisible: p.data.data.is_visible,
         })
@@ -102,12 +104,6 @@ const HiddenBigc = ({
 
   // const [stockHistory, setStockHistory] = useState(null);
 
-  // //   useEffect(() => {
-  // // product.data.optioned &&
-  // // db.collection("products").doc(id).collection()
-
-  // //   },[])
-
   useEffect(() => {
     sdadasdasd();
     handleBigTotalSold(total_sold);
@@ -119,12 +115,12 @@ place-items-center text-xs bg-transparent border-t"
     >
       {bigcProductId && (
         <>
-          <button
+          {/* <button
             onClick={() => fixfix(bigcProductId, handleStock, handlePrice)}
             className="col-span-2"
           >
             big-수정
-          </button>
+          </button> */}
           <div className="col-span-5 flex flex-row justify-start w-full">
             {isVisible === true ? (
               <VisibilityIcon
@@ -228,7 +224,12 @@ place-items-center text-xs bg-transparent border-t"
               className="col-span-2 border w-3/4 p-1 text-center"
               name="handlePrice"
               value={handlePrice}
-              onChange={onChange}
+              onChange={(e) => onChange(e)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  fixfix(bigcProductId, handleStock, handlePrice);
+                }
+              }}
             />
           </div>
 
@@ -238,7 +239,12 @@ place-items-center text-xs bg-transparent border-t"
             className="col-span-2 border w-3/4 p-1 text-center"
             name="handleStock"
             value={handleStock}
-            onChange={onChange}
+            onChange={(e) => onChange(e)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                fixfix(bigcProductId, handleStock, handlePrice);
+              }
+            }}
           />
           <div className="col-span-1">{total_sold && total_sold}</div>
 

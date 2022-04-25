@@ -10,7 +10,6 @@ const HiddenB2b = ({
   price,
   stock,
   relDate,
-  // orders,
   // shippings,
   currency,
   // sku,
@@ -143,9 +142,9 @@ const HiddenB2b = ({
       className="grid grid-cols-36 items-center 
 place-items-center text-xs bg-transparent border-t"
     >
-      <button onClick={() => simpleSave()} className="col-span-2">
+      {/* <button onClick={() => simpleSave()} className="col-span-2">
         b2b-수정
-      </button>
+      </button> */}
       {product?.data?.optioned && (
         <button onClick={openModal}>
           <SyncAltIcon fontSize="small" style={{ color: "gray" }} />
@@ -166,8 +165,7 @@ place-items-center text-xs bg-transparent border-t"
           product.data.optioned ? "4" : "5"
         } flex flex-row justify-start w-full`}
       ></div>
-      <div className="col-span-3"></div>
-      <div className="col-span-2"></div>
+      <div className="col-span-5">{op?.data?.optionBarcode}</div>
       <div className="col-span-9 w-full">{op?.data.optionName}</div>
       <div className="col-span-3 flex flex-row items-center justify-center">
         <div>{currency}</div>
@@ -178,6 +176,12 @@ place-items-center text-xs bg-transparent border-t"
           name="handlePrice"
           value={handlePrice}
           onChange={onChange}
+          // 엔터치면 바로수정되게
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              simpleSave();
+            }
+          }}
         />
       </div>
       <div className="col-span-2"></div>
@@ -187,21 +191,24 @@ place-items-center text-xs bg-transparent border-t"
         name="handleStock"
         value={handleStock}
         onChange={onChange}
+        // 엔터치면 바로수정되게
+        onKeyPress={(e) => {
+          if (e.key === "Enter") {
+            simpleSave();
+          }
+        }}
       />
 
       <div className="col-span-1">
         {/* {totalUnshipped} */}
         {orderListInShippings
           .filter((doc) =>
-            // op
-            //   ? doc?.data?.optionName === op?.data?.name
-            //   :
             doc.data.optioned === true
               ? doc.data.productId === product.id && doc.data.optionId === op.id
               : doc.data.productId === product.id
           )
           .reduce((a, c) => {
-            return a + c.data.quan;
+            return a + (c.data.canceled ? 0 : c.data.quan);
           }, 0) +
           ordered
             .filter((doc) =>
@@ -211,7 +218,7 @@ place-items-center text-xs bg-transparent border-t"
                 : doc.data.productId === product.id
             )
             .reduce((a, c) => {
-              return a + c.data.quan;
+              return a + (c.data.canceled ? 0 : c.data.quan);
             }, 0)}{" "}
       </div>
       <div className="col-span-1">
@@ -224,7 +231,7 @@ place-items-center text-xs bg-transparent border-t"
               : doc.data.productId === product.id
           )
           .reduce((a, c) => {
-            return a + c.data.quan;
+            return a + (c.data.canceled ? 0 : c.data.quan);
           }, 0)}
         {/* ) */}
       </div>

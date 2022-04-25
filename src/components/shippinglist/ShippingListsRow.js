@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { db } from "../../firebase";
 import { toDate } from "../../utils/shippingUtils";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";

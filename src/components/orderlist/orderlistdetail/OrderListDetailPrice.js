@@ -47,13 +47,23 @@ export function OrderListDetailPrice({
       }, 0)
     );
     // 체크된 아이템 총가격
-    const totalPrice = Number(
-      checkedItems
-        .reduce((a, c) => {
-          return a + Number(c.data.totalPrice);
-        }, 0)
-        .toFixed(0)
-    );
+
+    const totalPrice =
+      exR[account.data.currency] === 1
+        ? Number(
+            checkedItems
+              .reduce((a, c) => {
+                return a + Number(c.data.totalPrice);
+              }, 0)
+              .toFixed(0)
+          )
+        : Number(
+            checkedItems
+              .reduce((a, c) => {
+                return a + Number(c.data.totalPrice);
+              }, 0)
+              .toFixed(2)
+          );
 
     // 체크된 아이템 총무게
     const totalWeight =
@@ -70,7 +80,6 @@ export function OrderListDetailPrice({
       }
       num++;
     }
-    console.log("fee", fee);
     // 몇번째 존인지
     const zone = Object.keys(
       fee

@@ -2,7 +2,6 @@ import React, { useContext } from "react";
 import { InitDataContext } from "../../../../App";
 import { db } from "../../../../firebase";
 import useInputs from "../../../../hooks/useInput";
-import { CustomerCredit } from "./CustomerCredit";
 import { CustomerDcAmount } from "./CustomerDcAmount";
 import { CustomerDcRate } from "./CustomerDcRate";
 import { CustomerShippingRate } from "./CustomerShippingRate";
@@ -68,13 +67,6 @@ export function CustomerDetails({ match }) {
     recipient,
     shippingMessage,
     inCharge,
-    // cd,
-    // dvdBlueRay,
-    // goods,
-    // photoBook,
-    // officialStore,
-    // beauty,
-    // specialOrder,
     dhl,
     nickName,
     memo,
@@ -83,16 +75,6 @@ export function CustomerDetails({ match }) {
     taxId,
     companyName,
   } = form;
-
-  // const dcValues = {
-  //   cd,
-  //   dvdBlueRay,
-  //   goods,
-  //   photoBook,
-  //   officialStore,
-  //   beauty,
-  //   specialOrder,
-  // };
 
   const shippingRate = { dhl };
 
@@ -107,15 +89,6 @@ export function CustomerDetails({ match }) {
       zipcode,
       recipient,
       shippingMessage,
-      // dcRates: {
-      //   cd: Number((Number(cd) / 100).toFixed(2)),
-      //   dvdBlueRay: Number((Number(dvdBlueRay) / 100).toFixed(2)),
-      //   photoBook: Number((Number(goods) / 100).toFixed(2)),
-      //   goods: Number((Number(photoBook) / 100).toFixed(2)),
-      //   officialStore: Number((Number(officialStore) / 100).toFixed(2)),
-      //   beauty: Number((Number(beauty) / 100).toFixed(2)),
-      //   specialOrder: Number((Number(specialOrder) / 100).toFixed(2)),
-      // },
       nickName,
       inCharge,
       memo,
@@ -248,33 +221,6 @@ export function CustomerDetails({ match }) {
                 className="border p-1"
               />{" "}
             </div>
-
-            {/* 할인율 */}
-            {/* <div className="grid grid-cols-1">
-              <div className="text-center my-1 font-semibold">
-                DC Rate {`[ % ]`}
-              </div>
-              <div
-                className={`grid grid-cols-${
-                  Object.keys(user.data.dcRates).length
-                } border mb-10`}
-              >
-                {Object.keys(user.data.dcRates)
-                  .sort()
-                  .map((doc, index) => (
-                    <div key={index} className="grid grid-cols-1  text-center">
-                      <div className="text-gray-100 bg-gray-600">{doc}</div>
-                      <input
-                        type="number"
-                        name={doc}
-                        value={dcValues[doc]}
-                        onChange={onChange}
-                        className="text-center text-gray-800 text-sm py-1  border-r border-b"
-                      />
-                    </div>
-                  ))}
-              </div>
-            </div> */}
           </div>
           {/* 수령인 파트 */}
 
@@ -399,7 +345,6 @@ export function CustomerDetails({ match }) {
         <CustomerDcRate user={user} />
 
         <CustomerShippingRate user={user} />
-        <CustomerCredit user={user} />
         {user.data.survay && <CustomerSurvay user={user} />}
       </div>
     </div>

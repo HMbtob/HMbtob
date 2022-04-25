@@ -15,7 +15,6 @@ const ListProduct = ({ history }) => {
   const dispatch = useContext(InitDispatchContext);
   const {
     products,
-    orders,
     shippings,
     user,
     exchangeRate,
@@ -223,7 +222,6 @@ const ListProduct = ({ history }) => {
                   preOrderDeadline={product.data.preOrderDeadline}
                   bigcProductId={product?.data?.bigC?.id}
                   product={product}
-                  orders={orders}
                   shippings={shippings}
                   user={user}
                   exchangeRate={exchangeRate}

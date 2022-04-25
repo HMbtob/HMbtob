@@ -5,7 +5,6 @@ import HiddenB2b from "./HiddenB2b";
 import HiddenBigc from "./HiddenBigc";
 import StockTable from "./StockTable";
 import ProductMemo from "./ProductMemo";
-// import StoreProduct from "./StoreProduct";
 import BuildIcon from "@material-ui/icons/Build";
 import SyncAltIcon from "@material-ui/icons/SyncAlt";
 import CommentIcon from "@material-ui/icons/Comment";
@@ -37,7 +36,6 @@ const ListProductRow = ({
   unShipped,
   relDate,
   preOrderDeadline,
-  orders,
   shippings,
   barcode,
   bigcProductId,
@@ -121,17 +119,10 @@ const ListProductRow = ({
 
   const handleRelDate2 = (e) => {
     setRelDate2(e.target.value);
-
     db.collection("products")
       .doc(id)
       .update({ relDate: new Date(e.target.value) });
   };
-
-  // const [category, setCategory] = useState(product.data.category);
-  // const handleCat = (e) => {
-  //   setCategory(e.target.value);
-  //   db.collection("products").doc(id).update({ category: e.target.value });
-  // };
 
   const handleDelete = () => {
     let con = window.confirm("정말로 삭제하시겠습니까?");
@@ -143,31 +134,22 @@ const ListProductRow = ({
   };
 
   // 해당상품 포함한 주문 검색
-  // const [includedProducts, setIncludedProducts] = useState([]);
-  const includedProduct = () => {
-    // await setIncludedProducts(() =>
-    //   orders.filter(order => order.data.list.some(li => li.productId === id))
-    // );
-    if (
-      orders.filter((order) =>
-        order.data.list.some((li) => li.productId === id)
-      ).length > 0
-    ) {
-      history.push({
-        pathname: `/orderlist`,
-        state: {
-          includedProducts: orders.filter((order) =>
-            order.data.list.some((li) => li.productId === id)
-          ),
-        },
-      });
-    } else if (
-      orders.filter((order) =>
-        order.data.list.some((li) => li.productId === id)
-      ).length === 0
-    ) {
-      alert("주문이 없습니다.");
-    }
+  const includedProduct = async () => {
+    // 해당 주소로 보내기
+    history.push({ pathname: `/includedorders/${id}` });
+
+    // 하단의 내용을 이동한 주소로 이동
+
+    // const res = await db
+    //   .collectionGroup("order")
+    //   .where("productId", "==", id)
+    //   .get();
+
+    // const includedOrders = res.docs.map((doc) => ({
+    //   id: doc.id,
+    //   data: doc.data(),
+    // }));
+    // console.log(includedOrders);
   };
 
   const [options, setOptions] = useState(null);
@@ -309,7 +291,9 @@ const ListProductRow = ({
               id={id}
             />
           </Modal>
-          <button onClick={includedProduct} className="cursor-pointer">
+
+          {/* 포함된 주문 */}
+          <button onClick={() => includedProduct()} className="cursor-pointer">
             <ManageSearchIcon fontSize="small" style={{ color: "gray" }} />
           </button>
           <button
@@ -399,24 +383,6 @@ const ListProductRow = ({
                   {categories[option]}
                 </option>
               ))}
-              {/* <option value="cd">
-                cd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
-              </option>
-              <option value="dvdBlueRay">
-                dvdBlueRay&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
-              </option>
-              <option value="photoBook">
-                photoBook&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
-              </option>
-              <option value="goods">
-                goods&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
-              </option>
-              <option value="officialStore">
-                officialStore&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
-              </option>
-              <option value="beauty">
-                beauty&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
-              </option> */}
             </select>
           </div>
           <input
@@ -454,7 +420,12 @@ const ListProductRow = ({
             <SyncAltIcon fontSize="small" style={{ color: "gray" }} />
           </button>
           <Modal open={modalOpen3} close={closeModal3} header={"주문수량"}>
-            <OrderTable product={product} id={id} />
+            <OrderTable
+              product={product}
+              id={id}
+              orderQty={orderQty}
+              setOrderQty={setOrderQty}
+            />
           </Modal>
           <input
             type="number"
@@ -472,6 +443,8 @@ const ListProductRow = ({
                     .set({
                       createdAt: today,
                       orderQty,
+                      nickName: user?.nickName || "",
+                      memo: "",
                     });
 
                   const res = await db
@@ -500,14 +473,7 @@ const ListProductRow = ({
               }
             }}
           />
-          {/* <StoreProduct
-            stockHistory={product.data.stockHistory}
-            bigTotalSold={bigTotalSold}
-            totalStock={totalStock}
-            product={product}
-            user={user}
-            products={products}
-          /> */}
+
           <div>
             {/* 무한재고 */}
             {product.data.limitedStock === false ? (
@@ -623,15 +589,13 @@ const ListProductRow = ({
       ) : (
         <>
           {options ? (
-            options.map((op) => (
+            options.map((op, i) => (
               <HiddenB2b
+                key={i}
                 id={id}
-                // sku={sku}
                 price={price}
                 stock={stock}
                 relDate={relDate}
-                // orders={orders}
-                // shippings={shippings}
                 product={product}
                 currency={user.currency}
                 orderListInShippings={orderListInShippings}
@@ -641,12 +605,9 @@ const ListProductRow = ({
           ) : (
             <HiddenB2b
               id={id}
-              // sku={sku}
               price={price}
               stock={stock}
               relDate={relDate}
-              // orders={orders}
-              // shippings={shippings}
               product={product}
               currency={user.currency}
               orderListInShippings={orderListInShippings}
@@ -661,9 +622,9 @@ const ListProductRow = ({
                   ? 1
                   : -1;
               })
-              .map((option) => (
+              .map((option, i) => (
                 <HiddenBigc
-                  // id={id}
+                  key={i}
                   sku={sku}
                   thumbNail={thumbNail}
                   title={title}
@@ -673,19 +634,15 @@ const ListProductRow = ({
                   unShipped={unShipped}
                   relDate={relDate}
                   preOrderDeadline={preOrderDeadline}
-                  orders={orders}
                   shippings={shippings}
                   bigcProductId={bigcProductId}
                   handleBigTotalSold={handleBigTotalSold}
-                  // bigTotalSold={bigTotalSold}
-                  // totalStock={totalStock}
                   optioned={product.data.optioned === true ? true : false}
                   option={option}
                 />
               ))
           ) : (
             <HiddenBigc
-              // id={id}
               sku={sku}
               thumbNail={thumbNail}
               title={title}
@@ -695,12 +652,9 @@ const ListProductRow = ({
               unShipped={unShipped}
               relDate={relDate}
               preOrderDeadline={preOrderDeadline}
-              orders={orders}
               shippings={shippings}
-              // totalStock={totalStock}
               bigcProductId={bigcProductId}
               handleBigTotalSold={handleBigTotalSold}
-              // bigTotalSold={bigTotalSold}
               optioned={product.data.optioned === true ? true : false}
             />
           )}

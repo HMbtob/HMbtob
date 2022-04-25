@@ -86,64 +86,147 @@ export const onSubmitToShip = async (
         userId: orders[0]?.data.userId,
       });
   } catch (e) {
+    await db
+      .collection("error")
+      .doc()
+      .set({ name: "발송 생성 오류", createdAt: today });
     console.log("발송 생성 오류", e);
   }
 
-  // 생성한 발송에 선택한 상품 콜렉션에 추가
   await Promise.all(
-    checkedItems.map(async (order) => {
+    checkedItems.map(async (order, i) => {
       try {
-        await db
+        // console.log(i + 1, "번째 뱃치시작", order);
+        let batch = db.batch();
+
+        let orderListInShippingsRef = db
           .collection("accounts")
           .doc(orders[0]?.data.userId)
           .collection("shippingsInAccount")
           .doc(saveId)
           .collection("orderListInShippings")
-          .doc(order.id)
-          .set({ ...order.data });
+          .doc(order.id);
+        if (
+          order.data.sku !== "AddOrder" &&
+          order.data.sku !== "specialOrder"
+        ) {
+          let newStockHistoryRef = db
+            .collection("products")
+            .doc(order.data.productId)
+            .collection("newStockHistory")
+            .doc(order.id);
+          batch.update(newStockHistoryRef, {
+            shipped: true,
+            shippedQty: order.data.quan,
+            shippedDate: today,
+          });
+        }
+        let deleteRef = db
+          .collection("accounts")
+          .doc(orders[0]?.data.userId)
+          .collection("order")
+          .doc(order.id);
+
+        batch.set(orderListInShippingsRef, { ...order.data });
+        batch.delete(deleteRef);
+
+        batch.commit();
       } catch (e) {
-        console.log("orderListInShippings 오류", order);
+        await db
+          .collection("error")
+          .doc()
+          .set({ name: "뱃치오류 오류", createdAt: today, e, order, i });
         console.log(e);
       }
     })
   );
 
-  // 재고수불부 업데이트
-  await Promise.all(
-    checkedItems.map(async (order) => {
-      try {
-        await db
-          .collection("products")
-          .doc(order.data.productId)
-          .collection("newStockHistory")
-          .doc(order.id)
-          .update({
-            shipped: true,
-            shippedQty: order.data.quan,
-            shippedDate: today,
-          });
-      } catch (e) {
-        console.log("newStockHistory", order);
-        console.log(e);
-      }
-    })
-  );
-  // 추가후 선택한 상품 주문에서 삭제
-  await Promise.all(
-    checkedItems.map(async (order) => {
-      try {
-        await db
-          .collection("accounts")
-          .doc(orders[0]?.data.userId)
-          .collection("order")
-          .doc(order.id)
-          .delete();
-      } catch (e) {
-        console.log("주문삭제 오류", order);
-        console.log(e);
-      }
-    })
-  );
+  // await Promise.all(
+  //   checkedItems.map(async (order) => {
+  //     try {
+  //       // 생성한 발송에 선택한 상품 콜렉션에 추가
+  //       await db
+  //         .collection("accounts")
+  //         .doc(orders[0]?.data.userId)
+  //         .collection("shippingsInAccount")
+  //         .doc(saveId)
+  //         .collection("orderListInShippings")
+  //         .doc(order.id)
+  //         .set({ ...order.data });
+  //       // // 재고수불부 업데이트
+  //       // await db
+  //       //   .collection("products")
+  //       //   .doc(order.data.productId)
+  //       //   .collection("newStockHistory")
+  //       //   .doc(order.id)
+  //       //   .update({
+  //       //     shipped: true,
+  //       //     shippedQty: order.data.quan,
+  //       //     shippedDate: today,
+  //       //   });
+  //       // // 추가후 선택한 상품 주문에서 삭제
+  //       // await db
+  //       //   .collection("accounts")
+  //       //   .doc(orders[0]?.data.userId)
+  //       //   .collection("order")
+  //       //   .doc(order.id)
+  //       //   .delete();
+  //     } catch (e) {
+  //       await db.collection("error").doc().set({
+  //         name: "orderListInShippings or newStockHistory or 주문삭제 오류",
+  //         createdAt: today,
+  //         order,
+  //       });
+  //       console.log(e);
+  //     }
+  //   })
+  // );
+
+  // await Promise.all(
+  //   checkedItems.map(async (order) => {
+  //     try {
+  //       // 재고수불부 업데이트
+  //       await db
+  //         .collection("products")
+  //         .doc(order.data.productId)
+  //         .collection("newStockHistory")
+  //         .doc(order.id)
+  //         .update({
+  //           shipped: true,
+  //           shippedQty: order.data.quan,
+  //           shippedDate: today,
+  //         });
+  //     } catch (e) {
+  //       await db.collection("error").doc().set({
+  //         name: "newStockHistory",
+  //         createdAt: today,
+  //         order,
+  //       });
+  //       console.log("newStockHistory", order);
+  //       console.log(e);
+  //     }
+  //   })
+  // );
+  // await Promise.all(
+  //   checkedItems.map(async (order) => {
+  //     try {
+  //       await db
+  //         .collection("accounts")
+  //         .doc(orders[0]?.data.userId)
+  //         .collection("order")
+  //         .doc(order.id)
+  //         .delete();
+  //     } catch (e) {
+  //       await db
+  //         .collection("error")
+  //         .doc()
+  //         .set({ name: "주문삭제 오류", createdAt: today, order });
+
+  //       console.log("주문삭제 오류", order);
+  //       console.log(e);
+  //     }
+  //   })
+  // );
 
   // 크레딧 마지막 밸런스 가져오기
   try {
@@ -190,6 +273,11 @@ export const onSubmitToShip = async (
         balance: total,
       });
   } catch (e) {
+    await db
+      .collection("error")
+      .doc()
+      .set({ name: "크레딧 차감 오류", createdAt: today });
+
     console.log("크레딧 차감 오류", e);
   }
 

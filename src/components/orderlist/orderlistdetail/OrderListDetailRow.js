@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { db } from "../../../firebase";
-// import { krwComma } from "../../../utils/shippingUtils";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
@@ -225,14 +224,6 @@ export function OrderListDetailRow({
   };
   const [isListHover, setIsListHover] = useState(false);
 
-  // const [imgUrl, setImgUrl] = useState(null);
-  // useEffect(() => {
-  //   db.collection("products")
-  //     .doc(order.data.productId)
-  //     .get()
-  //     .then((doc) => setImgUrl(doc?.data()?.thumbNail || null));
-  // }, [order.data.productId]);
-
   return (
     <div
       className={`${
@@ -341,30 +332,7 @@ export function OrderListDetailRow({
           disabled={order.data.canceled}
           value={price}
           step={0.01}
-          onChange={
-            (e) => setPrice(Number(e.target.value))
-            // {
-            //   const { value } = e.target;
-            //   console.log("value", value);
-            //   if (isNaN(Number(value))) {
-            //     console.log("숫자아님");
-            //     setPrice("");
-            //     return;
-            //   }
-
-            // setPrice(krwComma(Number(value), order.data.currency));
-            // console.log("value", value);
-
-            // const onlyNumber2 = Number(value.replaceAll(",", ""));
-
-            // console.log("0삭제 ", Number(Number(value).toFixed(2)));
-
-            // const onlyNumber = value.replace(/[^0-9]/g, "");
-            // console.log("onlyNumber", onlyNumber);
-
-            // console.log("onlyNumber2", onlyNumber2);
-            // }
-          }
+          onChange={(e) => setPrice(Number(e.target.value))}
           className="w-2/3 text-right pr-2 border outline-none"
         />
         {order.data.currency}

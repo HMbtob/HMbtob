@@ -8,6 +8,10 @@ export function Inputed({
   onCal,
   caledPrice,
 }) {
+  const handleSetInputedShippingFee = (e) => {
+    e.preventDefault();
+    setInputedShippingFee(Number(e.target.value));
+  };
   return (
     <div className="flex flex-col  w-full items-center">
       <div className="flex flex-row">
@@ -15,7 +19,7 @@ export function Inputed({
           type="radio"
           name="price"
           value="inputed"
-          onChange={e => setCheckedRadio(e.target.value)}
+          onChange={(e) => setCheckedRadio(e.target.value)}
         />
         <div>입력한 배송비로 발송처리</div>
       </div>
@@ -36,7 +40,7 @@ export function Inputed({
             <div> 배송비</div>
             <div className="flex flex-row">
               <input
-                onChange={e => setInputedShippingFee(Number(e.target.value))}
+                onChange={(e) => handleSetInputedShippingFee(e)}
                 value={inputedShippingFee}
                 type="number"
               />

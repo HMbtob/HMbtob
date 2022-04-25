@@ -5,7 +5,7 @@ import { db } from "../../../firebase";
 const ProductMemo = ({ productMemo, id, user }) => {
   const [memo, setMemo] = useState("");
 
-  const handleMemo = e => {
+  const handleMemo = (e) => {
     setMemo(e.target.value);
   };
 

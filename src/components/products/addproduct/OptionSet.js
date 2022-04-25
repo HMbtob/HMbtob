@@ -13,7 +13,7 @@ export function OptionSet({
   const handleOptionSet = (e, i) => {
     setOptionSet(
       [...optionSet],
-      e.target.name === "optionName"
+      e.target.name === "optionName" || e.target.name === "optionBarcode"
         ? (optionSet[i][e.target.name] = e.target.value)
         : (optionSet[i][e.target.name] = Number(e.target.value))
     );
@@ -27,6 +27,7 @@ export function OptionSet({
         optionName: "",
         optionPrice: 0,
         optionStock: 0,
+        optionBarcode: "",
       });
     } catch (e) {
       console.log(e);
@@ -67,6 +68,7 @@ export function OptionSet({
               optionName: option.optionName,
               optionPrice: option.optionPrice,
               optionStock: option.optionStock,
+              optionBarcode: option.optionBarcode,
             })
       );
       alert("세트를 저장 했습니다.");
@@ -171,7 +173,7 @@ export function OptionSet({
       <div className="grid grid-cols-4 p-2 items-center">
         <div></div>
         <div className="col-span-3 flex flex-col w-full">
-          <div className="grid grid-cols-4 items-center">
+          <div className="grid grid-cols-5 items-center">
             {optionId !== "no" && (
               <>
                 <div
@@ -183,12 +185,13 @@ export function OptionSet({
                 <div className="border text-center p-1">옵션이름</div>
                 <div className="border text-center p-1">가격</div>
                 <div className="border text-center p-1">재고</div>
+                <div className="border text-center p-1">바코드</div>
               </>
             )}
           </div>
 
           {optionSet.map((option, i) => (
-            <div className="grid grid-cols-4 mb-1">
+            <div className="grid grid-cols-5 mb-1">
               <button
                 className="cursor-pointer text-center text-sm font-mono bg-gray-400  text-white ml-5 rounded-sm"
                 onClick={async () =>
@@ -224,6 +227,14 @@ export function OptionSet({
                 value={option.optionStock}
                 placeholder="재고"
                 type="number"
+                className="outline-none border p-1 pr-2 text-right"
+              />
+              <input
+                name="optionBarcode"
+                onChange={(e) => handleOptionSet(e, i)}
+                value={option.optionBarcode}
+                placeholder="바코드"
+                type="text"
                 className="outline-none border p-1 pr-2 text-right"
               />
             </div>

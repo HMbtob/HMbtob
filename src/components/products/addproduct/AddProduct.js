@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
-
 import { InitDataContext } from "../../../App";
 import { db } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
@@ -569,7 +568,6 @@ const AddProduct = ({ location }) => {
             optionName={optionName}
           />
           {/* 날짜 인풋 */}
-
           <div className="grid grid-cols-4 p-2 items-center">
             <div className="text-gray-600 text-right  mr-3">출시일</div>
             <input

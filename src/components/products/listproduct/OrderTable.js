@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../../firebase";
-import { toDate } from "../../../utils/shippingUtils";
+// import { toDate } from "../../../utils/shippingUtils";
+import OrderTableRow from "./OrderTableRow";
 
-export default function OrderTable({ id, product }) {
+export default function OrderTable({ id, product, setOrderQty }) {
   const [totalOrder, setTotalOrder] = useState(null);
 
   const [orderQtyHistory, setOrderQtyHistory] = useState([]);
@@ -29,23 +30,15 @@ export default function OrderTable({ id, product }) {
       </div>
 
       <div className="grid grid-cols-12 text-gray-200 bg-gray-800 text-center">
-        <div className="col-span-8">주문일</div>
-        <div className="col-span-4">수량</div>
+        <div className="col-span-2"></div>
+        <div className="col-span-2">주문인</div>
+        <div className="col-span-2">주문일</div>
+        <div className="col-span-2">수량</div>
+        <div className="col-span-4">MEMO</div>
       </div>
       {orderQtyHistory &&
         orderQtyHistory.map((de, i) => (
-          <div
-            key={i}
-            className={`grid grid-cols-12 text-center border-b  py-1 place-items-center 
-              
-            `}
-          >
-            <div className="col-span-8">
-              {de?.data?.createdAt && toDate(de.data.createdAt.seconds)}
-            </div>
-
-            <div className="col-span-4">{de.data.orderQty}</div>
-          </div>
+          <OrderTableRow de={de} key={i} id={id} setOrderQty={setOrderQty} />
         ))}
       <div
         className="grid grid-cols-12 text-center 

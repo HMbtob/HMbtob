@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import CreatedAt from "./CreatedAt";
 import ThermalPrinter from "./ThermalPrinter";
 import Excel from "./Excel";
@@ -7,7 +7,6 @@ import Order from "./Order";
 import { OrderListToNew } from "./OrderListToNew";
 import SaveProducts from "./SaveProducts";
 import ShippingFee from "./ShippingFee";
-import queryString from "query-string";
 import { db } from "../firebase";
 
 const Dev = () => {
