@@ -10,25 +10,25 @@ export function OrderListDetailHeader({ handleSort }) {
       <div className="col-span-3">배송지</div>
       <div
         id="createdAt"
-        onClick={e => handleSort(e)}
+        onClick={(e) => handleSort(e)}
         className="col-span-2 flex items-center justify-center cursor-pointer z-10"
       >
         주문일
         <ImportExportIcon
           id="createdAt"
-          onClick={e => handleSort(e)}
+          onClick={(e) => handleSort(e)}
           style={{ height: "20" }}
         />
       </div>
       <div
         id="relDate"
-        onClick={e => handleSort(e)}
+        onClick={(e) => handleSort(e)}
         className="col-span-2 flex items-center justify-center cursor-pointer"
       >
         출시일
         <ImportExportIcon
           id="relDate"
-          onClick={e => handleSort(e)}
+          onClick={(e) => handleSort(e)}
           style={{ height: "20" }}
         />
       </div>
@@ -36,20 +36,21 @@ export function OrderListDetailHeader({ handleSort }) {
       <div className="col-span-3">barcode</div>
       <div
         id="title"
-        onClick={e => handleSort(e)}
+        onClick={(e) => handleSort(e)}
         className="col-span-10 flex items-center justify-center cursor-pointer"
       >
         title
         <ImportExportIcon
           id="title"
-          onClick={e => handleSort(e)}
+          onClick={(e) => handleSort(e)}
           style={{ height: "20" }}
         />
       </div>
       <div className="col-span-3">price</div>
       <div className="col-span-2">qty</div>
       <div className="col-span-3">totalPrice</div>
-      <div className="col-span-4">memo</div>
+      <div className="col-span-2">memo</div>
+      <div className="col-span-2">등록업체</div>
     </div>
   );
 }

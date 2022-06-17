@@ -8,10 +8,10 @@ function Login() {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const signInWithGoogle = async () => {
-    await auth.signInWithRedirect(provider).catch(e => alert(e.message));
+    await auth.signInWithRedirect(provider).catch((e) => alert(e.message));
   };
 
-  const signInWithEmail = e => {
+  const signInWithEmail = (e) => {
     e.preventDefault();
     auth
       .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
@@ -26,11 +26,11 @@ function Login() {
             //   const user = userC.user;
             //   // console.log(user);
             // })
-            .catch(e => console.log(e))
+            .catch((e) => console.log(e))
         );
       })
       // .then(authUser => console.log(authUser))
-      .catch(e => {
+      .catch((e) => {
         alert(e.message);
       });
   };
@@ -42,7 +42,7 @@ function Login() {
   const closeModal = () => {
     setModal1Open(false);
   };
-  const forgotPassword = e => {
+  const forgotPassword = (e) => {
     e.preventDefault();
     const inputEmail = prompt("Please enter your email address.");
     if (inputEmail != null) {
@@ -51,7 +51,7 @@ function Login() {
         .then(() => {
           console.log("성공");
         })
-        .catch(error => {
+        .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
           console.log("e", errorCode, errorMessage);
@@ -65,9 +65,9 @@ function Login() {
        m-auto w-11/12 lg:w-auto"
       >
         <img
-          src="https://firebasestorage.googleapis.com/v0/b/interasiastock.appspot.com/o/assets%2Finterlogo-500.jpeg?alt=media&token=af2ec17d-dc0b-4147-9c7a-650ab2db870a"
+          src="https://firebasestorage.googleapis.com/v0/b/hmbtob-b093b.appspot.com/o/KakaoTalk_Photo_2022-05-22-16-23-08.png?alt=media&token=9f83fa22-e4d6-4924-b4fc-20e47d0af5ba"
           alt="logo"
-          className="h-40 lg:h-96"
+          className="h-40 lg:h-40"
         />
         <div className="flex flex-col w-11/12 lg:w-80">
           <input
@@ -98,7 +98,7 @@ function Login() {
           forgot password?
         </div>
         <div className="flex flex-col lg:flex-row mt-5 w-80 justify-start">
-          <div className="text-gray-700">{"New to INTERASIA ?  "}</div>
+          <div className="text-gray-700">{"New to HMcompany ?  "}</div>
           <button
             className=" font-bold cursor-pointer text-gray-800"
             name="modal1"

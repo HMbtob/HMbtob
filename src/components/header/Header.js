@@ -10,7 +10,7 @@ const Header = () => {
         className="text-gray-200 font-semibold text-left mr-10 cursor-pointer w-20 pl-5"
         onClick={() => history.replace("/")}
       >
-        INTERASIA
+        HMcompany
       </div>
 
       {/* 버튼들 */}

@@ -4,9 +4,10 @@ import { useHistory } from "react-router-dom";
 import { InitDataContext } from "../../../App";
 import { db } from "../../../firebase";
 import useInputs from "../../../hooks/useInput";
-import AddBigc from "./AddBigc";
-import { useCallback } from "react";
+// import AddBigc from "./AddBigc";
+// import { useCallback } from "react";
 import { OptionSet } from "./OptionSet";
+import uuid from "react-uuid";
 
 const AddProduct = ({ location }) => {
   console.log(location?.state?.product);
@@ -15,11 +16,12 @@ const AddProduct = ({ location }) => {
 
   const state = useContext(InitDataContext);
   const { user } = state;
-  const [cats, setCats] = useState([]);
-  const [parentCat, setParentCat] = useState([]);
-  const [childCat, setChildCat] = useState([]);
+  // const [cats, setCats] = useState([]);
+  // const [parentCat, setParentCat] = useState([]);
+  // const [childCat, setChildCat] = useState([]);
 
-  const [toggleBcSaveButton, setToggleBcSaveButton] = useState(false);
+  // const [toggleBcSaveButton, setToggleBcSaveButton] = useState(false);
+
   // 옵션
   const [optionSet, setOptionSet] = useState([]);
   const [optionId, setOptionId] = useState("no");
@@ -47,19 +49,19 @@ const AddProduct = ({ location }) => {
     setDiscripUrl(e.target.value);
   };
   // 디스크립션 텍스트
-  const [descr, setDescr] = useState("");
+  // const [descr, setDescr] = useState("");
 
   // 체크박스
-  const [checkedInputs, setCheckedInputs] = useState([]);
+  // const [checkedInputs, setCheckedInputs] = useState([]);
 
-  const changeHandler = (checked, id) => {
-    if (checked) {
-      setCheckedInputs([...checkedInputs, id]);
-    } else {
-      // 체크 해제
-      setCheckedInputs(checkedInputs.filter((el) => el !== id));
-    }
-  };
+  // const changeHandler = (checked, id) => {
+  //   if (checked) {
+  //     setCheckedInputs([...checkedInputs, id]);
+  //   } else {
+  //     // 체크 해제
+  //     setCheckedInputs(checkedInputs.filter((el) => el !== id));
+  //   }
+  // };
 
   const [form, onChange, reset] = useInputs({
     sku: location?.state?.product?.data?.sku || "",
@@ -166,19 +168,19 @@ const AddProduct = ({ location }) => {
     exposeToB2b,
     price,
     // 이하 빅커머스용 변수
-    inventoryLevel,
-    brandId,
-    brandName,
-    customFieldName,
+    // inventoryLevel,
+    // brandId,
+    // brandName,
+    // customFieldName,
   } = form;
-  const callCats = useCallback(async () => {
-    await axios
-      .get(
-        `https://us-central1-interasiastock.cloudfunctions.net/app/big/getcategory`
-      )
-      .then((cats) => setCats(cats.data.data))
-      .catch((error) => console.log(error));
-  }, []);
+  // const callCats = useCallback(async () => {
+  //   await axios
+  //     .get(
+  //       `https://us-central1-interasiastock.cloudfunctions.net/app/big/getcategory`
+  //     )
+  // .then((cats) => setCats(cats.data.data))
+  //     .catch((error) => console.log(error));
+  // }, []);
 
   // 섬넬
   const getImages = async () => {
@@ -222,11 +224,12 @@ const AddProduct = ({ location }) => {
       .catch((e) => console.log(e));
   };
 
-  const Appp = async (id) => {
+  const Appp = async () => {
+    const prodId = uuid();
     try {
       await db
         .collection("products")
-        .doc(String(id))
+        .doc(prodId)
         .set({
           sku,
           purchasePrice: Number(
@@ -260,7 +263,7 @@ const AddProduct = ({ location }) => {
           barcode,
           reStockable: reStockable,
           exposeToB2b: exposeToB2b,
-          bigC: { id },
+          // bigC: { id },
           productMemo: [
             {
               memo: "add product",
@@ -279,15 +282,17 @@ const AddProduct = ({ location }) => {
               date: new Date(),
             },
           ],
-          descr,
+          // descr,
           discripUrl,
+          addedBy: user?.nickName || user.email,
+          addedByOther: user.type !== "admin" ? true : false,
           optioned: optionSet.length > 0 ? true : false,
         });
       optionSet.map(
         async (option, i) =>
           await db
             .collection("products")
-            .doc(String(id))
+            .doc(prodId)
             .collection("options")
             .doc()
             .set({
@@ -302,110 +307,110 @@ const AddProduct = ({ location }) => {
       alert("추가완료");
       history.push("/listproduct");
     } catch (e) {
-      setToggleBcSaveButton(false);
+      // setToggleBcSaveButton(false);
       console.log("get added product err", e);
     }
   };
 
-  const addBig = async () => {
-    setToggleBcSaveButton(true);
-    const data = {
-      name: title,
-      price: Number(
-        category === "cd"
-          ? (price / 1100).toFixed(2)
-          : category === "officialStore"
-          ? (price / 0.8 / 1100).toFixed(2)
-          : (price / 0.9 / 1100).toFixed(2)
-      ),
-      weight: Number(weight / 1000),
-      type: "physical",
-      custom_fields_name: customFieldName,
-      custom_fields_Value: relDate,
-      is_thumbnail: true,
-      image_url: thumbnailUrl,
-      sku: sku,
-      upc: barcode,
-      inventory_tracking: optionSet.length > 0 ? "variant" : "product",
-      inventory_level: Number(inventoryLevel),
-      brand_name: brandName,
-      categories: checkedInputs,
-      description: `${descr} <img src=${discripUrl} alt="" />`,
-      variants: optionSet.map((option) => ({
-        price: Number(
-          category === "cd"
-            ? (option.optionPrice / 1100).toFixed(2)
-            : category === "officialStore"
-            ? (option.optionPrice / 0.8 / 1100).toFixed(2)
-            : (option.optionPrice / 0.9 / 1100).toFixed(2)
-        ),
+  // const addBig = async () => {
+  //   setToggleBcSaveButton(true);
+  //   const data = {
+  //     name: title,
+  //     price: Number(
+  //       category === "cd"
+  //         ? (price / 1100).toFixed(2)
+  //         : category === "officialStore"
+  //         ? (price / 0.8 / 1100).toFixed(2)
+  //         : (price / 0.9 / 1100).toFixed(2)
+  //     ),
+  //     weight: Number(weight / 1000),
+  //     type: "physical",
+  //     custom_fields_name: customFieldName,
+  //     custom_fields_Value: relDate,
+  //     is_thumbnail: true,
+  //     image_url: thumbnailUrl,
+  //     sku: sku,
+  //     upc: barcode,
+  //     inventory_tracking: optionSet.length > 0 ? "variant" : "product",
+  //     inventory_level: Number(inventoryLevel),
+  //     brand_name: brandName,
+  //     categories: checkedInputs,
+  //     description: `${descr} <img src=${discripUrl} alt="" />`,
+  //     variants: optionSet.map((option) => ({
+  //       price: Number(
+  //         category === "cd"
+  //           ? (option.optionPrice / 1100).toFixed(2)
+  //           : category === "officialStore"
+  //           ? (option.optionPrice / 0.8 / 1100).toFixed(2)
+  //           : (option.optionPrice / 0.9 / 1100).toFixed(2)
+  //       ),
 
-        inventory_level: option.optionStock,
-        sku: `${optionName.optionSetName}-${option.optionName}-${sku}`,
-        option_values: [
-          {
-            option_display_name: optionName.optionSetName,
-            label: option.optionName,
-          },
-        ],
-      })),
-      // variants: [
-      //   {
-      //     price: 11,
-      //     sku: "SKU-BLU1",
-      //     option_values: [
-      //       {
-      //         option_display_name: "Mug Color",
-      //         label: "Blue",
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     price: 10,
-      //     sku: "SKU-GRAY2",
-      //     option_values: [
-      //       {
-      //         option_display_name: "Mug Color",
-      //         label: "Gray",
-      //       },
-      //     ],
-      //   },
-      // ],
-    };
-    await axios({
-      method: "post",
-      url: "https://us-central1-interasiastock.cloudfunctions.net/app/big/addproduct",
-      data: data,
-    })
-      // .post(
-      //   `https://us-central1-interasiastock.cloudfunctions.net/app/big/addproduct`,
-      //   // `https://us-central1-interasiastock.cloudfunctions.net/app/big/getThumbnail`,
-      //   { params: data }
-      // )
-      .then((response) => {
-        if (response?.data?.id) {
-          // onSaveButtonClick();
-          return Appp(response.data.id);
-        } else if (response?.data?.errors) {
-          console.log("response.data.errors", response.data.errors);
-          setToggleBcSaveButton(false);
-          return alert(`${Object.values(response.data.errors)[0]}`);
-        } else if (response?.data?.code === 400) {
-          console.log("response.data.errors", response?.data?.title);
-          setToggleBcSaveButton(false);
-          return alert(`${response?.data?.title}`);
-        } else {
-          console.log(response);
-          setToggleBcSaveButton(false);
-          alert("알 수 없는 오류. 관리자에세 문의해주세요.");
-        }
-      })
-      .catch((e) => {
-        console.log("요청실패 오류 Catch", e);
-        setToggleBcSaveButton(false);
-        alert("알 수 없는 오류. 관리자에세 문의해주세요.");
-      });
-  };
+  //       inventory_level: option.optionStock,
+  //       sku: `${optionName.optionSetName}-${option.optionName}-${sku}`,
+  //       option_values: [
+  //         {
+  //           option_display_name: optionName.optionSetName,
+  //           label: option.optionName,
+  //         },
+  //       ],
+  //     })),
+  //     // variants: [
+  //     //   {
+  //     //     price: 11,
+  //     //     sku: "SKU-BLU1",
+  //     //     option_values: [
+  //     //       {
+  //     //         option_display_name: "Mug Color",
+  //     //         label: "Blue",
+  //     //       },
+  //     //     ],
+  //     //   },
+  //     //   {
+  //     //     price: 10,
+  //     //     sku: "SKU-GRAY2",
+  //     //     option_values: [
+  //     //       {
+  //     //         option_display_name: "Mug Color",
+  //     //         label: "Gray",
+  //     //       },
+  //     //     ],
+  //     //   },
+  //     // ],
+  //   };
+  //   await axios({
+  //     method: "post",
+  //     url: "https://us-central1-interasiastock.cloudfunctions.net/app/big/addproduct",
+  //     data: data,
+  //   })
+  //     // .post(
+  //     //   `https://us-central1-interasiastock.cloudfunctions.net/app/big/addproduct`,
+  //     //   // `https://us-central1-interasiastock.cloudfunctions.net/app/big/getThumbnail`,
+  //     //   { params: data }
+  //     // )
+  //     .then((response) => {
+  //       if (response?.data?.id) {
+  //         // onSaveButtonClick();
+  //         return Appp(response.data.id);
+  //       } else if (response?.data?.errors) {
+  //         console.log("response.data.errors", response.data.errors);
+  //         setToggleBcSaveButton(false);
+  //         return alert(`${Object.values(response.data.errors)[0]}`);
+  //       } else if (response?.data?.code === 400) {
+  //         console.log("response.data.errors", response?.data?.title);
+  //         setToggleBcSaveButton(false);
+  //         return alert(`${response?.data?.title}`);
+  //       } else {
+  //         console.log(response);
+  //         setToggleBcSaveButton(false);
+  //         alert("알 수 없는 오류. 관리자에세 문의해주세요.");
+  //       }
+  //     })
+  //     .catch((e) => {
+  //       console.log("요청실패 오류 Catch", e);
+  //       setToggleBcSaveButton(false);
+  //       alert("알 수 없는 오류. 관리자에세 문의해주세요.");
+  //     });
+  // };
 
   // 카테고리
   const [categories, setCategories] = useState([]);
@@ -510,31 +515,30 @@ const AddProduct = ({ location }) => {
       .onSnapshot((snapshot) => setCategories(snapshot.data()));
   }, []);
 
-  useEffect(() => {
-    callCats();
-  }, []);
-  useEffect(() => {
-    setParentCat(
-      cats
-        .filter((cat) => cat.parent_id === 0)
-        .sort((a, b) => {
-          return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-        })
-    );
-    setChildCat(
-      cats
-        .filter((cat) => cat.parent_id !== 0)
-        .sort((a, b) => {
-          return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-        })
-    );
-  }, [cats]);
+  // useEffect(() => {
+  //   callCats();
+  // }, []);
+  // useEffect(() => {
+  //   setParentCat(
+  //     cats
+  //       .filter((cat) => cat.parent_id === 0)
+  //       .sort((a, b) => {
+  //         return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+  //       })
+  //   );
+  //   setChildCat(
+  //     cats
+  //       .filter((cat) => cat.parent_id !== 0)
+  //       .sort((a, b) => {
+  //         return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+  //       })
+  //   );
+  // }, [cats]);
 
   return (
     <>
       <div className="w-3/5 m-auto my-20">
         <div
-          // onClick={callLastId}
           className="text-left text-2xl  
         text-gray-800 mb-1 ml-2 "
         >
@@ -746,21 +750,19 @@ const AddProduct = ({ location }) => {
             ))}
           </div>
           <div className="flex justify-end">
-            {/* <button
-              disabled={!toggleSaveButton}
+            <button
+              // disabled={!toggleSaveButton}
               // type="submit"
               onClick={() => Appp()}
-              className={`${
-                !toggleSaveButton ? "bg-gray-300" : "bg-gray-600"
-              } py-2 px-10 rounded 
+              className={`${"bg-gray-600"} py-2 px-10 rounded 
             text-gray-200 text-lg font-light`}
             >
               SAVE
-            </button> */}
+            </button>
           </div>
         </div>
         {/* 빅커머스 */}
-        <AddBigc
+        {/* <AddBigc
           sku={sku}
           title={title}
           price={price}
@@ -785,7 +787,7 @@ const AddProduct = ({ location }) => {
           descr={descr}
           addBig={addBig}
           toggleBcSaveButton={toggleBcSaveButton}
-        />
+        /> */}
       </div>
     </>
   );

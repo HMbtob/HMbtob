@@ -116,11 +116,10 @@ const PickUpList = ({ location }) => {
             <div className="flex-row flex w-full mb-5">
               <div className="w-2/3">
                 <div className="text-base font-semibold">Seller</div>
-                <div className="text-sm">INTERASIA</div>
-                <div className="text-sm">#417, 78 Digital-ro 10-gil</div>
-                <div className="text-sm">Geumcheon-gu, Seoul, Korea</div>
-                <div className="text-sm">Tel: +82 2 10 2088 0022</div>
-                <div className="text-sm">Fax: +82 2 3281 0125</div>
+                <div className="text-sm">HMcompany</div>
+                <div className="text-sm">71, Bukhang-ro 207beon-gil</div>
+                <div className="text-sm">Seo-gu, Incheon, Korea, 22856 </div>
+                <div className="text-sm">Tel: +82 2 010 5788 7679</div>
               </div>
               <div className="w-1/3 flex flex-col justify-center text-sm">
                 <div>invoice No.: {order && order.data.orderNumber}</div>

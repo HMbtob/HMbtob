@@ -139,6 +139,9 @@ export function CustomerDetails({ match }) {
                 <option value="none">none</option>
                 <option value="customer">customer</option>
                 <option value="admin">admin</option>
+                <option value="Level-1">Level-1</option>
+                <option value="Level-2">Level-2</option>
+                <option value="Level-3">Level-3</option>
               </select>
             </div>
             <div className="grid grid-cols-2 items-center">

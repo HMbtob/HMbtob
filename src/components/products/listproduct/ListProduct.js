@@ -9,6 +9,7 @@ import TopStoreProduct from "./TopStoreProduct";
 import { SearchProduct } from "../../../utils/SearchUtils";
 import AddCircleOutlinedIcon from "@material-ui/icons/AddCircleOutlined";
 import { db } from "../../../firebase";
+import { CSVLink } from "react-csv";
 
 const ListProduct = ({ history }) => {
   const state = useContext(InitDataContext);
@@ -118,6 +119,22 @@ const ListProduct = ({ history }) => {
     }
   }, [history.action]);
 
+  const [csvData, setCsvData] = useState("a");
+
+  useEffect(() => {
+    db.collection("products")
+      .get()
+      .then((res) =>
+        setCsvData(
+          res.docs.map((doc) => [
+            doc.data().title,
+            `${doc.data().price} 원`,
+            `${doc.data().stock} 개`,
+          ])
+        )
+      );
+  }, []);
+
   return (
     <div className="flex flex-col w-full">
       <form
@@ -143,7 +160,17 @@ const ListProduct = ({ history }) => {
           </div>
         </div>
       </form>
-      <div className="ml-28 mt-16 text-gray-800 text-xl">PRODUCT LIST</div>
+      <div className="ml-28 mt-16 text-gray-800 text-xl flex flex-row items-center">
+        <div>PRODUCT LIST</div>
+        <CSVLink
+          data={csvData}
+          filename="LIST.csv"
+          target="_blank"
+          className="bg-gray-600 p-1 rounded-sm text-gray-200 m-2 w-32 text-sm text-center"
+        >
+          LIST DOWNLOAD
+        </CSVLink>
+      </div>
       <div className="border border-gray-500 w-11/12 m-auto mt-4 mb-12">
         <TopStoreProduct
           products={products}
@@ -198,38 +225,73 @@ const ListProduct = ({ history }) => {
         </div>
         <div className="w-full flex flex-col items-center">
           <div className="w-full">
-            {preProduct
-              ?.slice(
-                currentPage * itemsPerPage - itemsPerPage,
-                currentPage * itemsPerPage
-              )
-              .map((product) => (
-                <ListProductRow
-                  key={product.id}
-                  id={product.id}
-                  sku={product.data.sku}
-                  thumbNail={product.data.thumbNail}
-                  title={product.data.title}
-                  price={product.data.price}
-                  barcode={product.data.barcode}
-                  stock={product.data.stock}
-                  totalStock={product.data.totalStock}
-                  totalSell={product.data.totalSell}
-                  unShipped={product.data.unShipped}
-                  relDate={product.data.relDate}
-                  weight={product.data.weight}
-                  isVisible={product.data.isVisible}
-                  preOrderDeadline={product.data.preOrderDeadline}
-                  bigcProductId={product?.data?.bigC?.id}
-                  product={product}
-                  shippings={shippings}
-                  user={user}
-                  exchangeRate={exchangeRate}
-                  products={products}
-                  hiddenAll={hiddenAll}
-                  orderListInShippings={orderListInShippings}
-                />
-              ))}
+            {user?.type === "admin" &&
+              preProduct
+                ?.slice(
+                  currentPage * itemsPerPage - itemsPerPage,
+                  currentPage * itemsPerPage
+                )
+                .map((product) => (
+                  <ListProductRow
+                    key={product.id}
+                    id={product.id}
+                    sku={product.data.sku}
+                    thumbNail={product.data.thumbNail}
+                    title={product.data.title}
+                    price={product.data.price}
+                    barcode={product.data.barcode}
+                    stock={product.data.stock}
+                    totalStock={product.data.totalStock}
+                    totalSell={product.data.totalSell}
+                    unShipped={product.data.unShipped}
+                    relDate={product.data.relDate}
+                    weight={product.data.weight}
+                    isVisible={product.data.isVisible}
+                    preOrderDeadline={product.data.preOrderDeadline}
+                    bigcProductId={product?.data?.bigC?.id}
+                    product={product}
+                    shippings={shippings}
+                    user={user}
+                    exchangeRate={exchangeRate}
+                    products={products}
+                    hiddenAll={hiddenAll}
+                    orderListInShippings={orderListInShippings}
+                  />
+                ))}
+            {user?.type === "Level-1" &&
+              preProduct
+                ?.filter((prod) => prod.data.addedBy === user?.nickName)
+                ?.slice(
+                  currentPage * itemsPerPage - itemsPerPage,
+                  currentPage * itemsPerPage
+                )
+                .map((product) => (
+                  <ListProductRow
+                    key={product.id}
+                    id={product.id}
+                    sku={product.data.sku}
+                    thumbNail={product.data.thumbNail}
+                    title={product.data.title}
+                    price={product.data.price}
+                    barcode={product.data.barcode}
+                    stock={product.data.stock}
+                    totalStock={product.data.totalStock}
+                    totalSell={product.data.totalSell}
+                    unShipped={product.data.unShipped}
+                    relDate={product.data.relDate}
+                    weight={product.data.weight}
+                    isVisible={product.data.isVisible}
+                    preOrderDeadline={product.data.preOrderDeadline}
+                    bigcProductId={product?.data?.bigC?.id}
+                    product={product}
+                    shippings={shippings}
+                    user={user}
+                    exchangeRate={exchangeRate}
+                    products={products}
+                    hiddenAll={hiddenAll}
+                    orderListInShippings={orderListInShippings}
+                  />
+                ))}
           </div>
         </div>
         <div className="flex flex-row w-full items-center justify-center">

@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { db } from "../../../firebase";
 import { onSubmitToShip } from "../../../utils/shippingUtils";
-import { Caled } from "./Caled";
+// import { Caled } from "./Caled";
 import { Inputed } from "./Inputed";
-import { ShipToKorea } from "./ShipToKorea";
+// import { ShipToKorea } from "./ShipToKorea";
 
 export function OrderListDetailPrice({
   handleSubmit,
@@ -33,6 +33,7 @@ export function OrderListDetailPrice({
   // 무게/배송지에 따른 배송비 계산하기. 배송지, 배송요율 설정해야함
   const onCal = async () => {
     const fee = await db.collection("shippingFee").doc("dhl").get();
+    console.log("fee", fee.data());
     const checkedItems = orders.filter((order) =>
       checkedInputs.includes(order.id)
     );
@@ -72,50 +73,51 @@ export function OrderListDetailPrice({
       }, 0) / 1000;
 
     // 몇번째 구간에 걸리는지
-    let num = 1;
-    for (let i = 1; i < 31; i++) {
-      let j = i * 0.5;
-      if (j > totalWeight) {
-        break;
-      }
-      num++;
-    }
-    // 몇번째 존인지
-    const zone = Object.keys(
-      fee
-        .data()
-        .z.find((doc) =>
-          Object.values(doc).find((asd) =>
-            asd.country.includes(checkedItems[0]?.data.country)
-          )
-        )
-    );
+    // let num = 1;
+    // for (let i = 1; i < 31; i++) {
+    //   let j = i * 0.5;
+    //   if (j > totalWeight) {
+    //     break;
+    //   }
+    //   num++;
+    // }
+    // // 몇번째 존인지
+    // const zone = Object.keys(
+    //   fee
+    //     .data()
+    //     .z.find((doc) =>
+    //       Object.values(doc).find((asd) =>
+    //         asd.country.includes(checkedItems[0]?.data.country)
+    //       )
+    //     )
+    // );
     // 30키로 이하 배송비(외국)
+    console.log("totalWeight", totalWeight);
     const shippingFee =
-      totalWeight < 30
-        ? Number(
-            Object.values(
-              fee.data().z.find((doc) => Object.keys(doc)[0] === zone[0])
-            )[0]
-              .fee[num - 1].split(",")
-              .join("")
-          )
-        : account.data.shippingRate.dhl * totalWeight;
-    // to korea
-    const shippingFeeToKorea = (parseInt(totalWeight / 15) + 1) * 4500;
-    setCaledPrice(totalPrice);
+      // totalWeight < 30
+      //   ? Number(
+      //       Object.values(
+      //         fee.data().z.find((doc) => Object.keys(doc)[0] === zone[0])
+      //       )[0]
+      //         .fee[num - 1].split(",")
+      //         .join("")
+      //     )
+      //   : account.data.shippingRate.dhl * totalWeight;
+      // to korea
+      // const shippingFeeToKorea = (parseInt(totalWeight / 15) + 1) * 4500;
+      setCaledPrice(totalPrice);
     setCaledshippingFee(
       exR
         ? exR[account.data.currency] === 1
           ? checkedRadio === "caled"
             ? shippingFee / exR[account.data.currency]
-            : shippingFeeToKorea / exR[account.data.currency]
+            : shippingFee / exR[account.data.currency]
           : checkedRadio === "caled"
           ? Number((shippingFee / exR[account.data.currency]).toFixed(2))
-          : Number((shippingFeeToKorea / exR[account.data.currency]).toFixed(2))
+          : Number((shippingFee / exR[account.data.currency]).toFixed(2))
         : checkedRadio === "caled"
         ? shippingFee
-        : shippingFeeToKorea
+        : shippingFee
     );
   };
 
@@ -136,7 +138,7 @@ export function OrderListDetailPrice({
         발송처리
       </div>
       <div className="flex flex-row justify-evenly">
-        <Caled
+        {/* <Caled
           checkedRadio={checkedRadio}
           setCheckedRadio={setCheckedRadio}
           onCal={onCal}
@@ -149,7 +151,7 @@ export function OrderListDetailPrice({
           onCal={onCal}
           caledPrice={caledPrice}
           caledshippingFee={caledshippingFee}
-        />
+        /> */}
         <Inputed
           checkedRadio={checkedRadio}
           setCheckedRadio={setCheckedRadio}

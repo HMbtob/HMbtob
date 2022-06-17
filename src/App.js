@@ -126,6 +126,39 @@ function App() {
     );
   }
 
+  // 1레벨 관리자
+  if (user && userType === "Level-1") {
+    return (
+      <Router>
+        <div className="flex flex-col bg-gray-50 h-auto min-h-screen w-screen">
+          <InitDispatchContext.Provider value={dispatch}>
+            <InitDataContext.Provider value={state}>
+              <Header />
+              <div className="flex flex-row h-auto min-h-screen">
+                <Sidebar />
+                <Switch>
+                  {/* product */}
+                  <Route
+                    exact
+                    path="/detailproduct/:id"
+                    component={DetailProduct}
+                  />
+                  <Route path="/listproduct" component={ListProduct} />
+                  <Route path="/addproduct" component={AddProduct} />
+
+                  {/* b2b */}
+                  <Route path="/pickuplist2" component={PickUpList2} />
+                  <Route path="/invoice2" component={Invoice2} />
+                  <Route path="/invoice" component={Invoice} />
+                </Switch>
+              </div>
+            </InitDataContext.Provider>
+          </InitDispatchContext.Provider>
+        </div>
+      </Router>
+    );
+  }
+
   if (user && userType === "admin") {
     return (
       <Router>

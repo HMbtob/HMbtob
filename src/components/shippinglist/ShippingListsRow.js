@@ -44,6 +44,25 @@ export function ShippingListsRow({ shipping, hiddenAll }) {
     }
   };
 
+  // 배송 삭제
+  const deleteShipping = async (e) => {
+    e.preventDefault();
+    if (window.confirm("정말로 삭제 하시겠습니까?")) {
+      try {
+        await db
+          .collection("accounts")
+          .doc(shipping.data.userId)
+          .collection("shippingsInAccount")
+          .doc(shipping.id)
+          .delete();
+        alert("배송이 삭제되었습니다.");
+      } catch (e) {
+        console.log("에러내용", e);
+        console.log("수정을 실패했습니다.");
+      }
+    }
+  };
+
   return (
     <div className="border-b border-r border-l w-full border-gray-500">
       <div
@@ -158,6 +177,14 @@ export function ShippingListsRow({ shipping, hiddenAll }) {
           >
             수정
           </button>
+          <button
+            type="button"
+            className="bg-gray-800 text-gray-100 py-1 px-1 rounded-sm cursor-pointer mr-2 w-1/4 ml-1"
+            onClick={(e) => deleteShipping(e)}
+          >
+            삭제
+          </button>
+
           {/* {Number(shipping.data.shippingFee).toLocaleString()}{" "} */}
         </div>
         <div>

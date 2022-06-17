@@ -350,7 +350,8 @@ export function OrderListDetailRow({
       <div className="col-span-3">
         {Number(order.data.totalPrice).toLocaleString()} {order.data.currency}
       </div>
-      <div className="col-span-4 text-left">{order?.data?.memo}</div>
+      <div className="col-span-2 text-left">{order?.data?.memo}</div>
+      <div className="col-span-2 text-center">{order?.data?.addedBy}</div>
     </div>
   );
 }

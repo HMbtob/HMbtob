@@ -7,11 +7,11 @@ const Sidebar = () => {
   const { user } = state;
   const history = useHistory();
 
-  const underMenu = [
-    { 상품추가: "/addproduct" },
-    { 상품목록: "/listproduct" },
-    { 고객관리: "/customerlist" },
-  ];
+  // const underMenu = [
+  //   { 상품추가: "/addproduct" },
+  //   { 상품목록: "/listproduct" },
+  //   { 고객관리: "/customerlist" },
+  // ];
 
   return (
     //   d-1
@@ -30,7 +30,7 @@ const Sidebar = () => {
         )}
 
         {/* d-3 */}
-        {underMenu.map((menu, index) => (
+        {/* {underMenu.map((menu, index) => (
           <div
             key={index}
             onClick={() => history.push(`${Object.values(menu)}`)}
@@ -44,30 +44,92 @@ const Sidebar = () => {
           >
             {Object.keys(menu)}
           </div>
-        ))}
+        ))} */}
+        {user?.type === "admin" && (
+          <>
+            <div
+              onClick={() => history.push(`/addproduct`)}
+              className="cursor-pointer hover:text-gray-50 
+          flex flex-row justify-center items-center"
+            >
+              상품추가
+            </div>
+            <div
+              onClick={() => history.push(`/listproduct`)}
+              className="cursor-pointer hover:text-gray-50 
+          flex flex-row justify-center items-center"
+            >
+              상품목록
+            </div>
+            <div
+              onClick={() => history.push(`/customerlist`)}
+              className="cursor-pointer hover:text-gray-50 
+          flex flex-row justify-center items-center"
+            >
+              고객관리
+            </div>
+            <div
+              onClick={() => history.push(`/orderlists`)}
+              className="cursor-pointer hover:text-gray-50 
+          flex flex-row justify-center items-center"
+            >
+              NEW 주문
+            </div>
+            <div
+              onClick={() => history.push(`/shippinglists`)}
+              className="cursor-pointer hover:text-gray-50 
+          flex flex-row justify-center items-center"
+            >
+              NEW 배송
+            </div>
+            <div
+              onClick={() =>
+                window.open("https://hmbtob-shop.web.app/", "blank")
+              }
+              className="cursor-pointer hover:text-gray-50 
+          flex flex-row justify-center items-center"
+            >
+              STORE
+            </div>
+            <div
+              onClick={() => history.push(`/exchangerates`)}
+              className="cursor-pointer hover:text-gray-50 
+          flex flex-row justify-center items-center mt-"
+            >
+              환율 조절
+            </div>
+          </>
+        )}
 
-        <div
-          onClick={() => history.push(`/orderlists`)}
-          className="cursor-pointer hover:text-gray-50 
+        {user?.type === "Level-1" && (
+          <>
+            <div
+              onClick={() => history.push(`/addproduct`)}
+              className="cursor-pointer hover:text-gray-50 
           flex flex-row justify-center items-center"
-        >
-          NEW 주문
-        </div>
-        <div
-          onClick={() => history.push(`/shippinglists`)}
-          className="cursor-pointer hover:text-gray-50 
+            >
+              상품추가
+            </div>
+            <div
+              onClick={() => history.push(`/listproduct`)}
+              className="cursor-pointer hover:text-gray-50 
           flex flex-row justify-center items-center"
-        >
-          NEW 배송
-        </div>
-        <div
-          onClick={() => window.open("https://interasia.biz", "blank")}
-          className="cursor-pointer hover:text-gray-50 
+            >
+              상품목록
+            </div>
+            <div
+              onClick={() =>
+                window.open("https://hmbtob-shop.web.app/", "blank")
+              }
+              className="cursor-pointer hover:text-gray-50 
           flex flex-row justify-center items-center"
-        >
-          STORE
-        </div>
-        <div
+            >
+              STORE
+            </div>
+          </>
+        )}
+
+        {/* <div
           onClick={() => history.push(`/receiptprint`)}
           className="cursor-pointer hover:text-gray-50 
           flex flex-row justify-center items-center mt-36"
@@ -80,14 +142,7 @@ const Sidebar = () => {
           flex flex-row justify-center items-center mt-"
         >
           상품판매량
-        </div>
-        <div
-          onClick={() => history.push(`/exchangerates`)}
-          className="cursor-pointer hover:text-gray-50 
-          flex flex-row justify-center items-center mt-"
-        >
-          환율 조절
-        </div>
+        </div> */}
       </div>
     </div>
   );
