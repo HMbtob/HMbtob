@@ -572,14 +572,14 @@ const ListProductRow = ({
               onChange={handleRelDate2}
               name="relDate2"
               className="p-1 outline-none bg-transparent w-full"
-              onKeyPress={(e) => {
-                if (e.key === "Enter") {
-                  db.collection("products")
-                    .doc(id)
-                    .update({ relDate: relDate2 });
-                  return false;
-                }
-              }}
+              // onKeyPress={(e) => {
+              //   if (e.key === "Enter") {
+              //     db.collection("products")
+              //       .doc(id)
+              //       .update({ relDate: relDate2 });
+              //     return false;
+              //   }
+              // }}
             />
           )}
         </div>

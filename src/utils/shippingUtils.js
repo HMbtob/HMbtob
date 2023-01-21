@@ -99,6 +99,7 @@ export const onSubmitToShip = async (
         // console.log(i + 1, "번째 뱃치시작", order);
         let batch = db.batch();
 
+        // todo
         let orderListInShippingsRef = db
           .collection("accounts")
           .doc(orders[0]?.data.userId)

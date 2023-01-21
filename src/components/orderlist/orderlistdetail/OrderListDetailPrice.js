@@ -33,7 +33,7 @@ export function OrderListDetailPrice({
   // 무게/배송지에 따른 배송비 계산하기. 배송지, 배송요율 설정해야함
   const onCal = async () => {
     const fee = await db.collection("shippingFee").doc("dhl").get();
-    console.log("fee", fee.data());
+    // console.log("fee", fee.data());
     const checkedItems = orders.filter((order) =>
       checkedInputs.includes(order.id)
     );
@@ -92,7 +92,7 @@ export function OrderListDetailPrice({
     //     )
     // );
     // 30키로 이하 배송비(외국)
-    console.log("totalWeight", totalWeight);
+    // console.log("totalWeight", totalWeight);
     const shippingFee =
       // totalWeight < 30
       //   ? Number(
